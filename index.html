@@ -64,7 +64,6 @@
         </div>
     </main>
 
-    <!-- Firebase check to change Login button text -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-app.js";
         import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-auth.js";
@@ -74,7 +73,6 @@
         });
     </script>
 
-    <!-- Guest AI Logic -->
     <script>
         window.sendGuestChat = async function() {
             const input = document.getElementById('chat-input');
@@ -107,7 +105,7 @@
             } catch(e) {
                 console.error(e);
                 document.getElementById(loadId).remove();
-                history.innerHTML += `<div class="text-center text-red-500 text-xs mt-3 font-semibold">⚠️ Backend Server Offline. Make sure your Python app is running.</div>`;
+                history.innerHTML += `<div class="text-center text-red-500 text-xs mt-3 font-semibold">⚠️ Backend Server Offline.</div>`;
             }
         }
     </script>
