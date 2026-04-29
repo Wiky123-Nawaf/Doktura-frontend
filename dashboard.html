@@ -106,10 +106,10 @@
             <!-- Voice View Overlay -->
             <div id="voice-overlay" class="absolute inset-0 top-16 bg-[#f8fafc] z-[50] hidden flex-col items-center justify-center">
                 <div class="voice-orb w-40 h-40 mb-12 flex items-center justify-center text-white"></div>
-                <h3 class="text-4xl font-bold text-gray-900 mb-6">Tap mic to speak</h3>
+                <h3 id="voice-status" class="text-4xl font-bold text-gray-900 mb-6">Tap mic to speak</h3>
                 <button onclick="toggleVoiceMic()" id="voice-action-btn" class="bg-[#d9381e] text-white rounded-full p-5 shadow-xl hover:bg-red-700 transition mb-6"><svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"></path></svg></button>
                 <p id="voice-transcript" class="text-gray-500 text-lg">Tap to start talking...</p>
-                <button onclick="exitVoiceMode()" class="mt-8 text-sm font-bold text-gray-400 hover:text-gray-800">Cancel</button>
+                <button onclick="exitVoiceMode()" class="mt-8 text-sm font-bold text-gray-400 hover:text-gray-800 uppercase tracking-widest">End Session</button>
             </div>
             
             <!-- Input Area -->
@@ -289,31 +289,107 @@
             el.scrollTo(0, el.scrollHeight);
         }
 
-        window.sendChat = async () => {
-            const input = document.getElementById('chat-input'); const msg = input.value.trim(); if(!msg) return;
+        window.sendChat = async (voiceInput = null) => {
+            const input = document.getElementById('chat-input'); 
+            const msg = voiceInput || input.value.trim(); 
+            if(!msg) return;
             input.value = '';
-            await fetch(API_BASE+'/api/chat',{method:'POST',headers:await getAuthHeaders(),body:JSON.stringify({message:msg, session_id:window.currentSessionId, user_name:window.userData.name})});
-            loadHistory();
+            
+            const r = await fetch(API_BASE+'/api/chat',{method:'POST',headers:await getAuthHeaders(),body:JSON.stringify({message:msg, session_id:window.currentSessionId, user_name:window.userData.name})});
+            const data = await r.json();
+            
+            await loadHistory();
+            
+            // Allow AI to speak response if in voice mode
+            if (isVoiceActive) {
+                if (data.reply) {
+                    speakOutLoud(data.reply);
+                } else {
+                    // Fallback: speak the last assistant message loaded from history
+                    const historyEl = document.getElementById('chat-history');
+                    const lastMsg = historyEl.lastElementChild;
+                    if (lastMsg) speakOutLoud(lastMsg.innerText);
+                }
+            }
         }
 
-        // ================= VOICE API ENGINE =================
-        let voiceRec = null; let isVoiceActive = false;
+        // ================= VOICE API ENGINE (Updated w/ TTS) =================
+        let voiceRec = null; 
+        let isVoiceActive = false;
+        let isListening = false;
+
+        window.speakOutLoud = function(text) {
+            window.speechSynthesis.cancel();
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.rate = 1.0;
+            utterance.onstart = () => { 
+                const status = document.getElementById('voice-status');
+                if(status) status.innerText = "AI is speaking..."; 
+            };
+            utterance.onend = () => { 
+                const status = document.getElementById('voice-status');
+                if(status) status.innerText = "Tap mic to speak"; 
+            };
+            window.speechSynthesis.speak(utterance);
+        }
+
         window.initVoice = function() {
             const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
             if (!SR) { alert("Voice not supported in this browser. Use Chrome."); return null; }
-            const rec = new SR(); rec.continuous = true; rec.interimResults = true;
-            rec.onstart = () => { document.getElementById('voice-transcript').innerText = "Listening..."; document.getElementById('voice-action-btn').classList.add('animate-pulse'); };
-            rec.onresult = (e) => { let trans = ""; for(let i=e.resultIndex; i<e.results.length; i++) trans += e.results[i][0].transcript; document.getElementById('voice-transcript').innerText = trans; };
+            const rec = new SR(); 
+            rec.continuous = false; // Turned off continuous for better turn-taking chat flow
+            
+            rec.onstart = () => { 
+                isListening = true;
+                document.getElementById('voice-status').innerText = "Listening...";
+                document.getElementById('voice-transcript').innerText = "Listening..."; 
+                document.getElementById('voice-action-btn').classList.add('animate-pulse'); 
+            };
+            rec.onresult = (e) => { 
+                let trans = e.results[0][0].transcript; 
+                document.getElementById('voice-transcript').innerText = trans; 
+            };
             rec.onend = () => {
-                document.getElementById('voice-action-btn').classList.remove('animate-pulse'); isVoiceActive = false;
+                isListening = false;
+                document.getElementById('voice-action-btn').classList.remove('animate-pulse'); 
+                if (document.getElementById('voice-status').innerText === "Listening...") {
+                    document.getElementById('voice-status').innerText = "Tap mic to speak";
+                }
                 const finalTxt = document.getElementById('voice-transcript').innerText;
-                if(finalTxt && finalTxt !== "Tap to start talking..." && finalTxt !== "Listening...") { document.getElementById('chat-input').value = finalTxt; sendChat(); exitVoiceMode(); }
+                if(finalTxt && finalTxt !== "Tap to start talking..." && finalTxt !== "Listening...") { 
+                    document.getElementById('chat-input').value = finalTxt; 
+                    sendChat(finalTxt); 
+                }
             };
             return rec;
         }
-        window.enterVoiceMode = () => { document.getElementById('voice-overlay').classList.remove('hidden'); document.getElementById('voice-overlay').classList.add('flex'); if(!voiceRec) voiceRec = initVoice(); }
-        window.exitVoiceMode = () => { document.getElementById('voice-overlay').classList.add('hidden'); if(voiceRec && isVoiceActive) { voiceRec.stop(); isVoiceActive = false; } }
-        window.toggleVoiceMic = () => { if(!voiceRec) return; if(isVoiceActive) voiceRec.stop(); else { document.getElementById('voice-transcript').innerText = "..."; voiceRec.start(); isVoiceActive = true; } }
+
+        window.enterVoiceMode = () => { 
+            document.getElementById('voice-overlay').classList.remove('hidden'); 
+            document.getElementById('voice-overlay').classList.add('flex'); 
+            isVoiceActive = true; 
+            if(!voiceRec) voiceRec = initVoice(); 
+        }
+
+        window.exitVoiceMode = () => { 
+            isVoiceActive = false;
+            window.speechSynthesis.cancel();
+            document.getElementById('voice-overlay').classList.add('hidden'); 
+            document.getElementById('voice-overlay').classList.remove('flex');
+            if(voiceRec && isListening) { voiceRec.stop(); isListening = false; } 
+            document.getElementById('voice-status').innerText = "Tap mic to speak";
+        }
+
+        window.toggleVoiceMic = () => { 
+            window.speechSynthesis.cancel();
+            if(!voiceRec) return; 
+            if(isListening) { 
+                voiceRec.stop(); 
+            } else { 
+                document.getElementById('voice-transcript').innerText = "..."; 
+                voiceRec.start(); 
+            } 
+        }
 
         // ================= DATA FETCHING =================
         async function fetchAppointments() {
