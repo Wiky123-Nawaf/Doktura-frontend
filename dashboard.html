@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Doktura</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 4px; }
+        @keyframes glowPulse { 0% { box-shadow: 0 0 0 0 rgba(46, 26, 71, 0.4); } 70% { box-shadow: 0 0 0 40px rgba(46, 26, 71, 0); } 100% { box-shadow: 0 0 0 0 rgba(46, 26, 71, 0); } }
+        .voice-glow { animation: glowPulse 1.5s infinite; }
+    </style>
+</head>
+<body class="hidden fixed inset-0 bg-white z-[60] flex h-screen w-full" id="appBody">
+
+    <script>const API_BASE = 'https://api.doktura.ai';</script>
+
+    <!-- FULL SCREEN VOICE OVERLAY -->
+    <div id="voice-overlay" class="absolute inset-0 bg-white/95 backdrop-blur-xl z-[200] hidden flex-col items-center justify-center transition-all">
+        <button onclick="exitVoiceMode()" class="absolute top-6 right-6 p-3 bg-gray-100 text-gray-400 hover:text-gray-800 rounded-full"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button>
+        <div class="relative flex items-center justify-center w-64 h-64 mb-8">
+            <div id="voice-pulse-ring" class="absolute inset-0 bg-[#00AEEF]/20 rounded-full hidden"></div>
+            <div id="voice-glow-ring" class="absolute inset-[-20px] bg-[#00AEEF]/10 rounded-full voice-glow hidden"></div>
+            <img src="https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/Gemini_Generated_Image_okdjp7okdjp7okdj.png?download=true" class="w-56 h-56 rounded-full border-4 border-[#00AEEF] relative z-10 object-cover shadow-2xl bg-white">
+        </div>
+        <h3 id="voice-status-text" class="text-3xl font-bold text-[#00AEEF] mb-4">Tap mic to speak</h3>
+        <p id="voice-transcript-preview" class="text-gray-500 text-lg text-center max-w-2xl h-20 overflow-hidden italic px-6"></p>
+        <button id="voice-toggle-btn" onclick="toggleVoiceMic()" class="mt-8 bg-[#00AEEF] hover:bg-[#0099d1] text-white rounded-full p-6 shadow-xl"><svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"></path></svg></button>
+    </div>
+
+    <!-- Left Sidebar -->
+    <div class="w-64 bg-[#111827] text-white flex flex-col transition-all shrink-0">
+        <div class="p-4 space-y-2 border-b border-gray-800">
+            <button onclick="switchTab('chat')" id="btn-chat" class="w-full flex items-center space-x-3 bg-gray-800 p-3 rounded-lg text-white font-medium text-sm">AI Doctor</button>
+            <button onclick="switchTab('book')" id="btn-book" class="w-full flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-800 text-gray-300 font-medium text-sm">Book Consultant</button>
+            <button onclick="switchTab('reports')" id="btn-reports" class="w-full flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-800 text-gray-300 font-medium text-sm">Medical Reports</button>
+        </div>
+        
+        <div class="flex-1 overflow-y-auto p-4">
+            <button onclick="startNewSession()" class="w-full text-left p-3 hover:bg-gray-800 rounded-lg text-green-400 font-bold mb-4 border border-gray-700 text-sm flex items-center"><svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg> New Session</button>
+            <div id="sidebar-sessions" class="space-y-1"></div>
+        </div>
+
+        <div class="p-4 border-t border-gray-800">
+            <div class="flex items-center justify-between mb-4">
+                <div class="flex items-center space-x-3 overflow-hidden">
+                    <img id="userAvatar" src="" class="w-8 h-8 rounded-full border border-gray-600 object-cover">
+                    <span id="userName" class="text-sm truncate font-medium"></span> 
+                </div>
+                <button id="logoutBtn" class="text-gray-400 hover:text-white p-1"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg></button>
+            </div>
+            <button onclick="switchTab('settings')" id="btn-settings" class="flex items-center justify-center space-x-2 p-2 w-full rounded-lg bg-gray-800 hover:bg-gray-700 text-gray-300 text-xs font-bold uppercase"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg> <span>Profile Settings</span></button>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="flex-1 flex flex-col relative h-full bg-white overflow-hidden">
+        
+        <!-- CHAT -->
+        <div id="view-chat" class="flex-1 flex flex-col h-full bg-white">
+            <div id="chat-history" class="flex-1 overflow-y-auto p-6 md:p-10 space-y-8"></div>
+            <div class="w-full shrink-0 pt-4 pb-6 px-6 bg-white border-t border-gray-100">
+                <div class="max-w-3xl mx-auto relative flex items-center shadow-lg rounded-full border bg-white p-1">
+                    <button onclick="enterVoiceMode()" class="p-3 bg-gray-100 hover:bg-[#00AEEF] hover:text-white rounded-full text-gray-600 ml-1"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"></path></svg></button>
+                    <input type="text" id="chat-input" class="w-full bg-transparent pl-4 pr-14 py-3 focus:outline-none text-gray-800" placeholder="Type a message or tap mic..." onkeypress="if(event.key === 'Enter') sendChat()">
+                    <button onclick="sendChat()" class="absolute right-2 p-2.5 bg-[#00AEEF] text-white rounded-full hover:bg-[#0099d1]"><svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z"></path></svg></button>
+                </div>
+            </div>
+        </div>
+
+        <!-- BOOKING -->
+        <div id="view-book" class="hidden flex-1 overflow-y-auto p-12">
+            <div class="max-w-4xl mx-auto">
+                <h2 class="text-3xl font-bold mb-8">Book a Consultant</h2>
+                <form id="book-form" onsubmit="submitBooking(event)" class="bg-white border rounded-2xl shadow-sm p-8 space-y-6">
+                    <select id="book-doctor" required class="w-full border rounded-lg px-4 py-3"><option value="">Loading Doctors...</option></select>
+                    <div class="flex space-x-4">
+                        <label class="flex-1 border rounded-lg p-4 cursor-pointer text-center"><input type="radio" name="v_type" value="online" checked class="mr-2"> Video Call (RM 10)</label>
+                        <label class="flex-1 border rounded-lg p-4 cursor-pointer text-center"><input type="radio" name="v_type" value="clinic" class="mr-2"> In-Clinic Visit</label>
+                    </div>
+                    <input type="datetime-local" id="book-time" class="w-full border rounded-lg px-4 py-3">
+                    <button type="submit" id="book-btn" class="w-full bg-[#00AEEF] text-white font-bold py-4 rounded-xl">Book Appointment</button>
+                    <div id="book-result" class="hidden p-4 rounded bg-gray-100 text-center text-sm"></div>
+                </form>
+            </div>
+        </div>
+
+        <!-- REPORTS -->
+        <div id="view-reports" class="hidden flex-1 overflow-y-auto p-12">
+            <div class="max-w-2xl mx-auto text-center">
+                <h2 class="text-3xl font-bold mb-4">Medical Reports</h2>
+                <button onclick="window.location.href=`${API_BASE}/api/auth/google?user_id=${window.currentUser.uid}`" class="mb-6 bg-white border font-semibold px-4 py-2 rounded-lg text-sky-600">🔗 Connect Google Drive</button>
+                <form onsubmit="uploadReport(event)" class="bg-white border border-dashed border-gray-300 rounded-2xl p-10 cursor-pointer">
+                    <input type="file" id="report-file" class="mb-4">
+                    <button type="submit" id="upload-btn" class="w-full bg-[#00AEEF] text-white py-3 rounded-lg font-bold mt-4">Upload & Analyze</button>
+                </form>
+                <div id="upload-result" class="hidden mt-4 p-4 rounded border text-sm text-left"></div>
+            </div>
+        </div>
+
+        <!-- SETTINGS -->
+        <div id="view-settings" class="hidden flex-1 overflow-y-auto p-12 bg-gray-50">
+            <div class="max-w-2xl mx-auto bg-white rounded-2xl border p-8 shadow-sm">
+                <h2 class="text-2xl font-bold mb-6">Profile Settings</h2>
+                <div id="settingsAlert" class="hidden mb-4 p-3 rounded text-sm text-center"></div>
+                <div class="flex items-center space-x-6 mb-6">
+                    <img id="set-avatar" src="" class="w-20 h-20 rounded-full border object-cover">
+                    <input type="file" id="set-photo" accept="image/*" class="text-sm">
+                </div>
+                <input type="text" id="set-name" placeholder="Full Name" class="w-full border rounded-lg px-4 py-3 mb-4">
+                <input type="text" id="set-phone" placeholder="Phone Number" class="w-full border rounded-lg px-4 py-3 mb-4">
+                <button onclick="saveSettings()" id="set-btn" class="w-full bg-[#00AEEF] text-white font-bold py-3 rounded-lg">Update Profile</button>
+            </div>
+        </div>
+
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-app.js";
+        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-auth.js";
+        
+        const app = initializeApp({
+            apiKey: "AIzaSyCrx9BPS8ficDzgVZMbJIb4b3PQ9IqEHLw",
+            authDomain: "doktura-ai-907d8.firebaseapp.com",
+            projectId: "doktura-ai-907d8",
+            storageBucket: "doktura-ai-907d8.firebasestorage.app",
+            messagingSenderId: "940024084363",
+            appId: "1:940024084363:web:db934bd0fd644d61f7e18e"
+        });
+        
+        const auth = getAuth(app);
+        window.userData = { name: "", phone: "", photo_url: "" };
+        window.currentUser = null;
+
+        // AUTH GUARD: If not logged in, kick to login page immediately
+        onAuthStateChanged(auth, async (user) => {
+            if (!user) { window.location.href = "login.html"; return; }
+            window.currentUser = user;
+            
+            try {
+                const token = await user.getIdToken();
+                const res = await fetch(`${API_BASE}/api/user/sync`, {
+                    method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                    body: JSON.stringify({ email: user.email })
+                });
+                const data = await res.json();
+                
+                if(!data.is_complete) { window.location.href = "login.html"; return; }
+                
+                window.userData = data;
+                
+                // Set UI
+                document.getElementById('appBody').classList.remove('hidden');
+                document.getElementById('userName').innerText = data.name;
+                document.getElementById('set-name').value = data.name;
+                document.getElementById('set-phone').value = data.phone;
+                
+                let avatar = data.photo_url || user.photoURL || `data:image/svg+xml;base64,${btoa(`<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64"><rect width="64" height="64" fill="#00AEEF"/><text x="50%" y="50%" fill="#fff" font-size="32" font-family="sans-serif" font-weight="bold" text-anchor="middle" dy=".35em">${data.name.charAt(0).toUpperCase()}</text></svg>`)}`;
+                document.getElementById('userAvatar').src = avatar;
+                document.getElementById('set-avatar').src = avatar;
+                window.currentAvatar = avatar;
+
+                loadSessions();
+                fetchDoctors();
+            } catch(e) { window.location.href = "login.html"; }
+        });
+
+        document.getElementById("logoutBtn").addEventListener("click", () => signOut(auth));
+    </script>
+
+    <script>
+        window.currentSessionId = null;
+        async function getAuthHeaders(json=true) {
+            const h = {}; if(json) h['Content-Type']='application/json';
+            if(window.currentUser) h['Authorization'] = `Bearer ${await window.currentUser.getIdToken()}`;
+            return h;
+        }
+
+        window.switchTab = function(tab) {
+            ['chat','book','reports','settings'].forEach(t => {
+                document.getElementById('view-'+t).classList.add('hidden');
+                document.getElementById('btn-'+t).classList.remove('bg-gray-800','text-white');
+                document.getElementById('btn-'+t).classList.add('text-gray-300');
+            });
+            document.getElementById('view-'+tab).classList.remove('hidden');
+            document.getElementById('btn-'+tab).classList.add('bg-gray-800','text-white');
+        }
+
+        // Settings Save
+        window.saveSettings = async function() {
+            const btn = document.getElementById('set-btn');
+            const alert = document.getElementById('settingsAlert');
+            btn.innerText = "Saving...";
+            
+            let photoUrl = window.userData.photo_url;
+            const file = document.getElementById('set-photo').files[0];
+            if(file) {
+                const fd = new FormData(); fd.append('file', file); fd.append('user_id', window.currentUser.uid);
+                try { const r = await fetch(`${API_BASE}/api/upload_avatar`,{method:'POST',body:fd}); photoUrl = (await r.json()).photo_url; }catch(e){}
+            }
+
+            try {
+                await fetch(`${API_BASE}/api/user/profile`, {
+                    method: 'POST', headers: await getAuthHeaders(),
+                    body: JSON.stringify({ name: document.getElementById('set-name').value, phone: document.getElementById('set-phone').value, photo_url: photoUrl })
+                });
+                alert.className = "mb-4 p-3 rounded text-sm text-center bg-green-100 text-green-700"; alert.innerText = "Saved successfully!"; alert.classList.remove('hidden');
+                setTimeout(()=>window.location.reload(), 1000);
+            } catch(e) { alert.className = "mb-4 p-3 rounded text-sm text-center bg-red-100 text-red-700"; alert.innerText = "Error saving."; alert.classList.remove('hidden'); btn.innerText = "Update Profile"; }
+        }
+
+        // Chat Logic
+        async function loadSessions() {
+            const r = await fetch(API_BASE+'/api/sessions',{method:'POST',headers:await getAuthHeaders(),body:JSON.stringify({user_id:window.currentUser.uid})});
+            const sessions = (await r.json()).sessions || [];
+            if(!window.currentSessionId) window.currentSessionId = sessions.length ? sessions[0] : Date.now().toString();
+            if(!sessions.includes(window.currentSessionId)) sessions.unshift(window.currentSessionId);
+            
+            const list = document.getElementById('sidebar-sessions'); list.innerHTML = '';
+            sessions.forEach(id => {
+                let dStr = isNaN(id) ? "Chat" : new Date(parseInt(id)).toLocaleString([], {month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'});
+                let bg = id === window.currentSessionId ? 'bg-gray-800 text-white border-l-4 border-[#00AEEF]' : 'hover:bg-gray-800 text-gray-400 border-l-4 border-transparent';
+                list.innerHTML += `<button onclick="window.currentSessionId='${id}';loadSessions();switchTab('chat');" class="w-full text-left p-3 rounded text-xs transition ${bg} mb-2">${dStr}</button>`;
+            });
+            loadHistory();
+        }
+
+        window.startNewSession = function() { window.currentSessionId = Date.now().toString(); loadSessions(); switchTab('chat'); }
+
+        async function loadHistory() {
+            const el = document.getElementById('chat-history');
+            const r = await fetch(API_BASE+'/api/history',{method:'POST',headers:await getAuthHeaders(),body:JSON.stringify({user_id:window.currentUser.uid, session_id:window.currentSessionId})});
+            const data = await r.json();
+            el.innerHTML = '';
+            if(!data.history || data.history.length === 0 || !data.history.some(m=>m.role!=='system')) {
+                el.innerHTML = `<div class="flex items-start space-x-4"><img src="https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/Gemini_Generated_Image_okdjp7okdjp7okdj.png?download=true" class="w-8 h-8 rounded-full border"><div class="flex-1"><p class="font-bold text-sm mb-1">Doktura AI</p><div class="text-gray-700">Hello ${window.userData.name}! How can I help you?</div></div></div>`;
+            } else {
+                data.history.forEach(m => {
+                    if(m.role==='system') return;
+                    let txt = m.content.replace(/\n/g,'<br>');
+                    if(m.role==='user') el.innerHTML += `<div class="flex items-start space-x-4"><img src="${window.currentAvatar}" class="w-8 h-8 rounded-full border object-cover"><div class="flex-1"><p class="font-bold text-sm mb-1">${window.userData.name}</p><div class="text-gray-700">${txt}</div></div></div>`;
+                    else el.innerHTML += `<div class="flex items-start space-x-4"><img src="https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/Gemini_Generated_Image_okdjp7okdjp7okdj.png?download=true" class="w-8 h-8 rounded-full border"><div class="flex-1"><p class="font-bold text-sm mb-1">Doktura AI</p><div class="text-gray-700">${txt}</div></div></div>`;
+                });
+            }
+            el.scrollTo({top: el.scrollHeight});
+        }
+
+        window.sendChat = async function() {
+            const input = document.getElementById('chat-input'); const msg = input.value.trim(); if(!msg) return;
+            const el = document.getElementById('chat-history');
+            el.innerHTML += `<div class="flex items-start space-x-4"><img src="${window.currentAvatar}" class="w-8 h-8 rounded-full border object-cover"><div class="flex-1"><p class="font-bold text-sm mb-1">${window.userData.name}</p><div class="text-gray-700">${msg}</div></div></div>`;
+            input.value = ''; el.scrollTo({top: el.scrollHeight});
+
+            const r = await fetch(API_BASE+'/api/chat',{method:'POST',headers:await getAuthHeaders(),body:JSON.stringify({message:msg, session_id:window.currentSessionId, user_name:window.userData.name})});
+            const data = await r.json();
+            el.innerHTML += `<div class="flex items-start space-x-4"><img src="https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/Gemini_Generated_Image_okdjp7okdjp7okdj.png?download=true" class="w-8 h-8 rounded-full border"><div class="flex-1"><p class="font-bold text-sm mb-1">Doktura AI</p><div class="text-gray-700">${data.reply.replace(/\n/g,'<br>')}</div></div></div>`;
+            el.scrollTo({top: el.scrollHeight});
+        }
+
+        // Booking & Upload Stubs
+        async function fetchDoctors() {
+            const r = await fetch(API_BASE+'/api/doctors'); const docs = await r.json();
+            const sel = document.getElementById('book-doctor'); sel.innerHTML = '<option value="">Select Doctor</option>';
+            docs.forEach(d => sel.innerHTML += `<option value="${d.id}">${d.name} - ${d.specialty}</option>`);
+        }
+        window.submitBooking = async function(e) { e.preventDefault(); /* Include booking logic here as before */ }
+        window.uploadReport = async function(e) { e.preventDefault(); /* Include upload logic here as before */ }
+    </script>
+</body>
+</html>
