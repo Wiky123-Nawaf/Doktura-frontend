@@ -62,7 +62,7 @@
     <!-- LEFT SIDEBAR -->
     <div class="w-[260px] bg-white border-r border-gray-200 flex flex-col shrink-0 h-full z-10 shadow-sm">
         <div class="p-6 pb-2">
-            <img src="https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/Logo.jpg?download=true" class="h-8">
+            <img src="https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/Logo.jpg?download=true" class="h-8 object-contain">
         </div>
         
         <div class="px-5 py-4">
@@ -116,7 +116,26 @@
         <div class="h-16 border-b border-gray-200 flex items-center justify-between px-8 bg-white shrink-0 shadow-sm z-10">
             <h1 class="text-lg font-bold text-gray-800" id="header-title">Consultation AI</h1>
             <div class="flex items-center space-x-4">
-                <button class="p-2 text-gray-400 border border-gray-200 rounded-lg hover:bg-gray-50 transition"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path></svg></button>
+                
+                <!-- Notification Bell -->
+                <div class="relative">
+                    <button onclick="toggleNotifications()" class="p-2 text-gray-400 border border-gray-200 rounded-lg hover:bg-gray-50 transition relative">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path></svg>
+                        <span id="notif-badge" class="hidden absolute top-1 right-1 w-2.5 h-2.5 bg-red-500 border-2 border-white rounded-full"></span>
+                    </button>
+                    <!-- Notification Dropdown -->
+                    <div id="notif-dropdown" class="hidden absolute right-0 mt-3 w-[320px] bg-white border border-gray-200 shadow-2xl rounded-xl z-50 flex flex-col overflow-hidden">
+                        <div class="p-4 border-b border-gray-100 font-bold text-gray-800 text-sm flex justify-between items-center">
+                            Notifications
+                            <button onclick="toggleNotifications()" class="text-gray-400 hover:text-gray-800 transition text-lg">✕</button>
+                        </div>
+                        <div id="notif-list" class="max-h-72 overflow-y-auto p-2 bg-gray-50/50">
+                            <p id="empty-notif" class="text-xs text-gray-400 text-center py-6">No new notifications</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Profile Badge -->
                 <button onclick="switchTab('settings')" class="flex items-center space-x-2 border border-gray-200 rounded-lg p-1 pr-3 hover:bg-gray-50 transition shrink-0">
                     <img id="userAvatarHeader" src="" class="w-8 h-8 rounded-full object-cover">
                     <span id="userNameHeader" class="text-xs font-bold text-gray-700">Profile</span>
@@ -141,11 +160,15 @@
             
             <!-- Voice View Overlay -->
             <div id="voice-overlay" class="absolute inset-0 bg-[#f8fafc]/95 z-[50] hidden flex-col items-center justify-center backdrop-blur-sm">
-                <div id="voice-orb-element" class="voice-orb mb-12 flex items-center justify-center text-white"></div>
-                <h3 id="voice-status-text" class="text-4xl font-bold text-gray-900 mb-6">Tap mic to speak</h3>
+                <div id="voice-orb-element" class="voice-orb mb-8 flex items-center justify-center text-white"></div>
+                <h3 id="voice-status-text" class="text-3xl font-bold text-gray-900 mb-6">Tap mic to speak</h3>
                 <button onclick="toggleVoiceMic()" id="voice-action-btn" class="bg-[#d9381e] text-white rounded-full p-6 shadow-xl hover:bg-red-700 transition mb-6"><svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"></path></svg></button>
-                <p id="voice-transcript" class="text-gray-500 text-lg max-w-lg text-center h-20 italic">Tap to start talking...</p>
-                <button onclick="exitVoiceMode()" class="mt-8 text-sm font-bold text-gray-400 hover:text-gray-800 uppercase tracking-widest transition">Cancel</button>
+                <p id="voice-transcript" class="text-gray-600 text-lg max-w-2xl text-center h-24 italic overflow-y-auto w-full px-6">Tap to start talking...</p>
+                
+                <div class="flex space-x-4 mt-8">
+                    <button onclick="exitVoiceMode()" class="px-6 py-3 rounded-xl font-bold text-gray-500 bg-gray-200 hover:bg-gray-300 transition uppercase text-sm">Cancel</button>
+                    <button onclick="sendChatFromVoice()" class="px-8 py-3 rounded-xl font-bold text-white bg-[#0066FF] hover:bg-blue-700 transition shadow-md uppercase text-sm">Send to AI</button>
+                </div>
             </div>
             
             <!-- Input Area -->
@@ -348,8 +371,9 @@
         let voiceRec = null; 
         let isVoiceActive = false;
         window.pendingDeleteId = null;
+        const chatLogoUrl = "https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/Vector%20(1).png?download=true";
 
-        // INLINE MESSAGE HANDLER (Replaces standard alerts/black boxes)
+        // ================= UI MESSAGING ENGINE =================
         window.showInlineMessage = (msg, type = 'error') => {
             const container = document.getElementById('global-message-container');
             const box = document.getElementById('global-message-box');
@@ -364,11 +388,27 @@
                 box.className = 'max-w-4xl mx-auto p-4 rounded-xl text-sm font-bold border flex items-center justify-between bg-green-50 border-green-200 text-green-600 shadow-sm';
                 icon.innerHTML = '<path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>';
             }
-            
             container.classList.remove('hidden');
-            
-            // Auto hide
             setTimeout(() => { container.classList.add('hidden'); }, 6000);
+        };
+
+        window.toggleNotifications = () => {
+            const el = document.getElementById('notif-dropdown');
+            el.classList.toggle('hidden');
+        };
+
+        window.addNotification = (title, msg, action) => {
+            document.getElementById('notif-badge').classList.remove('hidden');
+            const list = document.getElementById('notif-list');
+            if(list.innerText.includes('No new notifications')) list.innerHTML = '';
+            
+            const html = `
+                <div onclick="${action}; toggleNotifications(); document.getElementById('notif-badge').classList.add('hidden');" class="p-3 bg-white hover:bg-blue-50 rounded-lg cursor-pointer transition mb-2 border border-gray-100 hover:border-blue-200 shadow-sm">
+                    <p class="text-sm font-bold text-gray-800 mb-1">${title}</p>
+                    <p class="text-xs text-gray-500 leading-relaxed">${msg}</p>
+                </div>
+            `;
+            list.insertAdjacentHTML('afterbegin', html);
         };
 
         async function getAuthHeaders() { 
@@ -390,17 +430,13 @@
         }
 
         window.switchTab = function(tab) {
-            // Hide inline messages on tab switch
-            document.getElementById('global-message-container').classList.add('hidden');
-
-            // Subscription Blocker Logic
+            document.getElementById('global-message-container').classList.add('hidden'); // Clear any global alerts
             if(tab === 'reports' && !window.userData.is_subscribed) { 
                 document.getElementById('premium-modal').classList.remove('hidden'); 
                 document.getElementById('premium-modal').classList.add('flex'); 
                 return; 
             }
             
-            // Set Local Storage so Refresh doesn't reset tab
             localStorage.setItem('doktura_active_tab', tab);
             
             document.querySelectorAll('.nav-btn').forEach(b => { b.classList.remove('nav-active'); b.classList.add('nav-inactive'); });
@@ -412,7 +448,6 @@
             const activeView = document.getElementById('view-'+tab);
             if(activeView) activeView.classList.add('active');
             
-            // Format title
             let headerName = tab.replace('-', ' ').split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
             if (tab === 'chat') headerName = 'Consultation AI';
             document.getElementById('header-title').innerText = headerName;
@@ -446,7 +481,7 @@
             el.innerHTML = '';
             
             if(!data.history || data.history.length === 0 || !data.history.some(m=>m.role!=='system')) {
-                el.innerHTML = `<div class="flex flex-col items-start mb-6"><div class="flex items-center mb-1"><img src="https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/ChatGPT%20Image%20Mar%2026%2C%202026%2C%2007_53_48%20PM.png?download=true" class="w-6 h-6 rounded-full mr-2 border bg-white"><span class="text-xs font-bold text-gray-800">doktura.ai</span></div><div class="bg-white border shadow-sm px-5 py-4 rounded-2xl rounded-tl-sm text-sm text-gray-700">Hello ${window.userData.name}! How can I assist you today?</div></div>`;
+                el.innerHTML = `<div class="flex flex-col items-start mb-6"><div class="flex items-center mb-1"><img src="${chatLogoUrl}" class="w-8 h-8 rounded-full mr-2 border border-gray-200 bg-white object-contain"><span class="text-xs font-bold text-gray-800">doktura.ai</span></div><div class="bg-white border shadow-sm px-5 py-4 rounded-2xl rounded-tl-sm text-sm text-gray-700">Hello ${window.userData.name}! How can I assist you today?</div></div>`;
             } else {
                 data.history.forEach(m => {
                     if(m.role === 'system') return;
@@ -454,7 +489,7 @@
                     if(isUser) {
                         el.innerHTML += `<div class="flex flex-col items-end mb-6 w-full"><div class="flex items-center mb-1"><span class="text-xs text-gray-500 mr-2">${window.userData.name} (You)</span><img src="${window.currentAvatar}" class="w-6 h-6 rounded-full object-cover"></div><div class="bg-[#0066FF] text-white px-5 py-3.5 rounded-2xl rounded-tr-sm text-sm shadow-sm leading-relaxed">${m.content}</div></div>`;
                     } else {
-                        el.innerHTML += `<div class="flex flex-col items-start mb-6 w-full"><div class="flex items-center mb-1"><img src="https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/ChatGPT%20Image%20Mar%2026%2C%202026%2C%2007_53_48%20PM.png?download=true" class="w-6 h-6 rounded-full mr-2 border bg-white"><span class="text-xs font-bold text-gray-800">doktura.ai</span></div><div class="bg-white border shadow-sm px-5 py-4 rounded-2xl rounded-tl-sm text-sm text-gray-700 max-w-[85%] leading-relaxed">${m.content.replace(/\n/g,'<br>')}</div></div>`;
+                        el.innerHTML += `<div class="flex flex-col items-start mb-6 w-full"><div class="flex items-center mb-1"><img src="${chatLogoUrl}" class="w-8 h-8 rounded-full mr-2 border border-gray-200 bg-white object-contain"><span class="text-xs font-bold text-gray-800">doktura.ai</span></div><div class="bg-white border shadow-sm px-5 py-4 rounded-2xl rounded-tl-sm text-sm text-gray-700 max-w-[85%] leading-relaxed">${m.content.replace(/\n/g,'<br>')}</div></div>`;
                     }
                 });
             }
@@ -468,24 +503,21 @@
             input.value = '';
             
             const history = document.getElementById('chat-history');
-            // User Message
+            
             history.innerHTML += `<div class="flex flex-col items-end mb-6 w-full"><div class="flex items-center mb-1"><span class="text-xs text-gray-500 mr-2">${window.userData.name} (You)</span><img src="${window.currentAvatar}" class="w-6 h-6 rounded-full object-cover"></div><div class="bg-[#0066FF] text-white px-5 py-3.5 rounded-2xl rounded-tr-sm text-sm shadow-sm leading-relaxed">${msg}</div></div>`;
             history.scrollTo(0, history.scrollHeight);
 
-            // Typing Indicator Inject
             const typeId = 'typing-' + Date.now();
-            history.innerHTML += `<div id="${typeId}" class="flex flex-col items-start mb-6 w-full"><div class="flex items-center mb-1"><img src="https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/ChatGPT%20Image%20Mar%2026%2C%202026%2C%2007_53_48%20PM.png?download=true" class="w-6 h-6 rounded-full mr-2 border bg-white"><span class="text-xs font-bold text-gray-800">doktura.ai</span></div><div class="bg-white border shadow-sm px-5 py-4 rounded-2xl rounded-tl-sm flex space-x-1 items-center"><div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div></div></div>`;
+            history.innerHTML += `<div id="${typeId}" class="flex flex-col items-start mb-6 w-full"><div class="flex items-center mb-1"><img src="${chatLogoUrl}" class="w-8 h-8 rounded-full mr-2 border border-gray-200 bg-white object-contain"><span class="text-xs font-bold text-gray-800">doktura.ai</span></div><div class="bg-white border shadow-sm px-5 py-4 rounded-2xl rounded-tl-sm flex space-x-1 items-center"><div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div></div></div>`;
             history.scrollTo(0, history.scrollHeight);
 
             const r = await fetch(API_BASE+'/api/chat',{method:'POST',headers:await getAuthHeaders(),body:JSON.stringify({message:msg, session_id:window.currentSessionId || "default", user_name:window.userData.name})});
             const data = await r.json();
             
-            // Remove Typing Indicator
             const tEl = document.getElementById(typeId);
             if(tEl) tEl.remove();
 
-            // AI Reply
-            history.innerHTML += `<div class="flex flex-col items-start mb-6 w-full"><div class="flex items-center mb-1"><img src="https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/ChatGPT%20Image%20Mar%2026%2C%202026%2C%2007_53_48%20PM.png?download=true" class="w-6 h-6 rounded-full mr-2 border bg-white"><span class="text-xs font-bold text-gray-800">doktura.ai</span></div><div class="bg-white border shadow-sm px-5 py-4 rounded-2xl rounded-tl-sm text-sm text-gray-700 max-w-[85%] leading-relaxed">${data.reply.replace(/\n/g,'<br>')}</div></div>`;
+            history.innerHTML += `<div class="flex flex-col items-start mb-6 w-full"><div class="flex items-center mb-1"><img src="${chatLogoUrl}" class="w-8 h-8 rounded-full mr-2 border border-gray-200 bg-white object-contain"><span class="text-xs font-bold text-gray-800">doktura.ai</span></div><div class="bg-white border shadow-sm px-5 py-4 rounded-2xl rounded-tl-sm text-sm text-gray-700 max-w-[85%] leading-relaxed">${data.reply.replace(/\n/g,'<br>')}</div></div>`;
             history.scrollTo(0, history.scrollHeight);
             
             if(isVoiceActive) speakOut(data.reply);
@@ -495,15 +527,14 @@
         function speakOut(text) {
             window.speechSynthesis.cancel();
             const utterance = new SpeechSynthesisUtterance(text);
-            utterance.onstart = () => { document.getElementById('voice-status-text').innerText = "AI is speaking..."; };
-            utterance.onend = () => { document.getElementById('voice-status-text').innerText = "Tap mic to speak"; };
+            utterance.onend = () => { isVoiceActive = false; }; // Stop automatically speaking the NEXT input unless voice is triggered again
             window.speechSynthesis.speak(utterance);
         }
 
         window.enterVoiceMode = () => {
             document.getElementById('voice-overlay').classList.remove('hidden');
             document.getElementById('voice-overlay').classList.add('flex');
-            document.getElementById('voice-transcript').innerText = "Ready to listen...";
+            document.getElementById('voice-transcript').innerText = "Ready to listen... Press the mic to begin.";
             isVoiceActive = true;
             
             if(!voiceRec) {
@@ -514,19 +545,19 @@
                     return null; 
                 }
                 voiceRec = new SR();
-                voiceRec.continuous = false;
+                voiceRec.continuous = true; 
+                voiceRec.interimResults = true; 
                 
                 voiceRec.onresult = (e) => {
-                    const txt = e.results[0][0].transcript;
-                    document.getElementById('voice-transcript').innerText = txt;
-                    sendChat(txt); 
-                    document.getElementById('voice-orb-element').classList.remove('orb-active');
-                    document.getElementById('voice-status-text').innerText = "Tap mic to speak";
+                    let finalTxt = '';
+                    for(let i=0; i<e.results.length; i++){ finalTxt += e.results[i][0].transcript; }
+                    document.getElementById('voice-transcript').innerText = finalTxt;
+                    document.getElementById('chat-input').value = finalTxt;
                 };
                 voiceRec.onend = () => {
                     document.getElementById('voice-orb-element').classList.remove('orb-active');
                     if (document.getElementById('voice-status-text').innerText === "Listening...") {
-                        document.getElementById('voice-status-text').innerText = "Processing...";
+                        document.getElementById('voice-status-text').innerText = "Paused.";
                     }
                 };
             }
@@ -540,8 +571,18 @@
             voiceRec.start();
         };
 
+        // Fully gives control to the user to send their typed/spoken response to the AI manually
+        window.sendChatFromVoice = () => {
+            if(voiceRec) voiceRec.stop();
+            document.getElementById('voice-overlay').classList.add('hidden');
+            document.getElementById('voice-overlay').classList.remove('flex');
+            document.getElementById('voice-orb-element').classList.remove('orb-active');
+            sendChat();
+        };
+
         window.exitVoiceMode = () => {
-            isVoiceActive = false; window.speechSynthesis.cancel();
+            isVoiceActive = false; 
+            window.speechSynthesis.cancel();
             document.getElementById('voice-overlay').classList.add('hidden');
             document.getElementById('voice-overlay').classList.remove('flex');
             document.getElementById('voice-orb-element').classList.remove('orb-active');
@@ -614,7 +655,6 @@
             } catch(e) { console.error("Error loading reports", e); }
         }
 
-        // Deletion confirmation logic
         window.deleteReport = (id) => {
             if (!id) return;
             window.pendingDeleteId = id;
@@ -642,14 +682,11 @@
                 } else {
                     showInlineMessage("Failed to delete report.", "error");
                 }
-            } catch(e) {
-                showInlineMessage("An error occurred while deleting the report.", "error");
-            }
+            } catch(e) { showInlineMessage("An error occurred while deleting the report.", "error"); }
             btn.innerText = "Delete";
             closeConfirmModal();
         });
 
-        // Google Drive integration
         window.linkGoogleDrive = () => {
             if(!window.currentUser) return;
             window.location.href = `${API_BASE}/api/auth/google?user_id=${window.currentUser.uid}`;
@@ -729,16 +766,19 @@
                 }); 
                 const d = await r.json(); 
                 
-                // Hide modal and reset form styling
                 document.getElementById('upload-modal').classList.add('hidden'); 
                 document.getElementById('file-name-display').innerText = "Click to upload or drag and drop";
                 document.getElementById('file-name-display').classList.remove('text-[#0066FF]');
                 e.target.reset(); 
                 
-                // Show in the list instantly
                 fetchReports(); 
                 
-                showInlineMessage("Report successfully added! Our AI is analyzing it now. It will also be backed up to your Google Drive.", "success");
+                // NOTIFICATION TRIGGERS HERE INSTEAD OF THE LARGE ALERT TEXT
+                addNotification(
+                    "Upload Complete", 
+                    "Your report has been uploaded and analyzed. You can now chat with the AI to get a brief knowledge about it.", 
+                    "switchTab('chat')"
+                );
             } catch(e) { 
                 showInlineMessage("Upload failed. Please check your connection and try again.", "error"); 
             } 
