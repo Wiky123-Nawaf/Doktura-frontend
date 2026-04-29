@@ -11,14 +11,18 @@
         ::-webkit-scrollbar { width: 5px; }
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
         
-        /* Sidebar active state matching PDF */
         .nav-active { background-color: #eff6ff; color: #0066FF; font-weight: 700; border-left: 4px solid #0066FF; }
         .nav-inactive { color: #64748b; font-weight: 500; border-left: 4px solid transparent; }
         .nav-inactive:hover { background-color: #f8fafc; color: #0f172a; }
 
-        /* Voice Orb Animation (Matching Page 3 of PDF) */
-        @keyframes pulseGlow { 0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(255, 116, 116, 0.7); } 70% { transform: scale(1); box-shadow: 0 0 0 40px rgba(255, 116, 116, 0); } 100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(255, 116, 116, 0); } }
-        .voice-orb { background: radial-gradient(circle at 30% 30%, #fca5a5, #ef4444); border-radius: 50%; box-shadow: 0 10px 25px rgba(239,68,68,0.5); animation: pulseGlow 2s infinite; }
+        /* Voice Orb Pulse - ONLY active when the .orb-active class is added */
+        @keyframes pulseGlow { 0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); } 70% { transform: scale(1.05); box-shadow: 0 0 0 30px rgba(239, 68, 68, 0); } 100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); } }
+        .voice-orb { width: 160px; height: 160px; background: radial-gradient(circle at 30% 30%, #fca5a5, #ef4444); border-radius: 50%; box-shadow: 0 10px 25px rgba(239,68,68,0.3); transition: transform 0.3s; }
+        .orb-active { animation: pulseGlow 1.5s infinite; }
+
+        /* App View Transitions */
+        .app-view { display: none; }
+        .app-view.active { display: flex; }
     </style>
 </head>
 <body class="hidden h-screen w-full overflow-hidden flex bg-white" id="appBody">
@@ -30,21 +34,21 @@
         <div class="bg-white rounded-3xl p-10 max-w-lg w-full text-center relative shadow-2xl">
             <button onclick="document.getElementById('premium-modal').classList.add('hidden')" class="absolute top-4 right-5 text-gray-400 hover:text-gray-800 text-xl font-bold">✕</button>
             <h2 class="text-2xl font-extrabold text-gray-900 mb-3">Unlock Doktura Premium</h2>
-            <p class="text-gray-500 text-sm mb-8 px-4">Understand your medical reports instantly with AI, keep all your health records safely in one place, and access them anytime.</p>
-            <button onclick="triggerSubscription()" id="sub-btn" class="w-full bg-[#0066FF] hover:bg-blue-700 transition text-white font-bold py-3.5 rounded-xl shadow-md flex justify-center items-center">
+            <p class="text-gray-500 text-sm mb-8 px-4">Upload reports instantly, analyze scans with AI, and access records safely anywhere.</p>
+            <button onclick="triggerSubscription()" id="sub-btn" class="w-full bg-[#0066FF] hover:bg-blue-700 transition text-white font-bold py-3.5 rounded-xl shadow-md">
                 Unlock DokturaPremium – RM 50
             </button>
         </div>
     </div>
 
     <!-- LEFT SIDEBAR -->
-    <div class="w-[260px] bg-white border-r border-gray-200 flex flex-col shrink-0 h-full z-10 shadow-sm">
+    <div class="w-[260px] bg-white border-r border-gray-200 flex flex-col shrink-0 h-full z-10">
         <div class="p-6 pb-2">
             <img src="https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/ChatGPT%20Image%20Mar%2026%2C%202026%2C%2007_53_48%20PM.png?download=true" class="h-8">
         </div>
         
         <div class="px-5 py-4">
-            <button onclick="startNewSession()" class="w-full bg-[#d9381e] hover:bg-red-700 text-white font-bold py-2.5 rounded-lg shadow-sm flex items-center justify-center transition">
+            <button onclick="startNewSession()" class="w-full bg-[#d9381e] text-white font-bold py-2.5 rounded-lg shadow-sm flex items-center justify-center transition hover:bg-red-700">
                 <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg> New chat
             </button>
         </div>
@@ -52,19 +56,19 @@
         <div class="flex-1 overflow-y-auto">
             <p class="px-6 py-2 text-[10px] font-bold text-gray-400 uppercase tracking-widest">Main Menu</p>
             <nav class="space-y-1 mt-1">
-                <button onclick="switchTab('chat')" id="btn-chat" class="w-full flex items-center px-6 py-3 nav-active transition">
+                <button onclick="switchTab('chat')" id="btn-chat" class="nav-btn w-full flex items-center px-6 py-3 nav-active transition">
                     <span class="w-5 h-5 mr-3 flex items-center justify-center bg-red-100 text-red-500 rounded-full text-[10px] font-bold shrink-0">AI</span>
                     <span class="text-sm">AI Doctor</span>
                 </button>
-                <button onclick="switchTab('book')" id="btn-book" class="w-full flex items-center px-6 py-3 nav-inactive transition">
+                <button onclick="switchTab('book')" id="btn-book" class="nav-btn w-full flex items-center px-6 py-3 nav-inactive transition">
                     <svg class="w-5 h-5 mr-3 shrink-0 opacity-60" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
                     <span class="text-sm">Book Consultant</span>
                 </button>
-                <button onclick="switchTab('schedule')" id="btn-schedule" class="w-full flex items-center px-6 py-3 nav-inactive transition">
+                <button onclick="switchTab('schedule')" id="btn-schedule" class="nav-btn w-full flex items-center px-6 py-3 nav-inactive transition">
                     <svg class="w-5 h-5 mr-3 shrink-0 opacity-60" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path></svg>
                     <span class="text-sm">Schedule Appointment</span>
                 </button>
-                <button onclick="switchTab('reports')" id="btn-reports" class="w-full flex items-center px-6 py-3 nav-inactive transition">
+                <button onclick="switchTab('reports')" id="btn-reports" class="nav-btn w-full flex items-center px-6 py-3 nav-inactive transition">
                     <svg class="w-5 h-5 mr-3 shrink-0 opacity-60" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
                     <span class="text-sm">Medical Reports</span>
                 </button>
@@ -72,44 +76,44 @@
 
             <div class="mt-6 border-t border-gray-100 pt-4">
                 <p class="px-6 py-2 text-[10px] font-bold text-gray-400 uppercase tracking-widest flex items-center justify-between">
-                    Recent Consultations <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                    Recent Consultations
                 </p>
                 <div id="sidebar-sessions" class="mt-2 space-y-0.5 px-3"></div>
             </div>
         </div>
 
-        <div class="p-4 border-t border-gray-200">
-            <div class="flex items-center justify-between w-full">
-                <button onclick="switchTab('settings')" id="btn-settings" class="flex items-center space-x-3 text-left hover:bg-gray-50 p-2 rounded-lg transition w-[85%] nav-inactive">
-                    <img id="userAvatar" src="" class="w-9 h-9 rounded-full object-cover shrink-0">
-                    <div class="flex flex-col truncate">
-                        <span id="userName" class="text-sm font-bold text-gray-900 truncate">Patient</span>
-                        <span id="userEmail" class="text-[10px] text-gray-500 truncate">Loading...</span>
-                    </div>
-                </button>
-                <button id="logoutBtn" class="text-gray-400 hover:text-red-500 p-2"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg></button>
-            </div>
+        <div class="p-4 border-t border-gray-200 flex items-center justify-between">
+            <span class="text-xs text-gray-400 font-bold">DOKTURA v2.0</span>
+            <button id="logoutBtn" class="text-gray-400 hover:text-red-500 p-2"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg></button>
         </div>
     </div>
 
     <!-- MAIN CONTENT AREA -->
     <div class="flex-1 flex flex-col relative h-full bg-[#f8fafc]">
         
-        <!-- ================= CHAT VIEW ================= -->
-        <div id="view-chat" class="flex-1 flex-col h-full relative flex">
-            <div class="h-16 border-b border-gray-200 flex items-center justify-between px-8 bg-white shrink-0 shadow-sm z-10">
-                <h1 class="text-lg font-bold text-gray-800">Consultation AI</h1>
+        <!-- HEADER -->
+        <div class="h-16 border-b border-gray-200 flex items-center justify-between px-8 bg-white shrink-0 shadow-sm z-10">
+            <h1 class="text-lg font-bold text-gray-800" id="header-title">Consultation AI</h1>
+            <div class="flex items-center space-x-4">
+                <button class="p-2 text-gray-400 border border-gray-200 rounded-lg hover:bg-gray-50 transition"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path></svg></button>
+                <button onclick="switchTab('settings')" class="flex items-center space-x-2 border border-gray-200 rounded-lg p-1 pr-3 hover:bg-gray-50 transition shrink-0">
+                    <img id="userAvatar" src="" class="w-8 h-8 rounded-full object-cover">
+                    <span id="userNameHeader" class="text-xs font-bold text-gray-700">Patient</span>
+                </button>
             </div>
-            
+        </div>
+        
+        <!-- ================= CHAT VIEW ================= -->
+        <div id="view-chat" class="app-view active flex-1 flex-col h-full relative">
             <div id="chat-history" class="flex-1 overflow-y-auto p-8 max-w-4xl w-full mx-auto pb-32"></div>
             
             <!-- Voice View Overlay -->
-            <div id="voice-overlay" class="absolute inset-0 top-16 bg-[#f8fafc] z-[50] hidden flex-col items-center justify-center">
-                <div class="voice-orb w-40 h-40 mb-12 flex items-center justify-center text-white"></div>
-                <h3 id="voice-status" class="text-4xl font-bold text-gray-900 mb-6">Tap mic to speak</h3>
-                <button onclick="toggleVoiceMic()" id="voice-action-btn" class="bg-[#d9381e] text-white rounded-full p-5 shadow-xl hover:bg-red-700 transition mb-6"><svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"></path></svg></button>
-                <p id="voice-transcript" class="text-gray-500 text-lg">Tap to start talking...</p>
-                <button onclick="exitVoiceMode()" class="mt-8 text-sm font-bold text-gray-400 hover:text-gray-800 uppercase tracking-widest">End Session</button>
+            <div id="voice-overlay" class="absolute inset-0 bg-[#f8fafc]/95 z-[50] hidden flex-col items-center justify-center backdrop-blur-sm">
+                <div id="voice-orb-element" class="voice-orb mb-12 flex items-center justify-center text-white"></div>
+                <h3 id="voice-status-text" class="text-4xl font-bold text-gray-900 mb-6">Tap mic to speak</h3>
+                <button onclick="toggleVoiceMic()" id="voice-action-btn" class="bg-[#d9381e] text-white rounded-full p-6 shadow-xl hover:bg-red-700 transition mb-6"><svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"></path></svg></button>
+                <p id="voice-transcript" class="text-gray-500 text-lg max-w-lg text-center h-20 italic">Tap to start talking...</p>
+                <button onclick="exitVoiceMode()" class="mt-8 text-sm font-bold text-gray-400 hover:text-gray-800 uppercase tracking-widest transition">End Session</button>
             </div>
             
             <!-- Input Area -->
@@ -125,10 +129,7 @@
         </div>
 
         <!-- ================= BOOK CONSULTANT VIEW ================= -->
-        <div id="view-book" class="hidden flex-1 flex-col overflow-y-auto">
-            <div class="h-16 border-b border-gray-200 flex items-center px-8 bg-white shrink-0 sticky top-0 z-10 shadow-sm">
-                <h1 class="text-lg font-bold text-gray-800">Book Consultant</h1>
-            </div>
+        <div id="view-book" class="app-view flex-1 flex-col overflow-y-auto">
             <div class="max-w-4xl mx-auto p-10 w-full">
                 <h2 class="text-3xl font-extrabold text-gray-900 mb-2">Book a Consultant</h2>
                 <p class="text-gray-500 mb-8 text-sm leading-relaxed">Schedule a follow-up video call with one of our licensed human doctors.</p>
@@ -142,7 +143,7 @@
                             <div><label class="block text-xs font-semibold text-gray-500 mb-1">Name</label><input type="text" id="book-name" readonly class="w-full border border-gray-300 rounded-lg px-4 py-3 text-sm bg-gray-50"></div>
                             <div><label class="block text-xs font-semibold text-gray-500 mb-1">Email</label><input type="email" id="book-email" readonly class="w-full border border-gray-300 rounded-lg px-4 py-3 text-sm bg-gray-50"></div>
                         </div>
-                        <div><label class="block text-sm font-bold text-gray-700 mb-2">Symptoms</label><div class="relative"><input type="text" id="book-symptoms" placeholder="e.g skin rash, headache..." class="w-full border border-gray-300 rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-[#0066FF] pr-24"><button type="button" onclick="suggestDoctor()" class="absolute right-2 top-2 bottom-2 bg-white border border-gray-200 hover:bg-gray-50 text-gray-700 px-4 rounded-md text-xs font-bold shadow-sm">Find</button></div></div>
+                        <div><label class="block text-sm font-bold text-gray-700 mb-2">Symptoms</label><div class="relative"><input type="text" id="book-symptoms" placeholder="e.g skin rash, headache..." class="w-full border border-gray-300 rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-[#0066FF] pr-24"><button type="button" onclick="suggestDoctor()" class="absolute right-2 top-2 bottom-2 bg-white border border-gray-200 hover:bg-gray-50 text-gray-700 px-4 rounded-md text-xs font-bold shadow-sm transition">Find</button></div></div>
                         <div><label class="block text-sm font-bold text-gray-700 mb-2">Doctor</label><select id="book-doctor" required class="w-full border border-gray-300 rounded-lg px-4 py-3 text-sm bg-white focus:ring-2 focus:ring-[#0066FF]"><option value="">-- Select --</option></select></div>
                         <div><label class="block text-sm font-bold text-gray-700 mb-2">Date of Appointment</label><input type="datetime-local" id="book-time" required class="w-full border border-gray-300 rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-[#0066FF]"></div>
                     </div>
@@ -154,10 +155,7 @@
         </div>
 
         <!-- ================= SCHEDULE APPOINTMENT VIEW ================= -->
-        <div id="view-schedule" class="hidden flex-1 flex-col overflow-y-auto">
-            <div class="h-16 border-b border-gray-200 flex items-center px-8 bg-white shrink-0 sticky top-0 z-10 shadow-sm">
-                <h1 class="text-lg font-bold text-gray-800">Schedule Appointment</h1>
-            </div>
+        <div id="view-schedule" class="app-view flex-1 flex-col overflow-y-auto">
             <div class="max-w-5xl mx-auto p-10 w-full">
                 <h2 class="text-3xl font-extrabold text-gray-900 mb-1">Schedule Appointment</h2>
                 <p class="text-gray-500 text-sm mb-8">Manage your upcoming consultations with ease.</p>
@@ -166,10 +164,7 @@
         </div>
 
         <!-- ================= MEDICAL REPORTS VIEW ================= -->
-        <div id="view-reports" class="hidden flex-1 flex-col overflow-y-auto relative">
-            <div class="h-16 border-b border-gray-200 flex items-center px-8 bg-white shrink-0 sticky top-0 z-10 shadow-sm">
-                <h1 class="text-lg font-bold text-gray-800">Medical Reports</h1>
-            </div>
+        <div id="view-reports" class="app-view flex-1 flex-col overflow-y-auto relative">
             <div class="max-w-5xl mx-auto p-10 w-full text-center">
                 <h2 class="text-3xl font-extrabold text-gray-900 mb-2">Your Medical Documents</h2>
                 <p class="text-gray-500 text-sm mb-12">Securely store and manage your health records.</p>
@@ -184,11 +179,11 @@
             <!-- Upload Modal -->
             <div id="upload-modal" class="fixed inset-0 bg-gray-900/50 z-[250] hidden items-center justify-center backdrop-blur-sm">
                 <div class="bg-white rounded-3xl p-8 max-w-lg w-full relative shadow-2xl">
-                    <div class="flex justify-between items-center mb-6"><h2 class="text-xl font-bold text-gray-900">Upload Reports</h2><button onclick="document.getElementById('upload-modal').classList.add('hidden')" class="text-gray-400 hover:text-gray-800 text-xl font-bold">✕</button></div>
+                    <div class="flex justify-between items-center mb-6"><h2 class="text-xl font-bold text-gray-900">Upload Reports</h2><button onclick="document.getElementById('upload-modal').classList.add('hidden')" class="text-gray-400 hover:text-gray-800 text-xl font-bold transition">✕</button></div>
                     <form onsubmit="uploadReport(event)">
-                        <label class="block text-xs font-bold text-gray-700 mb-1">Report Name</label><input type="text" placeholder="e.g. Blood Test" class="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm mb-4">
-                        <div class="border-2 border-dashed border-gray-300 rounded-xl p-10 text-center cursor-pointer hover:bg-gray-50 relative mb-8"><input type="file" id="report-file" required class="absolute inset-0 w-full h-full opacity-0 cursor-pointer"><p class="text-sm font-bold text-gray-700">Click to upload or drag and drop</p><p class="text-xs text-gray-400 mt-1">Format is JPG, PNG or PDF</p></div>
-                        <div class="flex space-x-3"><button type="button" onclick="document.getElementById('upload-modal').classList.add('hidden')" class="flex-1 bg-white border border-gray-300 text-gray-700 font-bold py-3 rounded-lg">Cancel</button><button type="submit" id="upload-btn" class="flex-1 bg-[#0066FF] text-white font-bold py-3 rounded-lg">Add</button></div>
+                        <label class="block text-xs font-bold text-gray-700 mb-1">Report Name</label><input type="text" placeholder="e.g. Blood Test" class="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm mb-4 focus:ring-2 focus:ring-[#0066FF]">
+                        <div class="border-2 border-dashed border-gray-300 rounded-xl p-10 text-center cursor-pointer hover:bg-gray-50 relative mb-8 transition"><input type="file" id="report-file" required class="absolute inset-0 w-full h-full opacity-0 cursor-pointer"><p class="text-sm font-bold text-gray-700">Click to upload or drag and drop</p><p class="text-xs text-gray-400 mt-1">Format is JPG, PNG or PDF</p></div>
+                        <div class="flex space-x-3"><button type="button" onclick="document.getElementById('upload-modal').classList.add('hidden')" class="flex-1 bg-white border border-gray-300 hover:bg-gray-50 transition text-gray-700 font-bold py-3 rounded-lg">Cancel</button><button type="submit" id="upload-btn" class="flex-1 bg-[#0066FF] hover:bg-blue-700 transition text-white font-bold py-3 rounded-lg shadow-sm">Add</button></div>
                         <div id="upload-result" class="hidden mt-4 p-3 rounded text-sm font-bold text-center"></div>
                     </form>
                 </div>
@@ -196,9 +191,22 @@
         </div>
 
         <!-- ================= PROFILE SETTINGS VIEW ================= -->
-        <div id="view-settings" class="hidden flex-1 flex-col overflow-y-auto">
-            <div class="h-16 border-b border-gray-200 flex items-center px-8 bg-white shrink-0 shadow-sm"><h1 class="text-lg font-bold text-gray-800">Profile Settings</h1></div>
-            <div class="max-w-2xl mx-auto p-10 w-full"><div class="bg-white rounded-2xl border border-gray-200 p-8 shadow-sm"><h2 class="text-2xl font-extrabold text-gray-900 mb-8 border-b pb-4">Profile Settings</h2><div id="settingsAlert" class="hidden mb-6 p-4 rounded text-sm text-center font-bold"></div><div class="flex items-center space-x-6 mb-8"><img id="set-avatar" src="" class="w-20 h-20 rounded-full border border-gray-200 object-cover shadow-sm"><input type="file" id="set-photo" accept="image/*" class="text-sm text-gray-500"></div><div class="space-y-5"><div><label class="block text-xs font-bold text-gray-500 uppercase mb-1">Full Name</label><input type="text" id="set-name" class="w-full border border-gray-300 rounded-lg px-4 py-3 text-sm"></div><div><label class="block text-xs font-bold text-gray-500 uppercase mb-1">Phone Number</label><input type="text" id="set-phone" class="w-full border border-gray-300 rounded-lg px-4 py-3 text-sm"></div><button onclick="saveSettings()" id="set-btn" class="w-full mt-4 bg-[#0066FF] text-white font-bold py-3.5 rounded-xl shadow-md transition">Update Profile</button></div></div></div>
+        <div id="view-settings" class="app-view flex-1 flex-col overflow-y-auto">
+            <div class="max-w-2xl mx-auto p-10 w-full">
+                <div class="bg-white rounded-2xl border border-gray-200 p-8 shadow-sm">
+                    <h2 class="text-2xl font-extrabold text-gray-900 mb-8 border-b pb-4">Profile Settings</h2>
+                    <div id="settingsAlert" class="hidden mb-6 p-4 rounded text-sm text-center font-bold"></div>
+                    <div class="flex items-center space-x-6 mb-8">
+                        <img id="set-avatar" src="" class="w-20 h-20 rounded-full border border-gray-200 object-cover shadow-sm">
+                        <input type="file" id="set-photo" accept="image/*" class="text-sm text-gray-500">
+                    </div>
+                    <div class="space-y-5">
+                        <div><label class="block text-xs font-bold text-gray-500 uppercase mb-1">Full Name</label><input type="text" id="set-name" class="w-full border border-gray-300 rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-[#0066FF]"></div>
+                        <div><label class="block text-xs font-bold text-gray-500 uppercase mb-1">Phone Number</label><input type="text" id="set-phone" class="w-full border border-gray-300 rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-[#0066FF]"></div>
+                        <button onclick="saveSettings()" id="set-btn" class="w-full mt-4 bg-[#0066FF] hover:bg-blue-700 text-white font-bold py-3.5 rounded-xl shadow-md transition">Update Profile</button>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -209,7 +217,8 @@
         import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore.js";
         
         const app = initializeApp({ apiKey: "AIzaSyCrx9BPS8ficDzgVZMbJIb4b3PQ9IqEHLw", authDomain: "doktura-ai-907d8.firebaseapp.com", projectId: "doktura-ai-907d8" });
-        const auth = getAuth(app); const db = getFirestore(app);
+        const auth = getAuth(app); 
+        const db = getFirestore(app);
         
         window.userData = { name: "", phone: "", photo_url: "", is_subscribed: false };
         window.currentUser = null;
@@ -229,18 +238,32 @@
                 const data = await res.json();
                 if(!data.is_complete) { window.location.href = "login.html"; return; }
                 
-                window.userData.name = data.name; window.userData.phone = data.phone; window.userData.photo_url = data.photo_url;
+                window.userData.name = data.name; 
+                window.userData.phone = data.phone; 
+                window.userData.photo_url = data.photo_url;
+                
                 document.getElementById('appBody').classList.remove('hidden');
                 
-                document.getElementById('userName').innerText = data.name; document.getElementById('userEmail').innerText = user.email;
-                document.getElementById('set-name').value = data.name; document.getElementById('set-phone').value = data.phone;
-                document.getElementById('book-name').value = data.name; document.getElementById('book-email').value = user.email;
+                // Set fields across views
+                document.getElementById('userNameHeader').innerText = data.name; 
+                document.getElementById('set-name').value = data.name; 
+                document.getElementById('set-phone').value = data.phone;
+                document.getElementById('book-name').value = data.name; 
+                document.getElementById('book-email').value = user.email;
                 
                 let avatar = data.photo_url || user.photoURL || `data:image/svg+xml;base64,${btoa(`<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64"><rect width="64" height="64" fill="#0066FF"/><text x="50%" y="50%" fill="#fff" font-size="32" font-family="sans-serif" font-weight="bold" text-anchor="middle" dy=".35em">${data.name.charAt(0).toUpperCase()}</text></svg>`)}`;
-                document.getElementById('userAvatar').src = avatar; document.getElementById('set-avatar').src = avatar; window.currentAvatar = avatar;
+                document.getElementById('userAvatar').src = avatar; 
+                document.getElementById('set-avatar').src = avatar; 
+                window.currentAvatar = avatar;
 
-                switchTab('chat'); loadSessions(); fetchDoctors(); fetchAppointments(); 
-            } catch(e) { console.error("DASHBOARD STARTUP ERROR:", e); document.getElementById('appBody').classList.remove('hidden'); }
+                switchTab('chat'); 
+                loadSessions(); 
+                fetchDoctors(); 
+                fetchAppointments(); 
+            } catch(e) { 
+                console.error("DASHBOARD STARTUP ERROR:", e); 
+                document.getElementById('appBody').classList.remove('hidden'); 
+            }
         });
 
         document.getElementById("logoutBtn").addEventListener("click", () => signOut(auth));
@@ -249,24 +272,62 @@
     <!-- App Scripts -->
     <script>
         window.currentSessionId = null;
-        async function getAuthHeaders() { const h = { 'Content-Type': 'application/json' }; if(window.currentUser) h['Authorization'] = `Bearer ${await window.currentUser.getIdToken()}`; return h; }
+        let voiceRec = null; 
+        let isVoiceActive = false;
 
-        window.switchTab = function(tab) {
-            if(tab === 'reports' && !window.userData.is_subscribed) { document.getElementById('premium-modal').classList.remove('hidden'); document.getElementById('premium-modal').classList.add('flex'); return; }
-            ['chat','book','schedule','reports','settings'].forEach(t => {
-                const v = document.getElementById('view-'+t); if(v) { v.classList.add('hidden'); v.classList.remove('flex'); }
-                const b = document.getElementById('btn-'+t); if(b) { b.classList.remove('nav-active'); b.classList.add('nav-inactive'); }
-            });
-            const activeV = document.getElementById('view-'+tab); if(activeV) { activeV.classList.remove('hidden'); activeV.classList.add('flex'); }
-            const activeB = document.getElementById('btn-'+tab); if(activeB) { activeB.classList.add('nav-active'); activeB.classList.remove('nav-inactive'); }
+        async function getAuthHeaders() { 
+            const h = { 'Content-Type': 'application/json' }; 
+            if(window.currentUser) h['Authorization'] = `Bearer ${await window.currentUser.getIdToken()}`; 
+            return h; 
         }
 
-        window.startNewSession = () => { window.currentSessionId = Date.now().toString(); loadSessions(); switchTab('chat'); }
+        window.triggerSubscription = async function() {
+            try {
+                const btn = document.getElementById('sub-btn');
+                btn.innerText = "Processing...";
+                const r = await fetch(`${API_BASE}/api/create_subscription`, { method: 'POST', headers: await getAuthHeaders(), body: JSON.stringify({user_id: window.currentUser.uid}) });
+                const d = await r.json(); 
+                if(d.stripe_url) window.location.href = d.stripe_url;
+                else alert("Failed to connect to billing.");
+            } catch(e) { alert("Error connecting to payment."); }
+        }
+
+        window.switchTab = function(tab) {
+            if(tab === 'reports' && !window.userData.is_subscribed) { 
+                document.getElementById('premium-modal').classList.remove('hidden'); 
+                document.getElementById('premium-modal').classList.add('flex'); 
+                return; 
+            }
+            
+            document.querySelectorAll('.nav-btn').forEach(b => { 
+                b.classList.remove('nav-active'); 
+                b.classList.add('nav-inactive'); 
+            });
+            document.querySelectorAll('.app-view').forEach(v => v.classList.remove('active'));
+            
+            const activeBtn = document.getElementById('btn-'+tab);
+            if(activeBtn) { activeBtn.classList.add('nav-active'); activeBtn.classList.remove('nav-inactive'); }
+            
+            const activeView = document.getElementById('view-'+tab);
+            if(activeView) activeView.classList.add('active');
+            
+            document.getElementById('header-title').innerText = tab === 'chat' ? 'Consultation AI' : tab.replace('-',' ').toUpperCase();
+        }
+
+        window.startNewSession = () => { 
+            window.currentSessionId = Date.now().toString(); 
+            loadSessions(); 
+            switchTab('chat'); 
+        }
+
         async function loadSessions() {
             const r = await fetch(API_BASE+'/api/sessions',{method:'POST',headers:await getAuthHeaders(),body:JSON.stringify({user_id:window.currentUser.uid})});
             const sess = (await r.json()).sessions || [];
             if(!window.currentSessionId) window.currentSessionId = sess.length ? sess[0] : Date.now().toString();
-            const list = document.getElementById('sidebar-sessions'); list.innerHTML = '';
+            
+            const list = document.getElementById('sidebar-sessions'); 
+            list.innerHTML = '';
+            
             sess.forEach(id => {
                 const bg = id === window.currentSessionId ? 'bg-blue-50 text-blue-600 font-bold border-l-4 border-blue-600' : 'text-gray-500 hover:bg-gray-50 border-l-4 border-transparent';
                 list.innerHTML += `<button onclick="window.currentSessionId='${id}';loadSessions();switchTab('chat');" class="w-full text-left px-3 py-2.5 text-[11px] rounded transition ${bg} mb-1 flex items-center"><svg class="w-3 h-3 mr-2 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"></path></svg><span class="truncate">Session ${id.slice(-4)}</span></button>`;
@@ -277,150 +338,201 @@
         async function loadHistory() {
             const el = document.getElementById('chat-history');
             const r = await fetch(API_BASE+'/api/history',{method:'POST',headers:await getAuthHeaders(),body:JSON.stringify({user_id:window.currentUser.uid, session_id:window.currentSessionId})});
-            const data = await r.json(); el.innerHTML = '';
+            const data = await r.json(); 
+            el.innerHTML = '';
+            
             if(!data.history || data.history.length === 0 || !data.history.some(m=>m.role!=='system')) {
-                el.innerHTML = `<div class="flex items-start space-x-4"><img src="https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/Gemini_Generated_Image_okdjp7okdjp7okdj.png?download=true" class="w-8 h-8 rounded-full border bg-white"><div class="flex-1"><p class="font-bold text-sm text-gray-800">Doktura AI</p><div class="bg-white border shadow-sm px-5 py-4 rounded-2xl rounded-tl-sm text-sm text-gray-700 max-w-[80%] leading-relaxed">Hello ${window.userData.name}! How can I assist you today?</div></div></div>`;
+                el.innerHTML = `<div class="flex flex-col items-start mb-6"><div class="flex items-center mb-1"><img src="https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/ChatGPT%20Image%20Mar%2026%2C%202026%2C%2007_53_48%20PM.png?download=true" class="w-6 h-6 rounded-full mr-2 border bg-white"><span class="text-xs font-bold text-gray-800">doktura.ai</span></div><div class="bg-white border shadow-sm px-5 py-4 rounded-2xl rounded-tl-sm text-sm text-gray-700">Hello ${window.userData.name}! How can I assist you today?</div></div>`;
             } else {
                 data.history.forEach(m => {
-                    if(m.role==='system') return; let isUser = m.role==='user';
-                    el.innerHTML += `<div class="flex ${isUser?'justify-end':'justify-start'} mb-6 w-full"><div class="flex items-start max-w-[80%] ${isUser?'flex-row-reverse space-x-reverse':''} space-x-3"><img src="${isUser?window.currentAvatar:'https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/ChatGPT%20Image%20Mar%2026%2C%202026%2C%2007_53_48%20PM.png?download=true'}" class="w-7 h-7 rounded-full border bg-white object-cover"><div class="${isUser?'bg-[#0066FF] text-white':'bg-white border shadow-sm text-gray-700'} p-4 rounded-2xl text-sm leading-relaxed">${m.content}</div></div></div>`;
+                    if(m.role === 'system') return;
+                    let isUser = m.role === 'user';
+                    if(isUser) {
+                        el.innerHTML += `<div class="flex flex-col items-end mb-6 w-full"><div class="flex items-center mb-1"><span class="text-xs text-gray-500 mr-2">${window.userData.name} (You)</span><img src="${window.currentAvatar}" class="w-6 h-6 rounded-full object-cover"></div><div class="bg-[#0066FF] text-white px-5 py-3.5 rounded-2xl rounded-tr-sm text-sm shadow-sm leading-relaxed">${m.content}</div></div>`;
+                    } else {
+                        el.innerHTML += `<div class="flex flex-col items-start mb-6 w-full"><div class="flex items-center mb-1"><img src="https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/ChatGPT%20Image%20Mar%2026%2C%202026%2C%2007_53_48%20PM.png?download=true" class="w-6 h-6 rounded-full mr-2 border bg-white"><span class="text-xs font-bold text-gray-800">doktura.ai</span></div><div class="bg-white border shadow-sm px-5 py-4 rounded-2xl rounded-tl-sm text-sm text-gray-700 max-w-[85%] leading-relaxed">${m.content.replace(/\n/g,'<br>')}</div></div>`;
+                    }
                 });
             }
             el.scrollTo(0, el.scrollHeight);
         }
 
         window.sendChat = async (voiceInput = null) => {
-            const input = document.getElementById('chat-input'); 
+            const input = document.getElementById('chat-input');
             const msg = voiceInput || input.value.trim(); 
-            if(!msg) return;
+            if(!msg) return; 
             input.value = '';
             
-            const r = await fetch(API_BASE+'/api/chat',{method:'POST',headers:await getAuthHeaders(),body:JSON.stringify({message:msg, session_id:window.currentSessionId, user_name:window.userData.name})});
+            const history = document.getElementById('chat-history');
+            history.innerHTML += `<div class="flex flex-col items-end mb-6 w-full"><div class="flex items-center mb-1"><span class="text-xs text-gray-500 mr-2">${window.userData.name} (You)</span><img src="${window.currentAvatar}" class="w-6 h-6 rounded-full object-cover"></div><div class="bg-[#0066FF] text-white px-5 py-3.5 rounded-2xl rounded-tr-sm text-sm shadow-sm leading-relaxed">${msg}</div></div>`;
+            history.scrollTo(0, history.scrollHeight);
+
+            const r = await fetch(API_BASE+'/api/chat',{method:'POST',headers:await getAuthHeaders(),body:JSON.stringify({message:msg, session_id:window.currentSessionId || "default", user_name:window.userData.name})});
             const data = await r.json();
             
-            await loadHistory();
+            history.innerHTML += `<div class="flex flex-col items-start mb-6 w-full"><div class="flex items-center mb-1"><img src="https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/ChatGPT%20Image%20Mar%2026%2C%202026%2C%2007_53_48%20PM.png?download=true" class="w-6 h-6 rounded-full mr-2 border bg-white"><span class="text-xs font-bold text-gray-800">doktura.ai</span></div><div class="bg-white border shadow-sm px-5 py-4 rounded-2xl rounded-tl-sm text-sm text-gray-700 max-w-[85%] leading-relaxed">${data.reply.replace(/\n/g,'<br>')}</div></div>`;
+            history.scrollTo(0, history.scrollHeight);
             
-            // Allow AI to speak response if in voice mode
-            if (isVoiceActive) {
-                if (data.reply) {
-                    speakOutLoud(data.reply);
-                } else {
-                    // Fallback: speak the last assistant message loaded from history
-                    const historyEl = document.getElementById('chat-history');
-                    const lastMsg = historyEl.lastElementChild;
-                    if (lastMsg) speakOutLoud(lastMsg.innerText);
-                }
-            }
-        }
+            if(isVoiceActive) speakAI(data.reply);
+        };
 
-        // ================= VOICE API ENGINE (Updated w/ TTS) =================
-        let voiceRec = null; 
-        let isVoiceActive = false;
-        let isListening = false;
-
-        window.speakOutLoud = function(text) {
+        // ================= VOICE API ENGINE =================
+        function speakAI(text) {
             window.speechSynthesis.cancel();
             const utterance = new SpeechSynthesisUtterance(text);
-            utterance.rate = 1.0;
             utterance.onstart = () => { 
-                const status = document.getElementById('voice-status');
-                if(status) status.innerText = "AI is speaking..."; 
+                document.getElementById('voice-status-text').innerText = "AI is speaking..."; 
             };
             utterance.onend = () => { 
-                const status = document.getElementById('voice-status');
-                if(status) status.innerText = "Tap mic to speak"; 
+                document.getElementById('voice-status-text').innerText = "Tap mic to speak"; 
             };
             window.speechSynthesis.speak(utterance);
         }
 
-        window.initVoice = function() {
-            const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-            if (!SR) { alert("Voice not supported in this browser. Use Chrome."); return null; }
-            const rec = new SR(); 
-            rec.continuous = false; // Turned off continuous for better turn-taking chat flow
-            
-            rec.onstart = () => { 
-                isListening = true;
-                document.getElementById('voice-status').innerText = "Listening...";
-                document.getElementById('voice-transcript').innerText = "Listening..."; 
-                document.getElementById('voice-action-btn').classList.add('animate-pulse'); 
-            };
-            rec.onresult = (e) => { 
-                let trans = e.results[0][0].transcript; 
-                document.getElementById('voice-transcript').innerText = trans; 
-            };
-            rec.onend = () => {
-                isListening = false;
-                document.getElementById('voice-action-btn').classList.remove('animate-pulse'); 
-                if (document.getElementById('voice-status').innerText === "Listening...") {
-                    document.getElementById('voice-status').innerText = "Tap mic to speak";
-                }
-                const finalTxt = document.getElementById('voice-transcript').innerText;
-                if(finalTxt && finalTxt !== "Tap to start talking..." && finalTxt !== "Listening...") { 
-                    document.getElementById('chat-input').value = finalTxt; 
-                    sendChat(finalTxt); 
-                }
-            };
-            return rec;
-        }
+        window.enterVoiceMode = () => {
+            document.getElementById('voice-overlay').classList.remove('hidden');
+            document.getElementById('voice-overlay').classList.add('flex');
+            document.getElementById('voice-transcript').innerText = "Ready to listen...";
+            isVoiceActive = true;
+            if(!voiceRec) {
+                const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+                if (!SR) { alert("Voice not supported in this browser."); return null; }
+                voiceRec = new SR();
+                voiceRec.continuous = false; // Stop after one long thought
+                
+                voiceRec.onresult = (e) => {
+                    const txt = e.results[0][0].transcript;
+                    document.getElementById('voice-transcript').innerText = txt;
+                    // Auto send after they stop talking
+                    sendChat(txt); 
+                    // Reset UI for next round
+                    document.getElementById('voice-orb-element').classList.remove('orb-active');
+                    document.getElementById('voice-status-text').innerText = "Tap mic to speak";
+                };
+                voiceRec.onend = () => {
+                    document.getElementById('voice-orb-element').classList.remove('orb-active');
+                    if (document.getElementById('voice-status-text').innerText === "Listening...") {
+                        document.getElementById('voice-status-text').innerText = "Processing...";
+                    }
+                };
+            }
+        };
 
-        window.enterVoiceMode = () => { 
-            document.getElementById('voice-overlay').classList.remove('hidden'); 
-            document.getElementById('voice-overlay').classList.add('flex'); 
-            isVoiceActive = true; 
-            if(!voiceRec) voiceRec = initVoice(); 
-        }
-
-        window.exitVoiceMode = () => { 
-            isVoiceActive = false;
+        window.toggleVoiceMic = () => {
             window.speechSynthesis.cancel();
-            document.getElementById('voice-overlay').classList.add('hidden'); 
+            if(!voiceRec) return;
+            document.getElementById('voice-status-text').innerText = "Listening...";
+            document.getElementById('voice-orb-element').classList.add('orb-active');
+            voiceRec.start();
+        };
+
+        window.exitVoiceMode = () => {
+            isVoiceActive = false; 
+            window.speechSynthesis.cancel();
+            document.getElementById('voice-overlay').classList.add('hidden');
             document.getElementById('voice-overlay').classList.remove('flex');
-            if(voiceRec && isListening) { voiceRec.stop(); isListening = false; } 
-            document.getElementById('voice-status').innerText = "Tap mic to speak";
-        }
+            document.getElementById('voice-orb-element').classList.remove('orb-active');
+            if(voiceRec) voiceRec.stop();
+        };
 
-        window.toggleVoiceMic = () => { 
-            window.speechSynthesis.cancel();
-            if(!voiceRec) return; 
-            if(isListening) { 
-                voiceRec.stop(); 
-            } else { 
-                document.getElementById('voice-transcript').innerText = "..."; 
-                voiceRec.start(); 
-            } 
-        }
-
-        // ================= DATA FETCHING =================
+        // ================= DATA FETCHING / FORMS =================
         async function fetchAppointments() {
             const tbody = document.getElementById('schedule-table-body');
             try {
                 const r = await fetch(API_BASE + '/api/appointments', { method: 'GET', headers: await getAuthHeaders() });
                 const data = await r.json(); tbody.innerHTML = '';
-                if(!data.appointments || data.appointments.length === 0) { tbody.innerHTML = `<tr><td colspan="6" class="py-12 text-center text-gray-400 font-medium">No appointments scheduled.</td></tr>`; return; }
+                if(!data.appointments || data.appointments.length === 0) { 
+                    tbody.innerHTML = `<tr><td colspan="6" class="py-12 text-center text-gray-400 font-medium">No appointments scheduled.</td></tr>`; 
+                    return; 
+                }
                 data.appointments.forEach(a => {
                     let sColor = a.status === 'Done' ? 'text-green-600 bg-green-50' : 'text-blue-600 bg-blue-50';
-                    let btn = a.action_url ? `<a href="${API_BASE}${a.action_url}" target="_blank" class="bg-[#1e1b4b] text-white text-[10px] font-bold px-3 py-1.5 rounded uppercase">Start Call</a>` : `<span class="text-gray-300">--</span>`;
-                    tbody.innerHTML += `<tr class="border-b border-gray-100 hover:bg-gray-50"><td class="py-4 px-6 font-bold text-gray-900">${a.id}</td><td class="py-4 px-6">${a.type}</td><td class="py-4 px-6">${a.date}</td><td class="py-4 px-6">${a.time || '--'}</td><td class="py-4 px-6 font-bold"><span class="${sColor} px-2.5 py-1 rounded text-[10px]">${a.status}</span></td><td class="py-4 px-6 text-center">${btn}</td></tr>`;
+                    let btn = a.action_url ? `<a href="${API_BASE}${a.action_url}" target="_blank" class="bg-[#1e1b4b] hover:bg-gray-800 transition text-white text-[10px] font-bold px-3 py-1.5 rounded uppercase">Start Call</a>` : `<span class="text-gray-300">--</span>`;
+                    tbody.innerHTML += `<tr class="border-b border-gray-100 hover:bg-gray-50 transition"><td class="py-4 px-6 font-bold text-gray-900">${a.id}</td><td class="py-4 px-6">${a.type}</td><td class="py-4 px-6">${a.date}</td><td class="py-4 px-6">${a.time || '--'}</td><td class="py-4 px-6 font-bold"><span class="${sColor} px-2.5 py-1 rounded text-[10px]">${a.status}</span></td><td class="py-4 px-6 text-center">${btn}</td></tr>`;
                 });
             } catch (e) { console.error(e); }
         }
-        async function fetchDoctors() { const r = await fetch(API_BASE+'/api/doctors'); const docs = await r.json(); const sel = document.getElementById('book-doctor'); sel.innerHTML = '<option value="">-- Select --</option>'; docs.forEach(d => sel.innerHTML += `<option value="${d.id}">${d.name} - ${d.specialty}</option>`); }
-        window.suggestDoctor = async () => { const sym = document.getElementById('book-symptoms').value; if(!sym) return alert("Please type your symptoms."); const r = await fetch(API_BASE+'/api/suggest_doctor', {method:'POST',headers:await getAuthHeaders(), body:JSON.stringify({symptoms:sym})}); const d = await r.json(); if(d.doctor_id) document.getElementById('book-doctor').value = d.doctor_id; else alert(d.message); }
-        window.submitBooking = async (e) => {
-            e.preventDefault(); const btn = document.getElementById('book-btn'); btn.innerText = "Processing...";
+
+        async function fetchDoctors() { 
             try {
-                const r = await fetch(API_BASE+'/api/book_appointment', { method:'POST', headers:await getAuthHeaders(), body:JSON.stringify({ doctor_id: document.getElementById('book-doctor').value, visit_type: document.querySelector('input[name="v_type"]:checked').value, preferred_datetime: document.getElementById('book-time').value }) });
-                const d = await r.json(); if(d.stripe_url) window.location.href = d.stripe_url; else { alert("Booking Confirmed!"); fetchAppointments(); switchTab('schedule'); }
-            } catch(e) { alert("Failed."); } btn.innerText = "PAY NOW";
+                const r = await fetch(API_BASE+'/api/doctors'); 
+                const docs = await r.json(); 
+                const sel = document.getElementById('book-doctor'); 
+                sel.innerHTML = '<option value="">-- Select --</option>'; 
+                docs.forEach(d => sel.innerHTML += `<option value="${d.id}">${d.name} - ${d.specialty}</option>`); 
+            } catch(e) { console.error("Error fetching doctors", e); }
         }
+
+        window.suggestDoctor = async () => { 
+            const sym = document.getElementById('book-symptoms').value; 
+            if(!sym) return alert("Please type your symptoms."); 
+            
+            try {
+                const r = await fetch(API_BASE+'/api/suggest_doctor', {method:'POST',headers:await getAuthHeaders(), body:JSON.stringify({symptoms:sym})}); 
+                const d = await r.json(); 
+                if(d.doctor_id) document.getElementById('book-doctor').value = d.doctor_id; 
+                else alert(d.message); 
+            } catch(e) { alert("Failed to connect to AI suggestion."); }
+        }
+
+        window.submitBooking = async (e) => {
+            e.preventDefault(); 
+            const btn = document.getElementById('book-btn'); 
+            btn.innerText = "Processing...";
+            try {
+                const r = await fetch(API_BASE+'/api/book_appointment', { 
+                    method:'POST', 
+                    headers:await getAuthHeaders(), 
+                    body:JSON.stringify({ 
+                        doctor_id: document.getElementById('book-doctor').value, 
+                        visit_type: document.querySelector('input[name="v_type"]:checked').value, 
+                        preferred_datetime: document.getElementById('book-time').value 
+                    }) 
+                });
+                const d = await r.json(); 
+                if(d.stripe_url) window.location.href = d.stripe_url; 
+                else { alert("Booking Confirmed!"); fetchAppointments(); switchTab('schedule'); }
+            } catch(e) { alert("Booking Failed. Please try again."); } 
+            btn.innerText = "PAY NOW";
+        }
+
         window.saveSettings = async () => {
-            const btn = document.getElementById('set-btn'); btn.innerText = "Saving...";
-            try { await fetch(`${API_BASE}/api/user/profile`, { method: 'POST', headers: await getAuthHeaders(), body: JSON.stringify({ name: document.getElementById('set-name').value, phone: document.getElementById('set-phone').value }) }); window.location.reload(); } catch(e) { alert("Error."); btn.innerText = "Update Profile"; }
+            const btn = document.getElementById('set-btn'); 
+            btn.innerText = "Saving...";
+            try { 
+                await fetch(`${API_BASE}/api/user/profile`, { 
+                    method: 'POST', 
+                    headers: await getAuthHeaders(), 
+                    body: JSON.stringify({ name: document.getElementById('set-name').value, phone: document.getElementById('set-phone').value }) 
+                }); 
+                window.location.reload(); 
+            } catch(e) { 
+                alert("Error updating profile."); 
+                btn.innerText = "Update Profile"; 
+            }
         }
+
         window.uploadReport = async (e) => {
-            e.preventDefault(); const btn = document.getElementById('upload-btn'); btn.innerText = "Processing..."; const fd = new FormData(); fd.append('file', document.getElementById('report-file').files[0]);
-            try { const r = await fetch(API_BASE+'/api/upload_medical_report', { method:'POST', headers: {'Authorization': `Bearer ${await window.currentUser.getIdToken()}`}, body:fd }); const d = await r.json(); alert(d.message); document.getElementById('upload-modal').classList.add('hidden'); } catch(e) { alert("Upload failed."); } btn.innerText = "Add";
+            e.preventDefault(); 
+            const btn = document.getElementById('upload-btn'); 
+            btn.innerText = "Processing..."; 
+            
+            const fd = new FormData(); 
+            fd.append('file', document.getElementById('report-file').files[0]);
+            
+            try { 
+                const r = await fetch(API_BASE+'/api/upload_medical_report', { 
+                    method:'POST', 
+                    headers: {'Authorization': `Bearer ${await window.currentUser.getIdToken()}`}, 
+                    body:fd 
+                }); 
+                const d = await r.json(); 
+                alert(d.message); 
+                document.getElementById('upload-modal').classList.add('hidden'); 
+            } catch(e) { 
+                alert("Upload failed."); 
+            } 
+            btn.innerText = "Add";
         }
     </script>
 </body>
