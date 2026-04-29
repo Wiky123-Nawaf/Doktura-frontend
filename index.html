@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Doktura AI - Your Personal Medical Assistant</title>
+    <title>Doktura - AI Medical Assistant</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Inter:wght@400;500;600;700&display=swap');
@@ -12,225 +12,103 @@
         .bg-primary { background-color: #2e1a47; }
         .text-primary { color: #2e1a47; }
         .video-bg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0.05; z-index: -1; pointer-events: none; }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 4px; }
     </style>
 </head>
 <body class="relative min-h-screen flex flex-col">
 
-    <!-- Guest Landing Page -->
+    <script>const API_BASE = 'https://api.doktura.ai';</script>
+
     <video autoplay loop muted playsinline class="video-bg">
         <source src="https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/Whisk_cjziljmkvmzhzjy10sohjjytetn5qtl0qwni1sn.mp4?download=true" type="video/mp4">
     </video>
-    
-    <nav class="flex items-center justify-between px-6 py-4 max-w-6xl mx-auto w-full">
-        <img src="https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/ChatGPT%20Image%20Mar%2026%2C%202026%2C%2007_53_48%20PM.png?download=true" alt="Doktura AI Logo" class="h-32">
-        <button onclick="openAuth('login')" class="bg-[#00AEEF] text-white px-6 py-2.5 rounded-full text-sm font-bold hover:bg-[#0099d1] shadow-md">Log In</button>
+
+    <!-- Navbar -->
+    <nav class="flex items-center justify-between px-6 py-4 max-w-6xl mx-auto w-full z-10">
+        <img src="https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/ChatGPT%20Image%20Mar%2026%2C%202026%2C%2007_53_48%20PM.png?download=true" alt="Logo" class="h-32">
+        <a href="login.html" id="navLoginBtn" class="bg-[#00AEEF] text-white px-6 py-2.5 rounded-full text-sm font-bold hover:bg-[#0099d1] shadow-md transition">Log In</a>
     </nav>
 
-    <main class="max-w-4xl mx-auto px-6 pt-12 pb-20 text-center relative flex-1">
-        <h1 class="text-5xl font-bold mt-4 text-primary">Hi, I'm Doktura AI</h1>
-        <p class="mt-4 text-gray-600 max-w-2xl mx-auto text-lg">Your private and personal AI doctor.</p>
-        
-        <div class="mt-12 bg-white rounded-2xl shadow-xl border overflow-hidden text-left max-w-3xl mx-auto relative z-10 flex flex-col h-[500px]">
+    <!-- Hero -->
+    <main class="max-w-4xl mx-auto px-6 pt-12 pb-20 text-center relative flex-1 z-10">
+        <img src="https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/Gemini_Generated_Image_okdjp7okdjp7okdj.png?download=true" class="w-64 h-64 object-contain mx-auto animate-[bounce_4s_infinite]">
+        <h1 class="text-5xl font-bold mt-4 text-primary">Hi, I'm Doktura?</h1>
+        <p class="mt-4 text-gray-600 max-w-2xl mx-auto text-lg">I'm your private and personal AI doctor.<br>My service is fast and free. I've already helped people <strong>23,819,892 times!</strong></p>
+        <p class="mt-2 text-xs text-red-500 font-bold">If this is an emergency, call 911.</p>
+
+        <!-- Guest Chat Box -->
+        <div class="mt-12 bg-white rounded-2xl shadow-xl border overflow-hidden text-left max-w-3xl mx-auto flex flex-col h-[500px]">
+            <div class="flex border-b shrink-0">
+                <button class="flex-1 py-4 text-center border-bottom-2 border-[#2e1a47] text-[#2e1a47] font-bold">AI Assistant</button>
+                <a href="login.html" class="flex-1 py-4 text-center text-gray-500 hover:bg-gray-50 flex items-center justify-center">
+                    <span>Book Consultant</span><svg class="w-4 h-4 ml-1 text-red-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd"></path></svg>
+                </a>
+            </div>
             <div class="p-6 flex flex-col flex-1 overflow-hidden">
-                <div id="guest-chat-history" class="flex-1 overflow-y-auto mb-4 space-y-4 pr-2">
-                    <div class="flex items-start space-x-3 mt-4">
-                        <img src="https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/Gemini_Generated_Image_okdjp7okdjp7okdj.png?download=true" class="w-8 h-8 rounded-full bg-gray-100 object-cover">
-                        <div class="bg-gray-100 text-gray-800 p-3 rounded-2xl rounded-tl-none text-sm max-w-[80%]">
-                            <strong>Doktura AI:</strong><br>Hello! I am Doktura AI. Please type your symptoms below. Note: Guest chats are not saved permanently.
-                        </div>
-                    </div>
+                <div class="bg-yellow-50 text-yellow-800 text-xs px-3 py-2 rounded-lg mb-4">Log in to unlock Voice Interaction, Medical Reports, and Booking.</div>
+                <div id="chat-history" class="flex-1 overflow-y-auto mb-4 space-y-4 pr-2">
+                    <div class="flex items-start space-x-3"><img src="https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/Gemini_Generated_Image_okdjp7okdjp7okdj.png?download=true" class="w-8 h-8 rounded-full bg-gray-100 object-cover"><div class="bg-gray-100 text-gray-800 p-3 rounded-2xl rounded-tl-none text-sm max-w-[80%]">Hello! Type your symptoms below.</div></div>
                 </div>
                 <div class="flex space-x-2 shrink-0">
-                    <input type="text" id="guest-chat-input" placeholder="Type your symptoms here..." class="flex-1 border rounded-xl px-4 py-3 focus:outline-none text-sm" onkeypress="if(event.key === 'Enter') sendGuestChat()">
+                    <input type="text" id="chat-input" placeholder="Type your symptoms here..." class="flex-1 border rounded-xl px-4 py-3 focus:outline-none text-sm" onkeypress="if(event.key === 'Enter') sendGuestChat()">
                     <button onclick="sendGuestChat()" class="bg-primary text-white px-6 py-3 rounded-xl text-sm font-medium">Send</button>
                 </div>
             </div>
         </div>
     </main>
 
-    <!-- Authentication Modal (Login / Register / Profile Setup) -->
-    <div id="authMasterContainer" class="fixed inset-0 bg-gray-900 bg-opacity-50 z-[9999] flex flex-col hidden overflow-y-auto backdrop-blur-sm">
-        <div class="w-full p-6 flex justify-between items-center absolute top-0 left-0">
-            <button onclick="closeAuth()" class="text-white hover:text-[#00AEEF] transition flex items-center text-sm font-semibold">
-                &larr; Back to Home
-            </button>
-        </div>
-
-        <div class="flex-1 flex items-center justify-center p-4 min-h-screen">
-            <div class="bg-white rounded-2xl shadow-2xl border border-gray-100 w-full max-w-[420px] p-10 relative">
-                <div id="authAlertBox" class="hidden mb-4 p-3 text-xs rounded-lg text-center font-medium"></div>
-
-                <!-- Login View -->
-                <div id="authLoginView">
-                    <h2 class="text-2xl font-bold text-gray-800 text-center mb-1">Welcome Back</h2>
-                    <p class="text-xs text-gray-500 text-center mb-8">Log in to Doktura AI.</p>
-                    <input type="email" id="loginEmail" placeholder="Email Address" class="w-full border rounded-lg px-4 py-3 mb-4 text-sm focus:outline-none focus:border-[#00AEEF]">
-                    <input type="password" id="loginPass" placeholder="Password" class="w-full border rounded-lg px-4 py-3 mb-6 text-sm focus:outline-none focus:border-[#00AEEF]">
-                    <button id="doLoginBtn" class="w-full bg-[#00AEEF] text-white font-bold py-3 rounded-lg shadow-md mb-4 text-sm">Login</button>
-                    <p class="text-center text-xs text-gray-500">Don't have an account? <span onclick="switchAuthView('register')" class="text-[#00AEEF] font-bold cursor-pointer">Register</span></p>
-                </div>
-
-                <!-- Register View -->
-                <div id="authRegisterView" class="hidden">
-                    <h2 class="text-2xl font-bold text-gray-800 text-center mb-1">Create Account</h2>
-                    <p class="text-xs text-gray-500 text-center mb-8">Join Doktura AI</p>
-                    <input type="email" id="regEmail" placeholder="Email Address" class="w-full border rounded-lg px-4 py-3 mb-4 text-sm focus:outline-none focus:border-[#00AEEF]">
-                    <input type="password" id="regPass" placeholder="Password" class="w-full border rounded-lg px-4 py-3 mb-6 text-sm focus:outline-none focus:border-[#00AEEF]">
-                    <button id="doRegisterBtn" class="w-full bg-[#00AEEF] text-white font-bold py-3 rounded-lg shadow-md mb-4 text-sm">Register</button>
-                    <p class="text-center text-xs text-gray-500">Already have an account? <span onclick="switchAuthView('login')" class="text-[#00AEEF] font-bold cursor-pointer">Log in</span></p>
-                </div>
-
-                <!-- Profile Setup View (Redirects to App after) -->
-                <div id="authProfileView" class="hidden">
-                    <h2 class="text-2xl font-bold text-gray-800 text-center mb-1">Complete Profile</h2>
-                    <p class="text-xs text-gray-500 text-center mb-6">Let's set up your patient file.</p>
-                    <input type="text" id="profileName" placeholder="Full Name" class="w-full border rounded-lg px-4 py-3 mb-4 text-sm focus:outline-none">
-                    <input type="text" id="profilePhone" placeholder="Phone Number" class="w-full border rounded-lg px-4 py-3 mb-6 text-sm focus:outline-none">
-                    <button id="saveProfileBtn" class="w-full bg-[#00AEEF] text-white font-bold py-3 rounded-lg shadow-md text-sm">Save & Enter Application</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
+    <!-- Firebase Auth Check (Changes Login button to Dashboard if already logged in) -->
     <script type="module">
-    // ==========================================
-    // 1. UI FUNCTIONS (Loaded first so buttons always work)
-    // ==========================================
-    const API_BASE = 'https://api.doktura.ai'; 
-    let guestCount = 0;
-
-    // Attach functions to 'window' so HTML onclick attributes can find them
-    window.openAuth = (view) => {
-        const modal = document.getElementById("authMasterContainer");
-        if (modal) {
-            modal.classList.remove("hidden");
-            window.switchAuthView(view);
-        } else {
-            console.error("Login modal not found. Check if id='authMasterContainer' is in your HTML.");
-        }
-    };
-
-    window.closeAuth = () => {
-        const modal = document.getElementById("authMasterContainer");
-        if (modal) modal.classList.add("hidden");
-    };
-
-    window.switchAuthView = (view) => {
-        ['authLoginView', 'authRegisterView', 'authProfileView'].forEach(v => {
-            const el = document.getElementById(v);
-            if(el) el.classList.add("hidden");
-        });
-        const target = view === 'login' ? 'authLoginView' : view === 'register' ? 'authRegisterView' : 'authProfileView';
-        const targetEl = document.getElementById(target);
-        if(targetEl) targetEl.classList.remove("hidden");
-    };
-
-    window.sendGuestChat = async function() {
-        // Make sure your input and chat history div match these IDs!
-        const input = document.getElementById("guest-chat-input"); 
-        const history = document.getElementById("guest-chat-history");
-        
-        if (!input || !history) {
-            console.error("Chat elements not found. Make sure your input has id='guest-chat-input' and history box has id='guest-chat-history'");
-            return;
-        }
-
-        const msg = input.value.trim();
-        if(!msg) return;
-
-        guestCount++;
-        
-        // 1. Show User Message
-        history.innerHTML += `
-            <div class="flex justify-end mt-4">
-                <div class="bg-[#2e1a47] text-white p-3 rounded-lg text-sm">${msg}</div>
-            </div>`;
-        input.value = '';
-        history.scrollTop = history.scrollHeight;
-
-        // 2. Check Guest Limit
-        if(guestCount >= 3) {
-            history.innerHTML += `<div class="text-center mt-4 text-xs font-bold text-red-500">Guest limit reached. Please log in to Doktura AI to continue.</div>`;
-            setTimeout(() => window.openAuth('login'), 2000);
-            return;
-        }
-
-        // 3. Send to Backend
-        try {
-            const res = await fetch(`${API_BASE}/api/chat`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ message: msg, session_id: "guest_temp" })
-            });
-            const data = await res.json();
-            
-            // 4. Show AI Response
-            history.innerHTML += `
-                <div class="flex mt-4 space-x-3">
-                    <img src="https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/Gemini_Generated_Image_okdjp7okdjp7okdj.png?download=true" class="w-8 h-8 rounded-full">
-                    <div class="bg-gray-100 p-4 rounded-lg text-sm text-gray-800">
-                        <strong>Doktura AI:</strong><br>${data.reply.replace(/\n/g, '<br>')}
-                    </div>
-                </div>`;
-            history.scrollTop = history.scrollHeight;
-        } catch(e) {
-            history.innerHTML += `<div class="text-center mt-4 text-xs text-red-500">Error connecting to Doktura AI server.</div>`;
-        }
-    };
-
-
-    // ==========================================
-    // 2. FIREBASE SETUP
-    // ==========================================
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-app.js";
-    import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-auth.js";
-
-    try {
-        // 🔴 PASTE YOUR ACTUAL FIREBASE KEYS HERE 🔴
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-app.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-auth.js";
         const firebaseConfig = {
-            apiKey: "YOUR_API_KEY", 
-            authDomain: "YOUR_AUTH_DOMAIN",
-            projectId: "YOUR_PROJECT_ID",
-            storageBucket: "YOUR_STORAGE_BUCKET",
-            messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-            appId: "YOUR_APP_ID"
+            apiKey: "AIzaSyCrx9BPS8ficDzgVZMbJIb4b3PQ9IqEHLw",
+            authDomain: "doktura-ai-907d8.firebaseapp.com",
+            projectId: "doktura-ai-907d8",
+            storageBucket: "doktura-ai-907d8.firebasestorage.app",
+            messagingSenderId: "940024084363",
+            appId: "1:940024084363:web:db934bd0fd644d61f7e18e"
         };
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
 
-        if (firebaseConfig.apiKey === "YOUR_API_KEY") {
-            console.error("🚨 FIREBASE CONFIG MISSING: You must paste your Firebase keys into the code. The Login system will not work until you do.");
-        } else {
-            const app = initializeApp(firebaseConfig);
-            const auth = getAuth(app);
+        onAuthStateChanged(auth, (user) => {
+            if (user && (user.emailVerified || user.providerData.some(p => p.providerId === 'google.com'))) {
+                const btn = document.getElementById("navLoginBtn");
+                btn.innerText = "Go to Dashboard";
+                btn.href = "dashboard.html";
+            }
+        });
+    </script>
 
-            // -- Login Logic --
-            document.getElementById("doLoginBtn").addEventListener("click", async () => {
-                try { 
-                    await signInWithEmailAndPassword(auth, document.getElementById("loginEmail").value, document.getElementById("loginPass").value); 
-                } catch (e) { alert("Login failed: " + e.message); }
-            });
+    <!-- Guest Chat Logic -->
+    <script>
+        window.sendGuestChat = async function() {
+            const input = document.getElementById('chat-input');
+            const history = document.getElementById('chat-history');
+            const message = input.value.trim();
+            if(!message) return;
 
-            // -- Redirect if logged in --
-            onAuthStateChanged(auth, async (user) => {
-                if (user) {
-                    const token = await user.getIdToken();
-                    const res = await fetch(`${API_BASE}/api/user/sync`, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-                        body: JSON.stringify({ email: user.email })
-                    });
-                    const data = await res.json();
-                    
-                    if (data.is_complete) {
-                        window.location.href = "app.html"; // Go to dashboard
-                    } else {
-                        window.openAuth('profile'); // Force setup
-                    }
-                }
-            });
+            history.innerHTML += `<div class="flex items-start justify-end space-x-3 mt-4"><div class="bg-[#00AEEF] text-white p-3 rounded-2xl rounded-tr-none text-sm max-w-[80%]">${message}</div></div>`;
+            input.value = '';
+            history.scrollTo({ top: history.scrollHeight, behavior: 'smooth' });
+
+            try {
+                let uid = localStorage.getItem("anon_user_id");
+                if (!uid) { uid = "anon_" + Math.random().toString(36).substring(7); localStorage.setItem("anon_user_id", uid); }
+
+                const res = await fetch(API_BASE + '/api/chat', {
+                    method: 'POST', headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ message: message, session_id: "guest", user_id: uid })
+                });
+                const data = await res.json();
+                history.innerHTML += `<div class="flex items-start space-x-3 mt-4"><img src="https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/Gemini_Generated_Image_okdjp7okdjp7okdj.png?download=true" class="w-8 h-8 rounded-full bg-gray-100 object-cover"><div class="bg-gray-100 text-gray-800 p-3 rounded-2xl rounded-tl-none text-sm max-w-[80%]">${data.reply.replace(/\n/g, '<br>')}</div></div>`;
+                history.scrollTo({ top: history.scrollHeight, behavior: 'smooth' });
+            } catch(e) {
+                history.innerHTML += `<div class="text-center text-red-500 text-xs mt-2">Error connecting to AI.</div>`;
+            }
         }
-    } catch(err) {
-        console.error("Firebase Execution Error:", err);
-    }
-</script>
+    </script>
 </body>
 </html>
