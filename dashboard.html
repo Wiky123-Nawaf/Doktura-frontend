@@ -47,6 +47,18 @@
         </div>
     </div>
 
+    <!-- CONFIRM DELETE MODAL -->
+    <div id="confirm-modal" class="fixed inset-0 bg-gray-900/50 z-[400] hidden items-center justify-center backdrop-blur-sm transition-opacity">
+        <div class="bg-white rounded-3xl p-8 max-w-sm w-full relative shadow-2xl text-center">
+            <h2 class="text-xl font-extrabold text-gray-900 mb-2">Delete Report?</h2>
+            <p class="text-gray-500 text-sm mb-6 leading-relaxed">This action cannot be undone. Your medical document will be permanently removed.</p>
+            <div class="flex space-x-3 mt-4">
+                <button onclick="closeConfirmModal()" class="flex-1 bg-white border border-gray-300 hover:bg-gray-50 transition text-gray-700 font-bold py-3 rounded-lg text-sm">Cancel</button>
+                <button id="confirm-action-btn" class="flex-1 bg-red-500 hover:bg-red-600 transition text-white font-bold py-3 rounded-lg shadow-sm text-sm">Delete</button>
+            </div>
+        </div>
+    </div>
+
     <!-- LEFT SIDEBAR -->
     <div class="w-[260px] bg-white border-r border-gray-200 flex flex-col shrink-0 h-full z-10 shadow-sm">
         <div class="p-6 pb-2">
@@ -111,6 +123,17 @@
                 </button>
             </div>
         </div>
+
+        <!-- GLOBAL INLINE ERROR / SUCCESS NOTIFICATIONS -->
+        <div id="global-message-container" class="hidden w-full px-8 pt-6 pb-2 z-20 shrink-0 relative bg-transparent">
+            <div id="global-message-box" class="max-w-4xl mx-auto p-4 rounded-xl text-sm font-bold border flex items-center justify-between shadow-sm">
+                <div class="flex items-center">
+                    <svg id="global-message-icon" class="w-5 h-5 mr-3 shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path></svg>
+                    <span id="global-message-text" class="leading-relaxed"></span>
+                </div>
+                <button onclick="document.getElementById('global-message-container').classList.add('hidden')" class="ml-4 opacity-70 hover:opacity-100 transition shrink-0 text-lg">✕</button>
+            </div>
+        </div>
         
         <!-- ================= CHAT VIEW ================= -->
         <div id="view-chat" class="app-view active flex-1 flex-col h-full overflow-hidden relative">
@@ -139,7 +162,7 @@
 
         <!-- ================= BOOK CONSULTANT VIEW ================= -->
         <div id="view-book" class="app-view flex-1 flex-col overflow-y-auto">
-            <div class="max-w-4xl mx-auto p-10 w-full">
+            <div class="max-w-4xl mx-auto p-10 w-full pt-4">
                 <h2 class="text-3xl font-extrabold text-gray-900 mb-2">Book a Consultant</h2>
                 <p class="text-gray-500 mb-8 text-sm leading-relaxed">Schedule a follow-up video call with one of our licensed human doctors.</p>
                 <form onsubmit="submitBooking(event)">
@@ -164,7 +187,7 @@
 
         <!-- ================= SCHEDULE APPOINTMENT VIEW ================= -->
         <div id="view-schedule" class="app-view flex-1 flex-col overflow-y-auto">
-            <div class="max-w-5xl mx-auto p-10 w-full">
+            <div class="max-w-5xl mx-auto p-10 w-full pt-4">
                 <h2 class="text-3xl font-extrabold text-gray-900 mb-1">Schedule Appointment</h2>
                 <p class="text-gray-500 text-sm mb-8">Manage your upcoming consultations with ease.</p>
                 <div class="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden"><table class="w-full text-left border-collapse"><thead class="bg-gray-50 text-gray-500 text-[10px] uppercase font-bold border-b border-gray-200"><tr><th class="py-4 px-6">ID</th><th class="py-4 px-6">Type</th><th class="py-4 px-6">Doctor</th><th class="py-4 px-6">Date</th><th class="py-4 px-6">Status</th><th class="py-4 px-6 text-center">Action</th></tr></thead><tbody id="schedule-table-body" class="text-sm text-gray-800 divide-y divide-gray-100"></tbody></table></div>
@@ -173,14 +196,20 @@
 
         <!-- ================= MEDICAL REPORTS VIEW ================= -->
         <div id="view-reports" class="app-view flex-1 flex-col overflow-y-auto relative">
-            <div class="max-w-5xl mx-auto p-10 w-full">
+            <div class="max-w-5xl mx-auto p-10 w-full pt-4">
                 <!-- Header -->
                 <div class="flex justify-between items-end mb-8">
                     <div>
                         <h2 class="text-3xl font-extrabold text-gray-900 mb-2">Your Medical Documents</h2>
                         <p class="text-gray-500 text-sm">Securely store and manage your health records.</p>
                     </div>
-                    <button onclick="document.getElementById('upload-modal').classList.remove('hidden')" class="bg-[#f59e0b] hover:bg-yellow-600 text-white font-bold py-2.5 px-6 rounded-lg shadow-sm transition">Add Document</button>
+                    <div class="flex items-center space-x-3">
+                        <button onclick="linkGoogleDrive()" class="flex items-center border border-gray-200 bg-white hover:bg-gray-50 text-gray-700 text-sm font-bold py-2.5 px-5 rounded-lg shadow-sm transition">
+                            <svg class="w-4 h-4 mr-2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12.01 2.502c-5.247 0-9.505 4.258-9.505 9.505s4.258 9.505 9.505 9.505 9.505-4.258 9.505-9.505-4.258-9.505-9.505-9.505zm0 17.509c-4.414 0-8.004-3.59-8.004-8.004s3.59-8.004 8.004-8.004 8.004 3.59 8.004 8.004-3.59 8.004-8.004 8.004zm-1.51-12.006l-4.503 7.82 1.501 2.602 4.503-7.82-1.501-2.602zm4.503.01l-1.501 2.602 3.003 5.218 1.501-2.602-3.003-5.218zm-3.003 6.096l-3.003 5.218h6.006l-3.003-5.218z" fill="currentColor"/></svg>
+                            Link Drive
+                        </button>
+                        <button onclick="document.getElementById('upload-modal').classList.remove('hidden')" class="bg-[#f59e0b] hover:bg-yellow-600 text-white text-sm font-bold py-2.5 px-6 rounded-lg shadow-sm transition">Add Document</button>
+                    </div>
                 </div>
 
                 <!-- Empty State -->
@@ -200,6 +229,7 @@
                                 <th class="py-4 px-6">Type</th>
                                 <th class="py-4 px-6">Date</th>
                                 <th class="py-4 px-6">Status</th>
+                                <th class="py-4 px-6 text-center">Actions</th>
                             </tr>
                         </thead>
                         <tbody id="reports-table-body" class="text-sm text-gray-800 divide-y divide-gray-100"></tbody>
@@ -226,8 +256,8 @@
                             <p class="text-xs text-gray-400 mt-1">Format is JPG, PNG or PDF</p>
                         </div>
                         <div class="flex space-x-3 pt-4">
-                            <button type="button" onclick="document.getElementById('upload-modal').classList.add('hidden')" class="flex-1 bg-white border border-gray-300 hover:bg-gray-50 transition text-gray-700 font-bold py-3 rounded-lg">Cancel</button>
-                            <button type="submit" id="upload-btn" class="flex-1 bg-[#0066FF] hover:bg-blue-700 transition text-white font-bold py-3 rounded-lg shadow-sm">Add</button>
+                            <button type="button" onclick="document.getElementById('upload-modal').classList.add('hidden')" class="flex-1 bg-white border border-gray-300 hover:bg-gray-50 transition text-gray-700 font-bold py-3 rounded-lg text-sm">Cancel</button>
+                            <button type="submit" id="upload-btn" class="flex-1 bg-[#0066FF] hover:bg-blue-700 transition text-white font-bold py-3 rounded-lg shadow-sm text-sm">Add</button>
                         </div>
                     </form>
                 </div>
@@ -236,10 +266,9 @@
 
         <!-- ================= PROFILE SETTINGS VIEW ================= -->
         <div id="view-settings" class="app-view flex-1 flex-col overflow-y-auto">
-            <div class="max-w-2xl mx-auto p-10 w-full">
+            <div class="max-w-2xl mx-auto p-10 w-full pt-4">
                 <div class="bg-white rounded-2xl border border-gray-200 p-8 shadow-sm">
                     <h2 class="text-2xl font-extrabold text-gray-900 mb-8 border-b pb-4">Profile Settings</h2>
-                    <div id="settingsAlert" class="hidden mb-6 p-4 rounded text-sm text-center font-bold"></div>
                     <div class="flex items-center space-x-6 mb-8">
                         <img id="set-avatar" src="" class="w-20 h-20 rounded-full border border-gray-200 object-cover shadow-sm">
                         <input type="file" id="set-photo" accept="image/*" class="text-sm text-gray-500">
@@ -318,6 +347,29 @@
         window.currentSessionId = null;
         let voiceRec = null; 
         let isVoiceActive = false;
+        window.pendingDeleteId = null;
+
+        // INLINE MESSAGE HANDLER (Replaces standard alerts/black boxes)
+        window.showInlineMessage = (msg, type = 'error') => {
+            const container = document.getElementById('global-message-container');
+            const box = document.getElementById('global-message-box');
+            const text = document.getElementById('global-message-text');
+            const icon = document.getElementById('global-message-icon');
+            
+            text.innerText = msg;
+            if(type === 'error') {
+                box.className = 'max-w-4xl mx-auto p-4 rounded-xl text-sm font-bold border flex items-center justify-between bg-red-50 border-red-200 text-red-600 shadow-sm';
+                icon.innerHTML = '<path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>';
+            } else {
+                box.className = 'max-w-4xl mx-auto p-4 rounded-xl text-sm font-bold border flex items-center justify-between bg-green-50 border-green-200 text-green-600 shadow-sm';
+                icon.innerHTML = '<path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>';
+            }
+            
+            container.classList.remove('hidden');
+            
+            // Auto hide
+            setTimeout(() => { container.classList.add('hidden'); }, 6000);
+        };
 
         async function getAuthHeaders() { 
             const h = { 'Content-Type': 'application/json' }; 
@@ -332,11 +384,15 @@
                 const r = await fetch(`${API_BASE}/api/create_subscription`, { method: 'POST', headers: await getAuthHeaders(), body: JSON.stringify({user_id: window.currentUser.uid}) });
                 const d = await r.json(); 
                 if(d.stripe_url) window.location.href = d.stripe_url;
-                else alert("Failed to connect to billing.");
-            } catch(e) { alert("Error connecting to payment."); }
+                else showInlineMessage("Failed to connect to billing.", "error");
+            } catch(e) { showInlineMessage("Error connecting to payment.", "error"); }
+            document.getElementById('sub-btn').innerText = "Unlock DokturaPremium – RM 50";
         }
 
         window.switchTab = function(tab) {
+            // Hide inline messages on tab switch
+            document.getElementById('global-message-container').classList.add('hidden');
+
             // Subscription Blocker Logic
             if(tab === 'reports' && !window.userData.is_subscribed) { 
                 document.getElementById('premium-modal').classList.remove('hidden'); 
@@ -452,7 +508,11 @@
             
             if(!voiceRec) {
                 const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-                if (!SR) { alert("Voice not supported in this browser."); return null; }
+                if (!SR) { 
+                    exitVoiceMode();
+                    showInlineMessage("Voice features are not supported in your current browser.", "error"); 
+                    return null; 
+                }
                 voiceRec = new SR();
                 voiceRec.continuous = false;
                 
@@ -530,12 +590,19 @@
                     tbody.innerHTML = '';
                     data.reports.forEach(rep => {
                         let statColor = rep.status === 'Processing' ? 'bg-yellow-50 text-yellow-600' : 'bg-green-50 text-green-600';
+                        let safeId = rep.id ? `'${rep.id}'` : `null`;
+                        
                         tbody.innerHTML += `
                             <tr class="border-b border-gray-100 hover:bg-gray-50 transition">
                                 <td class="py-4 px-6 font-bold text-gray-900">${rep.name}</td>
                                 <td class="py-4 px-6 text-gray-600">${rep.type}</td>
                                 <td class="py-4 px-6 text-gray-600">${rep.date}</td>
                                 <td class="py-4 px-6"><span class="${statColor} px-2.5 py-1 rounded text-[10px] font-bold">${rep.status}</span></td>
+                                <td class="py-4 px-6 text-center">
+                                    <button onclick="deleteReport(${safeId})" class="text-gray-400 hover:text-red-500 font-bold transition">
+                                        <svg class="w-5 h-5 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                                    </button>
+                                </td>
                             </tr>
                         `;
                     });
@@ -547,16 +614,61 @@
             } catch(e) { console.error("Error loading reports", e); }
         }
 
+        // Deletion confirmation logic
+        window.deleteReport = (id) => {
+            if (!id) return;
+            window.pendingDeleteId = id;
+            document.getElementById('confirm-modal').classList.remove('hidden');
+            document.getElementById('confirm-modal').classList.add('flex');
+        };
+
+        window.closeConfirmModal = () => {
+            window.pendingDeleteId = null;
+            document.getElementById('confirm-modal').classList.add('hidden');
+            document.getElementById('confirm-modal').classList.remove('flex');
+        };
+
+        document.getElementById('confirm-action-btn').addEventListener('click', async () => {
+            if (!window.pendingDeleteId) return;
+            const id = window.pendingDeleteId;
+            const btn = document.getElementById('confirm-action-btn');
+            
+            btn.innerText = "Deleting...";
+            try {
+                const r = await fetch(`${API_BASE}/api/reports/${id}`, { method: 'DELETE', headers: await getAuthHeaders() });
+                if(r.ok) { 
+                    showInlineMessage("Report deleted successfully.", "success");
+                    fetchReports(); 
+                } else {
+                    showInlineMessage("Failed to delete report.", "error");
+                }
+            } catch(e) {
+                showInlineMessage("An error occurred while deleting the report.", "error");
+            }
+            btn.innerText = "Delete";
+            closeConfirmModal();
+        });
+
+        // Google Drive integration
+        window.linkGoogleDrive = () => {
+            if(!window.currentUser) return;
+            window.location.href = `${API_BASE}/api/auth/google?user_id=${window.currentUser.uid}`;
+        };
+
         window.suggestDoctor = async () => { 
             const sym = document.getElementById('book-symptoms').value; 
-            if(!sym) return alert("Please type your symptoms."); 
+            if(!sym) { showInlineMessage("Please type your symptoms to find a doctor.", "error"); return; }
             
             try {
                 const r = await fetch(API_BASE+'/api/suggest_doctor', {method:'POST',headers:await getAuthHeaders(), body:JSON.stringify({symptoms:sym})}); 
                 const d = await r.json(); 
-                if(d.doctor_id) document.getElementById('book-doctor').value = d.doctor_id; 
-                else alert(d.message); 
-            } catch(e) { alert("Failed to connect to AI suggestion."); }
+                if(d.doctor_id) {
+                    document.getElementById('book-doctor').value = d.doctor_id; 
+                    showInlineMessage("Doctor auto-assigned based on your symptoms.", "success");
+                } else {
+                    showInlineMessage(d.message || "Failed to find a matching doctor.", "error"); 
+                }
+            } catch(e) { showInlineMessage("Failed to connect to AI suggestion.", "error"); }
         }
 
         window.submitBooking = async (e) => {
@@ -575,8 +687,12 @@
                 });
                 const d = await r.json(); 
                 if(d.stripe_url) window.location.href = d.stripe_url; 
-                else { alert("Booking Confirmed!"); fetchAppointments(); switchTab('schedule'); }
-            } catch(e) { alert("Booking Failed. Please try again."); } 
+                else { 
+                    showInlineMessage("Booking Confirmed Successfully!", "success"); 
+                    fetchAppointments(); 
+                    switchTab('schedule'); 
+                }
+            } catch(e) { showInlineMessage("Booking Failed. Please try again.", "error"); } 
             btn.innerText = "PAY NOW";
         }
 
@@ -589,8 +705,9 @@
                     headers: await getAuthHeaders(), 
                     body: JSON.stringify({ name: document.getElementById('set-name').value, phone: document.getElementById('set-phone').value }) 
                 }); 
-                window.location.reload(); 
-            } catch(e) { alert("Error updating profile."); btn.innerText = "Update Profile"; }
+                showInlineMessage("Profile successfully updated.", "success");
+                setTimeout(() => window.location.reload(), 1500); 
+            } catch(e) { showInlineMessage("Error updating profile. Please try again.", "error"); btn.innerText = "Update Profile"; }
         }
 
         window.uploadReport = async (e) => {
@@ -621,8 +738,10 @@
                 // Show in the list instantly
                 fetchReports(); 
                 
-                alert("Report successfully added! Our AI is analyzing it now. It will also be backed up to your Google Drive.");
-            } catch(e) { alert("Upload failed."); } 
+                showInlineMessage("Report successfully added! Our AI is analyzing it now. It will also be backed up to your Google Drive.", "success");
+            } catch(e) { 
+                showInlineMessage("Upload failed. Please check your connection and try again.", "error"); 
+            } 
             btn.innerText = "Add";
         }
     </script>
