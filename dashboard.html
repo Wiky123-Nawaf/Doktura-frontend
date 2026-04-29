@@ -15,12 +15,18 @@
         .nav-inactive { color: #64748b; font-weight: 500; border-left: 4px solid transparent; }
         .nav-inactive:hover { background-color: #f8fafc; color: #0f172a; }
 
+        /* Typing Indicator Animation */
+        .typing-dot { width: 6px; height: 6px; background: #94a3b8; border-radius: 50%; display: inline-block; animation: bounce 1.4s infinite ease-in-out; }
+        .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+        .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+        @keyframes bounce { 0%, 80%, 100% { transform: translateY(0); } 40% { transform: translateY(-6px); } }
+
         /* Voice Orb Pulse */
         @keyframes pulseGlow { 0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); } 70% { transform: scale(1.05); box-shadow: 0 0 0 30px rgba(239, 68, 68, 0); } 100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); } }
         .voice-orb { width: 160px; height: 160px; background: radial-gradient(circle at 30% 30%, #fca5a5, #ef4444); border-radius: 50%; box-shadow: 0 10px 25px rgba(239,68,68,0.3); transition: transform 0.3s; }
         .orb-active { animation: pulseGlow 1.5s infinite; }
 
-        /* Crucial fix for the blank screen tab switching */
+        /* View Switching Logic */
         .app-view { display: none; }
         .app-view.active { display: flex; }
     </style>
@@ -32,7 +38,6 @@
     <!-- PREMIUM UNLOCK MODAL -->
     <div id="premium-modal" class="fixed inset-0 bg-gray-900/60 z-[300] hidden items-center justify-center backdrop-blur-sm">
         <div class="bg-white rounded-3xl p-10 max-w-lg w-full text-center relative shadow-2xl">
-            <!-- Modal display toggle fix applied here -->
             <button onclick="document.getElementById('premium-modal').classList.remove('flex'); document.getElementById('premium-modal').classList.add('hidden')" class="absolute top-4 right-5 text-gray-400 hover:text-gray-800 text-xl font-bold">✕</button>
             <h2 class="text-2xl font-extrabold text-gray-900 mb-3">Unlock Doktura Premium</h2>
             <p class="text-gray-500 text-sm mb-8 px-4">Upload reports instantly, analyze scans with AI, and access records safely anywhere.</p>
@@ -43,7 +48,7 @@
     </div>
 
     <!-- LEFT SIDEBAR -->
-    <div class="w-[260px] bg-white border-r border-gray-200 flex flex-col shrink-0 h-full z-10">
+    <div class="w-[260px] bg-white border-r border-gray-200 flex flex-col shrink-0 h-full z-10 shadow-sm">
         <div class="p-6 pb-2">
             <img src="https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/ChatGPT%20Image%20Mar%2026%2C%202026%2C%2007_53_48%20PM.png?download=true" class="h-8">
         </div>
@@ -84,13 +89,16 @@
         </div>
 
         <div class="p-4 border-t border-gray-200 flex items-center justify-between">
-            <span class="text-xs text-gray-400 font-bold">DOKTURA v2.0</span>
-            <button id="logoutBtn" class="text-gray-400 hover:text-red-500 p-2"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg></button>
+            <div class="flex items-center space-x-3 truncate">
+                <img id="userAvatarSidebar" src="" class="w-9 h-9 rounded-full object-cover">
+                <span id="userNameSidebar" class="text-xs font-bold truncate text-gray-600">Patient</span>
+            </div>
+            <button id="logoutBtn" class="text-gray-400 hover:text-red-500 p-2"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg></button>
         </div>
     </div>
 
     <!-- MAIN CONTENT AREA -->
-    <div class="flex-1 flex flex-col relative h-full bg-[#f8fafc]">
+    <div class="flex-1 flex flex-col relative h-full bg-[#f8fafc] overflow-hidden">
         
         <!-- HEADER -->
         <div class="h-16 border-b border-gray-200 flex items-center justify-between px-8 bg-white shrink-0 shadow-sm z-10">
@@ -98,15 +106,15 @@
             <div class="flex items-center space-x-4">
                 <button class="p-2 text-gray-400 border border-gray-200 rounded-lg hover:bg-gray-50 transition"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path></svg></button>
                 <button onclick="switchTab('settings')" class="flex items-center space-x-2 border border-gray-200 rounded-lg p-1 pr-3 hover:bg-gray-50 transition shrink-0">
-                    <img id="userAvatar" src="" class="w-8 h-8 rounded-full object-cover">
-                    <span id="userNameHeader" class="text-xs font-bold text-gray-700">Patient</span>
+                    <img id="userAvatarHeader" src="" class="w-8 h-8 rounded-full object-cover">
+                    <span id="userNameHeader" class="text-xs font-bold text-gray-700">Profile</span>
                 </button>
             </div>
         </div>
         
         <!-- ================= CHAT VIEW ================= -->
-        <div id="view-chat" class="app-view active flex-1 flex-col h-full relative">
-            <div id="chat-history" class="flex-1 overflow-y-auto p-8 max-w-4xl w-full mx-auto pb-32"></div>
+        <div id="view-chat" class="app-view active flex-1 flex-col h-full overflow-hidden relative">
+            <div id="chat-history" class="flex-1 overflow-y-auto p-8 max-w-4xl w-full mx-auto"></div>
             
             <!-- Voice View Overlay -->
             <div id="voice-overlay" class="absolute inset-0 bg-[#f8fafc]/95 z-[50] hidden flex-col items-center justify-center backdrop-blur-sm">
@@ -114,11 +122,11 @@
                 <h3 id="voice-status-text" class="text-4xl font-bold text-gray-900 mb-6">Tap mic to speak</h3>
                 <button onclick="toggleVoiceMic()" id="voice-action-btn" class="bg-[#d9381e] text-white rounded-full p-6 shadow-xl hover:bg-red-700 transition mb-6"><svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"></path></svg></button>
                 <p id="voice-transcript" class="text-gray-500 text-lg max-w-lg text-center h-20 italic">Tap to start talking...</p>
-                <button onclick="exitVoiceMode()" class="mt-8 text-sm font-bold text-gray-400 hover:text-gray-800 uppercase tracking-widest transition">End Session</button>
+                <button onclick="exitVoiceMode()" class="mt-8 text-sm font-bold text-gray-400 hover:text-gray-800 uppercase tracking-widest transition">Cancel</button>
             </div>
             
-            <!-- Input Area -->
-            <div class="absolute bottom-0 w-full bg-gradient-to-t from-[#f8fafc] via-[#f8fafc] to-transparent pt-10 pb-6 px-8 flex justify-center z-40">
+            <!-- Input Area (Fixed Float Issue: Using flex shrink-0 instead of absolute) -->
+            <div class="w-full bg-gradient-to-t from-[#f8fafc] via-[#f8fafc] to-transparent pt-4 pb-8 px-8 flex justify-center shrink-0">
                 <div class="max-w-4xl w-full bg-white border border-gray-200 rounded-xl shadow-[0_2px_15px_rgba(0,0,0,0.06)] p-2 flex items-center">
                     <button onclick="enterVoiceMode()" class="p-3 text-gray-400 hover:text-gray-800 transition shrink-0"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"></path></svg></button>
                     <input type="text" id="chat-input" class="flex-1 bg-transparent px-3 py-2 focus:outline-none text-gray-800 text-sm" placeholder="Type a message or tap the mic for voice mode..." onkeypress="if(event.key === 'Enter') sendChat()">
@@ -150,7 +158,6 @@
                     </div>
                     <div class="mt-8 mb-8 pb-8 border-b border-gray-200"><p class="text-sm font-bold text-gray-700 mb-2">Payment (FEE: RM 10.00)</p><div class="bg-gray-100 p-4 rounded-lg text-xs text-gray-600 font-medium">Kindly be informed that cancellations will not be eligible for a refund.</div></div>
                     <button type="submit" id="book-btn" class="w-full bg-[#0066FF] hover:bg-blue-700 text-white font-bold py-3.5 rounded-lg shadow-md transition uppercase text-sm">PAY NOW</button>
-                    <div id="book-result" class="hidden mt-4 p-4 rounded text-center text-sm font-bold"></div>
                 </form>
             </div>
         </div>
@@ -160,7 +167,7 @@
             <div class="max-w-5xl mx-auto p-10 w-full">
                 <h2 class="text-3xl font-extrabold text-gray-900 mb-1">Schedule Appointment</h2>
                 <p class="text-gray-500 text-sm mb-8">Manage your upcoming consultations with ease.</p>
-                <div class="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden"><table class="w-full text-left border-collapse"><thead class="bg-gray-50 text-gray-500 text-[10px] uppercase font-bold border-b border-gray-200"><tr><th class="py-4 px-6">ID</th><th class="py-4 px-6">Type</th><th class="py-4 px-6">Date</th><th class="py-4 px-6">Time</th><th class="py-4 px-6">Status</th><th class="py-4 px-6 text-center">Action</th></tr></thead><tbody id="schedule-table-body" class="text-sm text-gray-800 divide-y divide-gray-100"></tbody></table></div>
+                <div class="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden"><table class="w-full text-left border-collapse"><thead class="bg-gray-50 text-gray-500 text-[10px] uppercase font-bold border-b border-gray-200"><tr><th class="py-4 px-6">ID</th><th class="py-4 px-6">Type</th><th class="py-4 px-6">Doctor</th><th class="py-4 px-6">Date</th><th class="py-4 px-6">Status</th><th class="py-4 px-6 text-center">Action</th></tr></thead><tbody id="schedule-table-body" class="text-sm text-gray-800 divide-y divide-gray-100"></tbody></table></div>
             </div>
         </div>
 
@@ -177,15 +184,22 @@
                 </div>
             </div>
 
-            <!-- Upload Modal -->
+            <!-- Upload Modal (Updated Form Layout) -->
             <div id="upload-modal" class="fixed inset-0 bg-gray-900/50 z-[250] hidden items-center justify-center backdrop-blur-sm">
                 <div class="bg-white rounded-3xl p-8 max-w-lg w-full relative shadow-2xl">
-                    <div class="flex justify-between items-center mb-6"><h2 class="text-xl font-bold text-gray-900">Upload Reports</h2><button onclick="document.getElementById('upload-modal').classList.add('hidden')" class="text-gray-400 hover:text-gray-800 text-xl font-bold transition">✕</button></div>
-                    <form onsubmit="uploadReport(event)">
-                        <label class="block text-xs font-bold text-gray-700 mb-1">Report Name</label><input type="text" placeholder="e.g. Blood Test" class="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm mb-4 focus:ring-2 focus:ring-[#0066FF]">
-                        <div class="border-2 border-dashed border-gray-300 rounded-xl p-10 text-center cursor-pointer hover:bg-gray-50 relative mb-8 transition"><input type="file" id="report-file" required class="absolute inset-0 w-full h-full opacity-0 cursor-pointer"><p class="text-sm font-bold text-gray-700">Click to upload or drag and drop</p><p class="text-xs text-gray-400 mt-1">Format is JPG, PNG or PDF</p></div>
-                        <div class="flex space-x-3"><button type="button" onclick="document.getElementById('upload-modal').classList.add('hidden')" class="flex-1 bg-white border border-gray-300 hover:bg-gray-50 transition text-gray-700 font-bold py-3 rounded-lg">Cancel</button><button type="submit" id="upload-btn" class="flex-1 bg-[#0066FF] hover:bg-blue-700 transition text-white font-bold py-3 rounded-lg shadow-sm">Add</button></div>
-                        <div id="upload-result" class="hidden mt-4 p-3 rounded text-sm font-bold text-center"></div>
+                    <div class="flex justify-between items-center mb-6"><h2 class="text-xl font-bold text-gray-900">Upload Your Medical Reports</h2><button onclick="document.getElementById('upload-modal').classList.add('hidden')" class="text-gray-400 hover:text-gray-800 text-xl font-bold transition">✕</button></div>
+                    <form onsubmit="uploadReport(event)" class="space-y-4 text-left">
+                        <div><label class="block text-xs font-bold text-gray-600 mb-1">Report Name</label><input type="text" id="rep-name" required class="w-full border rounded-lg p-3 text-sm focus:ring-2 focus:ring-[#0066FF]" placeholder="e.g Blood Test"></div>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div><label class="block text-xs font-bold text-gray-600 mb-1">Uploaded Date</label><input type="date" id="rep-date" required class="w-full border rounded-lg p-3 text-sm focus:ring-2 focus:ring-[#0066FF]"></div>
+                            <div><label class="block text-xs font-bold text-gray-600 mb-1">Report Type</label><input type="text" id="rep-type" required class="w-full border rounded-lg p-3 text-sm focus:ring-2 focus:ring-[#0066FF]" placeholder="e.g MRI Scan"></div>
+                        </div>
+                        <div class="border-2 border-dashed border-gray-300 rounded-xl p-8 text-center cursor-pointer hover:bg-gray-50 relative mt-4 transition">
+                            <input type="file" id="report-file" required class="absolute inset-0 w-full h-full opacity-0 cursor-pointer">
+                            <p class="text-sm font-bold text-gray-700">Click to upload or drag and drop</p>
+                            <p class="text-xs text-gray-400 mt-1">Format is JPG, PNG or PDF</p>
+                        </div>
+                        <div class="flex space-x-3 pt-4"><button type="button" onclick="document.getElementById('upload-modal').classList.add('hidden')" class="flex-1 bg-white border border-gray-300 hover:bg-gray-50 transition text-gray-700 font-bold py-3 rounded-lg">Cancel</button><button type="submit" id="upload-btn" class="flex-1 bg-[#0066FF] hover:bg-blue-700 transition text-white font-bold py-3 rounded-lg shadow-sm">Add</button></div>
                     </form>
                 </div>
             </div>
@@ -232,7 +246,6 @@
                 if (res.status === 401 || res.status === 403) { await signOut(auth); window.location.href = "login.html"; return; }
                 const data = await res.json();
                 
-                // CRITICAL FIX: Save backend data correctly into global object (captures is_subscribed!)
                 window.userData = { ...window.userData, ...data };
                 window.currentUser = user;
 
@@ -240,7 +253,8 @@
                 
                 document.getElementById('appBody').classList.remove('hidden');
                 
-                // Set fields across views
+                // Populate all fields across the app
+                document.getElementById('userNameSidebar').innerText = window.userData.name;
                 document.getElementById('userNameHeader').innerText = window.userData.name; 
                 document.getElementById('set-name').value = window.userData.name; 
                 document.getElementById('set-phone').value = window.userData.phone || "";
@@ -248,11 +262,15 @@
                 document.getElementById('book-email').value = user.email;
                 
                 let avatar = window.userData.photo_url || user.photoURL || `data:image/svg+xml;base64,${btoa(`<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64"><rect width="64" height="64" fill="#0066FF"/><text x="50%" y="50%" fill="#fff" font-size="32" font-family="sans-serif" font-weight="bold" text-anchor="middle" dy=".35em">${window.userData.name.charAt(0).toUpperCase()}</text></svg>`)}`;
-                document.getElementById('userAvatar').src = avatar; 
+                document.getElementById('userAvatarSidebar').src = avatar;
+                document.getElementById('userAvatarHeader').src = avatar; 
                 document.getElementById('set-avatar').src = avatar; 
                 window.currentAvatar = avatar;
 
-                switchTab('chat'); 
+                // Load last tab used from Local Storage
+                const lastTab = localStorage.getItem('doktura_active_tab') || 'chat';
+                switchTab(lastTab);
+                
                 loadSessions(); 
                 fetchDoctors(); 
                 fetchAppointments(); 
@@ -289,17 +307,17 @@
         }
 
         window.switchTab = function(tab) {
-            // CRITICAL FIX: Tab switching using app-view class
+            // Subscription Blocker Logic
             if(tab === 'reports' && !window.userData.is_subscribed) { 
                 document.getElementById('premium-modal').classList.remove('hidden'); 
                 document.getElementById('premium-modal').classList.add('flex'); 
                 return; 
             }
             
-            document.querySelectorAll('.nav-btn').forEach(b => { 
-                b.classList.remove('nav-active'); 
-                b.classList.add('nav-inactive'); 
-            });
+            // Set Local Storage so Refresh doesn't reset tab
+            localStorage.setItem('doktura_active_tab', tab);
+            
+            document.querySelectorAll('.nav-btn').forEach(b => { b.classList.remove('nav-active'); b.classList.add('nav-inactive'); });
             document.querySelectorAll('.app-view').forEach(v => v.classList.remove('active'));
             
             const activeBtn = document.getElementById('btn-'+tab);
@@ -308,7 +326,10 @@
             const activeView = document.getElementById('view-'+tab);
             if(activeView) activeView.classList.add('active');
             
-            document.getElementById('header-title').innerText = tab === 'chat' ? 'Consultation AI' : tab.replace('-',' ').toUpperCase();
+            // Format title
+            let headerName = tab.replace('-', ' ').split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+            if (tab === 'chat') headerName = 'Consultation AI';
+            document.getElementById('header-title').innerText = headerName;
         }
 
         window.startNewSession = () => { 
@@ -361,16 +382,26 @@
             input.value = '';
             
             const history = document.getElementById('chat-history');
+            // User Message
             history.innerHTML += `<div class="flex flex-col items-end mb-6 w-full"><div class="flex items-center mb-1"><span class="text-xs text-gray-500 mr-2">${window.userData.name} (You)</span><img src="${window.currentAvatar}" class="w-6 h-6 rounded-full object-cover"></div><div class="bg-[#0066FF] text-white px-5 py-3.5 rounded-2xl rounded-tr-sm text-sm shadow-sm leading-relaxed">${msg}</div></div>`;
+            history.scrollTo(0, history.scrollHeight);
+
+            // Typing Indicator Inject
+            const typeId = 'typing-' + Date.now();
+            history.innerHTML += `<div id="${typeId}" class="flex flex-col items-start mb-6 w-full"><div class="flex items-center mb-1"><img src="https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/ChatGPT%20Image%20Mar%2026%2C%202026%2C%2007_53_48%20PM.png?download=true" class="w-6 h-6 rounded-full mr-2 border bg-white"><span class="text-xs font-bold text-gray-800">doktura.ai</span></div><div class="bg-white border shadow-sm px-5 py-4 rounded-2xl rounded-tl-sm flex space-x-1 items-center"><div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div></div></div>`;
             history.scrollTo(0, history.scrollHeight);
 
             const r = await fetch(API_BASE+'/api/chat',{method:'POST',headers:await getAuthHeaders(),body:JSON.stringify({message:msg, session_id:window.currentSessionId || "default", user_name:window.userData.name})});
             const data = await r.json();
             
+            // Remove Typing Indicator
+            const tEl = document.getElementById(typeId);
+            if(tEl) tEl.remove();
+
+            // AI Reply
             history.innerHTML += `<div class="flex flex-col items-start mb-6 w-full"><div class="flex items-center mb-1"><img src="https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/ChatGPT%20Image%20Mar%2026%2C%202026%2C%2007_53_48%20PM.png?download=true" class="w-6 h-6 rounded-full mr-2 border bg-white"><span class="text-xs font-bold text-gray-800">doktura.ai</span></div><div class="bg-white border shadow-sm px-5 py-4 rounded-2xl rounded-tl-sm text-sm text-gray-700 max-w-[85%] leading-relaxed">${data.reply.replace(/\n/g,'<br>')}</div></div>`;
             history.scrollTo(0, history.scrollHeight);
             
-            // Auto-speak function triggered here
             if(isVoiceActive) speakOut(data.reply);
         };
 
@@ -378,12 +409,8 @@
         function speakOut(text) {
             window.speechSynthesis.cancel();
             const utterance = new SpeechSynthesisUtterance(text);
-            utterance.onstart = () => { 
-                document.getElementById('voice-status-text').innerText = "AI is speaking..."; 
-            };
-            utterance.onend = () => { 
-                document.getElementById('voice-status-text').innerText = "Tap mic to speak"; 
-            };
+            utterance.onstart = () => { document.getElementById('voice-status-text').innerText = "AI is speaking..."; };
+            utterance.onend = () => { document.getElementById('voice-status-text').innerText = "Tap mic to speak"; };
             window.speechSynthesis.speak(utterance);
         }
 
@@ -397,14 +424,12 @@
                 const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
                 if (!SR) { alert("Voice not supported in this browser."); return null; }
                 voiceRec = new SR();
-                voiceRec.continuous = false; // Stop after one long thought
+                voiceRec.continuous = false;
                 
                 voiceRec.onresult = (e) => {
                     const txt = e.results[0][0].transcript;
                     document.getElementById('voice-transcript').innerText = txt;
-                    // Auto send after they stop talking
                     sendChat(txt); 
-                    // Reset UI for next round
                     document.getElementById('voice-orb-element').classList.remove('orb-active');
                     document.getElementById('voice-status-text').innerText = "Tap mic to speak";
                 };
@@ -426,8 +451,7 @@
         };
 
         window.exitVoiceMode = () => {
-            isVoiceActive = false; 
-            window.speechSynthesis.cancel();
+            isVoiceActive = false; window.speechSynthesis.cancel();
             document.getElementById('voice-overlay').classList.add('hidden');
             document.getElementById('voice-overlay').classList.remove('flex');
             document.getElementById('voice-orb-element').classList.remove('orb-active');
@@ -447,7 +471,7 @@
                 data.appointments.forEach(a => {
                     let sColor = a.status === 'Done' ? 'text-green-600 bg-green-50' : 'text-blue-600 bg-blue-50';
                     let btn = a.action_url ? `<a href="${API_BASE}${a.action_url}" target="_blank" class="bg-[#1e1b4b] hover:bg-gray-800 transition text-white text-[10px] font-bold px-3 py-1.5 rounded uppercase">Start Call</a>` : `<span class="text-gray-300">--</span>`;
-                    tbody.innerHTML += `<tr class="border-b border-gray-100 hover:bg-gray-50 transition"><td class="py-4 px-6 font-bold text-gray-900">${a.id}</td><td class="py-4 px-6">${a.type}</td><td class="py-4 px-6">${a.date}</td><td class="py-4 px-6">${a.time || '--'}</td><td class="py-4 px-6 font-bold"><span class="${sColor} px-2.5 py-1 rounded text-[10px]">${a.status}</span></td><td class="py-4 px-6 text-center">${btn}</td></tr>`;
+                    tbody.innerHTML += `<tr class="border-b border-gray-100 hover:bg-gray-50 transition"><td class="py-4 px-6 font-bold text-gray-900">${a.id}</td><td class="py-4 px-6">${a.type}</td><td class="py-4 px-6">${a.doctor_name || '--'}</td><td class="py-4 px-6">${a.date}</td><td class="py-4 px-6 font-bold"><span class="${sColor} px-2.5 py-1 rounded text-[10px]">${a.status}</span></td><td class="py-4 px-6 text-center">${btn}</td></tr>`;
                 });
             } catch (e) { console.error(e); }
         }
@@ -505,20 +529,22 @@
                     body: JSON.stringify({ name: document.getElementById('set-name').value, phone: document.getElementById('set-phone').value }) 
                 }); 
                 window.location.reload(); 
-            } catch(e) { 
-                alert("Error updating profile."); 
-                btn.innerText = "Update Profile"; 
-            }
+            } catch(e) { alert("Error updating profile."); btn.innerText = "Update Profile"; }
         }
 
         window.uploadReport = async (e) => {
             e.preventDefault(); 
             const btn = document.getElementById('upload-btn'); 
-            btn.innerText = "Processing..."; 
+            btn.innerText = "Working..."; 
             
             const fd = new FormData(); 
             fd.append('file', document.getElementById('report-file').files[0]);
             
+            // Backend might not support these yet, but appending them anyway based on UI
+            fd.append('report_name', document.getElementById('rep-name').value);
+            fd.append('report_date', document.getElementById('rep-date').value);
+            fd.append('report_type', document.getElementById('rep-type').value);
+
             try { 
                 const r = await fetch(API_BASE+'/api/upload_medical_report', { 
                     method:'POST', 
@@ -526,11 +552,9 @@
                     body:fd 
                 }); 
                 const d = await r.json(); 
-                alert(d.message); 
+                alert(d.message || "Report Added!"); 
                 document.getElementById('upload-modal').classList.add('hidden'); 
-            } catch(e) { 
-                alert("Upload failed."); 
-            } 
+            } catch(e) { alert("Upload failed."); } 
             btn.innerText = "Add";
         }
     </script>
