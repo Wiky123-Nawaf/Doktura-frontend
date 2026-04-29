@@ -3,191 +3,157 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - Doktura</title>
+    <title>Doktura - AI Medical Assistant</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <style> body { font-family: 'Inter', sans-serif; background-color: #f9fafb; } </style>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; background-color: #fcfcfc; color: #1f2937; }
+        .video-bg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0.05; z-index: -1; pointer-events: none; }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 4px; }
+    </style>
 </head>
-<body class="min-h-screen flex flex-col items-center justify-center p-4">
+<body class="relative min-h-screen flex flex-col">
 
+    <!-- UPDATE WITH YOUR LIVE BACKEND URL -->
     <script>const API_BASE = 'https://api.doktura.ai';</script>
 
-    <div id="authCloseBtnContainer" class="w-full flex justify-between absolute top-6 px-8">
-        <a href="index.html" class="text-gray-500 hover:text-[#0066FF] font-semibold text-sm flex items-center">
-            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
-            Back Home
-        </a>
-    </div>
+    <video autoplay loop muted playsinline class="video-bg">
+        <source src="https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/Whisk_cjziljmkvmzhzjy10sohjjytetn5qtl0qwni1sn.mp4?download=true" type="video/mp4">
+    </video>
 
-    <div class="bg-white rounded-2xl shadow-xl border border-gray-100 w-full max-w-[420px] p-10 relative">
-        <div class="w-16 h-16 bg-blue-50 rounded-full flex items-center justify-center mx-auto mb-6">
-            <svg class="w-8 h-8 text-[#0066FF]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
-        </div>
-        
-        <div id="authAlertBox" class="hidden mb-4 p-3 text-xs rounded-lg text-center font-medium capitalize"></div>
+    <!-- Navbar -->
+    <nav class="flex items-center justify-between px-6 py-4 max-w-6xl mx-auto w-full z-10">
+        <img src="https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/ChatGPT%20Image%20Mar%2026%2C%202026%2C%2007_53_48%20PM.png?download=true" alt="Doktura Logo" class="h-16 md:h-24">
+        <a href="login.html" id="navLoginBtn" class="bg-[#0066FF] text-white px-8 py-3 rounded-full text-sm font-bold hover:bg-blue-700 shadow-lg transition">Log In</a>
+    </nav>
 
-        <!-- LOGIN VIEW -->
-        <div id="authLoginView">
-            <h2 class="text-2xl font-bold text-gray-900 text-center mb-1">Welcome Back</h2>
-            <p class="text-sm text-gray-500 text-center mb-8">Log in to your account.</p>
-            <input type="email" id="loginEmail" placeholder="Email Address" class="w-full border border-gray-300 rounded-lg px-4 py-3.5 text-sm mb-4 focus:ring-2 focus:ring-blue-500 focus:outline-none">
-            <input type="password" id="loginPass" placeholder="Password" class="w-full border border-gray-300 rounded-lg px-4 py-3.5 text-sm mb-4 focus:ring-2 focus:ring-blue-500 focus:outline-none">
-            <button id="doLoginBtn" class="w-full bg-[#0066FF] text-white font-bold py-3.5 rounded-lg mb-4 hover:bg-blue-700 transition shadow-md">Login</button>
-            <div class="flex items-center my-4"><div class="flex-1 border-t border-gray-200"></div><span class="px-3 text-xs text-gray-400 uppercase">OR</span><div class="flex-1 border-t border-gray-200"></div></div>
-            <button id="doGoogleLoginBtn" class="w-full bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 font-semibold py-3.5 rounded-lg flex justify-center items-center transition shadow-sm mb-4">
-                <img src="https://www.svgrepo.com/show/475656/google-color.svg" class="w-5 h-5 mr-2"> Sign in with Google
-            </button>
-            <div class="text-center text-xs text-gray-500 flex justify-between mt-6">
-                <span onclick="switchView('forgot')" class="text-[#0066FF] cursor-pointer hover:underline font-semibold">Forgot Password?</span>
-                <span onclick="switchView('register')" class="text-[#0066FF] cursor-pointer hover:underline font-semibold">Register New Account</span>
+    <!-- Hero -->
+    <main class="max-w-4xl mx-auto px-6 pt-12 pb-20 text-center relative flex-1 z-10">
+        <img src="https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/Gemini_Generated_Image_okdjp7okdjp7okdj.png?download=true" class="w-56 h-56 object-contain mx-auto animate-[bounce_4s_infinite]">
+        <h1 class="text-4xl md:text-5xl font-bold mt-4 text-[#111827]">Hi, I'm Doktura?</h1>
+        <p class="mt-4 text-gray-600 max-w-2xl mx-auto text-lg leading-relaxed">
+            I'm your private and personal AI doctor.<br>
+            As an AI doctor, my service is fast and free. I've already helped people <strong>23,819,892 times!</strong><br>
+            After we chat, if you want you can have a video visit with a top doctor for only RM 10.00.
+        </p>
+        <p class="mt-6 text-sm text-red-500 font-bold tracking-wide uppercase">If this is an emergency, call 911 or your local emergency number.</p>
+
+        <!-- Guest Chat Box -->
+        <div class="mt-10 bg-white rounded-2xl shadow-[0_10px_40px_rgba(0,0,0,0.08)] border border-gray-100 overflow-hidden text-left max-w-3xl mx-auto flex flex-col h-[450px]">
+            <div class="flex border-b shrink-0 bg-gray-50">
+                <button class="flex-1 py-4 text-center border-b-2 border-[#0066FF] text-[#0066FF] font-bold flex items-center justify-center space-x-2 bg-white">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
+                    <span>AI Assistant</span>
+                </button>
+                <a href="login.html" class="flex-1 py-4 text-center text-gray-500 hover:bg-gray-100 flex items-center justify-center space-x-2 transition">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                    <span>Book Consultant</span>
+                    <svg class="w-4 h-4 text-red-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd"></path></svg>
+                </a>
+            </div>
+            
+            <div class="p-6 flex flex-col flex-1 overflow-hidden">
+                <div class="bg-yellow-50 border border-yellow-100 text-yellow-800 text-xs px-4 py-2.5 rounded-lg mb-4 flex items-center">
+                    <svg class="w-4 h-4 mr-2 text-yellow-600 shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path></svg>
+                    Log in to unlock hands-free Voice Interaction and Premium Doctor Avatars.
+                </div>
+                
+                <div id="chat-history" class="flex-1 overflow-y-auto mb-4 space-y-4 pr-2">
+                    <div class="flex items-start space-x-3">
+                        <img src="https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/Gemini_Generated_Image_okdjp7okdjp7okdj.png?download=true" class="w-8 h-8 rounded-full border border-gray-200 bg-white object-cover">
+                        <div class="bg-gray-100 text-gray-800 p-3 rounded-2xl rounded-tl-sm text-sm max-w-[85%] leading-relaxed">
+                            Hello! Type your symptoms below and I'll help you right away.
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="flex space-x-2 shrink-0 relative">
+                    <input type="text" id="chat-input" placeholder="Type your symptoms here..." class="flex-1 border border-gray-300 rounded-full pl-5 pr-24 py-3.5 focus:outline-none focus:ring-2 focus:ring-[#0066FF] text-sm bg-gray-50" onkeypress="if(event.key === 'Enter') sendGuestChat()">
+                    <button onclick="sendGuestChat()" class="absolute right-2 top-1.5 bottom-1.5 bg-[#ea580c] text-white px-6 rounded-full text-sm font-bold shadow-md hover:bg-orange-700 transition flex items-center">
+                        Send <svg class="w-4 h-4 ml-1" fill="currentColor" viewBox="0 0 20 20"><path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z"></path></svg>
+                    </button>
+                </div>
             </div>
         </div>
+    </main>
 
-        <!-- REGISTER VIEW -->
-        <div id="authRegisterView" class="hidden">
-            <h2 class="text-2xl font-bold text-gray-900 text-center mb-6">Create Account</h2>
-            <input type="email" id="regEmail" placeholder="Email Address" class="w-full border border-gray-300 rounded-lg px-4 py-3.5 text-sm mb-4 focus:ring-2 focus:ring-blue-500 focus:outline-none">
-            <input type="password" id="regPass" placeholder="Password" class="w-full border border-gray-300 rounded-lg px-4 py-3.5 text-sm mb-4 focus:ring-2 focus:ring-blue-500 focus:outline-none">
-            <button id="doRegisterBtn" class="w-full bg-[#0066FF] text-white font-bold py-3.5 hover:bg-blue-700 transition rounded-lg shadow-md mb-6">Register & Verify</button>
-            <p class="text-center text-sm text-gray-500">Already have an account? <span onclick="switchView('login')" class="text-[#0066FF] cursor-pointer hover:underline font-semibold">Log In</span></p>
-        </div>
-
-        <!-- FORGOT PASSWORD VIEW -->
-        <div id="authForgotView" class="hidden">
-            <h2 class="text-2xl font-bold text-gray-900 text-center mb-6">Reset Password</h2>
-            <input type="email" id="forgotEmail" placeholder="Enter your Email Address" class="w-full border border-gray-300 rounded-lg px-4 py-3.5 text-sm mb-4 focus:ring-2 focus:ring-blue-500 focus:outline-none">
-            <button id="doForgotBtn" class="w-full bg-[#0066FF] hover:bg-blue-700 transition text-white font-bold py-3.5 rounded-lg shadow-md mb-6">Send Reset Link</button>
-            <p class="text-center text-sm text-gray-500"><span onclick="switchView('login')" class="text-[#0066FF] cursor-pointer hover:underline font-semibold">← Back to Login</span></p>
-        </div>
-
-        <!-- PROFILE SETUP VIEW (Forced for new accounts) -->
-        <div id="authProfileView" class="hidden">
-            <h2 class="text-2xl font-bold text-gray-900 text-center mb-1">Complete Profile</h2>
-            <p class="text-sm text-gray-500 text-center mb-6">Let's set up your patient file.</p>
-            <label class="block text-xs uppercase text-gray-500 font-bold mb-2">Profile Photo (Optional)</label>
-            <input type="file" id="profilePhotoInput" accept="image/*" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm mb-5 bg-gray-50">
-            <label class="block text-xs uppercase text-gray-500 font-bold mb-2">Full Name</label>
-            <input type="text" id="profileName" placeholder="e.g. Ahmad Razif" class="w-full border border-gray-300 rounded-lg px-4 py-3 text-sm mb-5 focus:ring-2 focus:ring-blue-500 focus:outline-none">
-            <label class="block text-xs uppercase text-gray-500 font-bold mb-2">Phone Number</label>
-            <input type="text" id="profilePhone" placeholder="+60 12-345-6789" class="w-full border border-gray-300 rounded-lg px-4 py-3 text-sm mb-6 focus:ring-2 focus:ring-blue-500 focus:outline-none">
-            <button id="saveProfileBtn" class="w-full bg-[#0066FF] hover:bg-blue-700 transition text-white font-bold py-3.5 rounded-lg shadow-md">Complete Setup</button>
-        </div>
-    </div>
-
-    <!-- Firebase Script -->
+    <!-- Firebase Auth Check -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-app.js";
-        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut, sendPasswordResetEmail, sendEmailVerification } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-auth.js";
-
-        const firebaseConfig = {
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-auth.js";
+        
+        const app = initializeApp({
             apiKey: "AIzaSyCrx9BPS8ficDzgVZMbJIb4b3PQ9IqEHLw",
             authDomain: "doktura-ai-907d8.firebaseapp.com",
             projectId: "doktura-ai-907d8"
-        };
-        const app = initializeApp(firebaseConfig);
+        });
         const auth = getAuth(app);
-        let tempPhotoUrl = "";
 
-        window.switchView = function(view) {
-            document.getElementById("authAlertBox").classList.add("hidden");
-            ["authLoginView", "authRegisterView", "authForgotView", "authProfileView"].forEach(v => document.getElementById(v).classList.add("hidden"));
-            if(view === 'profile') document.getElementById("authCloseBtnContainer").classList.add("hidden"); 
-            else document.getElementById("authCloseBtnContainer").classList.remove("hidden");
-            document.getElementById(view === 'login' ? "authLoginView" : view === 'register' ? "authRegisterView" : view === 'forgot' ? "authForgotView" : "authProfileView").classList.remove("hidden");
-        }
-
-        function showAlert(msg, isError=true) {
-            const box = document.getElementById("authAlertBox");
-            box.innerText = msg.replace("Firebase: Error (", "").replace(").", "");
-            box.className = isError ? "mb-4 p-3 bg-red-50 border border-red-200 text-red-700 text-xs rounded-lg text-center font-medium" : "mb-4 p-3 bg-green-50 border border-green-200 text-green-700 text-xs rounded-lg text-center font-medium";
-            box.classList.remove("hidden");
-        }
-
-        document.getElementById("doGoogleLoginBtn").addEventListener("click", async () => {
-            try { await signInWithPopup(auth, new GoogleAuthProvider()); } catch(e) { showAlert("Google Login Failed."); }
-        });
-
-        document.getElementById("doLoginBtn").addEventListener("click", async () => {
-            const btn = document.getElementById("doLoginBtn"); btn.innerText = "Logging in..."; btn.disabled = true;
-            try { await signInWithEmailAndPassword(auth, document.getElementById("loginEmail").value, document.getElementById("loginPass").value); } 
-            catch(e) { showAlert(e.message); btn.innerText = "Login"; btn.disabled = false;}
-        });
-
-        document.getElementById("doRegisterBtn").addEventListener("click", async () => {
-            const btn = document.getElementById("doRegisterBtn"); btn.innerText = "Creating..."; btn.disabled = true;
-            try { 
-                const cred = await createUserWithEmailAndPassword(auth, document.getElementById("regEmail").value, document.getElementById("regPass").value); 
-                await sendEmailVerification(cred.user);
-                await signOut(auth);
-                showAlert("Success! Check email for verification link.", false);
-                setTimeout(() => switchView('login'), 3000);
-            } catch(e) { showAlert(e.message); }
-            btn.innerText = "Register & Verify"; btn.disabled = false;
-        });
-
-        document.getElementById("doForgotBtn").addEventListener("click", async () => {
-            try { await sendPasswordResetEmail(auth, document.getElementById("forgotEmail").value); showAlert("Link sent! Check your inbox.", false); } 
-            catch(e) { showAlert(e.message); }
-        });
-
-        onAuthStateChanged(auth, async (user) => {
-            if (user) {
-                const isGoogleAuth = user.providerData.some(p => p.providerId === 'google.com');
-                if (!isGoogleAuth && !user.emailVerified) {
-                    await signOut(auth);
-                    showAlert("Please verify your email first.");
-                    if(document.getElementById("doLoginBtn")) { document.getElementById("doLoginBtn").innerText = "Login"; document.getElementById("doLoginBtn").disabled = false; }
-                    return;
-                }
-
-                try {
-                    const token = await user.getIdToken();
-                    const res = await fetch(`${API_BASE}/api/user/sync`, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-                        body: JSON.stringify({ email: user.email, name: user.displayName, photo_url: user.photoURL })
-                    });
-                    const data = await res.json();
-                    
-                    if(data.is_complete) {
-                        window.location.href = "dashboard.html"; 
-                    } else {
-                        tempPhotoUrl = data.photo_url || user.photoURL;
-                        if(data.name) document.getElementById("profileName").value = data.name;
-                        switchView('profile');
-                    }
-                } catch(e) { showAlert("Network sync failed. Retrying..."); }
+        onAuthStateChanged(auth, (user) => {
+            if (user && (user.emailVerified || user.providerData.some(p => p.providerId === 'google.com'))) {
+                const btn = document.getElementById("navLoginBtn");
+                btn.innerText = "Go to Dashboard";
+                btn.href = "dashboard.html";
+                btn.className = "bg-green-600 text-white px-8 py-3 rounded-full text-sm font-bold hover:bg-green-700 shadow-lg transition";
             }
         });
+    </script>
 
-        document.getElementById("saveProfileBtn").addEventListener("click", async () => {
-            const name = document.getElementById("profileName").value.trim();
-            const phone = document.getElementById("profilePhone").value.trim();
-            if(!name || !phone) return showAlert("Name and Phone are required.");
-            
-            const btn = document.getElementById("saveProfileBtn"); btn.innerText = "Saving Profile..."; btn.disabled = true;
-            let photoUrl = tempPhotoUrl;
-            
-            const fileInput = document.getElementById("profilePhotoInput");
-            if (fileInput.files.length > 0) {
-                const formData = new FormData();
-                formData.append('file', fileInput.files[0]);
-                formData.append('user_id', auth.currentUser.uid);
-                try {
-                    const r = await fetch(`${API_BASE}/api/upload_avatar`, { method: 'POST', body: formData });
-                    const d = await r.json(); if(d.success) photoUrl = d.photo_url;
-                } catch(e) {}
-            }
+    <!-- Guest Chat Logic -->
+    <script>
+        window.sendGuestChat = async function() {
+            const input = document.getElementById('chat-input');
+            const history = document.getElementById('chat-history');
+            const message = input.value.trim();
+            if(!message) return;
+
+            // User Message
+            history.innerHTML += `
+                <div class="flex items-start justify-end space-x-3 mt-4">
+                    <div class="bg-[#0284c7] text-white p-3 rounded-2xl rounded-tr-sm text-sm max-w-[85%] shadow-sm leading-relaxed">${message}</div>
+                </div>`;
+            input.value = '';
+            history.scrollTo({ top: history.scrollHeight, behavior: 'smooth' });
+
+            // Loading Indicator
+            const loadingId = 'load-' + Date.now();
+            history.innerHTML += `
+                <div id="${loadingId}" class="flex items-start space-x-3 mt-4 opacity-60">
+                    <img src="https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/Gemini_Generated_Image_okdjp7okdjp7okdj.png?download=true" class="w-8 h-8 rounded-full border bg-white">
+                    <div class="bg-gray-100 text-gray-800 p-3 rounded-2xl rounded-tl-sm text-sm">Thinking...</div>
+                </div>`;
+            history.scrollTo({ top: history.scrollHeight, behavior: 'smooth' });
 
             try {
-                const token = await auth.currentUser.getIdToken();
-                await fetch(`${API_BASE}/api/user/profile`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-                    body: JSON.stringify({ name, phone, photo_url: photoUrl })
+                let uid = localStorage.getItem("anon_user_id");
+                if (!uid) { uid = "anon_" + Math.random().toString(36).substring(7); localStorage.setItem("anon_user_id", uid); }
+
+                const res = await fetch(API_BASE + '/api/chat', {
+                    method: 'POST', 
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ message: message, session_id: "guest_session", user_id: uid, user_name: "Guest" })
                 });
-                window.location.href = "dashboard.html";
-            } catch(e) { showAlert("Failed to save data. Please try again."); btn.innerText = "Complete Setup"; btn.disabled = false;}
-        });
+                
+                if(!res.ok) throw new Error("Network response was not ok");
+                
+                const data = await res.json();
+                document.getElementById(loadingId).remove();
+                
+                // AI Message
+                history.innerHTML += `
+                    <div class="flex items-start space-x-3 mt-4">
+                        <img src="https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/Gemini_Generated_Image_okdjp7okdjp7okdj.png?download=true" class="w-8 h-8 rounded-full border border-gray-200 bg-white object-cover">
+                        <div class="bg-gray-100 text-gray-800 p-4 rounded-2xl rounded-tl-sm text-sm max-w-[85%] leading-relaxed shadow-sm">
+                            ${data.reply.replace(/\n/g, '<br>')}
+                        </div>
+                    </div>`;
+                history.scrollTo({ top: history.scrollHeight, behavior: 'smooth' });
+            } catch(e) {
+                document.getElementById(loadingId).remove();
+                history.innerHTML += `<div class="text-center text-red-500 text-xs mt-3 font-semibold">⚠️ Error connecting to AI server.</div>`;
+            }
+        }
     </script>
 </body>
 </html>
