@@ -339,11 +339,12 @@
         window.currentUser = null;
 
         onAuthStateChanged(auth, async (user) => {
+            // 1. If no user, kick to login.
             if (!user) { window.location.href = "login.html"; return; }
             window.currentUser = user;
             
             try {
-                // Check premium status securely directly from Firebase 
+                // Check premium status securely
                 const userDoc = await getDoc(doc(db, "users", user.uid));
                 const isPremium = userDoc.exists() ? (userDoc.data().is_subscribed || false) : false;
                 window.userData.is_subscribed = isPremium;
@@ -353,31 +354,55 @@
                     method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
                     body: JSON.stringify({ email: user.email })
                 });
+                
+                // If backend actively rejects the token, kick to login
+                if (res.status === 401 || res.status === 403) {
+                    await signOut(auth);
+                    window.location.href = "login.html";
+                    return;
+                }
+
                 const data = await res.json();
                 
+                // If profile is not complete, kick to login to finish setup
                 if(!data.is_complete) { window.location.href = "login.html"; return; }
                 
-                window.userData.name = data.name;
-                window.userData.phone = data.phone;
-                window.userData.photo_url = data.photo_url;
+                window.userData.name = data.name || "Patient";
+                window.userData.phone = data.phone || "";
+                window.userData.photo_url = data.photo_url || "";
                 
                 document.getElementById('appBody').classList.remove('hidden');
-                document.getElementById('userName').innerText = data.name;
-                document.getElementById('userEmail').innerText = user.email;
-                document.getElementById('set-name').value = data.name;
-                document.getElementById('set-phone').value = data.phone;
-                document.getElementById('book-name').value = data.name;
-                document.getElementById('book-email').value = user.email;
                 
-                let avatar = data.photo_url || user.photoURL || `data:image/svg+xml;base64,${btoa(`<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64"><rect width="64" height="64" fill="#00AEEF"/><text x="50%" y="50%" fill="#fff" font-size="32" font-family="sans-serif" font-weight="bold" text-anchor="middle" dy=".35em">${data.name.charAt(0).toUpperCase()}</text></svg>`)}`;
-                document.getElementById('userAvatar').src = avatar;
-                document.getElementById('set-avatar').src = avatar;
+                // Safely update DOM elements
+                if(document.getElementById('userName')) document.getElementById('userName').innerText = window.userData.name;
+                if(document.getElementById('userEmail')) document.getElementById('userEmail').innerText = user.email;
+                if(document.getElementById('set-name')) document.getElementById('set-name').value = window.userData.name;
+                if(document.getElementById('set-phone')) document.getElementById('set-phone').value = window.userData.phone;
+                if(document.getElementById('book-name')) document.getElementById('book-name').value = window.userData.name;
+                if(document.getElementById('book-email')) document.getElementById('book-email').value = user.email;
+                
+                let avatar = data.photo_url || user.photoURL || `data:image/svg+xml;base64,${btoa(`<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64"><rect width="64" height="64" fill="#0066FF"/><text x="50%" y="50%" fill="#fff" font-size="32" font-family="sans-serif" font-weight="bold" text-anchor="middle" dy=".35em">${window.userData.name.charAt(0).toUpperCase()}</text></svg>`)}`;
+                
+                if(document.getElementById('userAvatar')) document.getElementById('userAvatar').src = avatar;
+                if(document.getElementById('set-avatar')) document.getElementById('set-avatar').src = avatar;
                 window.currentAvatar = avatar;
 
+                // Load Data
                 loadSessions();
                 fetchDoctors();
-                populateMockSchedule(); // Populate Schedule Table
-            } catch(e) { window.location.href = "login.html"; }
+                
+                // Safely try to fetch appointments (prevents crashes if function is missing)
+                try {
+                    if (typeof fetchAppointments === "function") fetchAppointments();
+                } catch (err) {
+                    console.error("Error loading appointments table:", err);
+                }
+
+            } catch(e) { 
+                // THIS FIXES THE LOOP: We log the error instead of redirecting!
+                console.error("CRITICAL DASHBOARD ERROR:", e);
+                document.getElementById('appBody').classList.remove('hidden'); 
+            }
         });
 
         document.getElementById("logoutBtn").addEventListener("click", () => signOut(auth));
