@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Doktura - AI Medical Assistant</title>
+    <title>Doktura AI - Your Personal Medical Assistant</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Inter:wght@400;500;600;700&display=swap');
@@ -11,681 +11,182 @@
         h1, h2, h3 { font-family: 'Playfair Display', serif; }
         .bg-primary { background-color: #2e1a47; }
         .text-primary { color: #2e1a47; }
-        .tab-active { border-bottom: 2px solid #2e1a47; color: #2e1a47; font-weight: 600; }
-        .tab-inactive { color: #6b7280; }
-        
-        .video-bg {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            object-fit: cover; opacity: 0.05; z-index: -1; pointer-events: none;
-        }
-
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 4px; }
-
-        @keyframes glowPulse {
-            0% { box-shadow: 0 0 0 0 rgba(46, 26, 71, 0.4); }
-            70% { box-shadow: 0 0 0 40px rgba(46, 26, 71, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(46, 26, 71, 0); }
-        }
-        .voice-glow { animation: glowPulse 1.5s infinite; }
+        .video-bg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0.05; z-index: -1; pointer-events: none; }
     </style>
 </head>
 <body class="relative min-h-screen flex flex-col">
 
-    <script>
-        const API_BASE = 'https://api.doktura.ai'; 
-    </script>
+    <!-- Guest Landing Page -->
+    <video autoplay loop muted playsinline class="video-bg">
+        <source src="https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/Whisk_cjziljmkvmzhzjy10sohjjytetn5qtl0qwni1sn.mp4?download=true" type="video/mp4">
+    </video>
+    
+    <nav class="flex items-center justify-between px-6 py-4 max-w-6xl mx-auto w-full">
+        <img src="https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/ChatGPT%20Image%20Mar%2026%2C%202026%2C%2007_53_48%20PM.png?download=true" alt="Doktura AI Logo" class="h-32">
+        <button onclick="openAuth('login')" class="bg-[#00AEEF] text-white px-6 py-2.5 rounded-full text-sm font-bold hover:bg-[#0099d1] shadow-md">Log In</button>
+    </nav>
 
-    <!-- FULL PAGE AUTHENTICATION UI -->
-    <div id="authMasterContainer" class="fixed inset-0 bg-gray-50 z-[9999] flex flex-col hidden overflow-y-auto transition-opacity duration-300">
-        <div id="authCloseBtnContainer" class="w-full p-6 flex justify-between items-center absolute top-0 left-0">
-            <button onclick="closeAuth()" class="text-gray-500 hover:text-[#00AEEF] transition flex items-center text-sm font-semibold">
-                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
-                Back to Home
+    <main class="max-w-4xl mx-auto px-6 pt-12 pb-20 text-center relative flex-1">
+        <h1 class="text-5xl font-bold mt-4 text-primary">Hi, I'm Doktura AI</h1>
+        <p class="mt-4 text-gray-600 max-w-2xl mx-auto text-lg">Your private and personal AI doctor.</p>
+        
+        <div class="mt-12 bg-white rounded-2xl shadow-xl border overflow-hidden text-left max-w-3xl mx-auto relative z-10 flex flex-col h-[500px]">
+            <div class="p-6 flex flex-col flex-1 overflow-hidden">
+                <div id="guest-chat-history" class="flex-1 overflow-y-auto mb-4 space-y-4 pr-2">
+                    <div class="flex items-start space-x-3 mt-4">
+                        <img src="https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/Gemini_Generated_Image_okdjp7okdjp7okdj.png?download=true" class="w-8 h-8 rounded-full bg-gray-100 object-cover">
+                        <div class="bg-gray-100 text-gray-800 p-3 rounded-2xl rounded-tl-none text-sm max-w-[80%]">
+                            <strong>Doktura AI:</strong><br>Hello! I am Doktura AI. Please type your symptoms below. Note: Guest chats are not saved permanently.
+                        </div>
+                    </div>
+                </div>
+                <div class="flex space-x-2 shrink-0">
+                    <input type="text" id="guest-chat-input" placeholder="Type your symptoms here..." class="flex-1 border rounded-xl px-4 py-3 focus:outline-none text-sm" onkeypress="if(event.key === 'Enter') sendGuestChat()">
+                    <button onclick="sendGuestChat()" class="bg-primary text-white px-6 py-3 rounded-xl text-sm font-medium">Send</button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Authentication Modal (Login / Register / Profile Setup) -->
+    <div id="authMasterContainer" class="fixed inset-0 bg-gray-900 bg-opacity-50 z-[9999] flex flex-col hidden overflow-y-auto backdrop-blur-sm">
+        <div class="w-full p-6 flex justify-between items-center absolute top-0 left-0">
+            <button onclick="closeAuth()" class="text-white hover:text-[#00AEEF] transition flex items-center text-sm font-semibold">
+                &larr; Back to Home
             </button>
         </div>
 
-        <div class="flex-1 flex items-center justify-center p-4 min-h-screen pt-20">
-            <div class="bg-white rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-100 w-full max-w-[420px] p-10 relative">
-                
-                <div class="w-14 h-14 bg-[#e6f7ff] rounded-full flex items-center justify-center mx-auto mb-6">
-                    <svg class="w-7 h-7 text-[#00AEEF]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
-                    </svg>
-                </div>
-                <div id="authAlertBox" class="hidden mb-4 p-3 text-xs rounded-lg text-center font-medium capitalize"></div>
+        <div class="flex-1 flex items-center justify-center p-4 min-h-screen">
+            <div class="bg-white rounded-2xl shadow-2xl border border-gray-100 w-full max-w-[420px] p-10 relative">
+                <div id="authAlertBox" class="hidden mb-4 p-3 text-xs rounded-lg text-center font-medium"></div>
 
-                <!-- LOGIN VIEW -->
+                <!-- Login View -->
                 <div id="authLoginView">
-                    <h2 class="text-xl font-bold text-gray-800 text-center mb-1">Welcome Back</h2>
-                    <p class="text-xs text-gray-500 text-center mb-8">Glad to see you again. Log in to your account.</p>
-                    <div class="space-y-4 mb-6">
-                        <div>
-                            <label class="block text-[10px] uppercase text-gray-500 font-semibold mb-1">Email Address</label>
-                            <input type="email" id="loginEmail" placeholder="demo@gmail.com" class="w-full border border-gray-200 rounded-lg px-4 py-3 text-sm focus:outline-none focus:border-[#00AEEF] transition">
-                        </div>
-                        <div>
-                            <div class="flex justify-between items-end mb-1">
-                                <label class="block text-[10px] uppercase text-gray-500 font-semibold">Password</label>
-                                <span onclick="switchAuthView('forgot')" class="text-[10px] text-[#00AEEF] font-bold cursor-pointer hover:underline">Forgot Password?</span>
-                            </div>
-                            <input type="password" id="loginPass" placeholder="••••••••" class="w-full border border-gray-200 rounded-lg px-4 py-3 text-sm focus:outline-none focus:border-[#00AEEF] transition">
-                        </div>
-                    </div>
-                    <button id="doLoginBtn" class="w-full bg-[#00AEEF] hover:bg-[#0099d1] text-white font-bold py-3 rounded-lg transition shadow-md mb-4 text-sm">Login</button>
-                    <button id="doGoogleLoginBtn" class="w-full bg-white border border-gray-200 text-gray-700 font-semibold py-3 rounded-lg hover:bg-gray-50 transition flex items-center justify-center mb-6 text-sm">
-                        <img src="https://www.svgrepo.com/show/475656/google-color.svg" class="w-5 h-5 mr-2" alt="Google"> Sign in with Google
-                    </button>
-                    <p class="text-center text-xs text-gray-500">Don't have an account? <span onclick="switchAuthView('register')" class="text-[#00AEEF] font-bold cursor-pointer hover:underline">Register</span></p>
+                    <h2 class="text-2xl font-bold text-gray-800 text-center mb-1">Welcome Back</h2>
+                    <p class="text-xs text-gray-500 text-center mb-8">Log in to Doktura AI.</p>
+                    <input type="email" id="loginEmail" placeholder="Email Address" class="w-full border rounded-lg px-4 py-3 mb-4 text-sm focus:outline-none focus:border-[#00AEEF]">
+                    <input type="password" id="loginPass" placeholder="Password" class="w-full border rounded-lg px-4 py-3 mb-6 text-sm focus:outline-none focus:border-[#00AEEF]">
+                    <button id="doLoginBtn" class="w-full bg-[#00AEEF] text-white font-bold py-3 rounded-lg shadow-md mb-4 text-sm">Login</button>
+                    <p class="text-center text-xs text-gray-500">Don't have an account? <span onclick="switchAuthView('register')" class="text-[#00AEEF] font-bold cursor-pointer">Register</span></p>
                 </div>
 
-                <!-- REGISTER VIEW -->
+                <!-- Register View -->
                 <div id="authRegisterView" class="hidden">
-                    <h2 class="text-xl font-bold text-gray-800 text-center mb-1">Create Account</h2>
-                    <p class="text-xs text-gray-500 text-center mb-8">Enter your details to sign up</p>
-                    <div class="space-y-4 mb-6">
-                        <div>
-                            <label class="block text-[10px] uppercase text-gray-500 font-semibold mb-1">Email Address</label>
-                            <input type="email" id="regEmail" placeholder="demo@gmail.com" class="w-full border border-gray-200 rounded-lg px-4 py-3 text-sm focus:outline-none focus:border-[#00AEEF] transition">
-                        </div>
-                        <div>
-                            <label class="block text-[10px] uppercase text-gray-500 font-semibold mb-1">Password</label>
-                            <input type="password" id="regPass" placeholder="••••••••" class="w-full border border-gray-200 rounded-lg px-4 py-3 text-sm focus:outline-none focus:border-[#00AEEF] transition">
-                        </div>
-                    </div>
-                    <button id="doRegisterBtn" class="w-full bg-[#00AEEF] hover:bg-[#0099d1] text-white font-bold py-3 rounded-lg transition shadow-md mb-4 text-sm">Register & Verify</button>
-                    <button id="doGoogleRegBtn" class="w-full bg-white border border-gray-200 text-gray-700 font-semibold py-3 rounded-lg hover:bg-gray-50 transition flex items-center justify-center mb-6 text-sm">
-                        <img src="https://www.svgrepo.com/show/475656/google-color.svg" class="w-5 h-5 mr-2" alt="Google"> Sign up with Google
-                    </button>
-                    <p class="text-center text-xs text-gray-500">Already have an account? <span onclick="switchAuthView('login')" class="text-[#00AEEF] font-bold cursor-pointer hover:underline">Log in</span></p>
+                    <h2 class="text-2xl font-bold text-gray-800 text-center mb-1">Create Account</h2>
+                    <p class="text-xs text-gray-500 text-center mb-8">Join Doktura AI</p>
+                    <input type="email" id="regEmail" placeholder="Email Address" class="w-full border rounded-lg px-4 py-3 mb-4 text-sm focus:outline-none focus:border-[#00AEEF]">
+                    <input type="password" id="regPass" placeholder="Password" class="w-full border rounded-lg px-4 py-3 mb-6 text-sm focus:outline-none focus:border-[#00AEEF]">
+                    <button id="doRegisterBtn" class="w-full bg-[#00AEEF] text-white font-bold py-3 rounded-lg shadow-md mb-4 text-sm">Register</button>
+                    <p class="text-center text-xs text-gray-500">Already have an account? <span onclick="switchAuthView('login')" class="text-[#00AEEF] font-bold cursor-pointer">Log in</span></p>
                 </div>
 
-                <!-- FORGOT PASSWORD VIEW -->
-                <div id="authForgotView" class="hidden">
-                    <h2 class="text-xl font-bold text-gray-800 text-center mb-1">Forgot Password</h2>
-                    <div class="mb-6">
-                        <label class="block text-[10px] uppercase text-gray-500 font-semibold mb-1">Email Address</label>
-                        <input type="email" id="forgotEmail" placeholder="demo@gmail.com" class="w-full border border-gray-200 rounded-lg px-4 py-3 text-sm focus:outline-none focus:border-[#00AEEF] transition">
-                    </div>
-                    <button id="doForgotBtn" class="w-full bg-[#00AEEF] hover:bg-[#0099d1] text-white font-bold py-3 rounded-lg transition shadow-md mb-6 text-sm">Send Reset Link</button>
-                    <p class="text-center text-xs text-gray-500"><span onclick="switchAuthView('login')" class="text-gray-500 font-bold cursor-pointer hover:underline">← Back to Login</span></p>
-                </div>
-
-                <!-- ONBOARDING PROFILE VIEW -->
+                <!-- Profile Setup View (Redirects to App after) -->
                 <div id="authProfileView" class="hidden">
-                    <h2 class="text-xl font-bold text-gray-800 text-center mb-1">Complete Profile</h2>
+                    <h2 class="text-2xl font-bold text-gray-800 text-center mb-1">Complete Profile</h2>
                     <p class="text-xs text-gray-500 text-center mb-6">Let's set up your patient file.</p>
-                    <div class="space-y-4 mb-4">
-                        <div>
-                            <label class="block text-[10px] uppercase text-gray-500 font-semibold mb-1">Profile Photo (Optional)</label>
-                            <input type="file" id="profilePhotoInput" accept="image/*" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none bg-gray-50">
-                        </div>
-                        <div>
-                            <label class="block text-[10px] uppercase text-gray-500 font-semibold mb-1">Full Name</label>
-                            <input type="text" id="profileName" placeholder="e.g. Ahmad Razif" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-[#00AEEF]">
-                        </div>
-                        <div>
-                            <label class="block text-[10px] uppercase text-gray-500 font-semibold mb-1">Phone Number</label>
-                            <input type="text" id="profilePhone" placeholder="+60 12-345-6789" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-[#00AEEF]">
-                        </div>
-                    </div>
-                    <button id="saveProfileBtn" class="w-full mt-4 bg-[#00AEEF] text-white font-bold py-3 rounded-lg shadow-md text-sm">Complete Setup</button>
+                    <input type="text" id="profileName" placeholder="Full Name" class="w-full border rounded-lg px-4 py-3 mb-4 text-sm focus:outline-none">
+                    <input type="text" id="profilePhone" placeholder="Phone Number" class="w-full border rounded-lg px-4 py-3 mb-6 text-sm focus:outline-none">
+                    <button id="saveProfileBtn" class="w-full bg-[#00AEEF] text-white font-bold py-3 rounded-lg shadow-md text-sm">Save & Enter Application</button>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- LOGGED OUT VIEW (Landing Page) -->
-    <div id="landingView" class="transition-opacity duration-300 flex-1 flex flex-col">
-        <video autoplay loop muted playsinline class="video-bg">
-            <source src="https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/Whisk_cjziljmkvmzhzjy10sohjjytetn5qtl0qwni1sn.mp4?download=true" type="video/mp4">
-        </video>
-        <nav class="flex items-center justify-between px-6 py-4 max-w-6xl mx-auto w-full">
-            <img src="https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/ChatGPT%20Image%20Mar%2026%2C%202026%2C%2007_53_48%20PM.png?download=true" alt="Logo" class="h-32">
-            <button id="navLoginBtn" class="bg-[#00AEEF] text-white px-6 py-2.5 rounded-full text-sm font-bold hover:bg-[#0099d1] shadow-md">Log In</button>
-        </nav>
-        <main class="max-w-4xl mx-auto px-6 pt-12 pb-20 text-center relative flex-1">
-            <img src="https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/Gemini_Generated_Image_okdjp7okdjp7okdj.png?download=true" class="w-64 h-64 object-contain mx-auto animate-[bounce_4s_infinite]">
-            <h1 class="text-5xl font-bold mt-4 text-primary">Hi, I'm Doktura?</h1>
-            <p class="mt-4 text-gray-600 max-w-2xl mx-auto text-lg">I'm your private and personal AI doctor.</p>
-            <div class="mt-12 bg-white rounded-2xl shadow-xl border overflow-hidden text-left max-w-3xl mx-auto relative z-10 flex flex-col h-[500px]">
-                <div class="flex border-b shrink-0">
-                    <button onclick="switchTab('chat')" id="btn-chat-tab" class="flex-1 py-4 text-center tab-active flex items-center justify-center space-x-2">
-                        <span>AI Assistant</span>
-                    </button>
-                    <button onclick="switchTab('book')" id="btn-book-tab" class="flex-1 py-4 text-center tab-inactive flex items-center justify-center space-x-2 relative hover:bg-gray-50">
-                        <span>Book Consultant</span>
-                        <svg class="w-4 h-4 ml-1 text-red-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd"></path></svg>
-                    </button>
-                </div>
-                <div id="chat-tab" class="p-6 flex flex-col flex-1 overflow-hidden">
-                    <div id="chat-history" class="flex-1 overflow-y-auto mb-4 space-y-4 pr-2"></div>
-                    <div class="flex space-x-2 shrink-0">
-                        <input type="text" id="chat-input" placeholder="Type your symptoms here..." class="flex-1 border rounded-xl px-4 py-3 focus:outline-none text-sm" onkeypress="if(event.key === 'Enter') sendChat(false)">
-                        <button onclick="sendChat(false)" class="bg-primary text-white px-6 py-3 rounded-xl text-sm font-medium">Send</button>
-                    </div>
-                </div>
-                <div id="book-tab" class="p-6 hidden overflow-y-auto"></div>
-            </div>
-        </main>
-    </div>
-
-    <!-- LOGGED IN VIEW (App Layout) -->
-    <div id="appView" class="hidden fixed inset-0 bg-white z-[60] flex h-screen w-full">
-        
-        <!-- Left Sidebar -->
-        <div class="w-64 bg-[#111827] text-white flex flex-col transition-all shrink-0">
-            <div class="p-4 space-y-2 border-b border-gray-800">
-                <button onclick="switchAppTab('chat')" id="app-btn-chat" class="w-full flex items-center space-x-3 bg-gray-800 p-3 rounded-lg hover:bg-gray-700 transition text-white">
-                    <span class="font-medium text-sm">AI Doctor</span>
-                </button>
-                <button onclick="switchAppTab('book')" id="app-btn-book" class="w-full flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-800 transition text-gray-300">
-                    <span class="font-medium text-sm">Book Consultant</span>
-                </button>
-                <button onclick="switchAppTab('reports')" id="app-btn-reports" class="w-full flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-800 transition text-gray-300">
-                    <span class="font-medium text-sm">Medical Reports</span>
-                </button>
-            </div>
-            
-            <div class="flex-1 overflow-y-auto p-4">
-                <p class="text-xs text-gray-400 font-semibold mb-3 uppercase tracking-wider">Recent Consultations</p>
-                <button onclick="startNewSession()" class="w-full text-left p-3 hover:bg-gray-800 rounded-lg flex items-center space-x-2 text-green-400 font-bold mb-4 shadow-sm border border-gray-700">
-                    <span class="text-sm">New Session</span>
-                </button>
-                <div id="sidebar-sessions-list" class="space-y-1"></div>
-            </div>
-
-            <div class="p-4 border-t border-gray-800 flex flex-col">
-                <div class="flex items-center justify-between">
-                    <div class="flex items-center space-x-3 overflow-hidden">
-                        <img id="appUserAvatar" src="" class="w-8 h-8 rounded-full flex-shrink-0 object-cover border border-gray-600">
-                        <span id="appUserEmail" class="text-sm truncate font-medium"></span> 
-                    </div>
-                    <button id="appLogoutBtn" title="Log Out" class="text-gray-400 hover:text-white p-1">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
-                    </button>
-                </div>
-                
-                <!-- Settings Button -->
-                <button onclick="switchAppTab('settings')" id="app-btn-settings" class="mt-4 flex items-center justify-center space-x-2 p-2 w-full rounded-lg bg-gray-800 hover:bg-gray-700 text-gray-300 transition text-xs font-bold uppercase tracking-wider">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
-                    <span>Profile Settings</span>
-                </button>
-            </div>
-        </div>
-
-        <!-- Main Content Area -->
-        <div class="flex-1 flex flex-col relative h-full bg-white overflow-hidden">
-            
-            <!-- Chat Interface -->
-            <div id="app-chat-view" class="flex-1 flex flex-col h-full overflow-hidden bg-white">
-                <div id="app-chat-history" class="flex-1 overflow-y-auto p-6 md:p-10 space-y-8"></div>
-                <div class="w-full shrink-0 pt-4 pb-6 px-6 bg-white border-t border-gray-100 shadow-[0_-5px_15px_rgba(0,0,0,0.02)]">
-                    <div class="max-w-3xl mx-auto relative flex items-center shadow-[0_5px_20px_rgba(0,0,0,0.08)] rounded-full border border-gray-200 bg-white p-1">
-                        <input type="text" id="app-chat-input" class="w-full bg-transparent pl-4 pr-14 py-3 focus:outline-none text-gray-800" placeholder="Type a message..." onkeypress="if(event.key === 'Enter') sendChat()">
-                        <button onclick="sendChat()" class="absolute right-2 p-2.5 bg-[#00AEEF] text-white rounded-full hover:bg-[#0099d1] transition shadow-md">
-                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z"></path></svg>
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Booking Form Interface -->
-            <div id="app-book-view" class="hidden flex-1 overflow-y-auto p-8 w-full">
-                <!-- Keep existing booking HTML structure exactly the same here -->
-                <h2 class="text-3xl font-bold mb-8">Book a Consultant</h2>
-                <select id="app-doctor-select" class="w-full border rounded px-4 py-2 mb-4"><option>Loading...</option></select>
-                <button onclick="submitBooking(event)" class="bg-[#00AEEF] text-white py-3 px-6 rounded-lg font-bold">Book Demo (Code Placeholder)</button>
-                <div id="app-booking-result" class="mt-4"></div>
-            </div>
-
-            <!-- MEDICAL REPORTS VIEW -->
-            <div id="app-reports-view" class="hidden flex-1 overflow-y-auto p-8 w-full">
-                <h2 class="text-3xl font-bold mb-8">Medical Reports & Scans</h2>
-                <div class="bg-white border rounded-2xl p-8 shadow-sm">
-                    <form id="upload-report-form" onsubmit="uploadReport(event)">
-                        <input type="file" id="report-file" required class="mb-4">
-                        <button type="submit" id="upload-report-btn" class="bg-[#00AEEF] text-white py-3 px-6 rounded-lg font-bold">Upload to Drive</button>
-                    </form>
-                    <div id="upload-result" class="hidden mt-4 p-4 rounded-xl border"></div>
-                </div>
-            </div>
-
-            <!-- PROFILE SETTINGS VIEW -->
-            <div id="app-settings-view" class="hidden flex-1 overflow-y-auto p-8 md:p-12 w-full bg-gray-50">
-                <div class="max-w-2xl mx-auto bg-white rounded-2xl shadow-sm border border-gray-200 p-8">
-                    <h2 class="text-2xl font-bold text-gray-800 mb-6">Profile Settings</h2>
-                    <div id="settingsAlertBox" class="hidden mb-6 p-4 rounded-lg text-sm font-medium"></div>
-                    
-                    <div class="flex items-center space-x-6 mb-8 pb-8 border-b border-gray-100">
-                        <img id="settingsAvatarPreview" src="" class="w-24 h-24 rounded-full border border-gray-200 object-cover shadow-sm">
-                        <div>
-                            <label class="block text-sm font-semibold text-gray-700 mb-2">Change Profile Photo</label>
-                            <input type="file" id="settingsPhotoInput" accept="image/*" class="text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-sky-50 file:text-sky-700 hover:file:bg-sky-100">
-                        </div>
-                    </div>
-
-                    <div class="space-y-6">
-                        <div>
-                            <label class="block text-sm font-semibold text-gray-700 mb-1">Full Name</label>
-                            <input type="text" id="settingsName" class="w-full border border-gray-300 rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-[#00AEEF] focus:outline-none">
-                        </div>
-                        <div>
-                            <label class="block text-sm font-semibold text-gray-700 mb-1">Phone Number</label>
-                            <input type="text" id="settingsPhone" class="w-full border border-gray-300 rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-[#00AEEF] focus:outline-none">
-                        </div>
-                        <button id="settingsSaveBtn" onclick="saveSettings()" class="w-full mt-4 bg-[#00AEEF] text-white font-bold py-3.5 rounded-xl shadow-md hover:bg-[#0099d1] transition">Update Settings</button>
-                    </div>
-                </div>
-            </div>
-
-        </div>
-    </div>
-
-    <!-- Firebase -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-app.js";
-        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut, sendPasswordResetEmail, sendEmailVerification } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-auth.js";
+        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-auth.js";
 
-        const firebaseConfig = {
-            apiKey: "AIzaSyCrx9BPS8ficDzgVZMbJIb4b3PQ9IqEHLw",
-            authDomain: "doktura-ai-907d8.firebaseapp.com",
-            projectId: "doktura-ai-907d8",
-            storageBucket: "doktura-ai-907d8.firebasestorage.app",
-            messagingSenderId: "940024084363",
-            appId: "1:940024084363:web:db934bd0fd644d61f7e18e"
-        };
-
+        const firebaseConfig = { /* YOUR FIREBASE CONFIG HERE */ };
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
+        const API_BASE = 'https://api.doktura.ai'; 
 
-        window.userData = { name: "Patient", phone: "Unknown", photo_url: "" };
-        window.currentUser = null;
-
-        const masterAuth = document.getElementById("authMasterContainer");
-
-        function showAuthAlert(msg, type="error") {
-            const alertBox = document.getElementById("authAlertBox");
-            alertBox.innerText = msg.replace("Firebase: Error (", "").replace(").", "").replace("auth/", "").replace(/-/g, " ");
-            alertBox.className = type === "error" ? "mb-4 p-3 bg-red-50 border border-red-200 text-red-600 text-xs rounded-lg text-center font-medium capitalize" : "mb-4 p-3 bg-green-50 border border-green-200 text-green-600 text-xs rounded-lg text-center font-medium capitalize";
-            alertBox.classList.remove("hidden");
-        }
-
-        window.switchAuthView = function(view) {
-            document.getElementById("authAlertBox").classList.add("hidden");
-            ["authLoginView", "authRegisterView", "authProfileView", "authForgotView"].forEach(v => document.getElementById(v).classList.add("hidden"));
-            
-            if(view === 'profile') {
-                document.getElementById("authCloseBtnContainer").classList.add("hidden"); // Force completion
-            } else {
-                document.getElementById("authCloseBtnContainer").classList.remove("hidden");
-            }
-            
-            document.getElementById(view === 'login' ? "authLoginView" : view === 'register' ? "authRegisterView" : view === 'forgot' ? "authForgotView" : "authProfileView").classList.remove("hidden");
-        }
-
-        window.openAuth = function(view = 'login') {
-            masterAuth.classList.remove("hidden");
+        // -- UI Logic --
+        window.openAuth = (view) => {
+            document.getElementById("authMasterContainer").classList.remove("hidden");
             switchAuthView(view);
         }
-        window.closeAuth = function() { masterAuth.classList.add("hidden"); }
+        window.closeAuth = () => document.getElementById("authMasterContainer").classList.add("hidden");
+        window.switchAuthView = (view) => {
+            ['authLoginView', 'authRegisterView', 'authProfileView'].forEach(v => document.getElementById(v).classList.add("hidden"));
+            document.getElementById(view === 'login' ? 'authLoginView' : view === 'register' ? 'authRegisterView' : 'authProfileView').classList.remove("hidden");
+        }
 
-        document.getElementById("navLoginBtn").addEventListener("click", () => openAuth('login'));
-
-        const handleGoogleAuth = async () => {
-            const provider = new GoogleAuthProvider();
-            try { await signInWithPopup(auth, provider); } 
-            catch (error) { showAuthAlert("Google Login Failed.", "error"); }
-        };
-
-        document.getElementById("doGoogleLoginBtn").addEventListener("click", handleGoogleAuth);
-        document.getElementById("doGoogleRegBtn").addEventListener("click", handleGoogleAuth);
-
+        // -- Authentication --
         document.getElementById("doLoginBtn").addEventListener("click", async () => {
-            document.getElementById("doLoginBtn").innerText = "Logging in...";
             try { await signInWithEmailAndPassword(auth, document.getElementById("loginEmail").value, document.getElementById("loginPass").value); } 
-            catch (error) { showAuthAlert(error.message, "error"); document.getElementById("doLoginBtn").innerText = "Login"; }
+            catch (e) { alert("Login failed: " + e.message); }
         });
 
         document.getElementById("doRegisterBtn").addEventListener("click", async () => {
-            document.getElementById("doRegisterBtn").innerText = "Creating Account...";
-            try { 
-                const userCred = await createUserWithEmailAndPassword(auth, document.getElementById("regEmail").value, document.getElementById("regPass").value); 
-                await sendEmailVerification(userCred.user);
-                await signOut(auth);
-                showAuthAlert("Registration successful! Check your email for the verification link.", "success");
-                setTimeout(() => { switchAuthView('login'); }, 2000);
-            } catch (error) { showAuthAlert(error.message, "error"); }
-            document.getElementById("doRegisterBtn").innerText = "Register & Verify";
+            try { await createUserWithEmailAndPassword(auth, document.getElementById("regEmail").value, document.getElementById("regPass").value); } 
+            catch (e) { alert("Registration failed: " + e.message); }
         });
 
-        document.getElementById("doForgotBtn").addEventListener("click", async () => {
-            try { await sendPasswordResetEmail(auth, document.getElementById("forgotEmail").value.trim()); showAuthAlert("Reset link sent!", "success"); } 
-            catch (error) { showAuthAlert(error.message, "error"); }
-        });
-
-        // Generate SVG Avatar function
-        window.getAvatarSvgDataUri = function(name) {
-            const initial = (name && name !== "Unknown") ? name.charAt(0).toUpperCase() : 'U';
-            const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64"><rect width="64" height="64" fill="#00AEEF"/><text x="50%" y="50%" fill="#ffffff" font-size="32" font-family="sans-serif" font-weight="bold" text-anchor="middle" dy=".35em">${initial}</text></svg>`;
-            return "data:image/svg+xml;base64," + btoa(svg);
-        }
-
+        // -- Profile Setup & Redirect --
         document.getElementById("saveProfileBtn").addEventListener("click", async () => {
-            const pName = document.getElementById("profileName").value.trim();
-            const pPhone = document.getElementById("profilePhone").value.trim();
-            
-            if(!pName || !pPhone) return showAuthAlert("Please provide Name and Phone number.", "error");
-            
-            const btn = document.getElementById("saveProfileBtn");
-            btn.innerText = "Saving..."; btn.disabled = true;
+            const name = document.getElementById("profileName").value;
+            const phone = document.getElementById("profilePhone").value;
+            if(!name || !phone) return alert("Please fill all fields");
 
-            let uploadedPhotoUrl = window.userData.photo_url || window.currentUser.photoURL || "";
-            const fileInput = document.getElementById("profilePhotoInput");
-            
-            if (fileInput.files.length > 0) {
-                const formData = new FormData();
-                formData.append('file', fileInput.files[0]);
-                formData.append('user_id', auth.currentUser.uid);
-                try {
-                    const res = await fetch(`${API_BASE}/api/upload_avatar`, { method: 'POST', body: formData });
-                    const data = await res.json();
-                    if (data.success) uploadedPhotoUrl = data.photo_url;
-                } catch(e) {}
-            }
-
-            // Sync with FastAPI Backend Profile API
-            try {
-                const token = await window.currentUser.getIdToken();
-                const res = await fetch(`${API_BASE}/api/user/profile`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-                    body: JSON.stringify({ name: pName, phone: pPhone, photo_url: uploadedPhotoUrl })
-                });
-                
-                window.userData = { name: pName, phone: pPhone, photo_url: uploadedPhotoUrl };
-                closeAuth();
-                initializeLoggedInState(auth.currentUser);
-            } catch(error) { showAuthAlert("Failed to save. Try again.", "error"); }
-            btn.innerText = "Complete Setup"; btn.disabled = false;
+            const token = await auth.currentUser.getIdToken();
+            await fetch(`${API_BASE}/api/user/profile`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                body: JSON.stringify({ name: name, phone: phone })
+            });
+            window.location.href = "app.html"; // Redirect to App
         });
 
+        // -- Check State (Redirect if already logged in) --
         onAuthStateChanged(auth, async (user) => {
             if (user) {
-                const isGoogleAuth = user.providerData.some(p => p.providerId === 'google.com');
-                // Email Verification Logic
-                if (!isGoogleAuth && !user.emailVerified) {
-                    await signOut(auth);
-                    showAuthAlert("Please verify your email address. Check your inbox and click the verification link.", "error");
-                    openAuth('login');
-                    return;
-                }
-
-                window.currentUser = user;
+                const token = await user.getIdToken();
+                const res = await fetch(`${API_BASE}/api/user/sync`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                    body: JSON.stringify({ email: user.email })
+                });
+                const data = await res.json();
                 
-                // Fetch/Sync with Postgres Backend directly
-                try {
-                    const token = await user.getIdToken();
-                    const res = await fetch(`${API_BASE}/api/user/sync`, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-                        body: JSON.stringify({ email: user.email, name: user.displayName, photo_url: user.photoURL })
-                    });
-                    
-                    const data = await res.json();
-                    
-                    if(data.is_complete) {
-                        window.userData = { name: data.name, phone: data.phone, photo_url: data.photo_url };
-                        closeAuth();
-                        initializeLoggedInState(user);
-                    } else {
-                        // User needs to fill out Name and Phone
-                        if(data.name) document.getElementById("profileName").value = data.name;
-                        window.userData.photo_url = data.photo_url || user.photoURL;
-                        openAuth('profile');
-                    }
-                } catch (err) {
-                    console.error("Backend sync failed", err);
+                if (data.is_complete) {
+                    window.location.href = "app.html"; // Go to App
+                } else {
+                    openAuth('profile'); // Force Profile Setup
                 }
-            } else {
-                window.currentUser = null;
-                document.getElementById('landingView').classList.remove("hidden");
-                document.getElementById('appView').classList.add("hidden");
-                loadSessions();
             }
         });
 
-        function initializeLoggedInState(user) {
-            document.getElementById('landingView').classList.add("hidden");
-            document.getElementById('appView').classList.remove("hidden");
-            
-            document.getElementById('appUserEmail').textContent = window.userData.name; 
+        // -- Temporary Guest Chat (Limits to 3 Messages) --
+        let guestCount = 0;
+        window.sendGuestChat = async function() {
+            const input = document.getElementById("guest-chat-input");
+            const history = document.getElementById("guest-chat-history");
+            const msg = input.value.trim();
+            if(!msg) return;
 
-            // Priority: Uploaded > Google > SVG Letter
-            let avatarUrl = window.userData.photo_url || user.photoURL || getAvatarSvgDataUri(window.userData.name);
-            window.currentUserPhotoUrl = avatarUrl;
-            
-            const appAvatarImg = document.getElementById('appUserAvatar');
-            appAvatarImg.src = avatarUrl;
-            appAvatarImg.onerror = () => { appAvatarImg.src = getAvatarSvgDataUri(window.userData.name); };
+            guestCount++;
+            history.innerHTML += `<div class="flex items-start justify-end space-x-3 mt-4"><div class="bg-[#00AEEF] text-white p-3 rounded-2xl rounded-tr-none text-sm max-w-[80%]">${msg}</div></div>`;
+            input.value = '';
 
-            // Pre-fill settings
-            document.getElementById('settingsName').value = window.userData.name;
-            document.getElementById('settingsPhone').value = window.userData.phone;
-            document.getElementById('settingsAvatarPreview').src = avatarUrl;
-
-            loadSessions();
-        }
-
-        document.getElementById("appLogoutBtn").addEventListener("click", () => { signOut(auth); });
-    </script>
-
-    <!-- UI Logic -->
-    <script>
-        window.currentSessionId = null;
-
-        async function getAuthHeaders() {
-            const headers = { 'Content-Type': 'application/json' };
-            if (window.currentUser) {
-                const token = await window.currentUser.getIdToken();
-                headers['Authorization'] = `Bearer ${token}`;
-            }
-            return headers;
-        }
-
-        window.switchTab = function(tab) {
-            if (tab === 'book' && !window.currentUser) { document.getElementById("navLoginBtn").click(); return; }
-        }
-
-        window.switchAppTab = function(tab) {
-            const views = ['app-chat-view', 'app-book-view', 'app-reports-view', 'app-settings-view'];
-            const btns = ['app-btn-chat', 'app-btn-book', 'app-btn-reports', 'app-btn-settings'];
-            
-            views.forEach(v => document.getElementById(v).classList.add('hidden'));
-            btns.forEach(b => {
-                document.getElementById(b).classList.remove('bg-gray-800', 'text-white');
-                document.getElementById(b).classList.add('text-gray-300');
-            });
-
-            document.getElementById('app-' + tab + '-view').classList.remove('hidden');
-            document.getElementById('app-btn-' + tab).classList.add('bg-gray-800', 'text-white');
-            document.getElementById('app-btn-' + tab).classList.remove('text-gray-300');
-        }
-
-        window.saveSettings = async function() {
-            const name = document.getElementById('settingsName').value.trim();
-            const phone = document.getElementById('settingsPhone').value.trim();
-            const alertBox = document.getElementById('settingsAlertBox');
-            const btn = document.getElementById('settingsSaveBtn');
-            
-            if(!name || !phone) {
-                alertBox.className = "mb-6 p-4 rounded-lg text-sm font-medium bg-red-50 text-red-700";
-                alertBox.innerText = "Name and Phone cannot be empty.";
-                alertBox.classList.remove("hidden");
+            if(guestCount >= 3) {
+                history.innerHTML += `<div class="text-center my-4 text-xs font-bold text-red-500 uppercase">Guest limit reached. Please log in to Doktura AI to continue.</div>`;
+                setTimeout(() => openAuth('login'), 2000);
                 return;
             }
 
-            btn.innerText = "Updating...";
-            
-            let photo_url = window.userData.photo_url;
-            const fileInput = document.getElementById('settingsPhotoInput');
-            if (fileInput.files.length > 0) {
-                const formData = new FormData();
-                formData.append('file', fileInput.files[0]);
-                formData.append('user_id', window.currentUser.uid);
-                try {
-                    const res = await fetch(`${API_BASE}/api/upload_avatar`, { method: 'POST', body: formData });
-                    const data = await res.json();
-                    if (data.success) photo_url = data.photo_url;
-                } catch(e) {}
-            }
-
             try {
-                const res = await fetch(`${API_BASE}/api/user/profile`, {
+                // Send without auth headers (Backend knows it's a guest)
+                const res = await fetch(`${API_BASE}/api/chat`, {
                     method: 'POST',
-                    headers: await getAuthHeaders(),
-                    body: JSON.stringify({ name, phone, photo_url })
-                });
-                
-                if(res.ok) {
-                    alertBox.className = "mb-6 p-4 rounded-lg text-sm font-medium bg-green-50 text-green-700";
-                    alertBox.innerText = "Settings successfully updated!";
-                    alertBox.classList.remove("hidden");
-                    
-                    window.userData = { name, phone, photo_url };
-                    let displayUrl = photo_url || window.currentUserPhotoUrl || getAvatarSvgDataUri(name);
-                    document.getElementById('appUserEmail').textContent = name;
-                    document.getElementById('appUserAvatar').src = displayUrl;
-                    document.getElementById('settingsAvatarPreview').src = displayUrl;
-                }
-            } catch(e) {
-                alertBox.className = "mb-6 p-4 rounded-lg text-sm font-medium bg-red-50 text-red-700";
-                alertBox.innerText = "Network error. Try again.";
-                alertBox.classList.remove("hidden");
-            }
-            btn.innerText = "Update Settings";
-        }
-
-        // Rest of the Chat & History Logic...
-        function scrollToBottom(elementId) {
-            const el = document.getElementById(elementId);
-            if (el) setTimeout(() => { el.scrollTo({ top: el.scrollHeight, behavior: 'smooth' }); }, 50);
-        }
-
-        async function loadSessions() {
-            const userId = window.currentUser ? window.currentUser.email : "anonymous";
-            try {
-                const res = await fetch(API_BASE + '/api/sessions', {
-                    method: 'POST', headers: await getAuthHeaders(), body: JSON.stringify({ user_id: userId })
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message: msg, session_id: "guest_temp" })
                 });
                 const data = await res.json();
-                let sessions = data.sessions ||[];
-
-                if (!window.currentSessionId) window.currentSessionId = sessions.length > 0 ? sessions[0] : Date.now().toString();
-                if (!sessions.includes(window.currentSessionId)) sessions.unshift(window.currentSessionId);
-
-                const sessionListEl = document.getElementById('sidebar-sessions-list');
-                if (sessionListEl) {
-                    sessionListEl.innerHTML = '';
-                    sessions.forEach(sessionId => {
-                        let dateStr = "New Consultation";
-                        if (!isNaN(parseInt(sessionId))) dateStr = new Date(parseInt(sessionId)).toLocaleString([], { month:'short', day:'numeric', hour:'2-digit', minute:'2-digit' });
-                        const bgClass = (sessionId === window.currentSessionId) ? 'bg-gray-800 text-white border-l-4 border-[#00AEEF]' : 'hover:bg-gray-800 text-gray-400 hover:text-white border-l-4 border-transparent';
-                        sessionListEl.innerHTML += `<button onclick="switchSession('${sessionId}')" class="w-full text-left p-3 rounded-lg truncate text-xs font-medium transition ${bgClass} mb-2">${dateStr}</button>`;
-                    });
-                }
-                loadHistory(!!window.currentUser); 
-            } catch (error) {}
+                history.innerHTML += `<div class="flex items-start space-x-3 mt-4"><img src="https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/Gemini_Generated_Image_okdjp7okdjp7okdj.png?download=true" class="w-8 h-8 rounded-full bg-gray-100"><div class="bg-gray-100 text-gray-800 p-3 rounded-2xl rounded-tl-none text-sm max-w-[80%]"><strong>Doktura AI:</strong><br>${data.reply}</div></div>`;
+                history.scrollTop = history.scrollHeight;
+            } catch(e) { alert("Error connecting to AI."); }
         }
-
-        window.switchSession = function(id) { window.currentSessionId = id; loadSessions(); switchAppTab('chat'); }
-        window.startNewSession = function() { window.currentSessionId = Date.now().toString(); loadSessions(); switchAppTab('chat'); }
-
-        async function loadHistory(isAppView) {
-            const userId = window.currentUser ? window.currentUser.email : "anonymous";
-            const historyId = isAppView ? 'app-chat-history' : 'chat-history';
-            const historyEl = document.getElementById(historyId);
-            if (!historyEl) return;
-
-            try {
-                const res = await fetch(API_BASE + '/api/history', {
-                    method: 'POST', headers: await getAuthHeaders(), body: JSON.stringify({ user_id: userId, session_id: window.currentSessionId })
-                });
-                const data = await res.json();
-                const hasRealMessages = data.history && data.history.some(msg => msg.role !== 'system');
-
-                if (!hasRealMessages) throw new Error("No real history");
-                
-                historyEl.innerHTML = ""; 
-                data.history.forEach(msg => {
-                    if (msg.role === "system") return; 
-                    let formattedContent = msg.content ? msg.content.replace(/\n/g, '<br>') : "";
-                    
-                    if (isAppView) {
-                        if (msg.role === "user") {
-                            historyEl.innerHTML += `<div class="flex items-start space-x-4 max-w-3xl mx-auto w-full"><img src="${window.currentUserPhotoUrl}" class="w-8 h-8 rounded-full border border-gray-200 object-cover"><div class="flex-1"><p class="font-bold text-sm text-gray-800 mb-1">${window.userData.name}</p><div class="text-gray-700 leading-relaxed">${formattedContent}</div></div></div>`;
-                        } else if (msg.role === "assistant") {
-                            historyEl.innerHTML += `<div class="flex items-start space-x-4 max-w-3xl mx-auto w-full"><img src="https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/Gemini_Generated_Image_okdjp7okdjp7okdj.png?download=true" class="w-8 h-8 rounded-full border border-gray-200"><div class="flex-1"><p class="font-bold text-sm text-gray-800 mb-1">Doktura AI</p><div class="text-gray-700 leading-relaxed">${formattedContent}</div></div></div>`;
-                        }
-                    } else {
-                        if (msg.role === "user") historyEl.innerHTML += `<div class="flex items-start justify-end space-x-3 mt-4"><div class="bg-[#00AEEF] text-white p-3 rounded-2xl rounded-tr-none text-sm max-w-[80%]">${formattedContent}</div></div>`;
-                        else historyEl.innerHTML += `<div class="flex items-start space-x-3 mt-4"><img src="https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/Gemini_Generated_Image_okdjp7okdjp7okdj.png?download=true" class="w-8 h-8 rounded-full bg-gray-100 object-cover"><div class="bg-gray-100 text-gray-800 p-3 rounded-2xl rounded-tl-none text-sm max-w-[80%]">${formattedContent}</div></div>`;
-                    }
-                });
-                scrollToBottom(historyId);
-            } catch(e) {
-                if (isAppView) {
-                    historyEl.innerHTML = `<div class="flex items-start space-x-4 max-w-3xl mx-auto w-full"><img src="https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/Gemini_Generated_Image_okdjp7okdjp7okdj.png?download=true" class="w-8 h-8 rounded-full border border-gray-200"><div class="flex-1"><p class="font-bold text-sm text-gray-800 mb-1">Doktura AI</p><div class="text-gray-700 leading-relaxed">Hello ${window.userData.name}! How can I help you today?</div></div></div>`;
-                } else {
-                    historyEl.innerHTML = `<div class="flex items-start space-x-3"><img src="https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/Gemini_Generated_Image_okdjp7okdjp7okdj.png?download=true" class="w-8 h-8 rounded-full bg-gray-100 object-cover"><div class="bg-gray-100 text-gray-800 p-3 rounded-2xl rounded-tl-none text-sm max-w-[80%]">Hello! Type your symptoms below.</div></div>`;
-                }
-            }
-        }
-
-        window.sendChat = async function() {
-            const isAppView = !!window.currentUser; 
-            const inputId = isAppView ? 'app-chat-input' : 'chat-input';
-            const historyId = isAppView ? 'app-chat-history' : 'chat-history';
-            
-            const inputEl = document.getElementById(inputId);
-            let message = inputEl.value.trim();
-            if (!message) return;
-
-            const historyEl = document.getElementById(historyId);
-
-            if (isAppView) {
-                historyEl.innerHTML += `<div class="flex items-start space-x-4 max-w-3xl mx-auto w-full"><img src="${window.currentUserPhotoUrl}" class="w-8 h-8 rounded-full border border-gray-200 object-cover"><div class="flex-1"><p class="font-bold text-sm text-gray-800 mb-1">${window.userData.name}</p><div class="text-gray-700 leading-relaxed">${message}</div></div></div>`;
-            } else {
-                historyEl.innerHTML += `<div class="flex items-start justify-end space-x-3 mt-4"><div class="bg-[#00AEEF] text-white p-3 rounded-2xl rounded-tr-none text-sm max-w-[80%]">${message}</div></div>`;
-            }
-
-            inputEl.value = '';
-            scrollToBottom(historyId);
-
-            try {
-                const payload = {
-                    message: message, 
-                    session_id: window.currentSessionId || Date.now().toString(),
-                    user_name: window.userData.name
-                };
-
-                const response = await fetch(API_BASE + '/api/chat', {
-                    method: 'POST', headers: await getAuthHeaders(), body: JSON.stringify(payload)
-                });
-                const data = await response.json();
-
-                if (isAppView) {
-                    historyEl.innerHTML += `<div class="flex items-start space-x-4 max-w-3xl mx-auto w-full"><img src="https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/Gemini_Generated_Image_okdjp7okdjp7okdj.png?download=true" class="w-8 h-8 rounded-full border border-gray-200"><div class="flex-1"><p class="font-bold text-sm text-gray-800 mb-1">Doktura AI</p><div class="text-gray-700 leading-relaxed">${data.reply.replace(/\n/g, '<br>')}</div></div></div>`;
-                } else {
-                    historyEl.innerHTML += `<div class="flex items-start space-x-3 mt-4"><img src="https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/Gemini_Generated_Image_okdjp7okdjp7okdj.png?download=true" class="w-8 h-8 rounded-full bg-gray-100 object-cover"><div class="bg-gray-100 text-gray-800 p-3 rounded-2xl rounded-tl-none text-sm max-w-[80%]">${data.reply.replace(/\n/g, '<br>')}</div></div>`;
-                }
-                scrollToBottom(historyId);
-            } catch (error) {
-                historyEl.innerHTML += `<div class="text-center text-sm text-red-500 mt-4">⚠️ Error connecting to AI.</div>`;
-            }
-        }
-        
-        document.addEventListener('DOMContentLoaded', () => { loadHistory(false); });
     </script>
 </body>
 </html>
