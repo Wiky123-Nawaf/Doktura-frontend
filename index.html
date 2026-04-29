@@ -15,7 +15,6 @@
 </head>
 <body class="relative min-h-screen flex flex-col">
 
-    <!-- UPDATE WITH YOUR LIVE BACKEND URL -->
     <script>const API_BASE = 'https://api.doktura.ai';</script>
 
     <video autoplay loop muted playsinline class="video-bg">
@@ -24,83 +23,58 @@
 
     <!-- Navbar -->
     <nav class="flex items-center justify-between px-6 py-4 max-w-6xl mx-auto w-full z-10">
-        <img src="https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/ChatGPT%20Image%20Mar%2026%2C%202026%2C%2007_53_48%20PM.png?download=true" alt="Doktura Logo" class="h-16 md:h-24">
-        <a href="login.html" id="navLoginBtn" class="bg-[#0066FF] text-white px-8 py-3 rounded-full text-sm font-bold hover:bg-blue-700 shadow-lg transition">Log In</a>
+        <img src="https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/ChatGPT%20Image%20Mar%2026%2C%202026%2C%2007_53_48%20PM.png?download=true" alt="Logo" class="h-16">
+        <a href="login.html" id="navLoginBtn" class="bg-[#0066FF] text-white px-8 py-3 rounded-full text-sm font-bold hover:bg-blue-700 shadow-lg transition">Go to Dashboard</a>
     </nav>
 
     <!-- Hero -->
     <main class="max-w-4xl mx-auto px-6 pt-12 pb-20 text-center relative flex-1 z-10">
         <img src="https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/Gemini_Generated_Image_okdjp7okdjp7okdj.png?download=true" class="w-56 h-56 object-contain mx-auto animate-[bounce_4s_infinite]">
-        <h1 class="text-4xl md:text-5xl font-bold mt-4 text-[#111827]">Hi, I'm Doktura?</h1>
-        <p class="mt-4 text-gray-600 max-w-2xl mx-auto text-lg leading-relaxed">
+        <h1 class="text-5xl font-bold mt-4 text-[#111827]">Hi, I'm Doktura?</h1>
+        <p class="mt-4 text-gray-600 max-w-2xl mx-auto text-lg">
             I'm your private and personal AI doctor.<br>
-            As an AI doctor, my service is fast and free. I've already helped people <strong>23,819,892 times!</strong><br>
-            After we chat, if you want you can have a video visit with a top doctor for only RM 10.00.
+            As an AI doctor, my service is fast and free. I've already helped people <strong>23,819,892 times!</strong>
         </p>
-        <p class="mt-6 text-sm text-red-500 font-bold tracking-wide uppercase">If this is an emergency, call 911 or your local emergency number.</p>
+        <p class="mt-4 text-sm text-red-500 font-bold uppercase tracking-wider">If this is an emergency, call 911 or your local emergency number.</p>
 
         <!-- Guest Chat Box -->
-        <div class="mt-10 bg-white rounded-2xl shadow-[0_10px_40px_rgba(0,0,0,0.08)] border border-gray-100 overflow-hidden text-left max-w-3xl mx-auto flex flex-col h-[450px]">
+        <div class="mt-10 bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden text-left max-w-3xl mx-auto flex flex-col h-[450px]">
             <div class="flex border-b shrink-0 bg-gray-50">
-                <button class="flex-1 py-4 text-center border-b-2 border-[#0066FF] text-[#0066FF] font-bold flex items-center justify-center space-x-2 bg-white">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
-                    <span>AI Assistant</span>
-                </button>
-                <a href="login.html" class="flex-1 py-4 text-center text-gray-500 hover:bg-gray-100 flex items-center justify-center space-x-2 transition">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
-                    <span>Book Consultant</span>
-                    <svg class="w-4 h-4 text-red-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd"></path></svg>
-                </a>
+                <button class="flex-1 py-4 text-center border-b-2 border-[#0066FF] text-[#0066FF] font-bold bg-white">AI Assistant</button>
+                <a href="login.html" class="flex-1 py-4 text-center text-gray-500 hover:bg-gray-100 font-medium">Book Consultant 🔒</a>
             </div>
             
             <div class="p-6 flex flex-col flex-1 overflow-hidden">
-                <div class="bg-yellow-50 border border-yellow-100 text-yellow-800 text-xs px-4 py-2.5 rounded-lg mb-4 flex items-center">
-                    <svg class="w-4 h-4 mr-2 text-yellow-600 shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path></svg>
+                <div class="bg-yellow-50 text-yellow-800 text-xs px-4 py-2.5 rounded-lg mb-4">
                     Log in to unlock hands-free Voice Interaction and Premium Doctor Avatars.
                 </div>
                 
                 <div id="chat-history" class="flex-1 overflow-y-auto mb-4 space-y-4 pr-2">
                     <div class="flex items-start space-x-3">
-                        <img src="https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/Gemini_Generated_Image_okdjp7okdjp7okdj.png?download=true" class="w-8 h-8 rounded-full border border-gray-200 bg-white object-cover">
-                        <div class="bg-gray-100 text-gray-800 p-3 rounded-2xl rounded-tl-sm text-sm max-w-[85%] leading-relaxed">
-                            Hello! Type your symptoms below and I'll help you right away.
-                        </div>
+                        <img src="https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/Gemini_Generated_Image_okdjp7okdjp7okdj.png?download=true" class="w-8 h-8 rounded-full border">
+                        <div class="bg-gray-100 text-gray-800 p-3 rounded-2xl rounded-tl-sm text-sm">Hello! Type your symptoms below and I'll help you right away.</div>
                     </div>
                 </div>
                 
                 <div class="flex space-x-2 shrink-0 relative">
-                    <input type="text" id="chat-input" placeholder="Type your symptoms here..." class="flex-1 border border-gray-300 rounded-full pl-5 pr-24 py-3.5 focus:outline-none focus:ring-2 focus:ring-[#0066FF] text-sm bg-gray-50" onkeypress="if(event.key === 'Enter') sendGuestChat()">
-                    <button onclick="sendGuestChat()" class="absolute right-2 top-1.5 bottom-1.5 bg-[#ea580c] text-white px-6 rounded-full text-sm font-bold shadow-md hover:bg-orange-700 transition flex items-center">
-                        Send <svg class="w-4 h-4 ml-1" fill="currentColor" viewBox="0 0 20 20"><path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z"></path></svg>
-                    </button>
+                    <input type="text" id="chat-input" placeholder="Type your symptoms here..." class="flex-1 border rounded-full pl-5 pr-24 py-3.5 focus:outline-none focus:ring-2 focus:ring-[#0066FF] text-sm bg-gray-50" onkeypress="if(event.key === 'Enter') sendGuestChat()">
+                    <button onclick="sendGuestChat()" class="absolute right-2 top-1.5 bottom-1.5 bg-[#d9381e] text-white px-6 rounded-full text-sm font-bold shadow-md hover:bg-red-700 transition">Send ➢</button>
                 </div>
             </div>
         </div>
     </main>
 
-    <!-- Firebase Auth Check -->
+    <!-- Firebase check to change Login button text -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-app.js";
         import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-auth.js";
-        
-        const app = initializeApp({
-            apiKey: "AIzaSyCrx9BPS8ficDzgVZMbJIb4b3PQ9IqEHLw",
-            authDomain: "doktura-ai-907d8.firebaseapp.com",
-            projectId: "doktura-ai-907d8"
-        });
-        const auth = getAuth(app);
-
-        onAuthStateChanged(auth, (user) => {
-            if (user && (user.emailVerified || user.providerData.some(p => p.providerId === 'google.com'))) {
-                const btn = document.getElementById("navLoginBtn");
-                btn.innerText = "Go to Dashboard";
-                btn.href = "dashboard.html";
-                btn.className = "bg-green-600 text-white px-8 py-3 rounded-full text-sm font-bold hover:bg-green-700 shadow-lg transition";
-            }
+        const app = initializeApp({ apiKey: "AIzaSyCrx9BPS8ficDzgVZMbJIb4b3PQ9IqEHLw", authDomain: "doktura-ai-907d8.firebaseapp.com", projectId: "doktura-ai-907d8" });
+        onAuthStateChanged(getAuth(app), (user) => {
+            if (user) document.getElementById("navLoginBtn").innerText = "Go to Dashboard";
         });
     </script>
 
-    <!-- Guest Chat Logic -->
+    <!-- Guest AI Logic -->
     <script>
         window.sendGuestChat = async function() {
             const input = document.getElementById('chat-input');
@@ -108,50 +82,32 @@
             const message = input.value.trim();
             if(!message) return;
 
-            // User Message
-            history.innerHTML += `
-                <div class="flex items-start justify-end space-x-3 mt-4">
-                    <div class="bg-[#0284c7] text-white p-3 rounded-2xl rounded-tr-sm text-sm max-w-[85%] shadow-sm leading-relaxed">${message}</div>
-                </div>`;
-            input.value = '';
-            history.scrollTo({ top: history.scrollHeight, behavior: 'smooth' });
+            history.innerHTML += `<div class="flex items-start justify-end space-x-3 mt-4"><div class="bg-[#0066FF] text-white p-3 rounded-2xl rounded-tr-sm text-sm shadow-sm">${message}</div></div>`;
+            input.value = ''; history.scrollTo({ top: history.scrollHeight, behavior: 'smooth' });
 
-            // Loading Indicator
-            const loadingId = 'load-' + Date.now();
-            history.innerHTML += `
-                <div id="${loadingId}" class="flex items-start space-x-3 mt-4 opacity-60">
-                    <img src="https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/Gemini_Generated_Image_okdjp7okdjp7okdj.png?download=true" class="w-8 h-8 rounded-full border bg-white">
-                    <div class="bg-gray-100 text-gray-800 p-3 rounded-2xl rounded-tl-sm text-sm">Thinking...</div>
-                </div>`;
+            const loadId = 'load-' + Date.now();
+            history.innerHTML += `<div id="${loadId}" class="flex items-start space-x-3 mt-4 opacity-60"><img src="https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/Gemini_Generated_Image_okdjp7okdjp7okdj.png?download=true" class="w-8 h-8 rounded-full border"><div class="bg-gray-100 text-gray-800 p-3 rounded-2xl rounded-tl-sm text-sm">Thinking...</div></div>`;
             history.scrollTo({ top: history.scrollHeight, behavior: 'smooth' });
 
             try {
-                let uid = localStorage.getItem("anon_user_id");
-                if (!uid) { uid = "anon_" + Math.random().toString(36).substring(7); localStorage.setItem("anon_user_id", uid); }
+                let uid = localStorage.getItem("anon_user_id") || ("anon_" + Math.random().toString(36).substring(7));
+                localStorage.setItem("anon_user_id", uid);
 
                 const res = await fetch(API_BASE + '/api/chat', {
-                    method: 'POST', 
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({ message: message, session_id: "guest_session", user_id: uid, user_name: "Guest" })
+                    method: 'POST', headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ message: message, session_id: "guest", user_id: uid, user_name: "Guest" })
                 });
                 
-                if(!res.ok) throw new Error("Network response was not ok");
-                
+                if(!res.ok) throw new Error("Backend Error");
                 const data = await res.json();
-                document.getElementById(loadingId).remove();
                 
-                // AI Message
-                history.innerHTML += `
-                    <div class="flex items-start space-x-3 mt-4">
-                        <img src="https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/Gemini_Generated_Image_okdjp7okdjp7okdj.png?download=true" class="w-8 h-8 rounded-full border border-gray-200 bg-white object-cover">
-                        <div class="bg-gray-100 text-gray-800 p-4 rounded-2xl rounded-tl-sm text-sm max-w-[85%] leading-relaxed shadow-sm">
-                            ${data.reply.replace(/\n/g, '<br>')}
-                        </div>
-                    </div>`;
+                document.getElementById(loadId).remove();
+                history.innerHTML += `<div class="flex items-start space-x-3 mt-4"><img src="https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/Gemini_Generated_Image_okdjp7okdjp7okdj.png?download=true" class="w-8 h-8 rounded-full border"><div class="bg-gray-100 text-gray-800 p-4 rounded-2xl rounded-tl-sm text-sm leading-relaxed shadow-sm">${data.reply.replace(/\n/g, '<br>')}</div></div>`;
                 history.scrollTo({ top: history.scrollHeight, behavior: 'smooth' });
             } catch(e) {
-                document.getElementById(loadingId).remove();
-                history.innerHTML += `<div class="text-center text-red-500 text-xs mt-3 font-semibold">⚠️ Error connecting to AI server.</div>`;
+                console.error(e);
+                document.getElementById(loadId).remove();
+                history.innerHTML += `<div class="text-center text-red-500 text-xs mt-3 font-semibold">⚠️ Backend Server Offline. Make sure your Python app is running.</div>`;
             }
         }
     </script>
