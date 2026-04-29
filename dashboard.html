@@ -11,14 +11,10 @@
         ::-webkit-scrollbar { width: 5px; }
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
         
-        /* Sidebar active state matching PDF */
+        /* Sidebar active state */
         .nav-active { background-color: #eff6ff; color: #0066FF; font-weight: 700; border-left: 4px solid #0066FF; }
         .nav-inactive { color: #64748b; font-weight: 500; border-left: 4px solid transparent; }
         .nav-inactive:hover { background-color: #f8fafc; color: #0f172a; }
-
-        /* App View Hiding */
-        .app-view { display: none; }
-        .app-view.active { display: flex; }
 
         /* Voice Orb Animation */
         @keyframes pulseGlow { 0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(255, 116, 116, 0.7); } 70% { transform: scale(1); box-shadow: 0 0 0 40px rgba(255, 116, 116, 0); } 100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(255, 116, 116, 0); } }
@@ -32,7 +28,7 @@
     <!-- PREMIUM UNLOCK MODAL -->
     <div id="premium-modal" class="fixed inset-0 bg-gray-900/60 z-[300] hidden items-center justify-center backdrop-blur-sm">
         <div class="bg-white rounded-3xl p-10 max-w-lg w-full text-center relative shadow-2xl">
-            <button onclick="document.getElementById('premium-modal').classList.add('hidden')" class="absolute top-4 right-5 text-gray-400 hover:text-gray-800 text-xl font-bold">✕</button>
+            <button onclick="document.getElementById('premium-modal').classList.add('hidden'); document.getElementById('premium-modal').classList.remove('flex');" class="absolute top-4 right-5 text-gray-400 hover:text-gray-800 text-xl font-bold">✕</button>
             <h2 class="text-2xl font-extrabold text-gray-900 mb-3">Unlock Doktura Premium</h2>
             <p class="text-gray-500 text-sm mb-8 px-4">Understand your medical reports instantly with AI, keep all your health records safely in one place, and access them anytime.</p>
             <button onclick="triggerSubscription()" id="sub-btn" class="w-full bg-[#0066FF] hover:bg-blue-700 transition text-white font-bold py-3.5 rounded-xl shadow-md flex justify-center items-center">
@@ -42,7 +38,7 @@
     </div>
 
     <!-- LEFT SIDEBAR -->
-    <div class="w-[260px] bg-white border-r border-gray-200 flex flex-col shrink-0 h-full z-10 shadow-[5px_0_15px_rgba(0,0,0,0.02)]">
+    <div class="w-[260px] bg-white border-r border-gray-200 flex flex-col shrink-0 h-full z-10 shadow-sm">
         <div class="p-6 pb-2">
             <img src="https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/ChatGPT%20Image%20Mar%2026%2C%202026%2C%2007_53_48%20PM.png?download=true" class="h-8">
         </div>
@@ -56,21 +52,21 @@
         <div class="flex-1 overflow-y-auto">
             <p class="px-6 py-2 text-[10px] font-bold text-gray-400 uppercase tracking-widest">Main Menu</p>
             <nav class="space-y-1 mt-1">
-                <button onclick="switchTab('chat')" id="btn-chat" class="nav-btn w-full flex items-center px-6 py-3 nav-active transition">
+                <button onclick="switchTab('chat')" id="btn-chat" class="w-full flex items-center px-6 py-3 nav-active transition">
                     <span class="w-5 h-5 mr-3 flex items-center justify-center bg-red-100 text-red-500 rounded-full text-[10px] font-bold">AI</span>
                     <span class="text-sm">AI Doctor</span>
                 </button>
-                <button onclick="switchTab('book')" id="btn-book" class="nav-btn w-full flex items-center px-6 py-3 nav-inactive transition">
+                <button onclick="switchTab('book')" id="btn-book" class="w-full flex items-center px-6 py-3 nav-inactive transition">
                     <svg class="w-5 h-5 mr-3 shrink-0 opacity-60" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
                     <span class="text-sm">Book Consultant</span>
                 </button>
-                <button onclick="switchTab('schedule')" id="btn-schedule" class="nav-btn w-full flex items-center px-6 py-3 nav-inactive transition justify-between">
+                <button onclick="switchTab('schedule')" id="btn-schedule" class="w-full flex items-center px-6 py-3 nav-inactive transition justify-between">
                     <div class="flex items-center">
                         <svg class="w-5 h-5 mr-3 shrink-0 opacity-60" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path></svg>
                         <span class="text-sm">Schedule Appointment</span>
                     </div>
                 </button>
-                <button onclick="switchTab('reports')" id="btn-reports" class="nav-btn w-full flex items-center px-6 py-3 nav-inactive transition">
+                <button onclick="switchTab('reports')" id="btn-reports" class="w-full flex items-center px-6 py-3 nav-inactive transition">
                     <svg class="w-5 h-5 mr-3 shrink-0 opacity-60" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
                     <span class="text-sm">Medical Reports</span>
                 </button>
@@ -86,7 +82,7 @@
 
         <div class="p-4 border-t border-gray-200">
             <div class="flex items-center justify-between w-full">
-                <button onclick="switchTab('settings')" id="btn-settings" class="nav-btn flex items-center space-x-3 overflow-hidden text-left hover:bg-gray-50 p-2 rounded-lg transition w-[85%]">
+                <button onclick="switchTab('settings')" id="btn-settings" class="flex items-center space-x-3 overflow-hidden text-left hover:bg-gray-50 p-2 rounded-lg transition w-[85%] nav-inactive">
                     <img id="userAvatar" src="" class="w-9 h-9 rounded-full object-cover shrink-0">
                     <div class="flex flex-col truncate">
                         <span id="userName" class="text-sm font-bold text-gray-900 truncate">Patient</span>
@@ -99,15 +95,14 @@
     </div>
 
     <!-- MAIN CONTENT AREA -->
-    <div class="flex-1 flex flex-col relative h-full bg-white">
+    <div class="flex-1 flex flex-col relative h-full bg-[#f8fafc]">
         
         <!-- ================= CHAT VIEW ================= -->
-        <div id="view-chat" class="app-view active flex-1 flex-col h-full bg-[#f8fafc] relative">
+        <div id="view-chat" class="flex-1 flex-col h-full relative flex">
             <div class="h-16 border-b border-gray-200 flex items-center justify-between px-8 bg-white shrink-0 shadow-sm z-10">
                 <h1 class="text-lg font-bold text-gray-800">Consultation AI</h1>
                 <div class="flex items-center space-x-4 text-gray-500">
                     <button class="hover:text-gray-800"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path></svg></button>
-                    <button class="hover:text-gray-800 flex items-center text-sm font-semibold"><svg class="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg> Help</button>
                 </div>
             </div>
             
@@ -122,7 +117,7 @@
                 <button onclick="exitVoiceMode()" class="mt-8 text-sm font-bold text-gray-400 hover:text-gray-800">Cancel</button>
             </div>
             
-            <div class="absolute bottom-0 w-full bg-gradient-to-t from-white via-white to-transparent pt-10 pb-6 px-8 flex justify-center z-40">
+            <div class="absolute bottom-0 w-full bg-gradient-to-t from-[#f8fafc] via-[#f8fafc] to-transparent pt-10 pb-6 px-8 flex justify-center z-40">
                 <div class="max-w-4xl w-full bg-white border border-gray-200 rounded-xl shadow-[0_2px_15px_rgba(0,0,0,0.06)] p-2 flex items-center">
                     <button onclick="enterVoiceMode()" class="p-3 text-gray-400 hover:text-gray-800 transition shrink-0"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"></path></svg></button>
                     <input type="text" id="chat-input" class="flex-1 bg-transparent px-3 py-2 focus:outline-none text-gray-800 text-sm" placeholder="Type a message or tap the mic for voice mode..." onkeypress="if(event.key === 'Enter') sendChat()">
@@ -134,7 +129,7 @@
         </div>
 
         <!-- ================= BOOK CONSULTANT VIEW ================= -->
-        <div id="view-book" class="app-view flex-1 flex-col overflow-y-auto bg-[#f8fafc]">
+        <div id="view-book" class="hidden flex-1 flex-col overflow-y-auto">
             <div class="h-16 border-b border-gray-200 flex items-center px-8 bg-white shrink-0 sticky top-0 z-10 shadow-sm">
                 <h1 class="text-lg font-bold text-gray-800">Book Consultant</h1>
             </div>
@@ -143,7 +138,6 @@
                 <p class="text-gray-500 mb-8 text-sm">Schedule a follow-up video call with one of our licensed human doctors.</p>
                 
                 <form onsubmit="submitBooking(event)">
-                    <!-- Tabs -->
                     <div class="flex bg-gray-100 p-1 rounded-xl mb-8 border border-gray-200 max-w-lg">
                         <label class="flex-1 text-center cursor-pointer relative">
                             <input type="radio" name="v_type" value="online" checked class="peer sr-only">
@@ -168,7 +162,7 @@
                             <label class="block text-sm font-bold text-gray-700 mb-2">Symptoms</label>
                             <div class="relative">
                                 <input type="text" id="book-symptoms" placeholder="e.g skin rash, headache..." class="w-full border border-gray-300 rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-[#0066FF] pr-24">
-                                <button type="button" onclick="suggestDoctor()" class="absolute right-2 top-2 bottom-2 bg-white border border-gray-200 hover:bg-gray-50 text-gray-700 px-4 rounded-md text-xs font-bold flex items-center shadow-sm"><svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd"></path></svg> Find</button>
+                                <button type="button" onclick="suggestDoctor()" class="absolute right-2 top-2 bottom-2 bg-white border border-gray-200 hover:bg-gray-50 text-gray-700 px-4 rounded-md text-xs font-bold shadow-sm">Find</button>
                             </div>
                         </div>
 
@@ -179,26 +173,23 @@
 
                         <div>
                             <label class="block text-sm font-bold text-gray-700 mb-2">Date of Appointment</label>
-                            <input type="datetime-local" id="book-time" class="w-full border border-gray-300 rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-[#0066FF]">
+                            <input type="datetime-local" id="book-time" required class="w-full border border-gray-300 rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-[#0066FF]">
                         </div>
                     </div>
 
                     <div class="mt-8 mb-8 pb-8 border-b border-gray-200">
                         <p class="text-sm font-bold text-gray-700 mb-2">Payment (FEE: RM 10.00)</p>
-                        <div class="bg-gray-100 p-4 rounded-lg flex items-center text-xs text-gray-600 font-medium">
-                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                            Kindly be informed that cancellations will not be eligible for a refund.
-                        </div>
+                        <div class="bg-gray-100 p-4 rounded-lg text-xs text-gray-600 font-medium">Kindly be informed that cancellations will not be eligible for a refund.</div>
                     </div>
 
-                    <button type="submit" id="book-btn" class="w-full bg-[#0066FF] hover:bg-blue-700 text-white font-bold py-3.5 rounded-lg shadow-md transition uppercase tracking-wide text-sm">PAY NOW</button>
+                    <button type="submit" id="book-btn" class="w-full bg-[#0066FF] hover:bg-blue-700 text-white font-bold py-3.5 rounded-lg shadow-md transition uppercase text-sm">PAY NOW</button>
                     <div id="book-result" class="hidden mt-4 p-4 rounded text-center text-sm font-bold"></div>
                 </form>
             </div>
         </div>
 
         <!-- ================= SCHEDULE APPOINTMENT VIEW ================= -->
-        <div id="view-schedule" class="app-view flex-1 flex-col overflow-y-auto bg-[#f8fafc]">
+        <div id="view-schedule" class="hidden flex-1 flex-col overflow-y-auto">
             <div class="h-16 border-b border-gray-200 flex items-center px-8 bg-white shrink-0 sticky top-0 z-10 shadow-sm">
                 <h1 class="text-lg font-bold text-gray-800">Schedule Appointment</h1>
             </div>
@@ -207,10 +198,6 @@
                     <div>
                         <h2 class="text-3xl font-extrabold text-gray-900 mb-1">Schedule Appointment</h2>
                         <p class="text-gray-500 text-sm">Schedule and manage your upcoming consultations with ease.</p>
-                    </div>
-                    <div class="flex space-x-3">
-                        <input type="text" placeholder="Search" class="border border-gray-300 rounded-lg px-4 py-2 text-sm focus:outline-none">
-                        <button class="border border-gray-300 bg-white px-4 py-2 rounded-lg text-sm text-gray-600 font-bold flex items-center shadow-sm"><svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path></svg> Refresh</button>
                     </div>
                 </div>
 
@@ -227,7 +214,6 @@
                             </tr>
                         </thead>
                         <tbody id="schedule-table-body" class="text-sm text-gray-800 divide-y divide-gray-100">
-                            <!-- Populated by JS -->
                         </tbody>
                     </table>
                 </div>
@@ -235,7 +221,7 @@
         </div>
 
         <!-- ================= MEDICAL REPORTS VIEW ================= -->
-        <div id="view-reports" class="app-view flex-1 flex-col overflow-y-auto bg-[#f8fafc] relative">
+        <div id="view-reports" class="hidden flex-1 flex-col overflow-y-auto relative">
             <div class="h-16 border-b border-gray-200 flex items-center px-8 bg-white shrink-0 sticky top-0 z-10 shadow-sm">
                 <h1 class="text-lg font-bold text-gray-800">Medical Reports</h1>
             </div>
@@ -246,19 +232,15 @@
                         <h2 class="text-3xl font-extrabold text-gray-900 mb-1">Your Medical Documents</h2>
                         <p class="text-gray-500 text-sm">Manage and upload your medical documents</p>
                     </div>
-                    <div class="flex space-x-3">
-                        <input type="text" placeholder="Search" class="border border-gray-300 rounded-lg px-4 py-2 text-sm focus:outline-none">
-                        <button onclick="document.getElementById('upload-modal').classList.remove('hidden')" class="bg-[#d9381e] text-white px-5 py-2.5 rounded-lg text-sm font-bold shadow hover:bg-red-700 transition flex items-center">
-                            + Upload Report
-                        </button>
-                    </div>
+                    <button onclick="document.getElementById('upload-modal').classList.remove('hidden'); document.getElementById('upload-modal').classList.add('flex');" class="bg-[#d9381e] text-white px-5 py-2.5 rounded-lg text-sm font-bold shadow hover:bg-red-700 transition">
+                        + Upload Report
+                    </button>
                 </div>
 
                 <div class="bg-white border border-gray-200 rounded-2xl shadow-sm p-24 flex flex-col items-center justify-center text-center">
                     <svg class="w-20 h-20 mb-6 text-gray-300 opacity-60" fill="currentColor" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6zm-1 1.5L18.5 9H13V3.5zM18 20H6V4h5v6h6v10z"/></svg>
                     <h3 class="text-lg font-extrabold text-gray-900 mb-1">No medical documents found</h3>
                     <p class="text-gray-500 text-sm mb-6">Start by uploading your first medical document.</p>
-                    <button onclick="document.getElementById('upload-modal').classList.remove('hidden')" class="bg-[#f59e0b] hover:bg-yellow-600 text-white font-bold py-2 px-6 rounded text-sm transition">Add Document</button>
                 </div>
             </div>
 
@@ -267,26 +249,22 @@
                 <div class="bg-white rounded-3xl p-8 max-w-lg w-full relative shadow-2xl">
                     <div class="flex justify-between items-center mb-6">
                         <h2 class="text-xl font-bold text-gray-900">Upload Your Medical Reports</h2>
-                        <button onclick="document.getElementById('upload-modal').classList.add('hidden')" class="text-gray-400 hover:text-gray-800 text-xl font-bold">✕</button>
+                        <button onclick="document.getElementById('upload-modal').classList.add('hidden'); document.getElementById('upload-modal').classList.remove('flex');" class="text-gray-400 hover:text-gray-800 text-xl font-bold">✕</button>
                     </div>
                     
                     <form onsubmit="uploadReport(event)">
                         <label class="block text-xs font-bold text-gray-700 mb-1">Report Name</label>
                         <input type="text" value="Blood Test Result" class="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm mb-4">
-                        
                         <label class="block text-xs font-bold text-gray-700 mb-1">Report Type</label>
                         <input type="text" value="MRI Scan" class="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm mb-6">
-                        
-                        <label class="block text-xs font-bold text-gray-700 mb-1">Medical Records</label>
                         <div class="border-2 border-dashed border-gray-300 rounded-xl p-10 text-center cursor-pointer hover:bg-gray-50 transition relative mb-8">
                             <input type="file" id="report-file" required class="absolute inset-0 w-full h-full opacity-0 cursor-pointer">
                             <svg class="w-8 h-8 text-gray-400 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path></svg>
                             <p class="text-sm font-bold text-gray-700">Click to upload or drag and drop</p>
-                            <p class="text-xs text-gray-400 mt-1">Format is JPG, PNG or PDF and max 10 MB.</p>
+                            <p class="text-xs text-gray-400 mt-1">Format is JPG, PNG or PDF</p>
                         </div>
-                        
                         <div class="flex space-x-3">
-                            <button type="button" onclick="document.getElementById('upload-modal').classList.add('hidden')" class="flex-1 bg-white border border-gray-300 text-gray-700 font-bold py-3 rounded-lg hover:bg-gray-50">Cancel</button>
+                            <button type="button" onclick="document.getElementById('upload-modal').classList.add('hidden'); document.getElementById('upload-modal').classList.remove('flex');" class="flex-1 bg-white border border-gray-300 text-gray-700 font-bold py-3 rounded-lg hover:bg-gray-50">Cancel</button>
                             <button type="submit" id="upload-btn" class="flex-1 bg-[#0066FF] text-white font-bold py-3 rounded-lg hover:bg-blue-700">Add</button>
                         </div>
                         <div id="upload-result" class="hidden mt-4 p-3 rounded text-sm font-bold text-center"></div>
@@ -296,7 +274,7 @@
         </div>
 
         <!-- ================= PROFILE SETTINGS VIEW ================= -->
-        <div id="view-settings" class="app-view flex-1 flex-col overflow-y-auto bg-[#f8fafc]">
+        <div id="view-settings" class="hidden flex-1 flex-col overflow-y-auto">
             <div class="h-16 border-b border-gray-200 flex items-center px-8 bg-white shrink-0 sticky top-0 z-10 shadow-sm">
                 <h1 class="text-lg font-bold text-gray-800">Profile Settings</h1>
             </div>
@@ -306,20 +284,16 @@
                     <div id="settingsAlert" class="hidden mb-6 p-4 rounded text-sm text-center font-bold"></div>
                     <div class="flex items-center space-x-6 mb-8">
                         <img id="set-avatar" src="" class="w-20 h-20 rounded-full border border-gray-200 object-cover shadow-sm">
-                        <div>
-                            <label class="block text-sm font-bold text-gray-700 mb-2">Change Photo</label>
-                            <input type="file" id="set-photo" accept="image/*" class="text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100">
-                        </div>
+                        <input type="file" id="set-photo" accept="image/*" class="text-sm text-gray-500">
                     </div>
                     <div class="space-y-5">
-                        <div><label class="block text-xs font-bold text-gray-500 uppercase mb-1">Full Name</label><input type="text" id="set-name" class="w-full border border-gray-300 rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-[#0066FF]"></div>
-                        <div><label class="block text-xs font-bold text-gray-500 uppercase mb-1">Phone Number</label><input type="text" id="set-phone" class="w-full border border-gray-300 rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-[#0066FF]"></div>
-                        <button onclick="saveSettings()" id="set-btn" class="w-full mt-4 bg-[#0066FF] text-white font-bold py-3.5 rounded-xl shadow-md hover:bg-blue-700 transition">Update Profile</button>
+                        <div><label class="block text-xs font-bold text-gray-500 uppercase mb-1">Full Name</label><input type="text" id="set-name" class="w-full border border-gray-300 rounded-lg px-4 py-3 text-sm"></div>
+                        <div><label class="block text-xs font-bold text-gray-500 uppercase mb-1">Phone Number</label><input type="text" id="set-phone" class="w-full border border-gray-300 rounded-lg px-4 py-3 text-sm"></div>
+                        <button onclick="saveSettings()" id="set-btn" class="w-full mt-4 bg-[#0066FF] text-white font-bold py-3.5 rounded-xl hover:bg-blue-700">Update Profile</button>
                     </div>
                 </div>
             </div>
         </div>
-
     </div>
 
     <!-- Firebase / Backend logic -->
@@ -328,12 +302,7 @@
         import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-auth.js";
         import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore.js";
         
-        const app = initializeApp({
-            apiKey: "AIzaSyCrx9BPS8ficDzgVZMbJIb4b3PQ9IqEHLw",
-            authDomain: "doktura-ai-907d8.firebaseapp.com",
-            projectId: "doktura-ai-907d8"
-        });
-        
+        const app = initializeApp({ apiKey: "AIzaSyCrx9BPS8ficDzgVZMbJIb4b3PQ9IqEHLw", authDomain: "doktura-ai-907d8.firebaseapp.com", projectId: "doktura-ai-907d8" });
         const auth = getAuth(app);
         const db = getFirestore(app);
         
@@ -349,40 +318,24 @@
                 window.userData.is_subscribed = userDoc.exists() ? (userDoc.data().is_subscribed || false) : false;
 
                 const token = await user.getIdToken();
-                const res = await fetch(`${API_BASE}/api/user/sync`, {
-                    method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-                    body: JSON.stringify({ email: user.email })
-                });
+                const res = await fetch(`${API_BASE}/api/user/sync`, { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }, body: JSON.stringify({ email: user.email }) });
                 
                 if (res.status === 401 || res.status === 403) { await signOut(auth); window.location.href = "login.html"; return; }
                 const data = await res.json();
                 if(!data.is_complete) { window.location.href = "login.html"; return; }
                 
-                window.userData.name = data.name;
-                window.userData.phone = data.phone;
-                window.userData.photo_url = data.photo_url;
-                
+                window.userData.name = data.name; window.userData.phone = data.phone; window.userData.photo_url = data.photo_url;
                 document.getElementById('appBody').classList.remove('hidden');
-                document.getElementById('userName').innerText = data.name;
-                document.getElementById('userEmail').innerText = user.email;
-                document.getElementById('set-name').value = data.name;
-                document.getElementById('set-phone').value = data.phone;
-                document.getElementById('book-name').value = data.name;
-                document.getElementById('book-email').value = user.email;
+                
+                document.getElementById('userName').innerText = data.name; document.getElementById('userEmail').innerText = user.email;
+                document.getElementById('set-name').value = data.name; document.getElementById('set-phone').value = data.phone;
+                document.getElementById('book-name').value = data.name; document.getElementById('book-email').value = user.email;
                 
                 let avatar = data.photo_url || user.photoURL || `data:image/svg+xml;base64,${btoa(`<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64"><rect width="64" height="64" fill="#0066FF"/><text x="50%" y="50%" fill="#fff" font-size="32" font-family="sans-serif" font-weight="bold" text-anchor="middle" dy=".35em">${data.name.charAt(0).toUpperCase()}</text></svg>`)}`;
-                document.getElementById('userAvatar').src = avatar;
-                document.getElementById('set-avatar').src = avatar;
-                window.currentAvatar = avatar;
+                document.getElementById('userAvatar').src = avatar; document.getElementById('set-avatar').src = avatar; window.currentAvatar = avatar;
 
-                switchTab('chat');
-                loadSessions();
-                fetchDoctors();
-                fetchAppointments(); // Load REAL appointments
-            } catch(e) { 
-                console.error("DASHBOARD ERROR:", e);
-                document.getElementById('appBody').classList.remove('hidden'); 
-            }
+                switchTab('chat'); loadSessions(); fetchDoctors(); fetchAppointments(); 
+            } catch(e) { console.error("DASHBOARD ERROR:", e); document.getElementById('appBody').classList.remove('hidden'); }
         });
 
         document.getElementById("logoutBtn").addEventListener("click", () => signOut(auth));
@@ -392,29 +345,18 @@
     <script>
         window.currentSessionId = null;
 
-        async function getAuthHeaders() {
-            const h = { 'Content-Type': 'application/json' };
-            if(window.currentUser) h['Authorization'] = `Bearer ${await window.currentUser.getIdToken()}`;
-            return h;
-        }
+        async function getAuthHeaders() { const h = { 'Content-Type': 'application/json' }; if(window.currentUser) h['Authorization'] = `Bearer ${await window.currentUser.getIdToken()}`; return h; }
 
         window.switchTab = function(tab) {
             if(tab === 'reports' && !window.userData.is_subscribed) {
-                document.getElementById('premium-modal').classList.remove('hidden');
-                document.getElementById('premium-modal').classList.add('flex');
-                return; 
+                document.getElementById('premium-modal').classList.remove('hidden'); document.getElementById('premium-modal').classList.add('flex'); return; 
             }
-
-            document.querySelectorAll('.app-view').forEach(el => el.classList.remove('active'));
-            document.querySelectorAll('.nav-btn').forEach(el => {
-                el.classList.remove('nav-active');
-                el.classList.add('nav-inactive');
+            ['chat','book','schedule','reports','settings'].forEach(t => {
+                const v = document.getElementById('view-'+t); if(v) { v.classList.add('hidden'); v.classList.remove('flex'); }
+                const b = document.getElementById('btn-'+t); if(b) { b.classList.remove('nav-active'); b.classList.add('nav-inactive'); }
             });
-            
-            const viewEl = document.getElementById('view-' + tab);
-            const btnEl = document.getElementById('btn-' + tab);
-            if(viewEl) viewEl.classList.add('active');
-            if(btnEl) { btnEl.classList.add('nav-active'); btnEl.classList.remove('nav-inactive'); }
+            const activeV = document.getElementById('view-'+tab); if(activeV) { activeV.classList.remove('hidden'); activeV.classList.add('flex'); }
+            const activeB = document.getElementById('btn-'+tab); if(activeB) { activeB.classList.add('nav-active'); activeB.classList.remove('nav-inactive'); }
         }
 
         window.triggerSubscription = async function() {
@@ -422,13 +364,12 @@
             try {
                 const r = await fetch(`${API_BASE}/api/create_subscription`, { method: 'POST', headers: await getAuthHeaders(), body: JSON.stringify({user_id: window.currentUser.uid}) });
                 const d = await r.json();
-                if(d.stripe_url) window.location.href = d.stripe_url;
-                else alert('Error: ' + d.error);
+                if(d.stripe_url) window.location.href = d.stripe_url; else alert('Error: ' + d.error);
             } catch(e) { alert("Network error."); }
             btn.innerText = "Unlock DokturaPremium – RM 50";
         }
 
-        // ================= CHAT ENGINE (Perfect PDF Styles) =================
+        // ================= CHAT =================
         async function loadSessions() {
             const r = await fetch(API_BASE+'/api/sessions',{method:'POST',headers:await getAuthHeaders(),body:JSON.stringify({user_id:window.currentUser.uid})});
             const sessions = (await r.json()).sessions || [];
@@ -449,20 +390,16 @@
         async function loadHistory() {
             const el = document.getElementById('chat-history');
             const r = await fetch(API_BASE+'/api/history',{method:'POST',headers:await getAuthHeaders(),body:JSON.stringify({user_id:window.currentUser.uid, session_id:window.currentSessionId})});
-            const data = await r.json();
-            el.innerHTML = '';
+            const data = await r.json(); el.innerHTML = '';
             
             if(!data.history || data.history.length === 0 || !data.history.some(m=>m.role!=='system')) {
-                el.innerHTML = `<div class="flex flex-col items-start mb-6"><div class="flex items-center mb-1"><img src="https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/ChatGPT%20Image%20Mar%2026%2C%202026%2C%2007_53_48%20PM.png?download=true" class="w-6 h-6 rounded-full mr-2 object-cover bg-white border border-gray-200"><span class="text-xs font-bold text-gray-800">doktura.ai</span></div><div class="bg-white border border-gray-100 shadow-[0_2px_10px_rgba(0,0,0,0.03)] px-5 py-4 rounded-2xl rounded-tl-sm text-sm text-gray-700 max-w-[80%] leading-relaxed">Hello ${window.userData.name}! How can I assist you today?</div></div>`;
+                el.innerHTML = `<div class="flex flex-col items-start mb-6"><div class="flex items-center mb-1"><img src="https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/ChatGPT%20Image%20Mar%2026%2C%202026%2C%2007_53_48%20PM.png?download=true" class="w-6 h-6 rounded-full mr-2 border bg-white"><span class="text-xs font-bold text-gray-800">doktura.ai</span></div><div class="bg-white border shadow-sm px-5 py-4 rounded-2xl rounded-tl-sm text-sm text-gray-700">Hello ${window.userData.name}! How can I assist you today?</div></div>`;
             } else {
                 data.history.forEach(m => {
                     if(m.role==='system') return;
                     let txt = m.content.replace(/\n/g,'<br>');
-                    if(m.role==='user') {
-                        el.innerHTML += `<div class="flex flex-col items-end mb-6 w-full"><div class="flex items-center mb-1"><span class="text-xs text-gray-500 mr-2">${window.userData.name} (You)</span><img src="${window.currentAvatar}" class="w-6 h-6 rounded-full object-cover"></div><div class="bg-[#0066FF] text-white px-5 py-3.5 rounded-2xl rounded-tr-sm text-sm max-w-[70%] shadow-sm leading-relaxed">${txt}</div></div>`;
-                    } else {
-                        el.innerHTML += `<div class="flex flex-col items-start mb-6 w-full"><div class="flex items-center mb-1"><img src="https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/ChatGPT%20Image%20Mar%2026%2C%202026%2C%2007_53_48%20PM.png?download=true" class="w-6 h-6 rounded-full mr-2 object-cover bg-white border border-gray-200"><span class="text-xs font-bold text-gray-800">doktura.ai</span></div><div class="bg-white border border-gray-100 shadow-[0_2px_10px_rgba(0,0,0,0.03)] px-5 py-4 rounded-2xl rounded-tl-sm text-sm text-gray-700 max-w-[80%] leading-relaxed">${txt}</div></div>`;
-                    }
+                    if(m.role==='user') el.innerHTML += `<div class="flex flex-col items-end mb-6 w-full"><div class="flex items-center mb-1"><span class="text-xs text-gray-500 mr-2">${window.userData.name} (You)</span><img src="${window.currentAvatar}" class="w-6 h-6 rounded-full object-cover"></div><div class="bg-[#0066FF] text-white px-5 py-3.5 rounded-2xl rounded-tr-sm text-sm max-w-[70%] shadow-sm">${txt}</div></div>`;
+                    else el.innerHTML += `<div class="flex flex-col items-start mb-6 w-full"><div class="flex items-center mb-1"><img src="https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/ChatGPT%20Image%20Mar%2026%2C%202026%2C%2007_53_48%20PM.png?download=true" class="w-6 h-6 rounded-full mr-2 border bg-white"><span class="text-xs font-bold text-gray-800">doktura.ai</span></div><div class="bg-white border shadow-sm px-5 py-4 rounded-2xl rounded-tl-sm text-sm text-gray-700 max-w-[80%]">${txt}</div></div>`;
                 });
             }
             el.scrollTo({top: el.scrollHeight});
@@ -471,155 +408,66 @@
         window.sendChat = async function() {
             const input = document.getElementById('chat-input'); const msg = input.value.trim(); if(!msg) return;
             const el = document.getElementById('chat-history');
-            
-            el.innerHTML += `<div class="flex flex-col items-end mb-6 w-full"><div class="flex items-center mb-1"><span class="text-xs text-gray-500 mr-2">${window.userData.name} (You)</span><img src="${window.currentAvatar}" class="w-6 h-6 rounded-full object-cover"></div><div class="bg-[#0066FF] text-white px-5 py-3.5 rounded-2xl rounded-tr-sm text-sm max-w-[70%] shadow-sm leading-relaxed">${msg}</div></div>`;
+            el.innerHTML += `<div class="flex flex-col items-end mb-6 w-full"><div class="flex items-center mb-1"><span class="text-xs text-gray-500 mr-2">${window.userData.name} (You)</span><img src="${window.currentAvatar}" class="w-6 h-6 rounded-full object-cover"></div><div class="bg-[#0066FF] text-white px-5 py-3.5 rounded-2xl rounded-tr-sm text-sm max-w-[70%] shadow-sm">${msg}</div></div>`;
             input.value = ''; el.scrollTo({top: el.scrollHeight});
-
             const r = await fetch(API_BASE+'/api/chat',{method:'POST',headers:await getAuthHeaders(),body:JSON.stringify({message:msg, session_id:window.currentSessionId, user_name:window.userData.name})});
             const data = await r.json();
-            
-            el.innerHTML += `<div class="flex flex-col items-start mb-6 w-full"><div class="flex items-center mb-1"><img src="https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/ChatGPT%20Image%20Mar%2026%2C%202026%2C%2007_53_48%20PM.png?download=true" class="w-6 h-6 rounded-full mr-2 object-cover bg-white border border-gray-200"><span class="text-xs font-bold text-gray-800">doktura.ai</span></div><div class="bg-white border border-gray-100 shadow-[0_2px_10px_rgba(0,0,0,0.03)] px-5 py-4 rounded-2xl rounded-tl-sm text-sm text-gray-700 max-w-[80%] leading-relaxed">${data.reply.replace(/\n/g,'<br>')}</div></div>`;
+            el.innerHTML += `<div class="flex flex-col items-start mb-6 w-full"><div class="flex items-center mb-1"><img src="https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/ChatGPT%20Image%20Mar%2026%2C%202026%2C%2007_53_48%20PM.png?download=true" class="w-6 h-6 rounded-full mr-2 border bg-white"><span class="text-xs font-bold text-gray-800">doktura.ai</span></div><div class="bg-white border shadow-sm px-5 py-4 rounded-2xl rounded-tl-sm text-sm text-gray-700 max-w-[80%]">${data.reply.replace(/\n/g,'<br>')}</div></div>`;
             el.scrollTo({top: el.scrollHeight});
         }
 
-        // ================= VOICE API ENGINE (Properly scoped globally) =================
-        let voiceRec = null;
-        let isVoiceActive = false;
-
+        // ================= VOICE =================
+        let voiceRec = null; let isVoiceActive = false;
         window.initVoice = function() {
-            if (!('webkitSpeechRecognition' in window)) { alert("Voice not supported in this browser. Use Chrome."); return null; }
-            const rec = new webkitSpeechRecognition();
-            rec.continuous = true; rec.interimResults = true;
-            
-            rec.onstart = () => { 
-                document.getElementById('voice-transcript').innerText = "Listening..."; 
-                document.getElementById('voice-action-btn').classList.add('animate-pulse'); 
-            };
-            rec.onresult = (e) => {
-                let trans = ""; for(let i=e.resultIndex; i<e.results.length; i++) trans += e.results[i][0].transcript;
-                document.getElementById('voice-transcript').innerText = trans;
-            };
+            if (!('webkitSpeechRecognition' in window)) { alert("Voice not supported here. Use Chrome."); return null; }
+            const rec = new webkitSpeechRecognition(); rec.continuous = true; rec.interimResults = true;
+            rec.onstart = () => { document.getElementById('voice-transcript').innerText = "Listening..."; document.getElementById('voice-action-btn').classList.add('animate-pulse'); };
+            rec.onresult = (e) => { let trans = ""; for(let i=e.resultIndex; i<e.results.length; i++) trans += e.results[i][0].transcript; document.getElementById('voice-transcript').innerText = trans; };
             rec.onend = () => {
-                document.getElementById('voice-action-btn').classList.remove('animate-pulse');
-                isVoiceActive = false;
+                document.getElementById('voice-action-btn').classList.remove('animate-pulse'); isVoiceActive = false;
                 const finalTxt = document.getElementById('voice-transcript').innerText;
-                if(finalTxt && finalTxt !== "Tap to start talking. Tap again to stop and send." && finalTxt !== "Listening...") {
-                    document.getElementById('chat-input').value = finalTxt;
-                    sendChat(); exitVoiceMode();
-                }
+                if(finalTxt && finalTxt !== "Tap to start talking. Tap again to stop and send." && finalTxt !== "Listening...") { document.getElementById('chat-input').value = finalTxt; sendChat(); exitVoiceMode(); }
             };
             return rec;
         }
+        window.enterVoiceMode = function() { document.getElementById('voice-overlay').classList.remove('hidden'); document.getElementById('voice-overlay').classList.add('flex'); document.getElementById('voice-transcript').innerText = "Tap to start talking. Tap again to stop and send."; if(!voiceRec) voiceRec = initVoice(); }
+        window.exitVoiceMode = function() { document.getElementById('voice-overlay').classList.add('hidden'); document.getElementById('voice-overlay').classList.remove('flex'); if(voiceRec && isVoiceActive) { voiceRec.stop(); isVoiceActive = false; } }
+        window.toggleVoiceMic = function() { if(!voiceRec) return; if(isVoiceActive) voiceRec.stop(); else { document.getElementById('voice-transcript').innerText = "..."; voiceRec.start(); isVoiceActive = true; } }
 
-        window.enterVoiceMode = function() {
-            document.getElementById('voice-overlay').classList.remove('hidden'); document.getElementById('voice-overlay').classList.add('flex');
-            document.getElementById('voice-transcript').innerText = "Tap to start talking. Tap again to stop and send.";
-            if(!voiceRec) voiceRec = initVoice();
-        }
-
-        window.exitVoiceMode = function() {
-            document.getElementById('voice-overlay').classList.add('hidden'); document.getElementById('voice-overlay').classList.remove('flex');
-            if(voiceRec && isVoiceActive) { voiceRec.stop(); isVoiceActive = false; }
-        }
-
-        window.toggleVoiceMic = function() {
-            if(!voiceRec) return;
-            if(isVoiceActive) { voiceRec.stop(); } else { document.getElementById('voice-transcript').innerText = "..."; voiceRec.start(); isVoiceActive = true; }
-        }
-
-        // ================= APPOINTMENTS =================
+        // ================= APPOINTMENTS & DOCTORS =================
         async function fetchAppointments() {
             const tbody = document.getElementById('schedule-table-body');
             try {
-                const r = await fetch(API_BASE + '/api/appointments', { method: 'GET', headers: await getAuthHeaders() });
-                const data = await r.json();
-                tbody.innerHTML = '';
-                
+                const r = await fetch(API_BASE + '/api/appointments', { method: 'GET', headers: await getAuthHeaders() }); const data = await r.json(); tbody.innerHTML = '';
                 if(!data.appointments || data.appointments.length === 0) { tbody.innerHTML = `<tr><td colspan="6" class="py-6 text-center text-gray-400 font-medium">No appointments scheduled.</td></tr>`; return; }
-                
                 data.appointments.forEach(r => {
                     let sColor = r.status === 'Done' ? 'text-green-600 bg-green-50' : r.status === 'On Going' ? 'text-yellow-600 bg-yellow-50' : r.status === 'Scheduled' ? 'text-blue-600 bg-blue-50' : 'text-red-500 bg-red-50';
-                    let icon = r.type === 'Online' ? '🎥' : '🏥';
-                    let btnHtml = r.action_url ? `<a href="${API_BASE}${r.action_url}" target="_blank" class="bg-[#1e1b4b] hover:bg-blue-900 transition text-white text-[10px] font-bold px-3 py-1.5 rounded uppercase">Start Video Call</a>` : '';
+                    let btnHtml = r.action_url ? `<a href="${API_BASE}${r.action_url}" target="_blank" class="bg-[#1e1b4b] hover:bg-blue-900 text-white text-[10px] font-bold px-3 py-1.5 rounded uppercase">Start Video Call</a>` : '';
                     if (r.status === 'Done') btnHtml = `<button class="bg-gray-200 text-gray-500 text-[10px] font-bold px-3 py-1.5 rounded uppercase" disabled>Completed</button>`;
-                    
-                    tbody.innerHTML += `
-                        <tr class="border-b border-gray-100 hover:bg-gray-50 transition">
-                            <td class="py-4 px-6 font-bold text-gray-900">${r.id}</td>
-                            <td class="py-4 px-6 flex items-center font-medium mt-1"><span class="mr-2">${icon}</span> ${r.type}</td>
-                            <td class="py-4 px-6 font-medium">${r.date}</td>
-                            <td class="py-4 px-6 text-gray-500">${r.time}</td>
-                            <td class="py-4 px-6 font-bold"><span class="${sColor} px-2.5 py-1 rounded text-xs">${r.status}</span></td>
-                            <td class="py-4 px-6 text-center">${btnHtml}</td>
-                        </tr>`;
+                    tbody.innerHTML += `<tr class="border-b border-gray-100 hover:bg-gray-50"><td class="py-4 px-6 font-bold text-gray-900">${r.id}</td><td class="py-4 px-6 flex items-center mt-1"><span class="mr-2">${r.type==='Online'?'🎥':'🏥'}</span> ${r.type}</td><td class="py-4 px-6 font-medium">${r.date}</td><td class="py-4 px-6 text-gray-500">${r.time}</td><td class="py-4 px-6 font-bold"><span class="${sColor} px-2.5 py-1 rounded text-xs">${r.status}</span></td><td class="py-4 px-6 text-center">${btnHtml}</td></tr>`;
                 });
             } catch (e) { tbody.innerHTML = `<tr><td colspan="6" class="py-6 text-center text-red-500 font-bold">Failed to load appointments.</td></tr>`; }
         }
-
-        async function fetchDoctors() {
-            const r = await fetch(API_BASE+'/api/doctors'); const docs = await r.json();
-            const sel = document.getElementById('book-doctor'); sel.innerHTML = '<option value="">(e.g Dr. John Doe)</option>';
-            docs.forEach(d => sel.innerHTML += `<option value="${d.id}">${d.name} - ${d.specialty}</option>`);
-        }
-        
-        window.suggestDoctor = async function() {
-            const sym = document.getElementById('book-symptoms').value;
-            if(!sym) return alert("Please type your symptoms first.");
-            const r = await fetch(API_BASE+'/api/suggest_doctor', {method:'POST',headers:await getAuthHeaders(), body:JSON.stringify({symptoms:sym})});
-            const d = await r.json();
-            if(d.doctor_id) document.getElementById('book-doctor').value = d.doctor_id;
-            else alert(d.message);
-        }
-
+        async function fetchDoctors() { const r = await fetch(API_BASE+'/api/doctors'); const docs = await r.json(); const sel = document.getElementById('book-doctor'); sel.innerHTML = '<option value="">-- Select --</option>'; docs.forEach(d => sel.innerHTML += `<option value="${d.id}">${d.name} - ${d.specialty}</option>`); }
+        window.suggestDoctor = async function() { const sym = document.getElementById('book-symptoms').value; if(!sym) return alert("Please type your symptoms first."); const r = await fetch(API_BASE+'/api/suggest_doctor', {method:'POST',headers:await getAuthHeaders(), body:JSON.stringify({symptoms:sym})}); const d = await r.json(); if(d.doctor_id) document.getElementById('book-doctor').value = d.doctor_id; else alert(d.message); }
         window.submitBooking = async function(e) { 
-            e.preventDefault(); 
-            const btn = document.getElementById('book-btn'); btn.innerText = "Processing...";
-            const vType = document.querySelector('input[name="v_type"]:checked').value;
+            e.preventDefault(); const btn = document.getElementById('book-btn'); btn.innerText = "Processing..."; const vType = document.querySelector('input[name="v_type"]:checked').value;
             try {
-                const r = await fetch(API_BASE+'/api/book_appointment', {
-                    method:'POST', headers:await getAuthHeaders(),
-                    body:JSON.stringify({ doctor_id: document.getElementById('book-doctor').value, visit_type: vType, preferred_datetime: document.getElementById('book-time').value })
-                });
-                const d = await r.json();
-                if(d.stripe_url) window.location.href = d.stripe_url;
-                else {
-                    const res = document.getElementById('book-result'); res.innerText = d.message; res.classList.remove('hidden'); res.classList.add('bg-green-100','text-green-800');
-                    fetchAppointments();
-                }
-            } catch(e) { alert("Booking failed"); }
-            btn.innerText = "PAY NOW";
+                const r = await fetch(API_BASE+'/api/book_appointment', { method:'POST', headers:await getAuthHeaders(), body:JSON.stringify({ doctor_id: document.getElementById('book-doctor').value, visit_type: vType, preferred_datetime: document.getElementById('book-time').value }) });
+                const d = await r.json(); if(d.stripe_url) window.location.href = d.stripe_url; else { const res = document.getElementById('book-result'); res.innerText = d.message; res.classList.remove('hidden'); res.classList.add('bg-green-100','text-green-800'); fetchAppointments(); }
+            } catch(e) { alert("Booking failed"); } btn.innerText = "PAY NOW";
         }
 
         // ================= SETTINGS =================
         window.saveSettings = async function() {
-            const btn = document.getElementById('set-btn'); const alert = document.getElementById('settingsAlert');
-            btn.innerText = "Saving...";
-            let photoUrl = window.userData.photo_url;
-            const file = document.getElementById('set-photo').files[0];
-            if(file) {
-                const fd = new FormData(); fd.append('file', file); fd.append('user_id', window.currentUser.uid);
-                try { const r = await fetch(`${API_BASE}/api/upload_avatar`,{method:'POST',body:fd}); photoUrl = (await r.json()).photo_url; }catch(e){}
-            }
-            try {
-                await fetch(`${API_BASE}/api/user/profile`, {
-                    method: 'POST', headers: await getAuthHeaders(),
-                    body: JSON.stringify({ name: document.getElementById('set-name').value, phone: document.getElementById('set-phone').value, photo_url: photoUrl })
-                });
-                alert.className = "mb-6 p-4 rounded text-sm text-center bg-green-50 text-green-700 font-bold border border-green-200"; alert.innerText = "Profile successfully updated!"; alert.classList.remove('hidden');
-                setTimeout(()=>window.location.reload(), 1000);
-            } catch(e) { alert.className = "mb-6 p-4 rounded text-sm text-center bg-red-50 text-red-700 font-bold border border-red-200"; alert.innerText = "Error saving profile."; alert.classList.remove('hidden'); btn.innerText = "Update Profile"; }
+            const btn = document.getElementById('set-btn'); const alert = document.getElementById('settingsAlert'); btn.innerText = "Saving...";
+            let photoUrl = window.userData.photo_url; const file = document.getElementById('set-photo').files[0];
+            if(file) { const fd = new FormData(); fd.append('file', file); fd.append('user_id', window.currentUser.uid); try { const r = await fetch(`${API_BASE}/api/upload_avatar`,{method:'POST',body:fd}); photoUrl = (await r.json()).photo_url; }catch(e){} }
+            try { await fetch(`${API_BASE}/api/user/profile`, { method: 'POST', headers: await getAuthHeaders(), body: JSON.stringify({ name: document.getElementById('set-name').value, phone: document.getElementById('set-phone').value, photo_url: photoUrl }) }); alert.className = "mb-6 p-4 rounded text-sm text-center bg-green-50 text-green-700 font-bold"; alert.innerText = "Profile updated!"; alert.classList.remove('hidden'); setTimeout(()=>window.location.reload(), 1000); } catch(e) { alert.className = "mb-6 p-4 rounded text-sm text-center bg-red-50 text-red-700 font-bold"; alert.innerText = "Error saving profile."; alert.classList.remove('hidden'); btn.innerText = "Update Profile"; }
         }
-
         window.uploadReport = async function(e) { 
-            e.preventDefault(); const btn = document.getElementById('upload-btn'); btn.innerText = "Uploading...";
-            const fd = new FormData(); fd.append('file', document.getElementById('report-file').files[0]);
-            try {
-                const r = await fetch(API_BASE+'/api/upload_medical_report', { method:'POST', headers: {'Authorization': `Bearer ${await window.currentUser.getIdToken()}`}, body:fd });
-                const d = await r.json();
-                document.getElementById('upload-result').classList.remove('hidden');
-                document.getElementById('upload-result').innerText = d.message || "Success"; document.getElementById('upload-result').className = "mt-4 p-3 rounded text-sm bg-green-50 text-green-700 border border-green-200 font-bold";
-            } catch(er) { document.getElementById('upload-result').innerText = "Upload failed."; document.getElementById('upload-result').classList.remove('hidden'); document.getElementById('upload-result').classList.add('bg-red-50','text-red-700','border','border-red-200'); }
-            btn.innerText = "Add";
+            e.preventDefault(); const btn = document.getElementById('upload-btn'); btn.innerText = "Uploading..."; const fd = new FormData(); fd.append('file', document.getElementById('report-file').files[0]);
+            try { const r = await fetch(API_BASE+'/api/upload_medical_report', { method:'POST', headers: {'Authorization': `Bearer ${await window.currentUser.getIdToken()}`}, body:fd }); const d = await r.json(); document.getElementById('upload-result').classList.remove('hidden'); document.getElementById('upload-result').innerText = d.message || "Success"; document.getElementById('upload-result').className = "mt-4 p-3 rounded text-sm bg-green-50 text-green-700 font-bold"; } catch(er) { document.getElementById('upload-result').innerText = "Upload failed."; document.getElementById('upload-result').classList.remove('hidden'); document.getElementById('upload-result').className = 'mt-4 p-3 rounded text-sm bg-red-50 text-red-700 font-bold'; } btn.innerText = "Add";
         }
     </script>
 </body>
