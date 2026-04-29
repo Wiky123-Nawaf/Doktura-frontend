@@ -554,31 +554,47 @@
             btn.innerText = "PAY NOW";
         }
 
-        // ================= MOCK SCHEDULE DATA =================
-        function populateMockSchedule() {
-            // Because the backend doesn't have a patient schedule GET endpoint yet, we mock the UI for the PDF representation.
+        // ================= REAL SCHEDULE DATA FROM DATABASE =================
+        async function fetchAppointments() {
             const tbody = document.getElementById('schedule-table-body');
-            const data = [
-                {id: "ID1239", type: "Online", icon: "🎥", date: "Sep 15, 2026", time: "04:00 PM", status: "Done", action: "Start Video Call"},
-                {id: "ID1238", type: "In-Clinic Visit", icon: "🏥", date: "Sep 15, 2026", time: "02:20 PM", status: "Done", action: ""},
-                {id: "ID1237", type: "Online", icon: "🎥", date: "Sep 16, 2026", time: "01:00 PM", status: "On Going", action: "Start Video Call"},
-                {id: "ID1236", type: "In-Clinic Visit", icon: "🏥", date: "Sep 17, 2026", time: "11:30 AM", status: "Upcoming", action: ""},
-                {id: "ID1235", type: "Online", icon: "🎥", date: "Sep 18, 2026", time: "10:00 AM", status: "Upcoming", action: "Start Video Call"}
-            ];
             
-            data.forEach(r => {
-                let sColor = r.status === 'Done' ? 'bg-green-50 text-green-600' : r.status === 'On Going' ? 'bg-yellow-50 text-yellow-600' : 'bg-red-50 text-red-500';
-                let btnHtml = r.action ? `<button class="bg-[#1e1b4b] text-white text-[10px] font-bold px-3 py-1.5 rounded uppercase">${r.action}</button>` : '';
+            try {
+                const r = await fetch(API_BASE + '/api/appointments', {
+                    method: 'GET',
+                    headers: await getAuthHeaders()
+                });
+                const data = await r.json();
                 
-                tbody.innerHTML += `
-                    <tr class="border-b border-gray-100 hover:bg-gray-50 transition">
-                        <td class="py-4 px-6 font-semibold">${r.id}</td>
-                        <td class="py-4 px-6 flex items-center"><span class="mr-2">${r.icon}</span> ${r.type}</td>
-                        <td class="py-4 px-6">${r.date}</td>
-                        <td class="py-4 px-6 font-bold"><span class="${sColor} px-2.5 py-1 rounded text-xs">${r.status}</span></td>
-                        <td class="py-4 px-6 text-center">${btnHtml}</td>
-                    </tr>`;
-            });
+                tbody.innerHTML = '';
+                
+                if(!data.appointments || data.appointments.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="5" class="py-6 text-center text-gray-500 italic">No appointments found.</td></tr>`;
+                    return;
+                }
+                
+                data.appointments.forEach(r => {
+                    let sColor = r.status === 'Done' ? 'bg-green-50 text-green-600' : r.status === 'On Going' ? 'bg-yellow-50 text-yellow-600' : r.status === 'Scheduled' ? 'bg-blue-50 text-blue-500' : 'bg-red-50 text-red-500';
+                    let icon = r.type === 'Online' ? '🎥' : '🏥';
+                    
+                    let btnHtml = '';
+                    if (r.action_url) {
+                        btnHtml = `<a href="${API_BASE}${r.action_url}" target="_blank" class="bg-[#1e1b4b] hover:bg-blue-900 transition text-white text-[10px] font-bold px-3 py-1.5 rounded uppercase inline-block">Join Call</a>`;
+                    } else if (r.status === 'Done') {
+                        btnHtml = `<button class="bg-gray-200 text-gray-500 text-[10px] font-bold px-3 py-1.5 rounded uppercase" disabled>Completed</button>`;
+                    }
+                    
+                    tbody.innerHTML += `
+                        <tr class="border-b border-gray-100 hover:bg-gray-50 transition">
+                            <td class="py-4 px-6 font-semibold">${r.id}<br><span class="text-xs text-gray-400 font-normal">Dr. ${r.doctor_name}</span></td>
+                            <td class="py-4 px-6 flex items-center mt-2"><span class="mr-2">${icon}</span> ${r.type}</td>
+                            <td class="py-4 px-6">${r.date}<br><span class="text-xs text-gray-500">${r.time}</span></td>
+                            <td class="py-4 px-6 font-bold"><span class="${sColor} px-2.5 py-1 rounded text-xs">${r.status}</span></td>
+                            <td class="py-4 px-6 text-center">${btnHtml}</td>
+                        </tr>`;
+                });
+            } catch (error) {
+                tbody.innerHTML = `<tr><td colspan="5" class="py-6 text-center text-red-500 font-bold">Failed to load appointments.</td></tr>`;
+            }
         }
 
         // ================= SETTINGS PROFILE =================
