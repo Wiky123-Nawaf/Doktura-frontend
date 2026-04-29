@@ -15,10 +15,14 @@
         .nav-inactive { color: #64748b; font-weight: 500; border-left: 4px solid transparent; }
         .nav-inactive:hover { background-color: #f8fafc; color: #0f172a; }
 
-        /* Voice Orb Pulse - ONLY active when the .orb-active class is added */
-        @keyframes pulseGlow { 0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); } 70% { transform: scale(1.05); box-shadow: 0 0 0 30px rgba(239, 68, 68, 0); } 100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); } }
-        .voice-orb { width: 160px; height: 160px; background: radial-gradient(circle at 30% 30%, #fca5a5, #ef4444); border-radius: 50%; box-shadow: 0 10px 25px rgba(239,68,68,0.3); transition: transform 0.3s; }
-        .orb-active { animation: pulseGlow 1.5s infinite; }
+        /* Voice Orb Pulse - Updated for persistent overlay */
+        @keyframes pulseGlow { 
+            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); } 
+            70% { transform: scale(1.05); box-shadow: 0 0 0 30px rgba(239, 68, 68, 0); } 
+            100% { transform: scale(0.95); } 
+        }
+        .voice-orb { width: 160px; height: 160px; background: radial-gradient(circle at 30% 30%, #fca5a5, #ef4444); border-radius: 50%; transition: transform 0.3s; }
+        .orb-active { animation: pulseGlow 2s infinite; }
 
         /* App View Transitions */
         .app-view { display: none; }
@@ -107,18 +111,18 @@
         <div id="view-chat" class="app-view active flex-1 flex-col h-full relative">
             <div id="chat-history" class="flex-1 overflow-y-auto p-8 max-w-4xl w-full mx-auto pb-32"></div>
             
-            <!-- Voice View Overlay -->
-            <div id="voice-overlay" class="absolute inset-0 bg-[#f8fafc]/95 z-[50] hidden flex-col items-center justify-center backdrop-blur-sm">
-                <div id="voice-orb-element" class="voice-orb mb-12 flex items-center justify-center text-white"></div>
-                <h3 id="voice-status-text" class="text-4xl font-bold text-gray-900 mb-6">Tap mic to speak</h3>
+            <!-- Voice View Persistent Overlay -->
+            <div id="voice-overlay" class="absolute inset-0 bg-[#f8fafc] z-[50] hidden flex-col items-center justify-center">
+                <div id="voice-orb" class="voice-orb mb-12"></div>
+                <h3 id="voice-status" class="text-4xl font-bold text-gray-900 mb-6">Tap mic to speak</h3>
                 <button onclick="toggleVoiceMic()" id="voice-action-btn" class="bg-[#d9381e] text-white rounded-full p-6 shadow-xl hover:bg-red-700 transition mb-6"><svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"></path></svg></button>
-                <p id="voice-transcript" class="text-gray-500 text-lg max-w-lg text-center h-20 italic">Tap to start talking...</p>
-                <button onclick="exitVoiceMode()" class="mt-8 text-sm font-bold text-gray-400 hover:text-gray-800 uppercase tracking-widest transition">End Session</button>
+                <p id="voice-transcript" class="text-gray-500 text-lg max-w-lg text-center h-20 italic px-8">Ready to listen...</p>
+                <button onclick="exitVoiceMode()" class="mt-8 font-bold text-gray-400 hover:text-gray-800 transition">Close Voice Mode</button>
             </div>
             
             <!-- Input Area -->
             <div class="absolute bottom-0 w-full bg-gradient-to-t from-[#f8fafc] via-[#f8fafc] to-transparent pt-10 pb-6 px-8 flex justify-center z-40">
-                <div class="max-w-4xl w-full bg-white border border-gray-200 rounded-xl shadow-[0_2px_15px_rgba(0,0,0,0.06)] p-2 flex items-center">
+                <div class="max-w-4xl w-full bg-white border border-gray-200 rounded-xl shadow-sm p-2 flex items-center">
                     <button onclick="enterVoiceMode()" class="p-3 text-gray-400 hover:text-gray-800 transition shrink-0"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"></path></svg></button>
                     <input type="text" id="chat-input" class="flex-1 bg-transparent px-3 py-2 focus:outline-none text-gray-800 text-sm" placeholder="Type a message or tap the mic for voice mode..." onkeypress="if(event.key === 'Enter') sendChat()">
                     <button onclick="sendChat()" class="bg-[#d9381e] hover:bg-red-700 text-white px-6 py-2.5 rounded-lg font-bold text-sm shadow-sm transition shrink-0 flex items-center">
@@ -373,18 +377,19 @@
             history.innerHTML += `<div class="flex flex-col items-start mb-6 w-full"><div class="flex items-center mb-1"><img src="https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/ChatGPT%20Image%20Mar%2026%2C%202026%2C%2007_53_48%20PM.png?download=true" class="w-6 h-6 rounded-full mr-2 border bg-white"><span class="text-xs font-bold text-gray-800">doktura.ai</span></div><div class="bg-white border shadow-sm px-5 py-4 rounded-2xl rounded-tl-sm text-sm text-gray-700 max-w-[85%] leading-relaxed">${data.reply.replace(/\n/g,'<br>')}</div></div>`;
             history.scrollTo(0, history.scrollHeight);
             
-            if(isVoiceActive) speakAI(data.reply);
+            // Auto-speak function triggered here
+            if(isVoiceActive) speakOut(data.reply);
         };
 
         // ================= VOICE API ENGINE =================
-        function speakAI(text) {
+        function speakOut(text) {
             window.speechSynthesis.cancel();
             const utterance = new SpeechSynthesisUtterance(text);
             utterance.onstart = () => { 
-                document.getElementById('voice-status-text').innerText = "AI is speaking..."; 
+                document.getElementById('voice-status').innerText = "AI is speaking..."; 
             };
             utterance.onend = () => { 
-                document.getElementById('voice-status-text').innerText = "Tap mic to speak"; 
+                document.getElementById('voice-status').innerText = "Tap mic to speak"; 
             };
             window.speechSynthesis.speak(utterance);
         }
@@ -394,6 +399,7 @@
             document.getElementById('voice-overlay').classList.add('flex');
             document.getElementById('voice-transcript').innerText = "Ready to listen...";
             isVoiceActive = true;
+            
             if(!voiceRec) {
                 const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
                 if (!SR) { alert("Voice not supported in this browser."); return null; }
@@ -406,13 +412,13 @@
                     // Auto send after they stop talking
                     sendChat(txt); 
                     // Reset UI for next round
-                    document.getElementById('voice-orb-element').classList.remove('orb-active');
-                    document.getElementById('voice-status-text').innerText = "Tap mic to speak";
+                    document.getElementById('voice-orb').classList.remove('orb-active');
+                    document.getElementById('voice-status').innerText = "Tap mic to speak";
                 };
                 voiceRec.onend = () => {
-                    document.getElementById('voice-orb-element').classList.remove('orb-active');
-                    if (document.getElementById('voice-status-text').innerText === "Listening...") {
-                        document.getElementById('voice-status-text').innerText = "Processing...";
+                    document.getElementById('voice-orb').classList.remove('orb-active');
+                    if (document.getElementById('voice-status').innerText === "Listening...") {
+                        document.getElementById('voice-status').innerText = "Processing...";
                     }
                 };
             }
@@ -421,8 +427,8 @@
         window.toggleVoiceMic = () => {
             window.speechSynthesis.cancel();
             if(!voiceRec) return;
-            document.getElementById('voice-status-text').innerText = "Listening...";
-            document.getElementById('voice-orb-element').classList.add('orb-active');
+            document.getElementById('voice-status').innerText = "Listening...";
+            document.getElementById('voice-orb').classList.add('orb-active');
             voiceRec.start();
         };
 
@@ -431,7 +437,7 @@
             window.speechSynthesis.cancel();
             document.getElementById('voice-overlay').classList.add('hidden');
             document.getElementById('voice-overlay').classList.remove('flex');
-            document.getElementById('voice-orb-element').classList.remove('orb-active');
+            document.getElementById('voice-orb').classList.remove('orb-active');
             if(voiceRec) voiceRec.stop();
         };
 
