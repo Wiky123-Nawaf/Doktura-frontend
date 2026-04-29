@@ -93,100 +93,144 @@
     </div>
 
     <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-app.js";
-        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-auth.js";
+    // ==========================================
+    // 1. UI FUNCTIONS (Loaded first so buttons always work)
+    // ==========================================
+    const API_BASE = 'https://api.doktura.ai'; 
+    let guestCount = 0;
 
-        const firebaseConfig = { /* YOUR FIREBASE CONFIG HERE */ };
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const API_BASE = 'https://api.doktura.ai'; 
-
-        // -- UI Logic --
-        window.openAuth = (view) => {
-            document.getElementById("authMasterContainer").classList.remove("hidden");
-            switchAuthView(view);
+    // Attach functions to 'window' so HTML onclick attributes can find them
+    window.openAuth = (view) => {
+        const modal = document.getElementById("authMasterContainer");
+        if (modal) {
+            modal.classList.remove("hidden");
+            window.switchAuthView(view);
+        } else {
+            console.error("Login modal not found. Check if id='authMasterContainer' is in your HTML.");
         }
-        window.closeAuth = () => document.getElementById("authMasterContainer").classList.add("hidden");
-        window.switchAuthView = (view) => {
-            ['authLoginView', 'authRegisterView', 'authProfileView'].forEach(v => document.getElementById(v).classList.add("hidden"));
-            document.getElementById(view === 'login' ? 'authLoginView' : view === 'register' ? 'authRegisterView' : 'authProfileView').classList.remove("hidden");
+    };
+
+    window.closeAuth = () => {
+        const modal = document.getElementById("authMasterContainer");
+        if (modal) modal.classList.add("hidden");
+    };
+
+    window.switchAuthView = (view) => {
+        ['authLoginView', 'authRegisterView', 'authProfileView'].forEach(v => {
+            const el = document.getElementById(v);
+            if(el) el.classList.add("hidden");
+        });
+        const target = view === 'login' ? 'authLoginView' : view === 'register' ? 'authRegisterView' : 'authProfileView';
+        const targetEl = document.getElementById(target);
+        if(targetEl) targetEl.classList.remove("hidden");
+    };
+
+    window.sendGuestChat = async function() {
+        // Make sure your input and chat history div match these IDs!
+        const input = document.getElementById("guest-chat-input"); 
+        const history = document.getElementById("guest-chat-history");
+        
+        if (!input || !history) {
+            console.error("Chat elements not found. Make sure your input has id='guest-chat-input' and history box has id='guest-chat-history'");
+            return;
         }
 
-        // -- Authentication --
-        document.getElementById("doLoginBtn").addEventListener("click", async () => {
-            try { await signInWithEmailAndPassword(auth, document.getElementById("loginEmail").value, document.getElementById("loginPass").value); } 
-            catch (e) { alert("Login failed: " + e.message); }
-        });
+        const msg = input.value.trim();
+        if(!msg) return;
 
-        document.getElementById("doRegisterBtn").addEventListener("click", async () => {
-            try { await createUserWithEmailAndPassword(auth, document.getElementById("regEmail").value, document.getElementById("regPass").value); } 
-            catch (e) { alert("Registration failed: " + e.message); }
-        });
+        guestCount++;
+        
+        // 1. Show User Message
+        history.innerHTML += `
+            <div class="flex justify-end mt-4">
+                <div class="bg-[#2e1a47] text-white p-3 rounded-lg text-sm">${msg}</div>
+            </div>`;
+        input.value = '';
+        history.scrollTop = history.scrollHeight;
 
-        // -- Profile Setup & Redirect --
-        document.getElementById("saveProfileBtn").addEventListener("click", async () => {
-            const name = document.getElementById("profileName").value;
-            const phone = document.getElementById("profilePhone").value;
-            if(!name || !phone) return alert("Please fill all fields");
+        // 2. Check Guest Limit
+        if(guestCount >= 3) {
+            history.innerHTML += `<div class="text-center mt-4 text-xs font-bold text-red-500">Guest limit reached. Please log in to Doktura AI to continue.</div>`;
+            setTimeout(() => window.openAuth('login'), 2000);
+            return;
+        }
 
-            const token = await auth.currentUser.getIdToken();
-            await fetch(`${API_BASE}/api/user/profile`, {
+        // 3. Send to Backend
+        try {
+            const res = await fetch(`${API_BASE}/api/chat`, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-                body: JSON.stringify({ name: name, phone: phone })
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ message: msg, session_id: "guest_temp" })
             });
-            window.location.href = "app.html"; // Redirect to App
-        });
-
-        // -- Check State (Redirect if already logged in) --
-        onAuthStateChanged(auth, async (user) => {
-            if (user) {
-                const token = await user.getIdToken();
-                const res = await fetch(`${API_BASE}/api/user/sync`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-                    body: JSON.stringify({ email: user.email })
-                });
-                const data = await res.json();
-                
-                if (data.is_complete) {
-                    window.location.href = "app.html"; // Go to App
-                } else {
-                    openAuth('profile'); // Force Profile Setup
-                }
-            }
-        });
-
-        // -- Temporary Guest Chat (Limits to 3 Messages) --
-        let guestCount = 0;
-        window.sendGuestChat = async function() {
-            const input = document.getElementById("guest-chat-input");
-            const history = document.getElementById("guest-chat-history");
-            const msg = input.value.trim();
-            if(!msg) return;
-
-            guestCount++;
-            history.innerHTML += `<div class="flex items-start justify-end space-x-3 mt-4"><div class="bg-[#00AEEF] text-white p-3 rounded-2xl rounded-tr-none text-sm max-w-[80%]">${msg}</div></div>`;
-            input.value = '';
-
-            if(guestCount >= 3) {
-                history.innerHTML += `<div class="text-center my-4 text-xs font-bold text-red-500 uppercase">Guest limit reached. Please log in to Doktura AI to continue.</div>`;
-                setTimeout(() => openAuth('login'), 2000);
-                return;
-            }
-
-            try {
-                // Send without auth headers (Backend knows it's a guest)
-                const res = await fetch(`${API_BASE}/api/chat`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ message: msg, session_id: "guest_temp" })
-                });
-                const data = await res.json();
-                history.innerHTML += `<div class="flex items-start space-x-3 mt-4"><img src="https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/Gemini_Generated_Image_okdjp7okdjp7okdj.png?download=true" class="w-8 h-8 rounded-full bg-gray-100"><div class="bg-gray-100 text-gray-800 p-3 rounded-2xl rounded-tl-none text-sm max-w-[80%]"><strong>Doktura AI:</strong><br>${data.reply}</div></div>`;
-                history.scrollTop = history.scrollHeight;
-            } catch(e) { alert("Error connecting to AI."); }
+            const data = await res.json();
+            
+            // 4. Show AI Response
+            history.innerHTML += `
+                <div class="flex mt-4 space-x-3">
+                    <img src="https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/Gemini_Generated_Image_okdjp7okdjp7okdj.png?download=true" class="w-8 h-8 rounded-full">
+                    <div class="bg-gray-100 p-4 rounded-lg text-sm text-gray-800">
+                        <strong>Doktura AI:</strong><br>${data.reply.replace(/\n/g, '<br>')}
+                    </div>
+                </div>`;
+            history.scrollTop = history.scrollHeight;
+        } catch(e) {
+            history.innerHTML += `<div class="text-center mt-4 text-xs text-red-500">Error connecting to Doktura AI server.</div>`;
         }
-    </script>
+    };
+
+
+    // ==========================================
+    // 2. FIREBASE SETUP
+    // ==========================================
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-app.js";
+    import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-auth.js";
+
+    try {
+        // 🔴 PASTE YOUR ACTUAL FIREBASE KEYS HERE 🔴
+        const firebaseConfig = {
+            apiKey: "YOUR_API_KEY", 
+            authDomain: "YOUR_AUTH_DOMAIN",
+            projectId: "YOUR_PROJECT_ID",
+            storageBucket: "YOUR_STORAGE_BUCKET",
+            messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+            appId: "YOUR_APP_ID"
+        };
+
+        if (firebaseConfig.apiKey === "YOUR_API_KEY") {
+            console.error("🚨 FIREBASE CONFIG MISSING: You must paste your Firebase keys into the code. The Login system will not work until you do.");
+        } else {
+            const app = initializeApp(firebaseConfig);
+            const auth = getAuth(app);
+
+            // -- Login Logic --
+            document.getElementById("doLoginBtn").addEventListener("click", async () => {
+                try { 
+                    await signInWithEmailAndPassword(auth, document.getElementById("loginEmail").value, document.getElementById("loginPass").value); 
+                } catch (e) { alert("Login failed: " + e.message); }
+            });
+
+            // -- Redirect if logged in --
+            onAuthStateChanged(auth, async (user) => {
+                if (user) {
+                    const token = await user.getIdToken();
+                    const res = await fetch(`${API_BASE}/api/user/sync`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                        body: JSON.stringify({ email: user.email })
+                    });
+                    const data = await res.json();
+                    
+                    if (data.is_complete) {
+                        window.location.href = "app.html"; // Go to dashboard
+                    } else {
+                        window.openAuth('profile'); // Force setup
+                    }
+                }
+            });
+        }
+    } catch(err) {
+        console.error("Firebase Execution Error:", err);
+    }
+</script>
 </body>
 </html>
