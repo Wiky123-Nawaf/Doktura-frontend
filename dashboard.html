@@ -15,16 +15,12 @@
         .nav-inactive { color: #64748b; font-weight: 500; border-left: 4px solid transparent; }
         .nav-inactive:hover { background-color: #f8fafc; color: #0f172a; }
 
-        /* Voice Orb Pulse - Updated for persistent overlay */
-        @keyframes pulseGlow { 
-            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); } 
-            70% { transform: scale(1.05); box-shadow: 0 0 0 30px rgba(239, 68, 68, 0); } 
-            100% { transform: scale(0.95); } 
-        }
-        .voice-orb { width: 160px; height: 160px; background: radial-gradient(circle at 30% 30%, #fca5a5, #ef4444); border-radius: 50%; transition: transform 0.3s; }
-        .orb-active { animation: pulseGlow 2s infinite; }
+        /* Voice Orb Pulse */
+        @keyframes pulseGlow { 0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); } 70% { transform: scale(1.05); box-shadow: 0 0 0 30px rgba(239, 68, 68, 0); } 100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); } }
+        .voice-orb { width: 160px; height: 160px; background: radial-gradient(circle at 30% 30%, #fca5a5, #ef4444); border-radius: 50%; box-shadow: 0 10px 25px rgba(239,68,68,0.3); transition: transform 0.3s; }
+        .orb-active { animation: pulseGlow 1.5s infinite; }
 
-        /* App View Transitions */
+        /* Crucial fix for the blank screen tab switching */
         .app-view { display: none; }
         .app-view.active { display: flex; }
     </style>
@@ -36,7 +32,8 @@
     <!-- PREMIUM UNLOCK MODAL -->
     <div id="premium-modal" class="fixed inset-0 bg-gray-900/60 z-[300] hidden items-center justify-center backdrop-blur-sm">
         <div class="bg-white rounded-3xl p-10 max-w-lg w-full text-center relative shadow-2xl">
-            <button onclick="document.getElementById('premium-modal').classList.add('hidden')" class="absolute top-4 right-5 text-gray-400 hover:text-gray-800 text-xl font-bold">✕</button>
+            <!-- Modal display toggle fix applied here -->
+            <button onclick="document.getElementById('premium-modal').classList.remove('flex'); document.getElementById('premium-modal').classList.add('hidden')" class="absolute top-4 right-5 text-gray-400 hover:text-gray-800 text-xl font-bold">✕</button>
             <h2 class="text-2xl font-extrabold text-gray-900 mb-3">Unlock Doktura Premium</h2>
             <p class="text-gray-500 text-sm mb-8 px-4">Upload reports instantly, analyze scans with AI, and access records safely anywhere.</p>
             <button onclick="triggerSubscription()" id="sub-btn" class="w-full bg-[#0066FF] hover:bg-blue-700 transition text-white font-bold py-3.5 rounded-xl shadow-md">
@@ -111,18 +108,18 @@
         <div id="view-chat" class="app-view active flex-1 flex-col h-full relative">
             <div id="chat-history" class="flex-1 overflow-y-auto p-8 max-w-4xl w-full mx-auto pb-32"></div>
             
-            <!-- Voice View Persistent Overlay -->
-            <div id="voice-overlay" class="absolute inset-0 bg-[#f8fafc] z-[50] hidden flex-col items-center justify-center">
-                <div id="voice-orb" class="voice-orb mb-12"></div>
-                <h3 id="voice-status" class="text-4xl font-bold text-gray-900 mb-6">Tap mic to speak</h3>
+            <!-- Voice View Overlay -->
+            <div id="voice-overlay" class="absolute inset-0 bg-[#f8fafc]/95 z-[50] hidden flex-col items-center justify-center backdrop-blur-sm">
+                <div id="voice-orb-element" class="voice-orb mb-12 flex items-center justify-center text-white"></div>
+                <h3 id="voice-status-text" class="text-4xl font-bold text-gray-900 mb-6">Tap mic to speak</h3>
                 <button onclick="toggleVoiceMic()" id="voice-action-btn" class="bg-[#d9381e] text-white rounded-full p-6 shadow-xl hover:bg-red-700 transition mb-6"><svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"></path></svg></button>
-                <p id="voice-transcript" class="text-gray-500 text-lg max-w-lg text-center h-20 italic px-8">Ready to listen...</p>
-                <button onclick="exitVoiceMode()" class="mt-8 font-bold text-gray-400 hover:text-gray-800 transition">Close Voice Mode</button>
+                <p id="voice-transcript" class="text-gray-500 text-lg max-w-lg text-center h-20 italic">Tap to start talking...</p>
+                <button onclick="exitVoiceMode()" class="mt-8 text-sm font-bold text-gray-400 hover:text-gray-800 uppercase tracking-widest transition">End Session</button>
             </div>
             
             <!-- Input Area -->
             <div class="absolute bottom-0 w-full bg-gradient-to-t from-[#f8fafc] via-[#f8fafc] to-transparent pt-10 pb-6 px-8 flex justify-center z-40">
-                <div class="max-w-4xl w-full bg-white border border-gray-200 rounded-xl shadow-sm p-2 flex items-center">
+                <div class="max-w-4xl w-full bg-white border border-gray-200 rounded-xl shadow-[0_2px_15px_rgba(0,0,0,0.06)] p-2 flex items-center">
                     <button onclick="enterVoiceMode()" class="p-3 text-gray-400 hover:text-gray-800 transition shrink-0"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"></path></svg></button>
                     <input type="text" id="chat-input" class="flex-1 bg-transparent px-3 py-2 focus:outline-none text-gray-800 text-sm" placeholder="Type a message or tap the mic for voice mode..." onkeypress="if(event.key === 'Enter') sendChat()">
                     <button onclick="sendChat()" class="bg-[#d9381e] hover:bg-red-700 text-white px-6 py-2.5 rounded-lg font-bold text-sm shadow-sm transition shrink-0 flex items-center">
@@ -218,44 +215,39 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-app.js";
         import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-auth.js";
-        import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore.js";
         
         const app = initializeApp({ apiKey: "AIzaSyCrx9BPS8ficDzgVZMbJIb4b3PQ9IqEHLw", authDomain: "doktura-ai-907d8.firebaseapp.com", projectId: "doktura-ai-907d8" });
         const auth = getAuth(app); 
-        const db = getFirestore(app);
         
         window.userData = { name: "", phone: "", photo_url: "", is_subscribed: false };
         window.currentUser = null;
 
         onAuthStateChanged(auth, async (user) => {
             if (!user) { window.location.href = "login.html"; return; }
-            window.currentUser = user;
             
             try {
-                const userDoc = await getDoc(doc(db, "users", user.uid));
-                window.userData.is_subscribed = userDoc.exists() ? (userDoc.data().is_subscribed || false) : false;
-
                 const token = await user.getIdToken();
                 const res = await fetch(`${API_BASE}/api/user/sync`, { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }, body: JSON.stringify({ email: user.email }) });
                 
                 if (res.status === 401 || res.status === 403) { await signOut(auth); window.location.href = "login.html"; return; }
                 const data = await res.json();
-                if(!data.is_complete) { window.location.href = "login.html"; return; }
                 
-                window.userData.name = data.name; 
-                window.userData.phone = data.phone; 
-                window.userData.photo_url = data.photo_url;
+                // CRITICAL FIX: Save backend data correctly into global object (captures is_subscribed!)
+                window.userData = { ...window.userData, ...data };
+                window.currentUser = user;
+
+                if(!data.is_complete) { window.location.href = "login.html"; return; }
                 
                 document.getElementById('appBody').classList.remove('hidden');
                 
                 // Set fields across views
-                document.getElementById('userNameHeader').innerText = data.name; 
-                document.getElementById('set-name').value = data.name; 
-                document.getElementById('set-phone').value = data.phone;
-                document.getElementById('book-name').value = data.name; 
+                document.getElementById('userNameHeader').innerText = window.userData.name; 
+                document.getElementById('set-name').value = window.userData.name; 
+                document.getElementById('set-phone').value = window.userData.phone || "";
+                document.getElementById('book-name').value = window.userData.name; 
                 document.getElementById('book-email').value = user.email;
                 
-                let avatar = data.photo_url || user.photoURL || `data:image/svg+xml;base64,${btoa(`<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64"><rect width="64" height="64" fill="#0066FF"/><text x="50%" y="50%" fill="#fff" font-size="32" font-family="sans-serif" font-weight="bold" text-anchor="middle" dy=".35em">${data.name.charAt(0).toUpperCase()}</text></svg>`)}`;
+                let avatar = window.userData.photo_url || user.photoURL || `data:image/svg+xml;base64,${btoa(`<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64"><rect width="64" height="64" fill="#0066FF"/><text x="50%" y="50%" fill="#fff" font-size="32" font-family="sans-serif" font-weight="bold" text-anchor="middle" dy=".35em">${window.userData.name.charAt(0).toUpperCase()}</text></svg>`)}`;
                 document.getElementById('userAvatar').src = avatar; 
                 document.getElementById('set-avatar').src = avatar; 
                 window.currentAvatar = avatar;
@@ -297,6 +289,7 @@
         }
 
         window.switchTab = function(tab) {
+            // CRITICAL FIX: Tab switching using app-view class
             if(tab === 'reports' && !window.userData.is_subscribed) { 
                 document.getElementById('premium-modal').classList.remove('hidden'); 
                 document.getElementById('premium-modal').classList.add('flex'); 
@@ -386,10 +379,10 @@
             window.speechSynthesis.cancel();
             const utterance = new SpeechSynthesisUtterance(text);
             utterance.onstart = () => { 
-                document.getElementById('voice-status').innerText = "AI is speaking..."; 
+                document.getElementById('voice-status-text').innerText = "AI is speaking..."; 
             };
             utterance.onend = () => { 
-                document.getElementById('voice-status').innerText = "Tap mic to speak"; 
+                document.getElementById('voice-status-text').innerText = "Tap mic to speak"; 
             };
             window.speechSynthesis.speak(utterance);
         }
@@ -412,13 +405,13 @@
                     // Auto send after they stop talking
                     sendChat(txt); 
                     // Reset UI for next round
-                    document.getElementById('voice-orb').classList.remove('orb-active');
-                    document.getElementById('voice-status').innerText = "Tap mic to speak";
+                    document.getElementById('voice-orb-element').classList.remove('orb-active');
+                    document.getElementById('voice-status-text').innerText = "Tap mic to speak";
                 };
                 voiceRec.onend = () => {
-                    document.getElementById('voice-orb').classList.remove('orb-active');
-                    if (document.getElementById('voice-status').innerText === "Listening...") {
-                        document.getElementById('voice-status').innerText = "Processing...";
+                    document.getElementById('voice-orb-element').classList.remove('orb-active');
+                    if (document.getElementById('voice-status-text').innerText === "Listening...") {
+                        document.getElementById('voice-status-text').innerText = "Processing...";
                     }
                 };
             }
@@ -427,8 +420,8 @@
         window.toggleVoiceMic = () => {
             window.speechSynthesis.cancel();
             if(!voiceRec) return;
-            document.getElementById('voice-status').innerText = "Listening...";
-            document.getElementById('voice-orb').classList.add('orb-active');
+            document.getElementById('voice-status-text').innerText = "Listening...";
+            document.getElementById('voice-orb-element').classList.add('orb-active');
             voiceRec.start();
         };
 
@@ -437,7 +430,7 @@
             window.speechSynthesis.cancel();
             document.getElementById('voice-overlay').classList.add('hidden');
             document.getElementById('voice-overlay').classList.remove('flex');
-            document.getElementById('voice-orb').classList.remove('orb-active');
+            document.getElementById('voice-orb-element').classList.remove('orb-active');
             if(voiceRec) voiceRec.stop();
         };
 
