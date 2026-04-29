@@ -125,8 +125,8 @@
                 <button onclick="exitVoiceMode()" class="mt-8 text-sm font-bold text-gray-400 hover:text-gray-800 uppercase tracking-widest transition">Cancel</button>
             </div>
             
-            <!-- Input Area (Fixed Float Issue: Using flex shrink-0 instead of absolute) -->
-            <div class="w-full bg-gradient-to-t from-[#f8fafc] via-[#f8fafc] to-transparent pt-4 pb-8 px-8 flex justify-center shrink-0">
+            <!-- Input Area -->
+            <div class="w-full shrink-0 bg-gradient-to-t from-[#f8fafc] via-[#f8fafc] to-transparent pt-4 pb-8 px-8 flex justify-center z-40">
                 <div class="max-w-4xl w-full bg-white border border-gray-200 rounded-xl shadow-[0_2px_15px_rgba(0,0,0,0.06)] p-2 flex items-center">
                     <button onclick="enterVoiceMode()" class="p-3 text-gray-400 hover:text-gray-800 transition shrink-0"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"></path></svg></button>
                     <input type="text" id="chat-input" class="flex-1 bg-transparent px-3 py-2 focus:outline-none text-gray-800 text-sm" placeholder="Type a message or tap the mic for voice mode..." onkeypress="if(event.key === 'Enter') sendChat()">
@@ -173,33 +173,62 @@
 
         <!-- ================= MEDICAL REPORTS VIEW ================= -->
         <div id="view-reports" class="app-view flex-1 flex-col overflow-y-auto relative">
-            <div class="max-w-5xl mx-auto p-10 w-full text-center">
-                <h2 class="text-3xl font-extrabold text-gray-900 mb-2">Your Medical Documents</h2>
-                <p class="text-gray-500 text-sm mb-12">Securely store and manage your health records.</p>
-                <div class="bg-white border border-gray-200 rounded-2xl shadow-sm p-24 flex flex-col items-center justify-center">
+            <div class="max-w-5xl mx-auto p-10 w-full">
+                <!-- Header -->
+                <div class="flex justify-between items-end mb-8">
+                    <div>
+                        <h2 class="text-3xl font-extrabold text-gray-900 mb-2">Your Medical Documents</h2>
+                        <p class="text-gray-500 text-sm">Securely store and manage your health records.</p>
+                    </div>
+                    <button onclick="document.getElementById('upload-modal').classList.remove('hidden')" class="bg-[#f59e0b] hover:bg-yellow-600 text-white font-bold py-2.5 px-6 rounded-lg shadow-sm transition">Add Document</button>
+                </div>
+
+                <!-- Empty State -->
+                <div id="reports-empty" class="bg-white border border-gray-200 rounded-2xl shadow-sm p-24 flex flex-col items-center justify-center text-center">
                     <svg class="w-20 h-20 mb-6 text-gray-300 opacity-60" fill="currentColor" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6zm-1 1.5L18.5 9H13V3.5zM18 20H6V4h5v6h6v10z"/></svg>
                     <h3 class="text-lg font-extrabold text-gray-900 mb-1">No medical documents found</h3>
                     <p class="text-gray-500 text-sm mb-8">Start by uploading your first medical document.</p>
                     <button onclick="document.getElementById('upload-modal').classList.remove('hidden')" class="bg-[#f59e0b] hover:bg-yellow-600 text-white font-bold py-2.5 px-8 rounded-lg shadow-sm transition">Add Document</button>
                 </div>
+
+                <!-- Reports Table List -->
+                <div id="reports-container" class="hidden bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm">
+                    <table class="w-full text-left border-collapse">
+                        <thead class="bg-gray-50 text-gray-500 text-[10px] uppercase font-bold border-b border-gray-200">
+                            <tr>
+                                <th class="py-4 px-6">Report Name</th>
+                                <th class="py-4 px-6">Type</th>
+                                <th class="py-4 px-6">Date</th>
+                                <th class="py-4 px-6">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="reports-table-body" class="text-sm text-gray-800 divide-y divide-gray-100"></tbody>
+                    </table>
+                </div>
             </div>
 
-            <!-- Upload Modal (Updated Form Layout) -->
+            <!-- Upload Modal -->
             <div id="upload-modal" class="fixed inset-0 bg-gray-900/50 z-[250] hidden items-center justify-center backdrop-blur-sm">
                 <div class="bg-white rounded-3xl p-8 max-w-lg w-full relative shadow-2xl">
-                    <div class="flex justify-between items-center mb-6"><h2 class="text-xl font-bold text-gray-900">Upload Your Medical Reports</h2><button onclick="document.getElementById('upload-modal').classList.add('hidden')" class="text-gray-400 hover:text-gray-800 text-xl font-bold transition">✕</button></div>
+                    <div class="flex justify-between items-center mb-6">
+                        <h2 class="text-xl font-bold text-gray-900">Upload Your Medical Reports</h2>
+                        <button onclick="document.getElementById('upload-modal').classList.add('hidden')" class="text-gray-400 hover:text-gray-800 text-xl font-bold transition">✕</button>
+                    </div>
                     <form onsubmit="uploadReport(event)" class="space-y-4 text-left">
-                        <div><label class="block text-xs font-bold text-gray-600 mb-1">Report Name</label><input type="text" id="rep-name" required class="w-full border rounded-lg p-3 text-sm focus:ring-2 focus:ring-[#0066FF]" placeholder="e.g Blood Test"></div>
+                        <div><label class="block text-xs font-bold text-gray-600 mb-1">Report Name</label><input type="text" id="rep-name" required class="w-full border border-gray-300 rounded-lg p-3 text-sm focus:ring-2 focus:ring-[#0066FF]" placeholder="e.g Blood Test"></div>
                         <div class="grid grid-cols-2 gap-4">
-                            <div><label class="block text-xs font-bold text-gray-600 mb-1">Uploaded Date</label><input type="date" id="rep-date" required class="w-full border rounded-lg p-3 text-sm focus:ring-2 focus:ring-[#0066FF]"></div>
-                            <div><label class="block text-xs font-bold text-gray-600 mb-1">Report Type</label><input type="text" id="rep-type" required class="w-full border rounded-lg p-3 text-sm focus:ring-2 focus:ring-[#0066FF]" placeholder="e.g MRI Scan"></div>
+                            <div><label class="block text-xs font-bold text-gray-600 mb-1">Uploaded Date</label><input type="date" id="rep-date" required class="w-full border border-gray-300 rounded-lg p-3 text-sm focus:ring-2 focus:ring-[#0066FF]"></div>
+                            <div><label class="block text-xs font-bold text-gray-600 mb-1">Report Type</label><input type="text" id="rep-type" required class="w-full border border-gray-300 rounded-lg p-3 text-sm focus:ring-2 focus:ring-[#0066FF]" placeholder="e.g MRI Scan"></div>
                         </div>
                         <div class="border-2 border-dashed border-gray-300 rounded-xl p-8 text-center cursor-pointer hover:bg-gray-50 relative mt-4 transition">
-                            <input type="file" id="report-file" required class="absolute inset-0 w-full h-full opacity-0 cursor-pointer">
-                            <p class="text-sm font-bold text-gray-700">Click to upload or drag and drop</p>
+                            <input type="file" id="report-file" required class="absolute inset-0 w-full h-full opacity-0 cursor-pointer" onchange="document.getElementById('file-name-display').innerText = this.files[0].name; document.getElementById('file-name-display').classList.add('text-[#0066FF]');">
+                            <p class="text-sm font-bold text-gray-700 transition" id="file-name-display">Click to upload or drag and drop</p>
                             <p class="text-xs text-gray-400 mt-1">Format is JPG, PNG or PDF</p>
                         </div>
-                        <div class="flex space-x-3 pt-4"><button type="button" onclick="document.getElementById('upload-modal').classList.add('hidden')" class="flex-1 bg-white border border-gray-300 hover:bg-gray-50 transition text-gray-700 font-bold py-3 rounded-lg">Cancel</button><button type="submit" id="upload-btn" class="flex-1 bg-[#0066FF] hover:bg-blue-700 transition text-white font-bold py-3 rounded-lg shadow-sm">Add</button></div>
+                        <div class="flex space-x-3 pt-4">
+                            <button type="button" onclick="document.getElementById('upload-modal').classList.add('hidden')" class="flex-1 bg-white border border-gray-300 hover:bg-gray-50 transition text-gray-700 font-bold py-3 rounded-lg">Cancel</button>
+                            <button type="submit" id="upload-btn" class="flex-1 bg-[#0066FF] hover:bg-blue-700 transition text-white font-bold py-3 rounded-lg shadow-sm">Add</button>
+                        </div>
                     </form>
                 </div>
             </div>
@@ -274,6 +303,7 @@
                 loadSessions(); 
                 fetchDoctors(); 
                 fetchAppointments(); 
+                fetchReports(); // Load Reports into table
             } catch(e) { 
                 console.error("DASHBOARD STARTUP ERROR:", e); 
                 document.getElementById('appBody').classList.remove('hidden'); 
@@ -486,6 +516,37 @@
             } catch(e) { console.error("Error fetching doctors", e); }
         }
 
+        async function fetchReports() {
+            try {
+                const r = await fetch(API_BASE+'/api/reports', { headers: await getAuthHeaders() });
+                const data = await r.json();
+                
+                if (data.reports && data.reports.length > 0) {
+                    document.getElementById('reports-empty').classList.add('hidden');
+                    document.getElementById('reports-empty').classList.remove('flex');
+                    document.getElementById('reports-container').classList.remove('hidden');
+                    
+                    const tbody = document.getElementById('reports-table-body');
+                    tbody.innerHTML = '';
+                    data.reports.forEach(rep => {
+                        let statColor = rep.status === 'Processing' ? 'bg-yellow-50 text-yellow-600' : 'bg-green-50 text-green-600';
+                        tbody.innerHTML += `
+                            <tr class="border-b border-gray-100 hover:bg-gray-50 transition">
+                                <td class="py-4 px-6 font-bold text-gray-900">${rep.name}</td>
+                                <td class="py-4 px-6 text-gray-600">${rep.type}</td>
+                                <td class="py-4 px-6 text-gray-600">${rep.date}</td>
+                                <td class="py-4 px-6"><span class="${statColor} px-2.5 py-1 rounded text-[10px] font-bold">${rep.status}</span></td>
+                            </tr>
+                        `;
+                    });
+                } else {
+                    document.getElementById('reports-empty').classList.remove('hidden');
+                    document.getElementById('reports-empty').classList.add('flex');
+                    document.getElementById('reports-container').classList.add('hidden');
+                }
+            } catch(e) { console.error("Error loading reports", e); }
+        }
+
         window.suggestDoctor = async () => { 
             const sym = document.getElementById('book-symptoms').value; 
             if(!sym) return alert("Please type your symptoms."); 
@@ -539,8 +600,6 @@
             
             const fd = new FormData(); 
             fd.append('file', document.getElementById('report-file').files[0]);
-            
-            // Backend might not support these yet, but appending them anyway based on UI
             fd.append('report_name', document.getElementById('rep-name').value);
             fd.append('report_date', document.getElementById('rep-date').value);
             fd.append('report_type', document.getElementById('rep-type').value);
@@ -552,8 +611,17 @@
                     body:fd 
                 }); 
                 const d = await r.json(); 
-                alert(d.message || "Report Added!"); 
+                
+                // Hide modal and reset form styling
                 document.getElementById('upload-modal').classList.add('hidden'); 
+                document.getElementById('file-name-display').innerText = "Click to upload or drag and drop";
+                document.getElementById('file-name-display').classList.remove('text-[#0066FF]');
+                e.target.reset(); 
+                
+                // Show in the list instantly
+                fetchReports(); 
+                
+                alert("Report successfully added! Our AI is analyzing it now. It will also be backed up to your Google Drive.");
             } catch(e) { alert("Upload failed."); } 
             btn.innerText = "Add";
         }
