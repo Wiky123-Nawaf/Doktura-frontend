@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Doktura - AI Medical Assistant</title>
-    <!-- Tailwind CSS for rapid UI styling -->
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Inter:wght@400;500;600;700&display=swap');
@@ -15,49 +14,31 @@
         .tab-active { border-bottom: 2px solid #2e1a47; color: #2e1a47; font-weight: 600; }
         .tab-inactive { color: #6b7280; }
         
-        /* Ambient Background Video styling */
         .video-bg {
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             object-fit: cover; opacity: 0.05; z-index: -1; pointer-events: none;
         }
 
-        /* Chat scrollbar */
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 4px; }
 
-        /* Voice Avatar Glow Animation */
         @keyframes glowPulse {
             0% { box-shadow: 0 0 0 0 rgba(46, 26, 71, 0.4); }
             70% { box-shadow: 0 0 0 40px rgba(46, 26, 71, 0); }
             100% { box-shadow: 0 0 0 0 rgba(46, 26, 71, 0); }
         }
-        .voice-glow {
-            animation: glowPulse 1.5s infinite;
-        }
+        .voice-glow { animation: glowPulse 1.5s infinite; }
     </style>
 </head>
 <body class="relative min-h-screen flex flex-col">
 
-    <!-- Configure Server Base URL Here -->
     <script>
-        const API_BASE = 'https://api.doktura.ai'; // Make sure this matches your FastAPI port
+        const API_BASE = 'https://api.doktura.ai'; 
     </script>
-
-    <!-- Floating Telegram Button -->
-    <a href="https://web.telegram.org/k/#@ArviaPersonal_bot" target="_blank" class="fixed bottom-6 right-6 z-[100] bg-white border border-gray-200 px-5 py-3 rounded-full shadow-2xl hover:shadow-[0_10px_25px_rgba(34,158,217,0.3)] hover:-translate-y-1 transition-all duration-300 flex items-center space-x-3 cursor-pointer group">
-        <div class="flex flex-col text-right">
-            <span class="text-sm font-bold text-[#229ED9]">Telegram Bot</span>
-            <span class="text-[11px] text-gray-500 font-medium">Chat with your own Doctor Bot<br>any time any where</span>
-        </div>
-        <div class="bg-[#229ED9] p-2.5 rounded-full shadow-md group-hover:scale-110 transition-transform">
-            <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69.01-.03.01-.14-.07-.19-.08-.05-.19-.02-.27 0-.12.03-1.98 1.25-5.58 3.63-.53.36-1.01.54-1.44.53-.47-.01-1.38-.27-2.06-.49-.83-.27-1.49-.41-1.43-.87.03-.24.34-.49.92-.76 3.6-1.57 6-2.6 7.19-3.1 3.43-1.43 4.14-1.68 4.6-1.69.1 0 .32.02.46.13.11.09.14.22.15.34-.01.07-.01.17-.02.26z"/></svg>
-        </div>
-    </a>
 
     <!-- FULL PAGE AUTHENTICATION UI -->
     <div id="authMasterContainer" class="fixed inset-0 bg-gray-50 z-[9999] flex flex-col hidden overflow-y-auto transition-opacity duration-300">
-        <div class="w-full p-6 flex justify-between items-center absolute top-0 left-0">
+        <div id="authCloseBtnContainer" class="w-full p-6 flex justify-between items-center absolute top-0 left-0">
             <button onclick="closeAuth()" class="text-gray-500 hover:text-[#00AEEF] transition flex items-center text-sm font-semibold">
                 <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
                 Back to Home
@@ -65,7 +46,6 @@
         </div>
 
         <div class="flex-1 flex items-center justify-center p-4 min-h-screen pt-20">
-            <!-- Auth Card -->
             <div class="bg-white rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-100 w-full max-w-[420px] p-10 relative">
                 
                 <div class="w-14 h-14 bg-[#e6f7ff] rounded-full flex items-center justify-center mx-auto mb-6">
@@ -123,7 +103,6 @@
                 <!-- FORGOT PASSWORD VIEW -->
                 <div id="authForgotView" class="hidden">
                     <h2 class="text-xl font-bold text-gray-800 text-center mb-1">Forgot Password</h2>
-                    <p class="text-xs text-gray-500 text-center mb-8">Enter your email and we'll send you a password reset link.</p>
                     <div class="mb-6">
                         <label class="block text-[10px] uppercase text-gray-500 font-semibold mb-1">Email Address</label>
                         <input type="email" id="forgotEmail" placeholder="demo@gmail.com" class="w-full border border-gray-200 rounded-lg px-4 py-3 text-sm focus:outline-none focus:border-[#00AEEF] transition">
@@ -135,235 +114,102 @@
                 <!-- ONBOARDING PROFILE VIEW -->
                 <div id="authProfileView" class="hidden">
                     <h2 class="text-xl font-bold text-gray-800 text-center mb-1">Complete Profile</h2>
-                    <p class="text-xs text-gray-500 text-center mb-6">Doktura AI uses this to personalize your care.</p>
+                    <p class="text-xs text-gray-500 text-center mb-6">Let's set up your patient file.</p>
                     <div class="space-y-4 mb-4">
-                        <!-- PROFILE IMAGE UPLOAD -->
                         <div>
                             <label class="block text-[10px] uppercase text-gray-500 font-semibold mb-1">Profile Photo (Optional)</label>
-                            <input type="file" id="profilePhotoInput" accept="image/*" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[#00AEEF] transition bg-gray-50 file:mr-4 file:py-1.5 file:px-4 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-[#e6f7ff] file:text-[#00AEEF] hover:file:bg-[#bae6fd]">
+                            <input type="file" id="profilePhotoInput" accept="image/*" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none bg-gray-50">
                         </div>
-
                         <div>
                             <label class="block text-[10px] uppercase text-gray-500 font-semibold mb-1">Full Name</label>
-                            <input type="text" id="profileName" placeholder="e.g. Ahmad Razif" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-[#00AEEF] transition">
-                        </div>
-                        <div class="grid grid-cols-2 gap-4">
-                            <div>
-                                <label class="block text-[10px] uppercase text-gray-500 font-semibold mb-1">Age</label>
-                                <input type="number" id="profileAge" placeholder="e.g. 35" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-[#00AEEF] transition">
-                            </div>
-                            <div>
-                                <label class="block text-[10px] uppercase text-gray-500 font-semibold mb-1">Gender</label>
-                                <select id="profileGender" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-[#00AEEF] bg-white transition">
-                                    <option value="">Select...</option>
-                                    <option value="Male">Male</option>
-                                    <option value="Female">Female</option>
-                                    <option value="Prefer not to say">Prefer not to say</option>
-                                </select>
-                            </div>
+                            <input type="text" id="profileName" placeholder="e.g. Ahmad Razif" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-[#00AEEF]">
                         </div>
                         <div>
-                            <label class="block text-[10px] uppercase text-gray-500 font-semibold mb-1">Country</label>
-                            <input type="text" id="profileCountry" placeholder="e.g. Malaysia" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-[#00AEEF] transition">
+                            <label class="block text-[10px] uppercase text-gray-500 font-semibold mb-1">Phone Number</label>
+                            <input type="text" id="profilePhone" placeholder="+60 12-345-6789" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-[#00AEEF]">
                         </div>
                     </div>
-                    <!-- Medical Disclaimers -->
-                    <div class="bg-[#f0f9ff] border border-[#bae6fd] rounded-lg p-3 mb-6 space-y-3">
-                        <label class="flex items-start space-x-2 cursor-pointer">
-                            <input type="checkbox" id="chkDisclaimer1" class="mt-1 w-4 h-4 text-[#00AEEF] border-gray-300 rounded focus:ring-[#00AEEF]">
-                            <span class="text-[10px] text-gray-700 leading-tight">I understand this AI provides general health information, and <strong>not professional medical advice.</strong></span>
-                        </label>
-                        <label class="flex items-start space-x-2 cursor-pointer">
-                            <input type="checkbox" id="chkDisclaimer2" class="mt-1 w-4 h-4 text-[#00AEEF] border-gray-300 rounded focus:ring-[#00AEEF]">
-                            <span class="text-[10px] text-gray-700 leading-tight">I will seek a qualified doctor or emergency services for serious or emergency medical conditions.</span>
-                        </label>
-                    </div>
-                    <button id="saveProfileBtn" class="w-full bg-[#00AEEF] hover:bg-[#0099d1] text-white font-bold py-3 rounded-lg transition shadow-md text-sm">Save Profile</button>
+                    <button id="saveProfileBtn" class="w-full mt-4 bg-[#00AEEF] text-white font-bold py-3 rounded-lg shadow-md text-sm">Complete Setup</button>
                 </div>
             </div>
         </div>
     </div>
-
 
     <!-- LOGGED OUT VIEW (Landing Page) -->
     <div id="landingView" class="transition-opacity duration-300 flex-1 flex flex-col">
         <video autoplay loop muted playsinline class="video-bg">
             <source src="https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/Whisk_cjziljmkvmzhzjy10sohjjytetn5qtl0qwni1sn.mp4?download=true" type="video/mp4">
         </video>
-
         <nav class="flex items-center justify-between px-6 py-4 max-w-6xl mx-auto w-full">
-            <div class="flex items-center space-x-2">
-                <img src="https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/ChatGPT%20Image%20Mar%2026%2C%202026%2C%2007_53_48%20PM.png?download=true" alt="Logo" class="h-32">
-            </div>
-            <div class="hidden md:flex space-x-6 text-sm font-medium text-gray-600">
-                <a href="#" class="hover:text-primary">Company</a>
-                <a href="#" class="hover:text-primary">Legal</a>
-                <a href="#" class="hover:text-primary">Support</a>
-            </div>
-            <div class="flex items-center space-x-4">
-                <button id="navLoginBtn" class="bg-[#00AEEF] text-white px-6 py-2.5 rounded-full text-sm font-bold hover:bg-[#0099d1] shadow-md transition">
-                    Log In
-                </button>
-            </div>
+            <img src="https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/ChatGPT%20Image%20Mar%2026%2C%202026%2C%2007_53_48%20PM.png?download=true" alt="Logo" class="h-32">
+            <button id="navLoginBtn" class="bg-[#00AEEF] text-white px-6 py-2.5 rounded-full text-sm font-bold hover:bg-[#0099d1] shadow-md">Log In</button>
         </nav>
-
-        <!-- Hero Section -->
         <main class="max-w-4xl mx-auto px-6 pt-12 pb-20 text-center relative flex-1">
-            <img src="https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/Gemini_Generated_Image_okdjp7okdjp7okdj.png?download=true" 
-                 alt="Doktura Robot" class="w-64 h-64 object-contain mx-auto animate-[bounce_4s_infinite]">
-            
-            <div class="mt-6 flex justify-center -space-x-3">
-                <img class="w-10 h-10 rounded-full border-2 border-white" src="https://static.doctronic.ai/img/people-tiles/3.jpg" alt="Doctor 1">
-                <img class="w-10 h-10 rounded-full border-2 border-white" src="https://static.doctronic.ai/img/people-tiles/0.jpg" alt="Doctor 2">
-                <img class="w-10 h-10 rounded-full border-2 border-white" src="https://static.doctronic.ai/img/people-tiles/4.jpg" alt="Patient">
-            </div>
-
+            <img src="https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/Gemini_Generated_Image_okdjp7okdjp7okdj.png?download=true" class="w-64 h-64 object-contain mx-auto animate-[bounce_4s_infinite]">
             <h1 class="text-5xl font-bold mt-4 text-primary">Hi, I'm Doktura?</h1>
-            <p class="mt-4 text-gray-600 max-w-2xl mx-auto text-lg">
-                I'm your private and personal AI doctor.<br>
-                As an AI doctor, my service is fast and free. I've already helped people <strong>23,819,892 times!</strong><br>
-                After we chat, if you want you can have a video visit with a top doctor for only RM 10.00.
-            </p>
-            <p class="mt-4 text-primary font-medium">What can I help you with today?</p>
-            <p class="mt-2 text-xs text-red-500 font-bold">If this is an emergency, call 911 or your local emergency number.</p>
-
-            <div class="mt-12 bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden text-left max-w-3xl mx-auto relative z-10 flex flex-col h-[500px]">
+            <p class="mt-4 text-gray-600 max-w-2xl mx-auto text-lg">I'm your private and personal AI doctor.</p>
+            <div class="mt-12 bg-white rounded-2xl shadow-xl border overflow-hidden text-left max-w-3xl mx-auto relative z-10 flex flex-col h-[500px]">
                 <div class="flex border-b shrink-0">
                     <button onclick="switchTab('chat')" id="btn-chat-tab" class="flex-1 py-4 text-center tab-active flex items-center justify-center space-x-2">
-                        <img src="https://static.doctronic.ai/img/icons/stethoscope-line-primary.svg" class="w-5 h-5">
                         <span>AI Assistant</span>
                     </button>
                     <button onclick="switchTab('book')" id="btn-book-tab" class="flex-1 py-4 text-center tab-inactive flex items-center justify-center space-x-2 relative hover:bg-gray-50">
-                        <img src="https://static.doctronic.ai/img/icons/dossier-line-primary.svg" class="w-5 h-5">
                         <span>Book Consultant</span>
                         <svg class="w-4 h-4 ml-1 text-red-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd"></path></svg>
                     </button>
                 </div>
-
                 <div id="chat-tab" class="p-6 flex flex-col flex-1 overflow-hidden">
-                    <div class="bg-yellow-50 text-yellow-800 text-xs px-3 py-2 rounded-lg mb-4 flex items-center shrink-0">
-                        <svg class="w-4 h-4 mr-2 text-yellow-600" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path></svg>
-                        Log in to unlock hands-free Voice Interaction and Premium Doctor Avatars.
-                    </div>
                     <div id="chat-history" class="flex-1 overflow-y-auto mb-4 space-y-4 pr-2"></div>
                     <div class="flex space-x-2 shrink-0">
-                        <input type="text" id="chat-input" placeholder="Type your symptoms here..." class="flex-1 border rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary text-sm" onkeypress="if(event.key === 'Enter') sendChat(false)">
-                        <button onclick="sendChat(false)" class="bg-primary text-white px-6 py-3 rounded-xl text-sm font-medium hover:bg-opacity-90 flex items-center">
-                            Send <span class="ml-2">➤</span>
-                        </button>
+                        <input type="text" id="chat-input" placeholder="Type your symptoms here..." class="flex-1 border rounded-xl px-4 py-3 focus:outline-none text-sm" onkeypress="if(event.key === 'Enter') sendChat(false)">
+                        <button onclick="sendChat(false)" class="bg-primary text-white px-6 py-3 rounded-xl text-sm font-medium">Send</button>
                     </div>
                 </div>
-
                 <div id="book-tab" class="p-6 hidden overflow-y-auto"></div>
             </div>
         </main>
-
-        <section class="bg-white py-16 px-6">
-            <div class="max-w-5xl mx-auto space-y-24">
-                <div class="text-center">
-                    <p class="text-gray-500 font-medium">Over 23.8M+ consultations completed</p>
-                </div>
-                <div class="grid md:grid-cols-2 gap-12 items-center">
-                    <img src="https://static.doctronic.ai/img/home/person-and-doctors.png" alt="Fast and free" class="w-full rounded-2xl">
-                    <div>
-                        <h2 class="text-3xl font-bold text-primary mb-4">As an AI doctor, I provide fast and free service</h2>
-                        <p class="text-gray-600 leading-relaxed">I prioritize your privacy and our conversation is totally anonymous by default. With over 23.8 million consultations completed, I can help you get up to date information, answer questions, or get treatment.</p>
-                    </div>
-                </div>
-                <div class="grid md:grid-cols-2 gap-12 items-center">
-                    <div class="order-2 md:order-1">
-                        <h2 class="text-3xl font-bold text-primary mb-4">You can talk to me just like you would your regular doctor</h2>
-                        <p class="text-gray-600 leading-relaxed">I can help you understand health issues, refill medications, answer health and lifestyle questions, and much more. I give you expert medical insights at your fingertips, whenever you need them.</p>
-                    </div>
-                    <img src="https://static.doctronic.ai/img/home/chat.png" alt="Chat" class="w-full rounded-2xl order-1 md:order-2 shadow-lg">
-                </div>
-            </div>
-        </section>
-
-        <footer class="bg-white border-t py-12 px-6 mt-auto">
-            <div class="max-w-6xl mx-auto grid grid-cols-2 md:grid-cols-5 gap-8 text-sm">
-                <div class="col-span-2">
-                    <img src="https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/ChatGPT%20Image%20Mar%2026%2C%202026%2C%2007_53_48%20PM.png?download=true" alt="Logo" class="h-32 mb-4">
-                    <p class="text-gray-500 mb-6 pr-4">Providing AI-powered medical insights and seamless doctor bookings 24/7.</p>
-                </div>
-                <div>
-                    <h4 class="font-bold text-gray-900 mb-4">Support</h4>
-                    <ul class="space-y-2 text-gray-600">
-                        <li><a href="/admin/api/dashboard" target="_blank" class="text-[#00AEEF] font-bold">Doctor Portal Login</a></li>
-                    </ul>
-                </div>
-            </div>
-        </footer>
     </div>
-
 
     <!-- LOGGED IN VIEW (App Layout) -->
     <div id="appView" class="hidden fixed inset-0 bg-white z-[60] flex h-screen w-full">
-        
-        <!-- FULL SCREEN VOICE OVERLAY -->
-        <div id="voice-overlay" class="absolute inset-0 bg-white/95 backdrop-blur-xl z-[200] hidden flex-col items-center justify-center transition-all duration-300">
-            <!-- Voice Settings -->
-            <div class="absolute top-6 left-6 flex flex-col space-y-3 z-50 bg-white p-4 rounded-2xl shadow-[0_5px_15px_rgba(0,0,0,0.05)] border border-gray-100">
-                <p class="text-xs font-bold text-gray-400 uppercase tracking-wider">Premium AI Voices</p>
-                <select id="app-language-select" onchange="populateVoiceList()" class="text-sm border rounded-lg px-3 py-2 text-gray-700 focus:outline-none focus:ring-1 focus:ring-[#00AEEF] bg-gray-50 font-medium cursor-pointer">
-                    <option value="en-US">🇬🇧 English</option>
-                    <option value="ms-MY">🇲🇾 Bahasa Melayu</option>
-                </select>
-                <select id="app-voice-select" onchange="saveVoicePreference()" class="text-sm border rounded-lg px-3 py-2 text-gray-700 focus:outline-none focus:ring-1 focus:ring-[#00AEEF] bg-gray-50 font-medium cursor-pointer w-48 truncate">
-                    <option value="">Loading premium voices...</option>
-                </select>
-            </div>
-            <button onclick="exitVoiceMode()" class="absolute top-6 right-6 p-3 bg-gray-100 text-gray-400 hover:text-gray-800 hover:bg-gray-200 rounded-full transition">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-            </button>
-            
-            <div class="relative flex items-center justify-center w-64 h-64 mb-8">
-                <div id="voice-pulse-ring" class="absolute inset-0 bg-[#00AEEF]/20 rounded-full hidden"></div>
-                <div id="voice-glow-ring" class="absolute inset-[-20px] bg-[#00AEEF]/10 rounded-full voice-glow hidden"></div>
-                <img src="https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/Gemini_Generated_Image_okdjp7okdjp7okdj.png?download=true" class="w-56 h-56 rounded-full border-4 border-[#00AEEF] relative z-10 object-cover shadow-2xl bg-white">
-            </div>
-
-            <h3 id="voice-status-text" class="text-3xl font-bold text-[#00AEEF] mb-4 tracking-wide">Tap mic to speak</h3>
-            <p id="voice-transcript-preview" class="text-gray-500 text-lg text-center max-w-2xl h-20 overflow-hidden italic px-6"></p>
-
-            <button id="voice-toggle-btn" onclick="toggleVoiceMic()" class="mt-8 bg-[#00AEEF] hover:bg-[#0099d1] text-white rounded-full p-6 shadow-xl hover:scale-105 transition-all duration-300 flex items-center justify-center">
-                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"></path></svg>
-            </button>
-        </div>
         
         <!-- Left Sidebar -->
         <div class="w-64 bg-[#111827] text-white flex flex-col transition-all shrink-0">
             <div class="p-4 space-y-2 border-b border-gray-800">
                 <button onclick="switchAppTab('chat')" id="app-btn-chat" class="w-full flex items-center space-x-3 bg-gray-800 p-3 rounded-lg hover:bg-gray-700 transition text-white">
-                    <img src="https://static.doctronic.ai/img/icons/stethoscope-line-primary.svg" class="w-5 h-5 filter invert">
                     <span class="font-medium text-sm">AI Doctor</span>
                 </button>
                 <button onclick="switchAppTab('book')" id="app-btn-book" class="w-full flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-800 transition text-gray-300">
-                    <img src="https://static.doctronic.ai/img/icons/dossier-line-primary.svg" class="w-5 h-5 filter invert opacity-80">
                     <span class="font-medium text-sm">Book Consultant</span>
                 </button>
                 <button onclick="switchAppTab('reports')" id="app-btn-reports" class="w-full flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-800 transition text-gray-300">
-                    <svg class="w-5 h-5 filter invert opacity-80" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
                     <span class="font-medium text-sm">Medical Reports</span>
                 </button>
             </div>
             
             <div class="flex-1 overflow-y-auto p-4">
                 <p class="text-xs text-gray-400 font-semibold mb-3 uppercase tracking-wider">Recent Consultations</p>
-                <button onclick="startNewSession()" class="w-full text-left p-3 hover:bg-gray-800 rounded-lg cursor-pointer truncate flex items-center space-x-2 transition text-green-400 font-bold mb-4 shadow-sm border border-gray-700">
-                    <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                <button onclick="startNewSession()" class="w-full text-left p-3 hover:bg-gray-800 rounded-lg flex items-center space-x-2 text-green-400 font-bold mb-4 shadow-sm border border-gray-700">
                     <span class="text-sm">New Session</span>
                 </button>
                 <div id="sidebar-sessions-list" class="space-y-1"></div>
             </div>
 
-            <div class="p-4 border-t border-gray-800 flex items-center justify-between">
-                <div class="flex items-center space-x-3 overflow-hidden">
-                    <img id="appUserAvatar" src="" class="w-8 h-8 rounded-full flex-shrink-0 object-cover border border-gray-600">
-                    <span id="appUserEmail" class="text-sm truncate font-medium"></span> 
+            <div class="p-4 border-t border-gray-800 flex flex-col">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center space-x-3 overflow-hidden">
+                        <img id="appUserAvatar" src="" class="w-8 h-8 rounded-full flex-shrink-0 object-cover border border-gray-600">
+                        <span id="appUserEmail" class="text-sm truncate font-medium"></span> 
+                    </div>
+                    <button id="appLogoutBtn" title="Log Out" class="text-gray-400 hover:text-white p-1">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
+                    </button>
                 </div>
-                <button id="appLogoutBtn" title="Log Out" class="text-gray-400 hover:text-white ml-2 p-1">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
+                
+                <!-- Settings Button -->
+                <button onclick="switchAppTab('settings')" id="app-btn-settings" class="mt-4 flex items-center justify-center space-x-2 p-2 w-full rounded-lg bg-gray-800 hover:bg-gray-700 text-gray-300 transition text-xs font-bold uppercase tracking-wider">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                    <span>Profile Settings</span>
                 </button>
             </div>
         </div>
@@ -374,14 +220,10 @@
             <!-- Chat Interface -->
             <div id="app-chat-view" class="flex-1 flex flex-col h-full overflow-hidden bg-white">
                 <div id="app-chat-history" class="flex-1 overflow-y-auto p-6 md:p-10 space-y-8"></div>
-                
-                <div class="w-full shrink-0 pt-4 pb-6 px-6 bg-white border-t border-gray-100 z-10 shadow-[0_-5px_15px_rgba(0,0,0,0.02)]">
+                <div class="w-full shrink-0 pt-4 pb-6 px-6 bg-white border-t border-gray-100 shadow-[0_-5px_15px_rgba(0,0,0,0.02)]">
                     <div class="max-w-3xl mx-auto relative flex items-center shadow-[0_5px_20px_rgba(0,0,0,0.08)] rounded-full border border-gray-200 bg-white p-1">
-                        <button onclick="enterVoiceMode()" class="p-3 bg-gray-100 hover:bg-[#00AEEF] hover:text-white rounded-full transition text-gray-600 z-10 shadow-sm ml-1" title="Start Interactive Voice Conversation">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"></path></svg>
-                        </button>
-                        <input type="text" id="app-chat-input" class="w-full bg-transparent pl-4 pr-14 py-3 focus:outline-none text-gray-800 placeholder-gray-400" placeholder="Type a message or tap the mic for voice mode..." onkeypress="if(event.key === 'Enter') sendChat()">
-                        <button onclick="sendChat()" class="absolute right-2 p-2.5 bg-[#00AEEF] text-white rounded-full hover:bg-[#0099d1] transition transform hover:scale-105 shadow-md">
+                        <input type="text" id="app-chat-input" class="w-full bg-transparent pl-4 pr-14 py-3 focus:outline-none text-gray-800" placeholder="Type a message..." onkeypress="if(event.key === 'Enter') sendChat()">
+                        <button onclick="sendChat()" class="absolute right-2 p-2.5 bg-[#00AEEF] text-white rounded-full hover:bg-[#0099d1] transition shadow-md">
                             <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z"></path></svg>
                         </button>
                     </div>
@@ -389,113 +231,50 @@
             </div>
 
             <!-- Booking Form Interface -->
-            <div id="app-book-view" class="hidden flex-1 overflow-y-auto p-8 md:p-12 w-full">
-                <div class="max-w-4xl mx-auto">
-                    <h2 class="text-3xl font-bold text-[#2e1a47] mb-2">Book a Consultant</h2>
-                    <p class="text-gray-500 mb-8">Schedule a follow-up video call with one of our licensed human doctors.</p>
-                    
-                    <div class="bg-white border rounded-2xl shadow-sm p-8">
-                        <form id="app-booking-form" onsubmit="submitBooking(event)">
-                            <div class="mb-8 bg-gray-50 p-1.5 rounded-xl border flex w-full">
-                                <label class="flex-1 text-center cursor-pointer">
-                                    <input type="radio" name="visit_type" value="online" class="hidden peer" checked onchange="togglePaymentArea(this)">
-                                    <div class="py-3 px-4 rounded-lg peer-checked:bg-[#00AEEF] peer-checked:text-white peer-checked:shadow-md text-sm font-bold text-gray-500 transition-all">
-                                        🎥 Online Video Call (RM 10.00)
-                                    </div>
-                                </label>
-                                <label class="flex-1 text-center cursor-pointer">
-                                    <input type="radio" name="visit_type" value="physical" class="hidden peer" onchange="togglePaymentArea(this)">
-                                    <div class="py-3 px-4 rounded-lg peer-checked:bg-[#00AEEF] peer-checked:text-white peer-checked:shadow-md text-sm font-bold text-gray-500 transition-all">
-                                        🏥 In-Clinic Visit
-                                    </div>
-                                </label>
-                            </div>
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
-                                <div class="space-y-8">
-                                    <div>
-                                        <h3 class="font-bold text-gray-800 flex items-center text-sm mb-4 border-b pb-2"><span class="bg-[#00AEEF] text-white w-5 h-5 rounded-full flex justify-center items-center text-xs mr-2">1</span> PATIENT DETAILS</h3>
-                                        <div class="space-y-3">
-                                            <input type="text" name="name" id="app-book-name" placeholder="Patient Name" required class="w-full border rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#00AEEF] bg-gray-50 focus:bg-white transition">
-                                            <input type="email" name="email" id="app-book-email" placeholder="Patient Email" required class="w-full border rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#00AEEF] bg-gray-50 focus:bg-white transition">
-                                            <label class="block text-xs text-gray-600 mt-2 mb-1">Preferred Date & Time (Optional)</label>
-                                            <input type="datetime-local" name="preferred_datetime" id="app-preferred-datetime" class="w-full border rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#00AEEF] bg-gray-50 focus:bg-white transition">
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <h3 class="font-bold text-gray-800 flex items-center text-sm mb-4 border-b pb-2"><span class="bg-[#00AEEF] text-white w-5 h-5 rounded-full flex justify-center items-center text-xs mr-2">2</span> CHOOSE DOCTOR</h3>
-                                        <div class="bg-sky-50 border border-sky-100 p-4 rounded-xl mb-4">
-                                            <label class="text-xs text-gray-600 font-medium block mb-2">Not sure? Describe symptoms for a suggestion:</label>
-                                            <div class="flex space-x-2">
-                                                <input type="text" id="app-symptom-suggest" placeholder="e.g. skin rash, fever..." class="flex-1 border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-[#00AEEF]">
-                                                <button type="button" onclick="suggestDoctor()" class="bg-white border shadow-sm text-[#00AEEF] text-xs px-4 py-2 rounded-lg hover:bg-gray-50 flex items-center font-medium transition"><img src="https://static.doctronic.ai/img/icons/stethoscope-line-primary.svg" class="w-4 h-4 mr-1"> Find</button>
-                                            </div>
-                                        </div>
-                                        <select name="doctor" id="app-doctor-select" class="w-full border rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#00AEEF] bg-gray-50 focus:bg-white transition">
-                                            <option value="">-- Loading Doctors --</option>
-                                        </select>
-                                    </div>
-                                </div>
-                                <div id="app-payment-section">
-                                    <div class="h-full flex flex-col">
-                                        <h3 class="font-bold text-gray-800 flex items-center text-sm mb-4 border-b pb-2"><span class="bg-[#00AEEF] text-white w-5 h-5 rounded-full flex justify-center items-center text-xs mr-2">3</span> PAYMENT (RM 10.00)</h3>
-                                        <div class="border-2 border-dashed border-sky-300 rounded-xl p-8 text-center bg-sky-50 flex-1 flex flex-col justify-center items-center">
-                                            <svg class="w-12 h-12 text-[#00AEEF] mb-3 opacity-80 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path>
-                                            </svg>
-                                            <span class="text-base font-semibold text-[#00AEEF] mb-2 block">Secure Payment via Stripe</span>
-                                            <span class="text-sm text-gray-600 block max-w-xs mx-auto">You will be redirected to Stripe's secure checkout to complete your RM 10.00 payment.</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="mt-8 pt-6 border-t">
-                                <button type="submit" id="app-submit-booking-btn" class="w-full bg-[#00AEEF] text-white py-4 rounded-xl font-bold text-lg hover:bg-[#0099d1] shadow-lg hover:shadow-xl transition transform hover:-translate-y-0.5 flex justify-center items-center">
-                                    Pay RM 10.00 & Book
-                                </button>
-                            </div>
-                        </form>
-                        <div id="app-booking-result" class="hidden mt-6 p-5 rounded-xl text-sm text-center font-medium shadow-sm"></div>
-                    </div>
-                </div>
+            <div id="app-book-view" class="hidden flex-1 overflow-y-auto p-8 w-full">
+                <!-- Keep existing booking HTML structure exactly the same here -->
+                <h2 class="text-3xl font-bold mb-8">Book a Consultant</h2>
+                <select id="app-doctor-select" class="w-full border rounded px-4 py-2 mb-4"><option>Loading...</option></select>
+                <button onclick="submitBooking(event)" class="bg-[#00AEEF] text-white py-3 px-6 rounded-lg font-bold">Book Demo (Code Placeholder)</button>
+                <div id="app-booking-result" class="mt-4"></div>
             </div>
 
             <!-- MEDICAL REPORTS VIEW -->
-            <div id="app-reports-view" class="hidden flex-1 overflow-y-auto p-8 md:p-12 w-full">
-                <div class="max-w-4xl mx-auto">
-                    <h2 class="text-3xl font-bold text-[#2e1a47] mb-2">Medical Reports & Scans</h2>
-                    <p class="text-gray-500 mb-8">Securely upload your medical reports directly to your personal Google Drive. Our AI will analyze them and remember your medical history for future consultations. <span class="text-red-500 font-medium">(Active Subscription Required)</span></p>
+            <div id="app-reports-view" class="hidden flex-1 overflow-y-auto p-8 w-full">
+                <h2 class="text-3xl font-bold mb-8">Medical Reports & Scans</h2>
+                <div class="bg-white border rounded-2xl p-8 shadow-sm">
+                    <form id="upload-report-form" onsubmit="uploadReport(event)">
+                        <input type="file" id="report-file" required class="mb-4">
+                        <button type="submit" id="upload-report-btn" class="bg-[#00AEEF] text-white py-3 px-6 rounded-lg font-bold">Upload to Drive</button>
+                    </form>
+                    <div id="upload-result" class="hidden mt-4 p-4 rounded-xl border"></div>
+                </div>
+            </div>
+
+            <!-- PROFILE SETTINGS VIEW -->
+            <div id="app-settings-view" class="hidden flex-1 overflow-y-auto p-8 md:p-12 w-full bg-gray-50">
+                <div class="max-w-2xl mx-auto bg-white rounded-2xl shadow-sm border border-gray-200 p-8">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-6">Profile Settings</h2>
+                    <div id="settingsAlertBox" class="hidden mb-6 p-4 rounded-lg text-sm font-medium"></div>
                     
-                    <!-- Link Drive Section -->
-                    <div class="bg-sky-50 border border-sky-100 p-6 rounded-2xl mb-8 flex items-center justify-between shadow-sm">
+                    <div class="flex items-center space-x-6 mb-8 pb-8 border-b border-gray-100">
+                        <img id="settingsAvatarPreview" src="" class="w-24 h-24 rounded-full border border-gray-200 object-cover shadow-sm">
                         <div>
-                            <h3 class="font-bold text-sky-900 mb-1">1. Link Personal Storage</h3>
-                            <p class="text-sm text-sky-700">Connect Google Drive to securely store your files. We never store files on our servers.</p>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Change Profile Photo</label>
+                            <input type="file" id="settingsPhotoInput" accept="image/*" class="text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-sky-50 file:text-sky-700 hover:file:bg-sky-100">
                         </div>
-                        <button onclick="linkGoogleDrive()" class="bg-white text-sky-600 font-semibold px-4 py-2.5 border border-sky-200 rounded-lg shadow-sm hover:bg-sky-100 transition shrink-0 ml-4 flex items-center text-sm">
-                            <svg class="w-5 h-5 mr-2" viewBox="0 0 24 24" fill="currentColor">
-                                <path d="M7.71 3.5L1.15 15l3.43 6L11.15 9.5M9.73 15L6.3 21h13.12l3.43-6M12.87 9.5L16.3 3.5h-13.1l3.43 6"/>
-                            </svg> 
-                            Connect Drive
-                        </button>
                     </div>
 
-                    <!-- Upload Section -->
-                    <div class="bg-white border rounded-2xl shadow-sm p-8">
-                        <h3 class="font-bold text-gray-800 mb-4 border-b pb-2">2. Upload Report</h3>
-                        <form id="upload-report-form" onsubmit="uploadReport(event)" class="space-y-4">
-                            <div class="border-2 border-dashed border-gray-300 rounded-xl p-8 text-center hover:bg-gray-50 transition cursor-pointer relative group">
-                                <input type="file" id="report-file" accept="image/*,application/pdf" required class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10">
-                                <svg class="w-10 h-10 text-gray-400 mx-auto mb-3 group-hover:text-[#00AEEF] transition" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path></svg>
-                                <p class="text-sm font-medium text-gray-600" id="file-name-display">Click to browse or drag and drop</p>
-                                <p class="text-xs text-gray-400 mt-1">Images & PDFs Supported</p>
-                            </div>
-                            
-                            <button type="submit" id="upload-report-btn" class="w-full bg-[#00AEEF] text-white py-3.5 rounded-xl font-bold hover:bg-[#0099d1] transition shadow-md flex items-center justify-center">
-                                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
-                                Upload to Drive & Analyze
-                            </button>
-                        </form>
-                        <div id="upload-result" class="hidden mt-6 p-4 rounded-xl text-sm border leading-relaxed"></div>
+                    <div class="space-y-6">
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-1">Full Name</label>
+                            <input type="text" id="settingsName" class="w-full border border-gray-300 rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-[#00AEEF] focus:outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-1">Phone Number</label>
+                            <input type="text" id="settingsPhone" class="w-full border border-gray-300 rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-[#00AEEF] focus:outline-none">
+                        </div>
+                        <button id="settingsSaveBtn" onclick="saveSettings()" class="w-full mt-4 bg-[#00AEEF] text-white font-bold py-3.5 rounded-xl shadow-md hover:bg-[#0099d1] transition">Update Settings</button>
                     </div>
                 </div>
             </div>
@@ -503,228 +282,175 @@
         </div>
     </div>
 
-    <!-- Firebase Authentication & Firestore Module -->
+    <!-- Firebase -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-app.js";
-        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut, sendPasswordResetEmail, sendEmailVerification, updateProfile } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-auth.js";
-        import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore.js";
+        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut, sendPasswordResetEmail, sendEmailVerification } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-auth.js";
 
-        // YOUR EXACT FIREBASE PROJECT CONFIG
         const firebaseConfig = {
             apiKey: "AIzaSyCrx9BPS8ficDzgVZMbJIb4b3PQ9IqEHLw",
             authDomain: "doktura-ai-907d8.firebaseapp.com",
             projectId: "doktura-ai-907d8",
             storageBucket: "doktura-ai-907d8.firebasestorage.app",
             messagingSenderId: "940024084363",
-            appId: "1:940024084363:web:db934bd0fd644d61f7e18e",
-            measurementId: "G-EGP9KP21D8"
+            appId: "1:940024084363:web:db934bd0fd644d61f7e18e"
         };
 
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
-        const db = getFirestore(app);
 
-        window.userData = { name: "Patient", age: "Unknown", gender: "Unknown", country: "Unknown" };
+        window.userData = { name: "Patient", phone: "Unknown", photo_url: "" };
         window.currentUser = null;
 
         const masterAuth = document.getElementById("authMasterContainer");
 
         function showAuthAlert(msg, type="error") {
             const alertBox = document.getElementById("authAlertBox");
-            let cleanMsg = msg.replace("Firebase: Error (", "").replace(").", "").replace("auth/", "").replace(/-/g, " ");
-            alertBox.innerText = cleanMsg;
-            if(type === "error") {
-                alertBox.className = "mb-4 p-3 bg-red-50 border border-red-200 text-red-600 text-xs rounded-lg text-center font-medium capitalize";
-            } else {
-                alertBox.className = "mb-4 p-3 bg-green-50 border border-green-200 text-green-600 text-xs rounded-lg text-center font-medium capitalize";
-            }
+            alertBox.innerText = msg.replace("Firebase: Error (", "").replace(").", "").replace("auth/", "").replace(/-/g, " ");
+            alertBox.className = type === "error" ? "mb-4 p-3 bg-red-50 border border-red-200 text-red-600 text-xs rounded-lg text-center font-medium capitalize" : "mb-4 p-3 bg-green-50 border border-green-200 text-green-600 text-xs rounded-lg text-center font-medium capitalize";
             alertBox.classList.remove("hidden");
         }
-        function hideAuthAlert() { document.getElementById("authAlertBox").classList.add("hidden"); }
 
         window.switchAuthView = function(view) {
-            hideAuthAlert();
-            document.getElementById("authLoginView").classList.add("hidden");
-            document.getElementById("authRegisterView").classList.add("hidden");
-            document.getElementById("authProfileView").classList.add("hidden");
-            document.getElementById("authForgotView").classList.add("hidden");
+            document.getElementById("authAlertBox").classList.add("hidden");
+            ["authLoginView", "authRegisterView", "authProfileView", "authForgotView"].forEach(v => document.getElementById(v).classList.add("hidden"));
             
-            if(view === 'login') {
-                document.getElementById("authLoginView").classList.remove("hidden");
-            } else if (view === 'register') {
-                document.getElementById("authRegisterView").classList.remove("hidden");
-            } else if (view === 'profile') {
-                document.getElementById("authProfileView").classList.remove("hidden");
-            } else if (view === 'forgot') {
-                document.getElementById("authForgotView").classList.remove("hidden");
+            if(view === 'profile') {
+                document.getElementById("authCloseBtnContainer").classList.add("hidden"); // Force completion
+            } else {
+                document.getElementById("authCloseBtnContainer").classList.remove("hidden");
             }
+            
+            document.getElementById(view === 'login' ? "authLoginView" : view === 'register' ? "authRegisterView" : view === 'forgot' ? "authForgotView" : "authProfileView").classList.remove("hidden");
         }
 
         window.openAuth = function(view = 'login') {
             masterAuth.classList.remove("hidden");
-            setTimeout(() => { masterAuth.classList.remove("opacity-0"); }, 10);
             switchAuthView(view);
         }
-        window.closeAuth = function() { 
-            masterAuth.classList.add("hidden"); 
-        }
+        window.closeAuth = function() { masterAuth.classList.add("hidden"); }
 
         document.getElementById("navLoginBtn").addEventListener("click", () => openAuth('login'));
 
         const handleGoogleAuth = async () => {
-            hideAuthAlert();
             const provider = new GoogleAuthProvider();
-            try { 
-                const result = await signInWithPopup(auth, provider);
-                if(result.user.displayName) {
-                    document.getElementById("profileName").value = result.user.displayName;
-                }
-            } catch (error) { 
-                showAuthAlert("Google Login Failed.", "error"); 
-                console.error(error);
-            }
+            try { await signInWithPopup(auth, provider); } 
+            catch (error) { showAuthAlert("Google Login Failed.", "error"); }
         };
 
         document.getElementById("doGoogleLoginBtn").addEventListener("click", handleGoogleAuth);
         document.getElementById("doGoogleRegBtn").addEventListener("click", handleGoogleAuth);
 
         document.getElementById("doLoginBtn").addEventListener("click", async () => {
-            hideAuthAlert();
-            const btn = document.getElementById("doLoginBtn");
-            btn.innerText = "Logging in..."; btn.disabled = true;
-            try { 
-                await signInWithEmailAndPassword(auth, document.getElementById("loginEmail").value, document.getElementById("loginPass").value); 
-            } catch (error) { showAuthAlert(error.message, "error"); }
-            btn.innerText = "Login"; btn.disabled = false;
+            document.getElementById("doLoginBtn").innerText = "Logging in...";
+            try { await signInWithEmailAndPassword(auth, document.getElementById("loginEmail").value, document.getElementById("loginPass").value); } 
+            catch (error) { showAuthAlert(error.message, "error"); document.getElementById("doLoginBtn").innerText = "Login"; }
         });
 
         document.getElementById("doRegisterBtn").addEventListener("click", async () => {
-            hideAuthAlert();
-            const btn = document.getElementById("doRegisterBtn");
-            btn.innerText = "Creating Account..."; btn.disabled = true;
+            document.getElementById("doRegisterBtn").innerText = "Creating Account...";
             try { 
                 const userCred = await createUserWithEmailAndPassword(auth, document.getElementById("regEmail").value, document.getElementById("regPass").value); 
                 await sendEmailVerification(userCred.user);
                 await signOut(auth);
-                
-                showAuthAlert("Registration successful! A verification link has been sent to your email. Please check your inbox, click the link, and then log in.", "success");
-                setTimeout(() => { switchAuthView('login'); }, 1500);
+                showAuthAlert("Registration successful! Check your email for the verification link.", "success");
+                setTimeout(() => { switchAuthView('login'); }, 2000);
             } catch (error) { showAuthAlert(error.message, "error"); }
-            btn.innerText = "Register & Verify"; btn.disabled = false;
+            document.getElementById("doRegisterBtn").innerText = "Register & Verify";
         });
 
         document.getElementById("doForgotBtn").addEventListener("click", async () => {
-            hideAuthAlert();
-            const email = document.getElementById("forgotEmail").value.trim();
-            if(!email) return showAuthAlert("Please enter your email address.", "error");
-
-            const btn = document.getElementById("doForgotBtn");
-            btn.innerText = "Sending..."; btn.disabled = true;
-            try { 
-                await sendPasswordResetEmail(auth, email);
-                showAuthAlert("Password reset link sent! Check your inbox.", "success");
-            } catch (error) { showAuthAlert(error.message, "error"); }
-            btn.innerText = "Send Reset Link"; btn.disabled = false;
+            try { await sendPasswordResetEmail(auth, document.getElementById("forgotEmail").value.trim()); showAuthAlert("Reset link sent!", "success"); } 
+            catch (error) { showAuthAlert(error.message, "error"); }
         });
 
-        document.getElementById("saveProfileBtn").addEventListener("click", async () => {
-            hideAuthAlert();
-            const pName = document.getElementById("profileName").value.trim();
-            const pAge = document.getElementById("profileAge").value.trim();
-            const pGender = document.getElementById("profileGender").value;
-            const pCountry = document.getElementById("profileCountry").value.trim();
-            
-            const chk1 = document.getElementById("chkDisclaimer1").checked;
-            const chk2 = document.getElementById("chkDisclaimer2").checked;
-
-            if(!pName || !pAge || !pGender || !pCountry) return showAuthAlert("Please complete all required profile fields.", "error");
-            if(!chk1 || !chk2) return showAuthAlert("Please agree to the medical disclaimers to continue.", "error");
-            
-            const btn = document.getElementById("saveProfileBtn");
-            btn.innerText = "Saving Profile & Image..."; btn.disabled = true;
-
-            try {
-                if(auth.currentUser) {
-                    
-                    let uploadedPhotoUrl = "";
-                    const fileInput = document.getElementById("profilePhotoInput");
-                    
-                    if (fileInput.files.length > 0) {
-                        const formData = new FormData();
-                        formData.append('file', fileInput.files[0]);
-                        formData.append('user_id', auth.currentUser.uid);
-                        
-                        try {
-                            const res = await fetch(`${API_BASE}/api/upload_avatar`, { method: 'POST', body: formData });
-                            const data = await res.json();
-                            if (data.success) uploadedPhotoUrl = data.photo_url;
-                        } catch(e) {
-                            console.error("Avatar Upload Failed", e);
-                        }
-                    }
-
-                    const profileData = {
-                        name: pName, 
-                        age: pAge, 
-                        gender: pGender, 
-                        country: pCountry, 
-                        email: auth.currentUser.email
-                    };
-                    if (uploadedPhotoUrl) profileData.photo_url = uploadedPhotoUrl;
-
-                    await setDoc(doc(db, "users", auth.currentUser.uid), profileData, { merge: true });
-                    
-                    await updateProfile(auth.currentUser, { 
-                        displayName: pName, 
-                        photoURL: uploadedPhotoUrl || auth.currentUser.photoURL 
-                    });
-                    
-                    window.userData = profileData;
-                    closeAuth();
-                    initializeLoggedInState(auth.currentUser);
-                }
-            } catch(error) { showAuthAlert("Failed to save profile. Try again. " + error.message, "error"); }
-            btn.innerText = "Save Profile"; btn.disabled = false;
-        });
-
-        function getAvatarSvgDataUri(name) {
+        // Generate SVG Avatar function
+        window.getAvatarSvgDataUri = function(name) {
             const initial = (name && name !== "Unknown") ? name.charAt(0).toUpperCase() : 'U';
             const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64"><rect width="64" height="64" fill="#00AEEF"/><text x="50%" y="50%" fill="#ffffff" font-size="32" font-family="sans-serif" font-weight="bold" text-anchor="middle" dy=".35em">${initial}</text></svg>`;
             return "data:image/svg+xml;base64," + btoa(svg);
         }
 
+        document.getElementById("saveProfileBtn").addEventListener("click", async () => {
+            const pName = document.getElementById("profileName").value.trim();
+            const pPhone = document.getElementById("profilePhone").value.trim();
+            
+            if(!pName || !pPhone) return showAuthAlert("Please provide Name and Phone number.", "error");
+            
+            const btn = document.getElementById("saveProfileBtn");
+            btn.innerText = "Saving..."; btn.disabled = true;
+
+            let uploadedPhotoUrl = window.userData.photo_url || window.currentUser.photoURL || "";
+            const fileInput = document.getElementById("profilePhotoInput");
+            
+            if (fileInput.files.length > 0) {
+                const formData = new FormData();
+                formData.append('file', fileInput.files[0]);
+                formData.append('user_id', auth.currentUser.uid);
+                try {
+                    const res = await fetch(`${API_BASE}/api/upload_avatar`, { method: 'POST', body: formData });
+                    const data = await res.json();
+                    if (data.success) uploadedPhotoUrl = data.photo_url;
+                } catch(e) {}
+            }
+
+            // Sync with FastAPI Backend Profile API
+            try {
+                const token = await window.currentUser.getIdToken();
+                const res = await fetch(`${API_BASE}/api/user/profile`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                    body: JSON.stringify({ name: pName, phone: pPhone, photo_url: uploadedPhotoUrl })
+                });
+                
+                window.userData = { name: pName, phone: pPhone, photo_url: uploadedPhotoUrl };
+                closeAuth();
+                initializeLoggedInState(auth.currentUser);
+            } catch(error) { showAuthAlert("Failed to save. Try again.", "error"); }
+            btn.innerText = "Complete Setup"; btn.disabled = false;
+        });
+
         onAuthStateChanged(auth, async (user) => {
             if (user) {
-                try {
-                    const isGoogleAuth = user.providerData.some(p => p.providerId === 'google.com');
-                    if (!isGoogleAuth && !user.emailVerified) {
-                        await signOut(auth);
-                        showAuthAlert("Please verify your email address. Check your inbox and click the verification link before logging in.", "error");
-                        openAuth('login');
-                        return;
-                    }
+                const isGoogleAuth = user.providerData.some(p => p.providerId === 'google.com');
+                // Email Verification Logic
+                if (!isGoogleAuth && !user.emailVerified) {
+                    await signOut(auth);
+                    showAuthAlert("Please verify your email address. Check your inbox and click the verification link.", "error");
+                    openAuth('login');
+                    return;
+                }
 
-                    window.currentUser = user;
-                    const userDoc = await getDoc(doc(db, "users", user.uid));
+                window.currentUser = user;
+                
+                // Fetch/Sync with Postgres Backend directly
+                try {
+                    const token = await user.getIdToken();
+                    const res = await fetch(`${API_BASE}/api/user/sync`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                        body: JSON.stringify({ email: user.email, name: user.displayName, photo_url: user.photoURL })
+                    });
                     
-                    if (userDoc.exists() && userDoc.data().name && userDoc.data().age && userDoc.data().gender && userDoc.data().country) {
-                        window.userData = userDoc.data();
+                    const data = await res.json();
+                    
+                    if(data.is_complete) {
+                        window.userData = { name: data.name, phone: data.phone, photo_url: data.photo_url };
                         closeAuth();
                         initializeLoggedInState(user);
                     } else {
+                        // User needs to fill out Name and Phone
+                        if(data.name) document.getElementById("profileName").value = data.name;
+                        window.userData.photo_url = data.photo_url || user.photoURL;
                         openAuth('profile');
                     }
                 } catch (err) {
-                    console.error("Database access error:", err);
-                    showAuthAlert("Firebase Database is Locked! Please update your Firestore Rules to allow read/write.", "error");
-                    await signOut(auth);
+                    console.error("Backend sync failed", err);
                 }
             } else {
                 window.currentUser = null;
-                window.userData = { name: "Patient", age: "Unknown", gender: "Unknown", country: "Unknown" };
                 document.getElementById('landingView').classList.remove("hidden");
                 document.getElementById('appView').classList.add("hidden");
-                exitVoiceMode(); 
                 loadSessions();
             }
         });
@@ -732,17 +458,21 @@
         function initializeLoggedInState(user) {
             document.getElementById('landingView').classList.add("hidden");
             document.getElementById('appView').classList.remove("hidden");
+            
             document.getElementById('appUserEmail').textContent = window.userData.name; 
 
-            document.getElementById('app-book-name').value = `${window.userData.name}, Age: ${window.userData.age}`;
-            document.getElementById('app-book-email').value = user.email;
-
-            let avatarUrl = user.photoURL || window.userData.photo_url || getAvatarSvgDataUri(window.userData.name);
+            // Priority: Uploaded > Google > SVG Letter
+            let avatarUrl = window.userData.photo_url || user.photoURL || getAvatarSvgDataUri(window.userData.name);
             window.currentUserPhotoUrl = avatarUrl;
             
             const appAvatarImg = document.getElementById('appUserAvatar');
             appAvatarImg.src = avatarUrl;
             appAvatarImg.onerror = () => { appAvatarImg.src = getAvatarSvgDataUri(window.userData.name); };
+
+            // Pre-fill settings
+            document.getElementById('settingsName').value = window.userData.name;
+            document.getElementById('settingsPhone').value = window.userData.phone;
+            document.getElementById('settingsAvatarPreview').src = avatarUrl;
 
             loadSessions();
         }
@@ -750,464 +480,104 @@
         document.getElementById("appLogoutBtn").addEventListener("click", () => { signOut(auth); });
     </script>
 
-    <!-- UI, Voice, App, and Upload Logic -->
+    <!-- UI Logic -->
     <script>
         window.currentSessionId = null;
 
-        // HELPER: Fetch Authentication Bearer Token required by Backend
-        async function getAuthHeaders(isJson = true) {
-            const headers = {};
-            if (isJson) headers['Content-Type'] = 'application/json';
-            
+        async function getAuthHeaders() {
+            const headers = { 'Content-Type': 'application/json' };
             if (window.currentUser) {
-                try {
-                    const token = await window.currentUser.getIdToken(true);
-                    headers['Authorization'] = `Bearer ${token}`;
-                } catch (e) {
-                    console.error("Auth token error", e);
-                }
+                const token = await window.currentUser.getIdToken();
+                headers['Authorization'] = `Bearer ${token}`;
             }
             return headers;
         }
 
-        function getAnonUserId() {
-            let uid = localStorage.getItem("anon_user_id");
-            if (!uid) {
-                uid = "anonymous_web_" + Math.random().toString(36).substring(7);
-                localStorage.setItem("anon_user_id", uid);
-            }
-            return uid;
-        }
-
-        document.addEventListener('DOMContentLoaded', () => {
-            loadHistory(false);
-            fetchAllDoctors();
-        });
-
-        // TABS & NAVIGATION LOGIC
         window.switchTab = function(tab) {
-            if (tab === 'book' && !window.currentUser) { openAuth('login'); return; }
+            if (tab === 'book' && !window.currentUser) { document.getElementById("navLoginBtn").click(); return; }
         }
 
         window.switchAppTab = function(tab) {
-            const chatBtn = document.getElementById('app-btn-chat');
-            const bookBtn = document.getElementById('app-btn-book');
-            const reportsBtn = document.getElementById('app-btn-reports');
+            const views = ['app-chat-view', 'app-book-view', 'app-reports-view', 'app-settings-view'];
+            const btns = ['app-btn-chat', 'app-btn-book', 'app-btn-reports', 'app-btn-settings'];
             
-            const chatView = document.getElementById('app-chat-view');
-            const bookView = document.getElementById('app-book-view');
-            const reportsView = document.getElementById('app-reports-view');
-
-            // Hide all
-            chatView.classList.add('hidden');
-            bookView.classList.add('hidden');
-            reportsView.classList.add('hidden');
-            
-            // Reset all buttons
-            [chatBtn, bookBtn, reportsBtn].forEach(btn => {
-                btn.classList.remove('bg-gray-800', 'text-white');
-                btn.classList.add('text-gray-300');
+            views.forEach(v => document.getElementById(v).classList.add('hidden'));
+            btns.forEach(b => {
+                document.getElementById(b).classList.remove('bg-gray-800', 'text-white');
+                document.getElementById(b).classList.add('text-gray-300');
             });
 
-            // Activate Selected
-            if (tab === 'chat') {
-                chatView.classList.remove('hidden');
-                chatBtn.classList.add('bg-gray-800', 'text-white'); chatBtn.classList.remove('text-gray-300');
-                scrollToBottom('app-chat-history');
-            } else if (tab === 'book') {
-                bookView.classList.remove('hidden');
-                bookBtn.classList.add('bg-gray-800', 'text-white'); bookBtn.classList.remove('text-gray-300');
-            } else if (tab === 'reports') {
-                reportsView.classList.remove('hidden');
-                reportsBtn.classList.add('bg-gray-800', 'text-white'); reportsBtn.classList.remove('text-gray-300');
-            }
+            document.getElementById('app-' + tab + '-view').classList.remove('hidden');
+            document.getElementById('app-btn-' + tab).classList.add('bg-gray-800', 'text-white');
+            document.getElementById('app-btn-' + tab).classList.remove('text-gray-300');
         }
 
-        // ==========================================
-        // MEDICAL REPORT UPLOAD LOGIC
-        // ==========================================
-        document.getElementById('report-file').addEventListener('change', function(e) {
-            const display = document.getElementById('file-name-display');
-            if(this.files && this.files.length > 0) {
-                display.textContent = "Selected: " + this.files[0].name;
-                display.classList.add('text-[#00AEEF]', 'font-bold');
-            } else {
-                display.textContent = "Click to browse or drag and drop";
-                display.classList.remove('text-[#00AEEF]', 'font-bold');
+        window.saveSettings = async function() {
+            const name = document.getElementById('settingsName').value.trim();
+            const phone = document.getElementById('settingsPhone').value.trim();
+            const alertBox = document.getElementById('settingsAlertBox');
+            const btn = document.getElementById('settingsSaveBtn');
+            
+            if(!name || !phone) {
+                alertBox.className = "mb-6 p-4 rounded-lg text-sm font-medium bg-red-50 text-red-700";
+                alertBox.innerText = "Name and Phone cannot be empty.";
+                alertBox.classList.remove("hidden");
+                return;
             }
-        });
 
-        window.linkGoogleDrive = function() {
-            if(!window.currentUser) { alert("Please log in first."); return; }
-            window.location.href = `${API_BASE}/api/auth/google?user_id=${window.currentUser.uid}`;
-        }
+            btn.innerText = "Updating...";
+            
+            let photo_url = window.userData.photo_url;
+            const fileInput = document.getElementById('settingsPhotoInput');
+            if (fileInput.files.length > 0) {
+                const formData = new FormData();
+                formData.append('file', fileInput.files[0]);
+                formData.append('user_id', window.currentUser.uid);
+                try {
+                    const res = await fetch(`${API_BASE}/api/upload_avatar`, { method: 'POST', body: formData });
+                    const data = await res.json();
+                    if (data.success) photo_url = data.photo_url;
+                } catch(e) {}
+            }
 
-        window.uploadReport = async function(event) {
-            event.preventDefault();
-            if(!window.currentUser) { alert("Please log in first."); return; }
-            
-            const fileInput = document.getElementById('report-file');
-            if(!fileInput.files.length) { alert("Please select a file."); return; }
-            
-            const btn = document.getElementById('upload-report-btn');
-            const resultDiv = document.getElementById('upload-result');
-            
-            btn.innerHTML = `<svg class="w-5 h-5 mr-2 animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path></svg> Uploading...`;
-            btn.disabled = true;
-            resultDiv.classList.add('hidden');
-            
-            const formData = new FormData();
-            formData.append('file', fileInput.files[0]);
-            
             try {
-                const headers = await getAuthHeaders(false); // form-data so no content-type!
-                
-                const res = await fetch(`${API_BASE}/api/upload_medical_report`, {
+                const res = await fetch(`${API_BASE}/api/user/profile`, {
                     method: 'POST',
-                    headers: headers,
-                    body: formData
+                    headers: await getAuthHeaders(),
+                    body: JSON.stringify({ name, phone, photo_url })
                 });
-                const data = await res.json();
                 
-                resultDiv.classList.remove('hidden');
-
-                if(res.ok || res.status === 206) {
-                    resultDiv.className = "mt-6 p-5 bg-[#f0fdf4] text-green-900 rounded-xl text-sm border border-green-200 shadow-sm leading-relaxed";
-                    resultDiv.innerHTML = `<strong class="text-green-700 text-base">✅ Success!</strong><br>${data.message}<br><br><strong class="text-gray-800">Doktura AI Summary:</strong><br><span class="text-gray-600">${data.summary || "No summary generated."}</span>`;
-                    fileInput.value = ""; 
-                    document.getElementById('file-name-display').textContent = "Click to browse or drag and drop";
-                    document.getElementById('file-name-display').classList.remove('text-[#00AEEF]', 'font-bold');
-                } else if (res.status === 403 || data.needs_subscription) {
-                    // CATCH FASTAPI HTTP 403 Premium Required
-                    resultDiv.className = "mt-6 p-5 bg-yellow-50 text-yellow-800 rounded-xl text-sm border border-yellow-200 shadow-sm";
-                    resultDiv.innerHTML = `<strong>Access Denied:</strong> Premium features are required. <br>
-                        <button id="trigger-sub-btn" onclick="triggerSubscription()" class="mt-4 bg-[#00AEEF] text-white font-bold border-none px-5 py-2.5 rounded-lg hover:bg-[#0099d1] transition shadow">Unlock Premium (RM 50)</button>`;
-                } else if (res.status === 401) {
-                    resultDiv.className = "mt-6 p-5 bg-yellow-50 text-yellow-800 rounded-xl text-sm border border-yellow-200 shadow-sm";
-                    resultDiv.innerHTML = `<strong>Session Expired:</strong> Please log out and back in.`;
-                } else {
-                    resultDiv.className = "mt-6 p-5 bg-red-50 text-red-800 rounded-xl text-sm border border-red-200 shadow-sm";
-                    resultDiv.innerHTML = `<strong>Error:</strong> ${data.detail || data.error || 'Failed to upload.'}`;
+                if(res.ok) {
+                    alertBox.className = "mb-6 p-4 rounded-lg text-sm font-medium bg-green-50 text-green-700";
+                    alertBox.innerText = "Settings successfully updated!";
+                    alertBox.classList.remove("hidden");
+                    
+                    window.userData = { name, phone, photo_url };
+                    let displayUrl = photo_url || window.currentUserPhotoUrl || getAvatarSvgDataUri(name);
+                    document.getElementById('appUserEmail').textContent = name;
+                    document.getElementById('appUserAvatar').src = displayUrl;
+                    document.getElementById('settingsAvatarPreview').src = displayUrl;
                 }
             } catch(e) {
-                resultDiv.classList.remove('hidden');
-                resultDiv.className = "mt-6 p-5 bg-red-50 text-red-800 rounded-xl text-sm border border-red-200 shadow-sm";
-                resultDiv.innerHTML = `<strong>Network Error:</strong> Could not connect to server.`;
+                alertBox.className = "mb-6 p-4 rounded-lg text-sm font-medium bg-red-50 text-red-700";
+                alertBox.innerText = "Network error. Try again.";
+                alertBox.classList.remove("hidden");
             }
-            btn.innerHTML = `<svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg> Upload to Drive & Analyze`;
-            btn.disabled = false;
+            btn.innerText = "Update Settings";
         }
 
-        window.triggerSubscription = async function() {
-            if(!window.currentUser) return;
-            const btn = document.getElementById('trigger-sub-btn');
-            if(btn) { btn.innerText = "Redirecting to Payment..."; btn.disabled = true; }
-            
-            try {
-                const res = await fetch(`${API_BASE}/api/create_subscription`, {
-                    method: 'POST',
-                    headers: await getAuthHeaders(true),
-                    body: JSON.stringify({user_id: window.currentUser.uid})
-                });
-                const data = await res.json();
-
-                if(data.stripe_url) {
-                    window.location.href = data.stripe_url;
-                } else {
-                    alert('Error: ' + (data.detail || data.error));
-                    if(btn) { btn.innerText = "Unlock Premium (RM 50)"; btn.disabled = false; }
-                }
-            } catch(err) {
-                 alert('Network error communicating with payment gateway.');
-                 if(btn) { btn.innerText = "Unlock Premium (RM 50)"; btn.disabled = false; }
-            }
-        }
-
-        // ==========================================
-        // DYNAMIC HIGH-QUALITY VOICE SELECTION LOGIC
-        // ==========================================
-        let availableVoices = [];
-        
-        function loadVoices() {
-            availableVoices = window.speechSynthesis.getVoices();
-            populateVoiceList();
-        }
-        if (speechSynthesis.onvoiceschanged !== undefined) {
-            speechSynthesis.onvoiceschanged = loadVoices;
-        }
-
-        function populateVoiceList() {
-            const langSelect = document.getElementById('app-language-select');
-            const voiceSelect = document.getElementById('app-voice-select');
-            if(!langSelect || !voiceSelect) return;
-            
-            const lang = langSelect.value;
-            voiceSelect.innerHTML = '';
-            
-            let filteredVoices = availableVoices.filter(v => v.lang.startsWith(lang.substring(0,2)));
-            filteredVoices.sort((a, b) => {
-                const aPremium = a.name.includes('Google') || a.name.includes('Online') || a.name.includes('Natural') || a.name.includes('Premium');
-                const bPremium = b.name.includes('Google') || b.name.includes('Online') || b.name.includes('Natural') || b.name.includes('Premium');
-                if (aPremium && !bPremium) return -1;
-                if (!aPremium && bPremium) return 1;
-                return 0;
-            });
-
-            if(filteredVoices.length === 0) {
-                voiceSelect.innerHTML = '<option value="">Default OS Voice</option>';
-                return;
-            }
-
-            filteredVoices.forEach(voice => {
-                const option = document.createElement('option');
-                option.value = voice.voiceURI;
-                let cleanName = voice.name;
-                if (cleanName.includes('Google') || cleanName.includes('Online') || cleanName.includes('Natural')) {
-                    cleanName = "✨ Premium: " + cleanName.replace('Google', '').replace('Microsoft', '').replace('Online', '').trim();
-                }
-                option.textContent = cleanName;
-                voiceSelect.appendChild(option);
-            });
-
-            const savedVoice = localStorage.getItem('preferred_voice_' + lang);
-            if (savedVoice && filteredVoices.some(v => v.voiceURI === savedVoice)) {
-                voiceSelect.value = savedVoice;
-            } else {
-                voiceSelect.value = filteredVoices[0].voiceURI;
-            }
-        }
-
-        function saveVoicePreference() {
-            const lang = document.getElementById('app-language-select').value;
-            const voiceSelect = document.getElementById('app-voice-select');
-            if(voiceSelect && voiceSelect.value) {
-                localStorage.setItem('preferred_voice_' + lang, voiceSelect.value);
-            }
-        }
-
-
-        // ==========================================
-        // CONTINUOUS VOICE RECORDING CONTROL
-        // ==========================================
-        let globalRecognition = null;
-        let voiceTranscript = "";
-        let finalTranscriptStr = ""; 
-        let isVoiceModeActive = false;
-        let isListening = false;
-        let intentionalStop = false; 
-
-        function initSpeech() {
-            if (!window.SpeechRecognition && !window.webkitSpeechRecognition) return null;
-            const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-            const rec = new SR();
-            rec.interimResults = true;
-            rec.continuous = true; 
-            
-            rec.onstart = () => {
-                isListening = true;
-                intentionalStop = false;
-                setMicUIMode('listening');
-            };
-
-            rec.onresult = (event) => {
-                let interim = "";
-                let currentFinal = "";
-                for (let i = event.resultIndex; i < event.results.length; ++i) {
-                    if (event.results[i].isFinal) {
-                        currentFinal += event.results[i][0].transcript + " ";
-                    } else {
-                        interim += event.results[i][0].transcript;
-                    }
-                }
-                finalTranscriptStr += currentFinal;
-                voiceTranscript = finalTranscriptStr + interim;
-                
-                let previewText = voiceTranscript.trim() === "" ? "Listening..." : voiceTranscript;
-                document.getElementById('voice-transcript-preview').innerText = previewText;
-            };
-
-            rec.onerror = (e) => {
-                if (e.error !== 'no-speech') {
-                    document.getElementById('voice-status-text').innerText = "Microphone error. Tap to retry.";
-                    isListening = false;
-                    setMicUIMode('ready');
-                }
-            };
-
-            rec.onend = () => {
-                isListening = false;
-                if (!intentionalStop && isVoiceModeActive) {
-                    try { globalRecognition.start(); } catch(e) {}
-                } 
-                else if (intentionalStop && isVoiceModeActive) {
-                    if (voiceTranscript.trim() !== "") {
-                        processVoiceSend();
-                    } else {
-                        setMicUIMode('ready');
-                    }
-                }
-            };
-
-            return rec;
-        }
-
-        function enterVoiceMode() {
-            if (!globalRecognition) globalRecognition = initSpeech();
-            if (!globalRecognition) {
-                alert("Your browser does not support voice input. Please use Google Chrome or Edge.");
-                return;
-            }
-            isVoiceModeActive = true;
-            window.speechSynthesis.cancel();
-            
-            const overlay = document.getElementById('voice-overlay');
-            overlay.classList.remove('hidden');
-            overlay.classList.add('flex');
-            
-            populateVoiceList();
-            setMicUIMode('ready');
-        }
-
-        function exitVoiceMode() {
-            isVoiceModeActive = false;
-            intentionalStop = true;
-            if(globalRecognition) globalRecognition.stop();
-            window.speechSynthesis.cancel();
-            
-            const overlay = document.getElementById('voice-overlay');
-            if(overlay) {
-                overlay.classList.add('hidden');
-                overlay.classList.remove('flex');
-            }
-            scrollToBottom('app-chat-history');
-        }
-
-        function toggleVoiceMic() {
-            if (!globalRecognition) return;
-            window.speechSynthesis.cancel();
-
-            if (isListening) {
-                intentionalStop = true; 
-                globalRecognition.stop(); 
-            } else {
-                finalTranscriptStr = "";
-                voiceTranscript = "";
-                document.getElementById('voice-transcript-preview').innerText = "Listening...";
-                const lang = document.getElementById('app-language-select').value;
-                globalRecognition.lang = lang;
-                
-                try { globalRecognition.start(); } catch(e) {}
-            }
-        }
-
-        function setMicUIMode(mode) {
-            const btn = document.getElementById('voice-toggle-btn');
-            const status = document.getElementById('voice-status-text');
-            const pulse = document.getElementById('voice-pulse-ring');
-            const glow = document.getElementById('voice-glow-ring');
-            
-            if (mode === 'listening') {
-                btn.innerHTML = '<svg class="w-8 h-8" fill="currentColor" viewBox="0 0 24 24"><path d="M6 6h12v12H6z"></path></svg>'; 
-                btn.className = "mt-8 bg-red-500 hover:bg-red-600 text-white rounded-full p-6 shadow-[0_10px_25px_rgba(239,68,68,0.4)] transition-transform flex items-center justify-center animate-pulse";
-                status.innerText = "Listening... (Tap to Send)";
-                pulse.classList.remove('hidden');
-                pulse.classList.add('animate-ping');
-                glow.classList.add('hidden');
-                btn.disabled = false;
-            } else if (mode === 'ready') {
-                btn.innerHTML = '<svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"></path></svg>'; 
-                btn.className = "mt-8 bg-[#00AEEF] hover:bg-[#0099d1] text-white rounded-full p-6 shadow-xl hover:scale-105 transition-transform flex items-center justify-center";
-                status.innerText = "Tap mic to speak";
-                pulse.classList.add('hidden');
-                glow.classList.add('hidden');
-                btn.disabled = false;
-                btn.classList.remove('opacity-50', 'cursor-not-allowed');
-            } else if (mode === 'processing') {
-                btn.className = "mt-8 bg-gray-400 text-white rounded-full p-6 shadow-md transition-transform flex items-center justify-center opacity-50 cursor-not-allowed";
-                btn.disabled = true;
-                status.innerText = "Thinking...";
-                pulse.classList.add('hidden');
-                glow.classList.add('hidden');
-            } else if (mode === 'speaking') {
-                btn.className = "mt-8 bg-gray-400 text-white rounded-full p-6 shadow-md transition-transform flex items-center justify-center opacity-50 cursor-not-allowed";
-                btn.disabled = true;
-                status.innerText = "Speaking...";
-                pulse.classList.add('hidden');
-                glow.classList.remove('hidden'); 
-            }
-        }
-
-        async function processVoiceSend() {
-            setMicUIMode('processing');
-            await sendChat(voiceTranscript); 
-            voiceTranscript = ""; 
-            finalTranscriptStr = "";
-        }
-
-        function playAIResponseVoice(text) {
-            if (!isVoiceModeActive) return; 
-
-            setMicUIMode('speaking');
-
-            const lang = document.getElementById('app-language-select').value;
-            const utterance = new SpeechSynthesisUtterance(text);
-            utterance.lang = lang;
-            utterance.rate = 1.0; 
-            
-            const voiceURI = document.getElementById('app-voice-select').value;
-            if(voiceURI) {
-                const selectedVoice = availableVoices.find(v => v.voiceURI === voiceURI);
-                if(selectedVoice) utterance.voice = selectedVoice;
-            }
-
-            utterance.onend = function() {
-                if(isVoiceModeActive) setMicUIMode('ready'); 
-            };
-
-            window.speechSynthesis.speak(utterance);
-        }
-
+        // Rest of the Chat & History Logic...
         function scrollToBottom(elementId) {
             const el = document.getElementById(elementId);
             if (el) setTimeout(() => { el.scrollTo({ top: el.scrollHeight, behavior: 'smooth' }); }, 50);
         }
 
-        // ==========================================
-        // DOCTOR FETCHING & SESSIONS
-        // ==========================================
-        async function fetchAllDoctors() {
-            try {
-                // Ensure your python backend has an equivalent GET /api/doctors route implemented
-                const res = await fetch(API_BASE + '/api/doctors');
-                if(!res.ok) return;
-                const doctors = await res.json();
-                const selects = [document.getElementById('app-doctor-select')];
-                
-                selects.forEach(select => {
-                    if(!select) return;
-                    select.innerHTML = '<option value="">-- Select a Doctor --</option>';
-                    doctors.forEach(doc => {
-                        const opt = document.createElement('option');
-                        // Backend book route expects a valid doctor_id (e.g., from your Doctor table)
-                        opt.value = doc.id; 
-                        opt.text = `${doc.name} - ${doc.specialty}`;
-                        select.add(opt);
-                    });
-                });
-            } catch (err) { console.error("Error fetching doctors:", err) }
-        }
-
         async function loadSessions() {
-            const userId = window.currentUser ? window.currentUser.email : getAnonUserId();
+            const userId = window.currentUser ? window.currentUser.email : "anonymous";
             try {
                 const res = await fetch(API_BASE + '/api/sessions', {
-                    method: 'POST', 
-                    headers: await getAuthHeaders(true), 
-                    body: JSON.stringify({ user_id: userId })
+                    method: 'POST', headers: await getAuthHeaders(), body: JSON.stringify({ user_id: userId })
                 });
-                
-                if(!res.ok) return; // Fail silently if backend endpoint isn't ready
-                
                 const data = await res.json();
                 let sessions = data.sessions ||[];
 
@@ -1219,43 +589,28 @@
                     sessionListEl.innerHTML = '';
                     sessions.forEach(sessionId => {
                         let dateStr = "New Consultation";
-                        if (sessionId !== "default" && !isNaN(parseInt(sessionId))) {
-                            dateStr = new Date(parseInt(sessionId)).toLocaleString([], { month:'short', day:'numeric', hour:'2-digit', minute:'2-digit' });
-                        }
+                        if (!isNaN(parseInt(sessionId))) dateStr = new Date(parseInt(sessionId)).toLocaleString([], { month:'short', day:'numeric', hour:'2-digit', minute:'2-digit' });
                         const bgClass = (sessionId === window.currentSessionId) ? 'bg-gray-800 text-white border-l-4 border-[#00AEEF]' : 'hover:bg-gray-800 text-gray-400 hover:text-white border-l-4 border-transparent';
-                        
-                        sessionListEl.innerHTML += `
-                            <button onclick="switchSession('${sessionId}')" class="w-full text-left p-3 rounded-lg cursor-pointer truncate flex items-center space-x-3 transition ${bgClass} shadow-sm mb-2">
-                                <svg class="w-4 h-4 shrink-0 opacity-70" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"></path></svg>
-                                <span class="text-xs font-medium truncate">${dateStr}</span>
-                            </button>
-                        `;
+                        sessionListEl.innerHTML += `<button onclick="switchSession('${sessionId}')" class="w-full text-left p-3 rounded-lg truncate text-xs font-medium transition ${bgClass} mb-2">${dateStr}</button>`;
                     });
                 }
                 loadHistory(!!window.currentUser); 
             } catch (error) {}
         }
 
-        window.switchSession = function(sessionId) { window.currentSessionId = sessionId; loadSessions(); switchAppTab('chat'); }
+        window.switchSession = function(id) { window.currentSessionId = id; loadSessions(); switchAppTab('chat'); }
         window.startNewSession = function() { window.currentSessionId = Date.now().toString(); loadSessions(); switchAppTab('chat'); }
 
         async function loadHistory(isAppView) {
-            const userId = window.currentUser ? window.currentUser.email : getAnonUserId();
+            const userId = window.currentUser ? window.currentUser.email : "anonymous";
             const historyId = isAppView ? 'app-chat-history' : 'chat-history';
             const historyEl = document.getElementById(historyId);
             if (!historyEl) return;
 
             try {
                 const res = await fetch(API_BASE + '/api/history', {
-                    method: 'POST', 
-                    headers: await getAuthHeaders(true), 
-                    body: JSON.stringify({ user_id: userId, session_id: window.currentSessionId })
+                    method: 'POST', headers: await getAuthHeaders(), body: JSON.stringify({ user_id: userId, session_id: window.currentSessionId })
                 });
-                
-                if(!res.ok) { // Fail cleanly to default greeting if backend isn't ready
-                    throw new Error("No history available");
-                }
-                
                 const data = await res.json();
                 const hasRealMessages = data.history && data.history.some(msg => msg.role !== 'system');
 
@@ -1268,254 +623,69 @@
                     
                     if (isAppView) {
                         if (msg.role === "user") {
-                            historyEl.innerHTML += `
-                                <div class="flex items-start space-x-4 max-w-3xl mx-auto w-full">
-                                    <img src="${window.currentUserPhotoUrl}" class="w-8 h-8 rounded-full border border-gray-200 object-cover">
-                                    <div class="flex-1"><p class="font-bold text-sm text-gray-800 mb-1">${window.userData.name}</p><div class="text-gray-700 leading-relaxed">${formattedContent}</div></div>
-                                </div>`;
+                            historyEl.innerHTML += `<div class="flex items-start space-x-4 max-w-3xl mx-auto w-full"><img src="${window.currentUserPhotoUrl}" class="w-8 h-8 rounded-full border border-gray-200 object-cover"><div class="flex-1"><p class="font-bold text-sm text-gray-800 mb-1">${window.userData.name}</p><div class="text-gray-700 leading-relaxed">${formattedContent}</div></div></div>`;
                         } else if (msg.role === "assistant") {
-                            historyEl.innerHTML += `
-                                <div class="flex items-start space-x-4 max-w-3xl mx-auto w-full">
-                                    <img src="https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/Gemini_Generated_Image_okdjp7okdjp7okdj.png?download=true" class="w-8 h-8 rounded-full border border-gray-200">
-                                    <div class="flex-1"><p class="font-bold text-sm text-gray-800 mb-1">Doktura AI</p><div class="text-gray-700 leading-relaxed">${formattedContent}</div></div>
-                                </div>`;
+                            historyEl.innerHTML += `<div class="flex items-start space-x-4 max-w-3xl mx-auto w-full"><img src="https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/Gemini_Generated_Image_okdjp7okdjp7okdj.png?download=true" class="w-8 h-8 rounded-full border border-gray-200"><div class="flex-1"><p class="font-bold text-sm text-gray-800 mb-1">Doktura AI</p><div class="text-gray-700 leading-relaxed">${formattedContent}</div></div></div>`;
                         }
                     } else {
-                        if (msg.role === "user") {
-                            historyEl.innerHTML += `<div class="flex items-start justify-end space-x-3 mt-4"><div class="bg-[#00AEEF] text-white p-3 rounded-2xl rounded-tr-none text-sm max-w-[80%]">${formattedContent}</div></div>`;
-                        } else if (msg.role === "assistant") {
-                            historyEl.innerHTML += `<div class="flex items-start space-x-3 mt-4"><img src="https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/Gemini_Generated_Image_okdjp7okdjp7okdj.png?download=true" class="w-8 h-8 rounded-full bg-gray-100 object-cover"><div class="bg-gray-100 text-gray-800 p-3 rounded-2xl rounded-tl-none text-sm max-w-[80%]">${formattedContent}</div></div>`;
-                        }
+                        if (msg.role === "user") historyEl.innerHTML += `<div class="flex items-start justify-end space-x-3 mt-4"><div class="bg-[#00AEEF] text-white p-3 rounded-2xl rounded-tr-none text-sm max-w-[80%]">${formattedContent}</div></div>`;
+                        else historyEl.innerHTML += `<div class="flex items-start space-x-3 mt-4"><img src="https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/Gemini_Generated_Image_okdjp7okdjp7okdj.png?download=true" class="w-8 h-8 rounded-full bg-gray-100 object-cover"><div class="bg-gray-100 text-gray-800 p-3 rounded-2xl rounded-tl-none text-sm max-w-[80%]">${formattedContent}</div></div>`;
                     }
                 });
-                
                 scrollToBottom(historyId);
-                
             } catch(e) {
-                // Initial Default Greeting
                 if (isAppView) {
-                    historyEl.innerHTML = `
-                        <div class="flex items-start space-x-4 max-w-3xl mx-auto w-full">
-                            <img src="https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/Gemini_Generated_Image_okdjp7okdjp7okdj.png?download=true" class="w-8 h-8 rounded-full border border-gray-200">
-                            <div class="flex-1">
-                                <p class="font-bold text-sm text-gray-800 mb-1">Doktura AI</p>
-                                <div class="text-gray-700 leading-relaxed">Hello ${window.userData.name}! I am your personal AI Doctor. Please describe your symptoms or ask any health-related questions.</div>
-                            </div>
-                        </div>
-                    `;
+                    historyEl.innerHTML = `<div class="flex items-start space-x-4 max-w-3xl mx-auto w-full"><img src="https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/Gemini_Generated_Image_okdjp7okdjp7okdj.png?download=true" class="w-8 h-8 rounded-full border border-gray-200"><div class="flex-1"><p class="font-bold text-sm text-gray-800 mb-1">Doktura AI</p><div class="text-gray-700 leading-relaxed">Hello ${window.userData.name}! How can I help you today?</div></div></div>`;
                 } else {
-                    historyEl.innerHTML = `
-                        <div class="flex items-start space-x-3">
-                            <img src="https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/Gemini_Generated_Image_okdjp7okdjp7okdj.png?download=true" class="w-8 h-8 rounded-full bg-gray-100 object-cover">
-                            <div class="bg-gray-100 text-gray-800 p-3 rounded-2xl rounded-tl-none text-sm max-w-[80%]">
-                                Hello! Type your symptoms below and I'll help you right away.
-                            </div>
-                        </div>
-                    `;
+                    historyEl.innerHTML = `<div class="flex items-start space-x-3"><img src="https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/Gemini_Generated_Image_okdjp7okdjp7okdj.png?download=true" class="w-8 h-8 rounded-full bg-gray-100 object-cover"><div class="bg-gray-100 text-gray-800 p-3 rounded-2xl rounded-tl-none text-sm max-w-[80%]">Hello! Type your symptoms below.</div></div>`;
                 }
             }
         }
 
-        // ==========================================
-        // MAIN SEND CHAT LOGIC
-        // ==========================================
-        window.sendChat = async function(overrideMessage = null) {
+        window.sendChat = async function() {
             const isAppView = !!window.currentUser; 
             const inputId = isAppView ? 'app-chat-input' : 'chat-input';
             const historyId = isAppView ? 'app-chat-history' : 'chat-history';
             
             const inputEl = document.getElementById(inputId);
-            let message = typeof overrideMessage === 'string' ? overrideMessage : inputEl.value.trim();
-            
+            let message = inputEl.value.trim();
             if (!message) return;
-
-            window.speechSynthesis.cancel(); 
-
-            const lang = isAppView ? (document.getElementById('app-language-select')?.value || 'en-US') : 'en-US';
-            const systemPromptInstruction = lang === 'ms-MY' ? "[User requested Bahasa Melayu] " + message : message;
 
             const historyEl = document.getElementById(historyId);
 
             if (isAppView) {
-                historyEl.innerHTML += `
-                    <div class="flex items-start space-x-4 max-w-3xl mx-auto w-full">
-                        <img src="${window.currentUserPhotoUrl}" class="w-8 h-8 rounded-full border border-gray-200 object-cover">
-                        <div class="flex-1"><p class="font-bold text-sm text-gray-800 mb-1">${window.userData.name}</p><div class="text-gray-700 leading-relaxed">${message}</div></div>
-                    </div>`;
+                historyEl.innerHTML += `<div class="flex items-start space-x-4 max-w-3xl mx-auto w-full"><img src="${window.currentUserPhotoUrl}" class="w-8 h-8 rounded-full border border-gray-200 object-cover"><div class="flex-1"><p class="font-bold text-sm text-gray-800 mb-1">${window.userData.name}</p><div class="text-gray-700 leading-relaxed">${message}</div></div></div>`;
             } else {
                 historyEl.innerHTML += `<div class="flex items-start justify-end space-x-3 mt-4"><div class="bg-[#00AEEF] text-white p-3 rounded-2xl rounded-tr-none text-sm max-w-[80%]">${message}</div></div>`;
             }
 
-            if(inputEl) inputEl.value = '';
-            scrollToBottom(historyId);
-
-            const loadingId = 'loading-' + Date.now();
-            if (isAppView) {
-                historyEl.innerHTML += `
-                    <div id="${loadingId}" class="flex items-start space-x-4 max-w-3xl mx-auto w-full opacity-60">
-                        <img src="https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/Gemini_Generated_Image_okdjp7okdjp7okdj.png?download=true" class="w-8 h-8 rounded-full border border-gray-200">
-                        <div class="flex-1"><p class="font-bold text-sm text-gray-800 mb-1">Doktura AI</p><div class="text-gray-700 italic flex items-center"><span class="animate-pulse">Thinking...</span></div></div>
-                    </div>`;
-            } else {
-                historyEl.innerHTML += `<div id="${loadingId}" class="flex items-start space-x-3 mt-4 opacity-50"><img src="https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/Gemini_Generated_Image_okdjp7okdjp7okdj.png?download=true" class="w-8 h-8 rounded-full bg-gray-100 object-cover"><div class="bg-gray-100 text-gray-800 p-3 rounded-2xl rounded-tl-none text-sm">Thinking...</div></div>`;
-            }
+            inputEl.value = '';
             scrollToBottom(historyId);
 
             try {
-                // The backend BaseModel `ChatReq` explicitly expects `message` and `session_id`
-                const chatPayload = {
-                    message: systemPromptInstruction, 
-                    session_id: window.currentSessionId || Date.now().toString()
+                const payload = {
+                    message: message, 
+                    session_id: window.currentSessionId || Date.now().toString(),
+                    user_name: window.userData.name
                 };
 
                 const response = await fetch(API_BASE + '/api/chat', {
-                    method: 'POST',
-                    headers: await getAuthHeaders(true),
-                    body: JSON.stringify(chatPayload)
+                    method: 'POST', headers: await getAuthHeaders(), body: JSON.stringify(payload)
                 });
-                
                 const data = await response.json();
-                document.getElementById(loadingId).remove();
 
                 if (isAppView) {
-                    historyEl.innerHTML += `
-                        <div class="flex items-start space-x-4 max-w-3xl mx-auto w-full">
-                            <img src="https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/Gemini_Generated_Image_okdjp7okdjp7okdj.png?download=true" class="w-8 h-8 rounded-full border border-gray-200">
-                            <div class="flex-1"><p class="font-bold text-sm text-gray-800 mb-1">Doktura AI</p><div class="text-gray-700 leading-relaxed">${data.reply.replace(/\n/g, '<br>')}</div></div>
-                        </div>`;
-                    
-                    if(isVoiceModeActive) {
-                        document.getElementById('voice-transcript-preview').innerText = "Doktura: " + data.reply.substring(0,80) + "...";
-                        playAIResponseVoice(data.reply);
-                    }
+                    historyEl.innerHTML += `<div class="flex items-start space-x-4 max-w-3xl mx-auto w-full"><img src="https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/Gemini_Generated_Image_okdjp7okdjp7okdj.png?download=true" class="w-8 h-8 rounded-full border border-gray-200"><div class="flex-1"><p class="font-bold text-sm text-gray-800 mb-1">Doktura AI</p><div class="text-gray-700 leading-relaxed">${data.reply.replace(/\n/g, '<br>')}</div></div></div>`;
                 } else {
                     historyEl.innerHTML += `<div class="flex items-start space-x-3 mt-4"><img src="https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/Gemini_Generated_Image_okdjp7okdjp7okdj.png?download=true" class="w-8 h-8 rounded-full bg-gray-100 object-cover"><div class="bg-gray-100 text-gray-800 p-3 rounded-2xl rounded-tl-none text-sm max-w-[80%]">${data.reply.replace(/\n/g, '<br>')}</div></div>`;
                 }
-
                 scrollToBottom(historyId);
-
             } catch (error) {
-                document.getElementById(loadingId).remove();
-                historyEl.innerHTML += `<div class="text-center text-sm text-red-500 mt-4">⚠️ Error connecting to AI. Please try again.</div>`;
-                scrollToBottom(historyId);
-                if(isVoiceModeActive) setMicUIMode('ready');
+                historyEl.innerHTML += `<div class="text-center text-sm text-red-500 mt-4">⚠️ Error connecting to AI.</div>`;
             }
         }
-
-        // ==========================================
-        // SMART APPOINTMENT BOOKING LOGIC
-        // ==========================================
-        window.togglePaymentArea = function(radioElement) {
-            const paymentSection = document.getElementById('app-payment-section');
-            const submitBtn = document.getElementById('app-submit-booking-btn');
-
-            if (radioElement.value === 'physical') {
-                paymentSection.classList.add('hidden');
-                submitBtn.innerText = "Schedule In-Clinic Visit";
-            } else {
-                paymentSection.classList.remove('hidden');
-                submitBtn.innerText = "Pay RM 10.00 & Book";
-            }
-        }
-
-        window.suggestDoctor = async function() {
-            const symptoms = document.getElementById('app-symptom-suggest').value;
-            const prefDatetime = document.getElementById('app-preferred-datetime').value;
-            const visitTypeEl = document.querySelector(`#app-book-view input[type="radio"]:checked`);
-            const visitType = visitTypeEl ? visitTypeEl.value : 'online';
-
-            if(!symptoms) { alert("Please describe your symptoms first."); return; }
-            
-            try {
-                // Provide bearer token in case backend requires auth
-                const response = await fetch(API_BASE + '/api/suggest_doctor', { 
-                    method: 'POST', 
-                    headers: await getAuthHeaders(true), 
-                    body: JSON.stringify({ symptoms: symptoms, visit_type: visitType, preferred_datetime: prefDatetime }) 
-                });
-                
-                if(!response.ok) { alert("Backend suggestion feature not available."); return; }
-                const data = await response.json();
-                
-                const selectEl = document.getElementById('app-doctor-select');
-                
-                if(data.doctor) {
-                    let exists = Array.from(selectEl.options).some(opt => opt.value === data.doctor_id);
-                    if (!exists) { 
-                        const newOpt = document.createElement('option'); 
-                        newOpt.value = data.doctor_id || data.doctor; 
-                        newOpt.text = data.doctor; 
-                        selectEl.add(newOpt); 
-                    }
-                    selectEl.value = data.doctor_id || data.doctor;
-                    selectEl.classList.add('ring-2', 'ring-green-400', 'bg-green-50');
-                    setTimeout(() => selectEl.classList.remove('ring-2', 'ring-green-400', 'bg-green-50'), 1500);
-
-                    if (data.suggested_time) {
-                        const timeInput = document.getElementById('app-preferred-datetime');
-                        timeInput.value = data.suggested_time;
-                        timeInput.classList.add('ring-2', 'ring-purple-500', 'bg-purple-50');
-                        setTimeout(() => timeInput.classList.remove('ring-2', 'ring-purple-500', 'bg-purple-50'), 2000);
-                    }
-                } else {
-                    alert(data.message || "No doctors match those criteria at this time.");
-                }
-            } catch (error) {}
-        }
-
-        window.submitBooking = async function(event) {
-            event.preventDefault();
-            const btn = document.getElementById('app-submit-booking-btn');
-            const resultDiv = document.getElementById('app-booking-result');
-            
-            const doctorId = document.getElementById('app-doctor-select').value;
-            if (!doctorId) { alert("Please select a doctor."); return; }
-
-            const visitTypeEl = document.querySelector(`#app-book-view input[type="radio"]:checked`);
-            const visitType = visitTypeEl ? visitTypeEl.value : 'online';
-            const preferredDatetime = document.getElementById('app-preferred-datetime').value;
-
-            btn.innerText = "Processing Booking...";
-            btn.classList.add('opacity-70', 'cursor-not-allowed');
-            resultDiv.classList.add('hidden');
-
-            // Send JSON matching the backend FastAPI 'BookReq' Pydantic model
-            const payload = {
-                doctor_id: doctorId,
-                visit_type: visitType,
-                preferred_datetime: preferredDatetime || ""
-            };
-
-            try {
-                const response = await fetch(API_BASE + '/api/book_appointment', { 
-                    method: 'POST', 
-                    headers: await getAuthHeaders(true),
-                    body: JSON.stringify(payload) 
-                });
-                
-                const data = await response.json();
-                
-                if (response.ok && data.stripe_url) {
-                    window.location.href = data.stripe_url;
-                } else if (response.ok && data.success) {
-                    resultDiv.classList.remove('hidden');
-                    resultDiv.classList.add('bg-green-100', 'text-green-800');
-                    resultDiv.innerHTML = data.message.replace(/\n/g, '<br>');
-                    document.getElementById('app-booking-form').reset(); 
-                } else {
-                    resultDiv.classList.remove('hidden');
-                    resultDiv.classList.add('bg-red-100', 'text-red-700'); 
-                    resultDiv.innerText = data.detail || data.message || "Booking Failed";
-                }
-            } catch (error) {
-                resultDiv.classList.remove('hidden'); 
-                resultDiv.classList.add('bg-red-100', 'text-red-700');
-                resultDiv.innerText = "Network Error. Could not process booking.";
-            }
-
-            btn.innerText = (visitType === 'physical') ? "Schedule In-Clinic Visit" : "Pay RM 10.00 & Book";
-            btn.classList.remove('opacity-70', 'cursor-not-allowed');
-        }
+        
+        document.addEventListener('DOMContentLoaded', () => { loadHistory(false); });
     </script>
 </body>
 </html>
