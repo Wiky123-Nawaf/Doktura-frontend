@@ -3,143 +3,351 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard - Doktura</title>
+    <title>Dashboard - Doktura AI</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        body { font-family: 'Inter', sans-serif; }
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 4px; }
-        @keyframes glowPulse { 0% { box-shadow: 0 0 0 0 rgba(46, 26, 71, 0.4); } 70% { box-shadow: 0 0 0 40px rgba(46, 26, 71, 0); } 100% { box-shadow: 0 0 0 0 rgba(46, 26, 71, 0); } }
-        .voice-glow { animation: glowPulse 1.5s infinite; }
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; }
+        ::-webkit-scrollbar { width: 5px; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        
+        /* Sidebar active state matching PDF */
+        .nav-active { background-color: #eff6ff; color: #2563eb; border-left: 4px solid #2563eb; font-weight: 600; }
+        .nav-inactive { color: #64748b; border-left: 4px solid transparent; }
+        .nav-inactive:hover { background-color: #f8fafc; color: #0f172a; }
+
+        /* Voice Orb Animation (Matching Page 3) */
+        @keyframes pulseGlow { 0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(255, 116, 116, 0.7); } 70% { transform: scale(1); box-shadow: 0 0 0 40px rgba(255, 116, 116, 0); } 100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(255, 116, 116, 0); } }
+        .voice-orb { background: radial-gradient(circle at 30% 30%, #fca5a5, #ef4444); border-radius: 50%; box-shadow: 0 10px 25px rgba(239,68,68,0.5); animation: pulseGlow 2s infinite; }
     </style>
 </head>
-<body class="hidden fixed inset-0 bg-white z-[60] flex h-screen w-full" id="appBody">
+<body class="hidden h-screen w-full overflow-hidden flex" id="appBody">
 
     <script>const API_BASE = 'https://api.doktura.ai';</script>
 
-    <!-- FULL SCREEN VOICE OVERLAY -->
-    <div id="voice-overlay" class="absolute inset-0 bg-white/95 backdrop-blur-xl z-[200] hidden flex-col items-center justify-center transition-all">
-        <button onclick="exitVoiceMode()" class="absolute top-6 right-6 p-3 bg-gray-100 text-gray-400 hover:text-gray-800 rounded-full"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button>
-        <div class="relative flex items-center justify-center w-64 h-64 mb-8">
-            <div id="voice-pulse-ring" class="absolute inset-0 bg-[#00AEEF]/20 rounded-full hidden"></div>
-            <div id="voice-glow-ring" class="absolute inset-[-20px] bg-[#00AEEF]/10 rounded-full voice-glow hidden"></div>
-            <img src="https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/Gemini_Generated_Image_okdjp7okdjp7okdj.png?download=true" class="w-56 h-56 rounded-full border-4 border-[#00AEEF] relative z-10 object-cover shadow-2xl bg-white">
-        </div>
-        <h3 id="voice-status-text" class="text-3xl font-bold text-[#00AEEF] mb-4">Tap mic to speak</h3>
-        <p id="voice-transcript-preview" class="text-gray-500 text-lg text-center max-w-2xl h-20 overflow-hidden italic px-6"></p>
-        <button id="voice-toggle-btn" onclick="toggleVoiceMic()" class="mt-8 bg-[#00AEEF] hover:bg-[#0099d1] text-white rounded-full p-6 shadow-xl"><svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"></path></svg></button>
-    </div>
-
-    <!-- Left Sidebar -->
-    <div class="w-64 bg-[#111827] text-white flex flex-col transition-all shrink-0">
-        <div class="p-4 space-y-2 border-b border-gray-800">
-            <button onclick="switchTab('chat')" id="btn-chat" class="w-full flex items-center space-x-3 bg-gray-800 p-3 rounded-lg text-white font-medium text-sm">AI Doctor</button>
-            <button onclick="switchTab('book')" id="btn-book" class="w-full flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-800 text-gray-300 font-medium text-sm">Book Consultant</button>
-            <button onclick="switchTab('reports')" id="btn-reports" class="w-full flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-800 text-gray-300 font-medium text-sm">Medical Reports</button>
-        </div>
-        
-        <div class="flex-1 overflow-y-auto p-4">
-            <button onclick="startNewSession()" class="w-full text-left p-3 hover:bg-gray-800 rounded-lg text-green-400 font-bold mb-4 border border-gray-700 text-sm flex items-center"><svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg> New Session</button>
-            <div id="sidebar-sessions" class="space-y-1"></div>
-        </div>
-
-        <div class="p-4 border-t border-gray-800">
-            <div class="flex items-center justify-between mb-4">
-                <div class="flex items-center space-x-3 overflow-hidden">
-                    <img id="userAvatar" src="" class="w-8 h-8 rounded-full border border-gray-600 object-cover">
-                    <span id="userName" class="text-sm truncate font-medium"></span> 
-                </div>
-                <button id="logoutBtn" class="text-gray-400 hover:text-white p-1"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg></button>
+    <!-- PREMIUM UNLOCK MODAL (Matching Page 8) -->
+    <div id="premium-modal" class="fixed inset-0 bg-gray-900/60 z-[300] hidden items-center justify-center backdrop-blur-sm transition-all duration-300">
+        <div class="bg-white rounded-3xl p-10 max-w-lg w-full text-center relative shadow-2xl transform scale-100 transition-transform">
+            <button onclick="document.getElementById('premium-modal').classList.add('hidden')" class="absolute top-4 right-5 text-gray-400 hover:text-gray-800 text-xl font-bold">✕</button>
+            <h2 class="text-3xl font-extrabold text-gray-900 mb-3">Unlock Doktura Premium</h2>
+            <p class="text-gray-500 text-sm mb-8 leading-relaxed px-4">Understand your medical reports instantly with AI, keep all your health records safely in one place, and access them anytime, anywhere.</p>
+            <div class="flex justify-center gap-3 mb-10">
+                <span class="bg-blue-50 text-blue-600 px-4 py-1.5 rounded-full text-xs font-bold tracking-wide">☁️ Link Google Drive</span>
+                <span class="bg-green-50 text-green-600 px-4 py-1.5 rounded-full text-xs font-bold tracking-wide">🔒 Secure & Private</span>
+                <span class="bg-purple-50 text-purple-600 px-4 py-1.5 rounded-full text-xs font-bold tracking-wide">✨ AI-Powered Insights</span>
             </div>
-            <button onclick="switchTab('settings')" id="btn-settings" class="flex items-center justify-center space-x-2 p-2 w-full rounded-lg bg-gray-800 hover:bg-gray-700 text-gray-300 text-xs font-bold uppercase"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg> <span>Profile Settings</span></button>
+            <button onclick="triggerSubscription()" id="sub-btn" class="w-full bg-[#0066FF] hover:bg-blue-700 transition text-white font-bold py-4 rounded-xl shadow-lg flex justify-center items-center text-lg">
+                <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 2a1 1 0 011 1v1.323l3.954 1.582 1.599-.8a1 1 0 01.894 1.79l-1.233.616 1.738 5.42a1 1 0 01-.285 1.05A3.989 3.989 0 0115 15a3.989 3.989 0 01-2.667-1.019 1 1 0 01-.285-1.05l1.715-5.349L11 6.477V16h2a1 1 0 110 2H7a1 1 0 110-2h2V6.477L6.237 7.582l1.715 5.349a1 1 0 01-.285 1.05A3.989 3.989 0 015 15a3.989 3.989 0 01-2.667-1.019 1 1 0 01-.285-1.05l1.738-5.42-1.233-.617a1 1 0 01.894-1.788l1.599.799L9 4.323V3a1 1 0 011-1z" clip-rule="evenodd"></path></svg>
+                Unlock DokturaPremium – RM 50
+            </button>
         </div>
     </div>
 
-    <!-- Main Content -->
-    <div class="flex-1 flex flex-col relative h-full bg-white overflow-hidden">
+    <!-- VOICE OVERLAY (Matching Page 3) -->
+    <div id="voice-overlay" class="fixed inset-0 bg-slate-50/95 z-[200] hidden flex-col items-center justify-center transition-all">
+        <div class="voice-orb w-48 h-48 mb-12"></div>
+        <h3 id="voice-status-text" class="text-4xl font-bold text-gray-900 mb-6">Tap mic to speak</h3>
+        <p id="voice-transcript" class="text-gray-500 text-xl text-center max-w-2xl h-24 overflow-hidden px-6 italic">Tap to start talking. Tap again to stop and send.</p>
+        <div class="mt-8 flex space-x-6">
+            <button onclick="exitVoiceMode()" class="px-8 py-3 rounded-full text-gray-500 font-bold border border-gray-300 hover:bg-gray-100 transition">Cancel</button>
+            <button onclick="toggleVoiceMic()" id="voice-action-btn" class="bg-red-500 text-white rounded-full p-6 shadow-xl hover:bg-red-600 transition"><svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"></path></svg></button>
+        </div>
+    </div>
+
+    <!-- LEFT SIDEBAR (Matching Page 1/2) -->
+    <div class="w-[280px] bg-white border-r border-gray-200 flex flex-col shrink-0 h-full">
+        <!-- Logo -->
+        <div class="p-6 pb-2">
+            <img src="https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/ChatGPT%20Image%20Mar%2026%2C%202026%2C%2007_53_48%20PM.png?download=true" class="h-10">
+        </div>
         
-        <!-- CHAT -->
-        <div id="view-chat" class="flex-1 flex flex-col h-full bg-white">
-            <div id="chat-history" class="flex-1 overflow-y-auto p-6 md:p-10 space-y-8"></div>
-            <div class="w-full shrink-0 pt-4 pb-6 px-6 bg-white border-t border-gray-100">
-                <div class="max-w-3xl mx-auto relative flex items-center shadow-lg rounded-full border bg-white p-1">
-                    <button onclick="enterVoiceMode()" class="p-3 bg-gray-100 hover:bg-[#00AEEF] hover:text-white rounded-full text-gray-600 ml-1"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"></path></svg></button>
-                    <input type="text" id="chat-input" class="w-full bg-transparent pl-4 pr-14 py-3 focus:outline-none text-gray-800" placeholder="Type a message or tap mic..." onkeypress="if(event.key === 'Enter') sendChat()">
-                    <button onclick="sendChat()" class="absolute right-2 p-2.5 bg-[#00AEEF] text-white rounded-full hover:bg-[#0099d1]"><svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z"></path></svg></button>
-                </div>
-            </div>
+        <!-- New Chat Button -->
+        <div class="px-6 py-4">
+            <button onclick="startNewSession()" class="w-full bg-[#ea580c] hover:bg-orange-700 text-white font-bold py-2.5 rounded-lg shadow-sm flex items-center justify-center transition">
+                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                New chat
+            </button>
         </div>
 
-        <!-- BOOKING -->
-        <div id="view-book" class="hidden flex-1 overflow-y-auto p-12">
-            <div class="max-w-4xl mx-auto">
-                <h2 class="text-3xl font-bold mb-8">Book a Consultant</h2>
-                <form id="book-form" onsubmit="submitBooking(event)" class="bg-white border rounded-2xl shadow-sm p-8 space-y-6">
-                    <select id="book-doctor" required class="w-full border rounded-lg px-4 py-3"><option value="">Loading Doctors...</option></select>
-                    <div class="flex space-x-4">
-                        <label class="flex-1 border rounded-lg p-4 cursor-pointer text-center"><input type="radio" name="v_type" value="online" checked class="mr-2"> Video Call (RM 10)</label>
-                        <label class="flex-1 border rounded-lg p-4 cursor-pointer text-center"><input type="radio" name="v_type" value="clinic" class="mr-2"> In-Clinic Visit</label>
+        <!-- Main Menu -->
+        <div class="flex-1 overflow-y-auto">
+            <p class="px-6 py-2 text-[10px] font-bold text-gray-400 uppercase tracking-widest">Main Menu</p>
+            <nav class="space-y-1 mt-1">
+                <button onclick="switchTab('chat')" id="btn-chat" class="w-full flex items-center px-6 py-3 nav-active transition">
+                    <svg class="w-5 h-5 mr-3 shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"></path></svg>
+                    <span class="text-sm">AI Doctor</span>
+                </button>
+                <button onclick="switchTab('book')" id="btn-book" class="w-full flex items-center px-6 py-3 nav-inactive transition">
+                    <svg class="w-5 h-5 mr-3 shrink-0 opacity-70" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                    <span class="text-sm">Book Consultant</span>
+                </button>
+                <button onclick="switchTab('schedule')" id="btn-schedule" class="w-full flex items-center px-6 py-3 nav-inactive transition justify-between">
+                    <div class="flex items-center">
+                        <svg class="w-5 h-5 mr-3 shrink-0 opacity-70" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path></svg>
+                        <span class="text-sm">Schedule Appointment</span>
                     </div>
-                    <input type="datetime-local" id="book-time" class="w-full border rounded-lg px-4 py-3">
-                    <button type="submit" id="book-btn" class="w-full bg-[#00AEEF] text-white font-bold py-4 rounded-xl">Book Appointment</button>
-                    <div id="book-result" class="hidden p-4 rounded bg-gray-100 text-center text-sm"></div>
-                </form>
+                    <span class="bg-blue-100 text-blue-600 text-[10px] font-bold px-2 py-0.5 rounded-full">3</span>
+                </button>
+                <button onclick="switchTab('reports')" id="btn-reports" class="w-full flex items-center px-6 py-3 nav-inactive transition">
+                    <svg class="w-5 h-5 mr-3 shrink-0 opacity-70" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                    <span class="text-sm">Medical Reports</span>
+                </button>
+            </nav>
+
+            <!-- Sessions list -->
+            <div class="mt-6 border-t border-gray-100 pt-4">
+                <button class="w-full flex items-center justify-between px-6 py-2 text-[10px] font-bold text-gray-400 uppercase tracking-widest">
+                    Recent Consultations <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                </button>
+                <div id="sidebar-sessions" class="mt-2 space-y-0.5 px-3"></div>
             </div>
         </div>
 
-        <!-- REPORTS -->
-        <div id="view-reports" class="hidden flex-1 overflow-y-auto p-12">
-            <div class="max-w-2xl mx-auto text-center">
-                <h2 class="text-3xl font-bold mb-4">Medical Reports</h2>
-                <button onclick="window.location.href=`${API_BASE}/api/auth/google?user_id=${window.currentUser.uid}`" class="mb-6 bg-white border font-semibold px-4 py-2 rounded-lg text-sky-600">🔗 Connect Google Drive</button>
-                <form onsubmit="uploadReport(event)" class="bg-white border border-dashed border-gray-300 rounded-2xl p-10 cursor-pointer">
-                    <input type="file" id="report-file" class="mb-4">
-                    <button type="submit" id="upload-btn" class="w-full bg-[#00AEEF] text-white py-3 rounded-lg font-bold mt-4">Upload & Analyze</button>
-                </form>
-                <div id="upload-result" class="hidden mt-4 p-4 rounded border text-sm text-left"></div>
+        <!-- User Profile Bottom -->
+        <div class="p-4 border-t border-gray-200">
+            <div class="flex items-center justify-between w-full">
+                <button onclick="switchTab('settings')" id="btn-settings" class="flex items-center space-x-3 overflow-hidden text-left hover:bg-gray-50 p-2 rounded-lg transition w-[85%]">
+                    <img id="userAvatar" src="" class="w-10 h-10 rounded-full border border-gray-200 object-cover shrink-0">
+                    <div class="flex flex-col truncate">
+                        <span id="userName" class="text-sm font-bold text-gray-900 truncate">Patient</span>
+                        <span id="userEmail" class="text-xs text-gray-500 truncate">Loading...</span>
+                    </div>
+                </button>
+                <button id="logoutBtn" class="text-gray-400 hover:text-red-500 p-2"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg></button>
             </div>
         </div>
+    </div>
 
-        <!-- SETTINGS -->
-        <div id="view-settings" class="hidden flex-1 overflow-y-auto p-12 bg-gray-50">
-            <div class="max-w-2xl mx-auto bg-white rounded-2xl border p-8 shadow-sm">
-                <h2 class="text-2xl font-bold mb-6">Profile Settings</h2>
-                <div id="settingsAlert" class="hidden mb-4 p-3 rounded text-sm text-center"></div>
-                <div class="flex items-center space-x-6 mb-6">
-                    <img id="set-avatar" src="" class="w-20 h-20 rounded-full border object-cover">
-                    <input type="file" id="set-photo" accept="image/*" class="text-sm">
+    <!-- MAIN CONTENT AREA -->
+    <div class="flex-1 flex flex-col relative h-full bg-white">
+        
+        <!-- ================= CHAT VIEW ================= -->
+        <div id="view-chat" class="flex-1 flex flex-col h-full bg-white relative">
+            <!-- Header -->
+            <div class="h-16 border-b border-gray-200 flex items-center justify-between px-8 bg-white shrink-0">
+                <h1 class="text-lg font-bold text-gray-800">Consultation AI</h1>
+                <div class="flex items-center space-x-4 text-gray-500">
+                    <button class="hover:text-gray-800"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path></svg></button>
+                    <button class="hover:text-gray-800 flex items-center text-sm font-semibold"><svg class="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg> Help</button>
                 </div>
-                <input type="text" id="set-name" placeholder="Full Name" class="w-full border rounded-lg px-4 py-3 mb-4">
-                <input type="text" id="set-phone" placeholder="Phone Number" class="w-full border rounded-lg px-4 py-3 mb-4">
-                <button onclick="saveSettings()" id="set-btn" class="w-full bg-[#00AEEF] text-white font-bold py-3 rounded-lg">Update Profile</button>
+            </div>
+            
+            <!-- Chat History -->
+            <div id="chat-history" class="flex-1 overflow-y-auto p-8 space-y-6 max-w-4xl w-full mx-auto pb-32"></div>
+            
+            <!-- Input Area matching PDF -->
+            <div class="absolute bottom-0 w-full bg-gradient-to-t from-white via-white to-transparent pt-10 pb-8 px-8 flex justify-center">
+                <div class="max-w-3xl w-full bg-white border border-gray-200 rounded-2xl shadow-[0_5px_15px_rgba(0,0,0,0.05)] p-2 flex items-center">
+                    <button onclick="enterVoiceMode()" class="p-3 text-gray-400 hover:text-[#ea580c] transition shrink-0"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"></path></svg></button>
+                    <button class="p-3 text-gray-400 hover:text-blue-500 transition shrink-0"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg></button>
+                    <input type="text" id="chat-input" class="flex-1 bg-transparent px-2 py-3 focus:outline-none text-gray-800 text-sm" placeholder="Type a message or tap the mic for voice mode..." onkeypress="if(event.key === 'Enter') sendChat()">
+                    <button onclick="sendChat()" class="bg-[#ea580c] hover:bg-orange-700 text-white px-6 py-2.5 rounded-xl font-bold text-sm shadow-md transition shrink-0 flex items-center">
+                        <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path></svg> Send
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= BOOK CONSULTANT VIEW ================= -->
+        <div id="view-book" class="hidden flex-1 overflow-y-auto bg-gray-50">
+            <div class="h-16 border-b border-gray-200 flex items-center px-8 bg-white shrink-0 sticky top-0 z-10">
+                <h1 class="text-lg font-bold text-gray-800">Book Consultant</h1>
+            </div>
+            <div class="max-w-3xl mx-auto p-10">
+                <h2 class="text-3xl font-extrabold text-gray-900 mb-2">Book a Consultant</h2>
+                <p class="text-gray-500 mb-8">Schedule a follow-up video call with one of our licensed human doctors.</p>
+                
+                <form id="book-form" onsubmit="submitBooking(event)" class="bg-white rounded-2xl shadow-sm border border-gray-200 p-8">
+                    <!-- Tabs -->
+                    <div class="flex bg-gray-100 p-1 rounded-xl mb-8 border border-gray-200">
+                        <label class="flex-1 text-center cursor-pointer relative">
+                            <input type="radio" name="v_type" value="online" checked class="peer sr-only">
+                            <div class="py-3 rounded-lg text-sm font-bold text-gray-500 peer-checked:bg-white peer-checked:text-gray-900 peer-checked:shadow-sm transition">🎥 Online</div>
+                        </label>
+                        <label class="flex-1 text-center cursor-pointer relative">
+                            <input type="radio" name="v_type" value="clinic" class="peer sr-only">
+                            <div class="py-3 rounded-lg text-sm font-bold text-gray-500 peer-checked:bg-white peer-checked:text-gray-900 peer-checked:shadow-sm transition">🏥 In-Clinic Visit</div>
+                        </label>
+                    </div>
+
+                    <h3 class="font-bold text-gray-800 mb-4 text-sm">Patient Details</h3>
+                    <div class="grid grid-cols-2 gap-4 mb-6">
+                        <div><label class="block text-xs text-gray-500 font-bold mb-1">Name</label><input type="text" id="book-name" required readonly class="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm bg-gray-50"></div>
+                        <div><label class="block text-xs text-gray-500 font-bold mb-1">Email</label><input type="email" id="book-email" required readonly class="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm bg-gray-50"></div>
+                    </div>
+
+                    <h3 class="font-bold text-gray-800 mb-4 text-sm">Appointment Specs</h3>
+                    <div class="mb-6 relative">
+                        <label class="block text-xs text-gray-500 font-bold mb-1">Symptoms</label>
+                        <input type="text" id="book-symptoms" placeholder="e.g. skin rash, fever..." class="w-full border border-gray-300 rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-[#0066FF] pr-24">
+                        <button type="button" onclick="suggestDoctor()" class="absolute right-2 top-7 bottom-2 bg-gray-100 hover:bg-gray-200 border text-gray-700 px-4 rounded-md text-xs font-bold flex items-center"><svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd"></path></svg> Find</button>
+                    </div>
+                    
+                    <div class="mb-6">
+                        <label class="block text-xs text-gray-500 font-bold mb-1">Doctor</label>
+                        <select id="book-doctor" required class="w-full border border-gray-300 rounded-lg px-4 py-3 text-sm bg-white focus:ring-2 focus:ring-[#0066FF]"><option value="">-- Select --</option></select>
+                    </div>
+
+                    <h3 class="font-bold text-gray-800 mb-4 text-sm mt-8">Date of Appointment</h3>
+                    <input type="datetime-local" id="book-time" class="w-full border border-gray-300 rounded-lg px-4 py-3 text-sm mb-8 focus:ring-2 focus:ring-[#0066FF]">
+
+                    <div class="bg-gray-50 p-4 rounded-xl border border-gray-200 mb-8 flex items-center text-sm text-gray-600">
+                        <svg class="w-5 h-5 mr-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        <span>Payment (FEE: RM 10.00). Kindly be informed that cancellations will not be eligible for a refund.</span>
+                    </div>
+
+                    <button type="submit" id="book-btn" class="w-full bg-[#0066FF] hover:bg-blue-700 text-white font-bold py-4 rounded-xl shadow-md transition uppercase tracking-wide">PAY NOW</button>
+                    <div id="book-result" class="hidden mt-4 p-4 rounded text-center text-sm font-medium"></div>
+                </form>
+            </div>
+        </div>
+
+        <!-- ================= SCHEDULE APPOINTMENT VIEW ================= -->
+        <div id="view-schedule" class="hidden flex-1 overflow-y-auto bg-gray-50">
+            <div class="h-16 border-b border-gray-200 flex items-center px-8 bg-white shrink-0 sticky top-0 z-10">
+                <h1 class="text-lg font-bold text-gray-800">Schedule Appointment</h1>
+            </div>
+            <div class="max-w-6xl mx-auto p-10">
+                <div class="flex justify-between items-end mb-8">
+                    <div>
+                        <h2 class="text-3xl font-extrabold text-gray-900 mb-2">Schedule Appointment</h2>
+                        <p class="text-gray-500 text-sm">Schedule and manage your upcoming consultations with ease.</p>
+                    </div>
+                    <div class="flex space-x-3">
+                        <input type="text" placeholder="Search..." class="border border-gray-300 rounded-lg px-4 py-2 text-sm">
+                        <button class="border border-gray-300 bg-white px-4 py-2 rounded-lg text-sm text-gray-600 font-semibold flex items-center"><svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path></svg> Filter</button>
+                    </div>
+                </div>
+
+                <div class="bg-white border border-gray-200 rounded-2xl shadow-sm overflow-hidden">
+                    <table class="w-full text-left border-collapse">
+                        <thead class="bg-gray-50 text-gray-500 text-xs uppercase font-bold border-b border-gray-200">
+                            <tr>
+                                <th class="py-4 px-6">Appointment ID</th>
+                                <th class="py-4 px-6">Visit Type</th>
+                                <th class="py-4 px-6">Date</th>
+                                <th class="py-4 px-6">Status</th>
+                                <th class="py-4 px-6 text-center">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="schedule-table-body" class="text-sm text-gray-800">
+                            <!-- Populated by JS. Mock data used if backend empty -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= MEDICAL REPORTS VIEW ================= -->
+        <div id="view-reports" class="hidden flex-1 overflow-y-auto bg-gray-50 relative">
+            <div class="h-16 border-b border-gray-200 flex items-center px-8 bg-white shrink-0 sticky top-0 z-10">
+                <h1 class="text-lg font-bold text-gray-800">Medical Reports</h1>
+            </div>
+            
+            <div class="max-w-5xl mx-auto p-10">
+                <div class="flex justify-between items-end mb-8">
+                    <div>
+                        <h2 class="text-3xl font-extrabold text-gray-900 mb-2">Your Medical Documents</h2>
+                        <p class="text-gray-500 text-sm">Manage and upload your medical documents</p>
+                    </div>
+                    <button onclick="document.getElementById('upload-modal').classList.remove('hidden')" class="bg-[#ea580c] text-white px-5 py-2.5 rounded-lg text-sm font-bold shadow hover:bg-orange-700 transition flex items-center">
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg> Upload Report
+                    </button>
+                </div>
+
+                <!-- Empty State -->
+                <div class="bg-white border border-gray-200 rounded-2xl shadow-sm p-20 flex flex-col items-center justify-center text-center">
+                    <img src="https://www.svgrepo.com/show/475103/file-blank.svg" class="w-24 h-24 mb-6 opacity-30 grayscale">
+                    <h3 class="text-xl font-bold text-gray-900 mb-2">No medical documents found</h3>
+                    <p class="text-gray-500 text-sm mb-6">Start by uploading your first medical document.</p>
+                    <button onclick="document.getElementById('upload-modal').classList.remove('hidden')" class="bg-[#f59e0b] hover:bg-yellow-600 text-white font-bold py-2.5 px-6 rounded-lg transition">Add Document</button>
+                </div>
+            </div>
+
+            <!-- Upload Modal (Matching Page 10) -->
+            <div id="upload-modal" class="fixed inset-0 bg-gray-900/50 z-[250] hidden items-center justify-center backdrop-blur-sm">
+                <div class="bg-white rounded-3xl p-8 max-w-lg w-full relative shadow-2xl">
+                    <div class="flex justify-between items-center mb-6">
+                        <h2 class="text-xl font-bold text-gray-900">Upload Your Medical Reports</h2>
+                        <button onclick="document.getElementById('upload-modal').classList.add('hidden')" class="text-gray-400 hover:text-gray-800">✕</button>
+                    </div>
+                    
+                    <form onsubmit="uploadReport(event)">
+                        <label class="block text-xs font-bold text-gray-700 mb-1">Report Name</label>
+                        <input type="text" value="Blood Test Result" class="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm mb-4">
+                        
+                        <label class="block text-xs font-bold text-gray-700 mb-1">Report Type</label>
+                        <input type="text" value="MRI Scan" class="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm mb-6">
+                        
+                        <label class="block text-xs font-bold text-gray-700 mb-1">Medical Records</label>
+                        <div class="border-2 border-dashed border-gray-300 rounded-xl p-10 text-center cursor-pointer hover:bg-gray-50 transition relative mb-6">
+                            <input type="file" id="report-file" required class="absolute inset-0 w-full h-full opacity-0 cursor-pointer">
+                            <svg class="w-10 h-10 text-gray-400 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path></svg>
+                            <p class="text-sm font-bold text-gray-700">Click to upload or drag and drop</p>
+                            <p class="text-xs text-gray-400 mt-1">Format is JPG, PNG or PDF and max 10 MB.</p>
+                        </div>
+                        
+                        <div class="flex space-x-3">
+                            <button type="button" onclick="document.getElementById('upload-modal').classList.add('hidden')" class="flex-1 bg-white border border-gray-300 text-gray-700 font-bold py-3 rounded-lg hover:bg-gray-50">Cancel</button>
+                            <button type="submit" id="upload-btn" class="flex-1 bg-[#0066FF] text-white font-bold py-3 rounded-lg hover:bg-blue-700">Add</button>
+                        </div>
+                        <div id="upload-result" class="hidden mt-4 p-3 rounded text-sm text-center"></div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= PROFILE SETTINGS VIEW ================= -->
+        <div id="view-settings" class="hidden flex-1 overflow-y-auto p-12 bg-gray-50">
+            <div class="max-w-2xl mx-auto bg-white rounded-2xl border border-gray-200 p-10 shadow-sm">
+                <h2 class="text-2xl font-bold text-gray-900 mb-8 border-b pb-4">Profile Settings</h2>
+                <div id="settingsAlert" class="hidden mb-6 p-4 rounded text-sm text-center font-medium"></div>
+                <div class="flex items-center space-x-6 mb-8">
+                    <img id="set-avatar" src="" class="w-24 h-24 rounded-full border border-gray-200 object-cover shadow-sm">
+                    <div>
+                        <label class="block text-sm font-bold text-gray-700 mb-2">Change Photo</label>
+                        <input type="file" id="set-photo" accept="image/*" class="text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100">
+                    </div>
+                </div>
+                <div class="space-y-5">
+                    <div><label class="block text-xs font-bold text-gray-500 uppercase mb-1">Full Name</label><input type="text" id="set-name" class="w-full border border-gray-300 rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-[#0066FF]"></div>
+                    <div><label class="block text-xs font-bold text-gray-500 uppercase mb-1">Phone Number</label><input type="text" id="set-phone" class="w-full border border-gray-300 rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-[#0066FF]"></div>
+                    <button onclick="saveSettings()" id="set-btn" class="w-full mt-4 bg-[#0066FF] text-white font-bold py-3.5 rounded-xl shadow-md hover:bg-blue-700 transition">Update Profile</button>
+                </div>
             </div>
         </div>
 
     </div>
 
+    <!-- Firebase / Backend logic -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-app.js";
         import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-auth.js";
+        import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore.js";
         
         const app = initializeApp({
             apiKey: "AIzaSyCrx9BPS8ficDzgVZMbJIb4b3PQ9IqEHLw",
             authDomain: "doktura-ai-907d8.firebaseapp.com",
             projectId: "doktura-ai-907d8",
-            storageBucket: "doktura-ai-907d8.firebasestorage.app",
-            messagingSenderId: "940024084363",
-            appId: "1:940024084363:web:db934bd0fd644d61f7e18e"
+            storageBucket: "doktura-ai-907d8.firebasestorage.app"
         });
         
         const auth = getAuth(app);
-        window.userData = { name: "", phone: "", photo_url: "" };
+        const db = getFirestore(app);
+        
+        window.userData = { name: "", phone: "", photo_url: "", is_subscribed: false };
         window.currentUser = null;
 
-        // AUTH GUARD: If not logged in, kick to login page immediately
         onAuthStateChanged(auth, async (user) => {
             if (!user) { window.location.href = "login.html"; return; }
             window.currentUser = user;
             
             try {
+                // Check premium status securely directly from Firebase 
+                const userDoc = await getDoc(doc(db, "users", user.uid));
+                const isPremium = userDoc.exists() ? (userDoc.data().is_subscribed || false) : false;
+                window.userData.is_subscribed = isPremium;
+
                 const token = await user.getIdToken();
                 const res = await fetch(`${API_BASE}/api/user/sync`, {
                     method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
@@ -149,13 +357,17 @@
                 
                 if(!data.is_complete) { window.location.href = "login.html"; return; }
                 
-                window.userData = data;
+                window.userData.name = data.name;
+                window.userData.phone = data.phone;
+                window.userData.photo_url = data.photo_url;
                 
-                // Set UI
                 document.getElementById('appBody').classList.remove('hidden');
                 document.getElementById('userName').innerText = data.name;
+                document.getElementById('userEmail').innerText = user.email;
                 document.getElementById('set-name').value = data.name;
                 document.getElementById('set-phone').value = data.phone;
+                document.getElementById('book-name').value = data.name;
+                document.getElementById('book-email').value = user.email;
                 
                 let avatar = data.photo_url || user.photoURL || `data:image/svg+xml;base64,${btoa(`<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64"><rect width="64" height="64" fill="#00AEEF"/><text x="50%" y="50%" fill="#fff" font-size="32" font-family="sans-serif" font-weight="bold" text-anchor="middle" dy=".35em">${data.name.charAt(0).toUpperCase()}</text></svg>`)}`;
                 document.getElementById('userAvatar').src = avatar;
@@ -164,14 +376,17 @@
 
                 loadSessions();
                 fetchDoctors();
+                populateMockSchedule(); // Populate Schedule Table
             } catch(e) { window.location.href = "login.html"; }
         });
 
         document.getElementById("logoutBtn").addEventListener("click", () => signOut(auth));
     </script>
 
+    <!-- Global App Logic -->
     <script>
         window.currentSessionId = null;
+
         async function getAuthHeaders(json=true) {
             const h = {}; if(json) h['Content-Type']='application/json';
             if(window.currentUser) h['Authorization'] = `Bearer ${await window.currentUser.getIdToken()}`;
@@ -179,39 +394,35 @@
         }
 
         window.switchTab = function(tab) {
-            ['chat','book','reports','settings'].forEach(t => {
-                document.getElementById('view-'+t).classList.add('hidden');
-                document.getElementById('btn-'+t).classList.remove('bg-gray-800','text-white');
-                document.getElementById('btn-'+t).classList.add('text-gray-300');
-            });
-            document.getElementById('view-'+tab).classList.remove('hidden');
-            document.getElementById('btn-'+tab).classList.add('bg-gray-800','text-white');
-        }
-
-        // Settings Save
-        window.saveSettings = async function() {
-            const btn = document.getElementById('set-btn');
-            const alert = document.getElementById('settingsAlert');
-            btn.innerText = "Saving...";
-            
-            let photoUrl = window.userData.photo_url;
-            const file = document.getElementById('set-photo').files[0];
-            if(file) {
-                const fd = new FormData(); fd.append('file', file); fd.append('user_id', window.currentUser.uid);
-                try { const r = await fetch(`${API_BASE}/api/upload_avatar`,{method:'POST',body:fd}); photoUrl = (await r.json()).photo_url; }catch(e){}
+            // Check Premium for Reports Tab
+            if(tab === 'reports' && !window.userData.is_subscribed) {
+                document.getElementById('premium-modal').classList.remove('hidden');
+                document.getElementById('premium-modal').classList.add('flex');
+                return; // Stop them from entering the tab
             }
 
-            try {
-                await fetch(`${API_BASE}/api/user/profile`, {
-                    method: 'POST', headers: await getAuthHeaders(),
-                    body: JSON.stringify({ name: document.getElementById('set-name').value, phone: document.getElementById('set-phone').value, photo_url: photoUrl })
-                });
-                alert.className = "mb-4 p-3 rounded text-sm text-center bg-green-100 text-green-700"; alert.innerText = "Saved successfully!"; alert.classList.remove('hidden');
-                setTimeout(()=>window.location.reload(), 1000);
-            } catch(e) { alert.className = "mb-4 p-3 rounded text-sm text-center bg-red-100 text-red-700"; alert.innerText = "Error saving."; alert.classList.remove('hidden'); btn.innerText = "Update Profile"; }
+            ['chat','book','schedule','reports','settings'].forEach(t => {
+                document.getElementById('view-'+t).classList.add('hidden');
+                document.getElementById('btn-'+t).classList.remove('nav-active');
+                document.getElementById('btn-'+t).classList.add('nav-inactive');
+            });
+            document.getElementById('view-'+tab).classList.remove('hidden');
+            document.getElementById('btn-'+tab).classList.add('nav-active');
+            document.getElementById('btn-'+tab).classList.remove('nav-inactive');
         }
 
-        // Chat Logic
+        window.triggerSubscription = async function() {
+            const btn = document.getElementById('sub-btn'); btn.innerText = "Redirecting to Stripe...";
+            try {
+                const r = await fetch(`${API_BASE}/api/create_subscription`, { method: 'POST', headers: await getAuthHeaders(), body: JSON.stringify({user_id: window.currentUser.uid}) });
+                const d = await r.json();
+                if(d.stripe_url) window.location.href = d.stripe_url;
+                else alert('Error: ' + d.error);
+            } catch(e) { alert("Network error."); }
+            btn.innerText = "Unlock DokturaPremium – RM 50";
+        }
+
+        // ================= CHAT ENGINE =================
         async function loadSessions() {
             const r = await fetch(API_BASE+'/api/sessions',{method:'POST',headers:await getAuthHeaders(),body:JSON.stringify({user_id:window.currentUser.uid})});
             const sessions = (await r.json()).sessions || [];
@@ -220,9 +431,9 @@
             
             const list = document.getElementById('sidebar-sessions'); list.innerHTML = '';
             sessions.forEach(id => {
-                let dStr = isNaN(id) ? "Chat" : new Date(parseInt(id)).toLocaleString([], {month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'});
-                let bg = id === window.currentSessionId ? 'bg-gray-800 text-white border-l-4 border-[#00AEEF]' : 'hover:bg-gray-800 text-gray-400 border-l-4 border-transparent';
-                list.innerHTML += `<button onclick="window.currentSessionId='${id}';loadSessions();switchTab('chat');" class="w-full text-left p-3 rounded text-xs transition ${bg} mb-2">${dStr}</button>`;
+                let dStr = isNaN(id) ? "Chat Session" : new Date(parseInt(id)).toLocaleString([], {month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'});
+                let bg = id === window.currentSessionId ? 'bg-blue-50 text-blue-600 border-blue-600 font-bold' : 'text-gray-500 hover:bg-gray-50 border-transparent';
+                list.innerHTML += `<button onclick="window.currentSessionId='${id}';loadSessions();switchTab('chat');" class="w-full text-left px-3 py-2.5 text-xs rounded border-l-4 transition ${bg} mb-1 flex items-center"><svg class="w-3 h-3 mr-2 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"></path></svg><span class="truncate">${dStr}</span></button>`;
             });
             loadHistory();
         }
@@ -234,14 +445,18 @@
             const r = await fetch(API_BASE+'/api/history',{method:'POST',headers:await getAuthHeaders(),body:JSON.stringify({user_id:window.currentUser.uid, session_id:window.currentSessionId})});
             const data = await r.json();
             el.innerHTML = '';
+            
             if(!data.history || data.history.length === 0 || !data.history.some(m=>m.role!=='system')) {
-                el.innerHTML = `<div class="flex items-start space-x-4"><img src="https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/Gemini_Generated_Image_okdjp7okdjp7okdj.png?download=true" class="w-8 h-8 rounded-full border"><div class="flex-1"><p class="font-bold text-sm mb-1">Doktura AI</p><div class="text-gray-700">Hello ${window.userData.name}! How can I help you?</div></div></div>`;
+                el.innerHTML = `<div class="flex items-start space-x-4"><img src="https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/Gemini_Generated_Image_okdjp7okdjp7okdj.png?download=true" class="w-8 h-8 rounded-full border bg-white"><div class="flex-1"><p class="font-bold text-sm text-gray-800 mb-1">Doktura AI</p><div class="text-gray-700 leading-relaxed text-sm">Hello ${window.userData.name}! How can I assist you with your medical information today?</div></div></div>`;
             } else {
                 data.history.forEach(m => {
                     if(m.role==='system') return;
                     let txt = m.content.replace(/\n/g,'<br>');
-                    if(m.role==='user') el.innerHTML += `<div class="flex items-start space-x-4"><img src="${window.currentAvatar}" class="w-8 h-8 rounded-full border object-cover"><div class="flex-1"><p class="font-bold text-sm mb-1">${window.userData.name}</p><div class="text-gray-700">${txt}</div></div></div>`;
-                    else el.innerHTML += `<div class="flex items-start space-x-4"><img src="https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/Gemini_Generated_Image_okdjp7okdjp7okdj.png?download=true" class="w-8 h-8 rounded-full border"><div class="flex-1"><p class="font-bold text-sm mb-1">Doktura AI</p><div class="text-gray-700">${txt}</div></div></div>`;
+                    if(m.role==='user') {
+                        el.innerHTML += `<div class="flex items-start justify-end space-x-3 mt-4 w-full"><div class="bg-[#0284c7] text-white p-3.5 rounded-2xl rounded-tr-sm text-sm max-w-[70%] shadow-sm">${txt}</div><img src="${window.currentAvatar}" class="w-8 h-8 rounded-full border object-cover"></div>`;
+                    } else {
+                        el.innerHTML += `<div class="flex items-start space-x-4 mt-6 w-full"><img src="https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/Gemini_Generated_Image_okdjp7okdjp7okdj.png?download=true" class="w-8 h-8 rounded-full border bg-white"><div class="flex-1"><p class="font-bold text-sm text-gray-800 mb-1">Doktura AI</p><div class="text-gray-700 text-sm leading-relaxed">${txt}</div></div></div>`;
+                    }
                 });
             }
             el.scrollTo({top: el.scrollHeight});
@@ -250,23 +465,152 @@
         window.sendChat = async function() {
             const input = document.getElementById('chat-input'); const msg = input.value.trim(); if(!msg) return;
             const el = document.getElementById('chat-history');
-            el.innerHTML += `<div class="flex items-start space-x-4"><img src="${window.currentAvatar}" class="w-8 h-8 rounded-full border object-cover"><div class="flex-1"><p class="font-bold text-sm mb-1">${window.userData.name}</p><div class="text-gray-700">${msg}</div></div></div>`;
+            
+            el.innerHTML += `<div class="flex items-start justify-end space-x-3 mt-4 w-full"><div class="bg-[#0284c7] text-white p-3.5 rounded-2xl rounded-tr-sm text-sm max-w-[70%] shadow-sm">${msg}</div><img src="${window.currentAvatar}" class="w-8 h-8 rounded-full border object-cover"></div>`;
             input.value = ''; el.scrollTo({top: el.scrollHeight});
 
             const r = await fetch(API_BASE+'/api/chat',{method:'POST',headers:await getAuthHeaders(),body:JSON.stringify({message:msg, session_id:window.currentSessionId, user_name:window.userData.name})});
             const data = await r.json();
-            el.innerHTML += `<div class="flex items-start space-x-4"><img src="https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/Gemini_Generated_Image_okdjp7okdjp7okdj.png?download=true" class="w-8 h-8 rounded-full border"><div class="flex-1"><p class="font-bold text-sm mb-1">Doktura AI</p><div class="text-gray-700">${data.reply.replace(/\n/g,'<br>')}</div></div></div>`;
+            
+            el.innerHTML += `<div class="flex items-start space-x-4 mt-6 w-full"><img src="https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/Gemini_Generated_Image_okdjp7okdjp7okdj.png?download=true" class="w-8 h-8 rounded-full border bg-white"><div class="flex-1"><p class="font-bold text-sm text-gray-800 mb-1">Doktura AI</p><div class="text-gray-700 text-sm leading-relaxed">${data.reply.replace(/\n/g,'<br>')}</div></div></div>`;
             el.scrollTo({top: el.scrollHeight});
         }
 
-        // Booking & Upload Stubs
+        // ================= VOICE API ENGINE =================
+        let voiceRec = null;
+        let isVoiceActive = false;
+
+        window.initVoice = function() {
+            if (!('webkitSpeechRecognition' in window)) return null;
+            const rec = new webkitSpeechRecognition();
+            rec.continuous = true; rec.interimResults = true;
+            
+            rec.onstart = () => { document.getElementById('voice-status-text').innerText = "Listening..."; document.getElementById('voice-action-btn').classList.add('animate-pulse'); };
+            rec.onresult = (e) => {
+                let trans = ""; for(let i=e.resultIndex; i<e.results.length; i++) trans += e.results[i][0].transcript;
+                document.getElementById('voice-transcript').innerText = trans;
+            };
+            rec.onend = () => {
+                document.getElementById('voice-status-text').innerText = "Tap mic to speak";
+                document.getElementById('voice-action-btn').classList.remove('animate-pulse');
+                isVoiceActive = false;
+                const finalTxt = document.getElementById('voice-transcript').innerText;
+                if(finalTxt && finalTxt !== "Tap to start talking. Tap again to stop and send.") {
+                    document.getElementById('chat-input').value = finalTxt;
+                    sendChat(); exitVoiceMode();
+                }
+            };
+            return rec;
+        }
+
+        window.enterVoiceMode = function() {
+            document.getElementById('voice-overlay').classList.remove('hidden'); document.getElementById('voice-overlay').classList.add('flex');
+            document.getElementById('voice-transcript').innerText = "Tap to start talking. Tap again to stop and send.";
+            if(!voiceRec) voiceRec = initVoice();
+        }
+
+        window.exitVoiceMode = function() {
+            document.getElementById('voice-overlay').classList.add('hidden'); document.getElementById('voice-overlay').classList.remove('flex');
+            if(voiceRec && isVoiceActive) { voiceRec.stop(); isVoiceActive = false; }
+        }
+
+        window.toggleVoiceMic = function() {
+            if(!voiceRec) return;
+            if(isVoiceActive) { voiceRec.stop(); } else { document.getElementById('voice-transcript').innerText = "..."; voiceRec.start(); isVoiceActive = true; }
+        }
+
+        // ================= BOOKING ENGINE =================
         async function fetchDoctors() {
             const r = await fetch(API_BASE+'/api/doctors'); const docs = await r.json();
-            const sel = document.getElementById('book-doctor'); sel.innerHTML = '<option value="">Select Doctor</option>';
+            const sel = document.getElementById('book-doctor'); sel.innerHTML = '<option value="">(e.g Dr. John Doe)</option>';
             docs.forEach(d => sel.innerHTML += `<option value="${d.id}">${d.name} - ${d.specialty}</option>`);
         }
-        window.submitBooking = async function(e) { e.preventDefault(); /* Include booking logic here as before */ }
-        window.uploadReport = async function(e) { e.preventDefault(); /* Include upload logic here as before */ }
+        
+        window.suggestDoctor = async function() {
+            const sym = document.getElementById('book-symptoms').value;
+            if(!sym) return alert("Please type your symptoms first.");
+            const r = await fetch(API_BASE+'/api/suggest_doctor', {method:'POST',headers:await getAuthHeaders(), body:JSON.stringify({symptoms:sym})});
+            const d = await r.json();
+            if(d.doctor_id) document.getElementById('book-doctor').value = d.doctor_id;
+            else alert(d.message);
+        }
+
+        window.submitBooking = async function(e) { 
+            e.preventDefault(); 
+            const btn = document.getElementById('book-btn'); btn.innerText = "Processing...";
+            const vType = document.querySelector('input[name="v_type"]:checked').value;
+            
+            try {
+                const r = await fetch(API_BASE+'/api/book_appointment', {
+                    method:'POST', headers:await getAuthHeaders(),
+                    body:JSON.stringify({ doctor_id: document.getElementById('book-doctor').value, visit_type: vType, preferred_datetime: document.getElementById('book-time').value })
+                });
+                const d = await r.json();
+                if(d.stripe_url) window.location.href = d.stripe_url;
+                else {
+                    const res = document.getElementById('book-result'); res.innerText = d.message; res.classList.remove('hidden'); res.classList.add('bg-green-100','text-green-800');
+                }
+            } catch(e) { alert("Booking failed"); }
+            btn.innerText = "PAY NOW";
+        }
+
+        // ================= MOCK SCHEDULE DATA =================
+        function populateMockSchedule() {
+            // Because the backend doesn't have a patient schedule GET endpoint yet, we mock the UI for the PDF representation.
+            const tbody = document.getElementById('schedule-table-body');
+            const data = [
+                {id: "ID1239", type: "Online", icon: "🎥", date: "Sep 15, 2026", time: "04:00 PM", status: "Done", action: "Start Video Call"},
+                {id: "ID1238", type: "In-Clinic Visit", icon: "🏥", date: "Sep 15, 2026", time: "02:20 PM", status: "Done", action: ""},
+                {id: "ID1237", type: "Online", icon: "🎥", date: "Sep 16, 2026", time: "01:00 PM", status: "On Going", action: "Start Video Call"},
+                {id: "ID1236", type: "In-Clinic Visit", icon: "🏥", date: "Sep 17, 2026", time: "11:30 AM", status: "Upcoming", action: ""},
+                {id: "ID1235", type: "Online", icon: "🎥", date: "Sep 18, 2026", time: "10:00 AM", status: "Upcoming", action: "Start Video Call"}
+            ];
+            
+            data.forEach(r => {
+                let sColor = r.status === 'Done' ? 'bg-green-50 text-green-600' : r.status === 'On Going' ? 'bg-yellow-50 text-yellow-600' : 'bg-red-50 text-red-500';
+                let btnHtml = r.action ? `<button class="bg-[#1e1b4b] text-white text-[10px] font-bold px-3 py-1.5 rounded uppercase">${r.action}</button>` : '';
+                
+                tbody.innerHTML += `
+                    <tr class="border-b border-gray-100 hover:bg-gray-50 transition">
+                        <td class="py-4 px-6 font-semibold">${r.id}</td>
+                        <td class="py-4 px-6 flex items-center"><span class="mr-2">${r.icon}</span> ${r.type}</td>
+                        <td class="py-4 px-6">${r.date}</td>
+                        <td class="py-4 px-6 font-bold"><span class="${sColor} px-2.5 py-1 rounded text-xs">${r.status}</span></td>
+                        <td class="py-4 px-6 text-center">${btnHtml}</td>
+                    </tr>`;
+            });
+        }
+
+        // ================= SETTINGS PROFILE =================
+        window.saveSettings = async function() {
+            const btn = document.getElementById('set-btn'); const alert = document.getElementById('settingsAlert');
+            btn.innerText = "Saving...";
+            let photoUrl = window.userData.photo_url;
+            const file = document.getElementById('set-photo').files[0];
+            if(file) {
+                const fd = new FormData(); fd.append('file', file); fd.append('user_id', window.currentUser.uid);
+                try { const r = await fetch(`${API_BASE}/api/upload_avatar`,{method:'POST',body:fd}); photoUrl = (await r.json()).photo_url; }catch(e){}
+            }
+            try {
+                await fetch(`${API_BASE}/api/user/profile`, {
+                    method: 'POST', headers: await getAuthHeaders(),
+                    body: JSON.stringify({ name: document.getElementById('set-name').value, phone: document.getElementById('set-phone').value, photo_url: photoUrl })
+                });
+                alert.className = "mb-6 p-4 rounded text-sm text-center bg-green-50 text-green-700 font-bold border border-green-200"; alert.innerText = "Profile successfully updated!"; alert.classList.remove('hidden');
+                setTimeout(()=>window.location.reload(), 1500);
+            } catch(e) { alert.className = "mb-6 p-4 rounded text-sm text-center bg-red-50 text-red-700 font-bold border border-red-200"; alert.innerText = "Error saving profile."; alert.classList.remove('hidden'); btn.innerText = "Update Profile"; }
+        }
+
+        window.uploadReport = async function(e) { e.preventDefault(); const btn = document.getElementById('upload-btn'); btn.innerText = "Uploading...";
+            const fd = new FormData(); fd.append('file', document.getElementById('report-file').files[0]);
+            try {
+                const r = await fetch(API_BASE+'/api/upload_medical_report', { method:'POST', headers: {'Authorization': `Bearer ${await window.currentUser.getIdToken()}`}, body:fd });
+                const d = await r.json();
+                document.getElementById('upload-result').classList.remove('hidden');
+                document.getElementById('upload-result').innerText = d.message || "Success"; document.getElementById('upload-result').className = "mt-4 p-3 rounded text-sm bg-green-100 text-green-800 font-bold";
+            } catch(er) { document.getElementById('upload-result').innerText = "Upload failed."; document.getElementById('upload-result').classList.remove('hidden'); document.getElementById('upload-result').classList.add('bg-red-100','text-red-800'); }
+            btn.innerText = "Add";
+        }
     </script>
 </body>
 </html>
