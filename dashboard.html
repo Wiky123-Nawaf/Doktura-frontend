@@ -441,8 +441,16 @@
                 document.getElementById('set-avatar').src = avatar; 
                 window.currentAvatar = avatar;
 
-                const lastTab = localStorage.getItem('doktura_active_tab') || 'chat';
+                // NEW: Check URL for tab parameter
+                const params = new URLSearchParams(window.location.search);
+                const urlTab = params.get('tab');
+                
+                // If 'tab' is in the URL, use it; otherwise use localStorage or default to 'chat'
+                const lastTab = urlTab || localStorage.getItem('doktura_active_tab') || 'chat';
                 switchTab(lastTab);
+                
+                // Clean the URL so the '?tab=schedule' part doesn't stay there forever
+                if (urlTab) window.history.replaceState({}, document.title, window.location.pathname);
                 
                 loadSessions(); 
                 fetchDoctors(); 
