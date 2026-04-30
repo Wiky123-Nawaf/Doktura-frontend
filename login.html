@@ -10,69 +10,96 @@
         body { font-family: 'Inter', sans-serif; background-color: #f8fafc; } 
     </style>
 </head>
-<body class="min-h-screen flex flex-col items-center justify-center p-4">
+<body class="min-h-screen flex flex-col items-center justify-center p-4 relative overflow-hidden">
+
+    <!-- Decorative background glow (Optional, adds to the "premium creamy" feel) -->
+    <div class="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-blue-100/40 rounded-full blur-3xl pointer-events-none"></div>
+    <div class="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-red-50/50 rounded-full blur-3xl pointer-events-none"></div>
 
     <script>const API_BASE = 'https://api.doktura.ai';</script>
 
-    <div id="authCloseBtnContainer" class="w-full flex justify-between absolute top-6 px-8">
-        <a href="index.html" class="text-gray-500 hover:text-[#0066FF] font-semibold text-sm flex items-center transition">← Back Home</a>
+    <div id="authCloseBtnContainer" class="w-full flex justify-between absolute top-8 px-10 z-10">
+        <a href="index.html" class="text-gray-400 hover:text-[#d9381e] font-bold text-sm flex items-center transition">← Back Home</a>
     </div>
 
-    <div class="bg-white rounded-2xl shadow-[0_2px_20px_rgba(0,0,0,0.04)] border border-gray-200 w-full max-w-[420px] p-10 relative">
+    <!-- Login Card -->
+    <div class="bg-white rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-100 w-full max-w-[420px] p-10 relative z-10">
         
-        <!-- Updated Doktura AI Logo -->
+        <!-- Doktura AI Logo -->
         <img src="https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/Logo.jpg?download=true" class="h-10 object-contain mx-auto mb-8" alt="Doktura AI">
         
-        <div id="authAlertBox" class="hidden mb-4 p-3 text-xs rounded-lg text-center font-medium"></div>
+        <div id="authAlertBox" class="hidden mb-5 p-3.5 text-xs rounded-xl text-center font-bold"></div>
 
         <!-- LOGIN VIEW -->
         <div id="authLoginView">
-            <h2 class="text-2xl font-extrabold text-gray-900 text-center mb-1">Welcome Back</h2>
-            <p class="text-sm text-gray-500 text-center mb-8">Log in to your account.</p>
-            <input type="email" id="loginEmail" placeholder="Email Address" class="w-full border border-gray-300 rounded-lg px-4 py-3.5 text-sm mb-4 focus:outline-none focus:ring-2 focus:ring-[#0066FF] transition">
-            <input type="password" id="loginPass" placeholder="Password" class="w-full border border-gray-300 rounded-lg px-4 py-3.5 text-sm mb-4 focus:outline-none focus:ring-2 focus:ring-[#0066FF] transition">
-            <button id="doLoginBtn" class="w-full bg-[#0066FF] text-white font-bold py-3.5 rounded-lg shadow-sm mb-4 hover:bg-blue-700 transition">Login</button>
-            <button id="doGoogleLoginBtn" class="w-full bg-white border border-gray-300 text-gray-700 font-bold py-3.5 rounded-lg flex justify-center items-center hover:bg-gray-50 shadow-sm transition mb-4">
-                <img src="https://www.svgrepo.com/show/475656/google-color.svg" class="w-5 h-5 mr-3"> Sign in with Google
+            <h2 class="text-2xl font-extrabold text-gray-900 text-center mb-1.5">Welcome Back</h2>
+            <p class="text-sm text-gray-500 text-center mb-8 font-medium">Log in to access your dashboard.</p>
+            
+            <div class="space-y-4">
+                <input type="email" id="loginEmail" placeholder="Email Address" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3.5 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#0066FF] focus:border-transparent transition">
+                <input type="password" id="loginPass" placeholder="Password" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3.5 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#0066FF] focus:border-transparent transition">
+            </div>
+
+            <!-- Primary Action Button (Using Reddish-Orange) -->
+            <button id="doLoginBtn" class="w-full bg-[#d9381e] text-white font-bold py-3.5 rounded-xl shadow-md mt-6 hover:bg-red-700 hover:shadow-lg transition transform hover:-translate-y-0.5">Log In</button>
+            
+            <!-- Divider -->
+            <div class="flex items-center my-6">
+                <div class="flex-grow border-t border-gray-100"></div>
+                <span class="flex-shrink-0 mx-4 text-gray-400 text-xs font-bold uppercase tracking-wider">Or</span>
+                <div class="flex-grow border-t border-gray-100"></div>
+            </div>
+
+            <button id="doGoogleLoginBtn" class="w-full bg-white border border-gray-200 text-gray-700 font-bold py-3.5 rounded-xl flex justify-center items-center hover:bg-gray-50 shadow-sm transition mb-6">
+                <img src="https://www.svgrepo.com/show/475656/google-color.svg" class="w-5 h-5 mr-3"> Continue with Google
             </button>
-            <div class="text-center text-xs text-gray-500 flex justify-between mt-6">
-                <span onclick="switchView('forgot')" class="text-[#0066FF] cursor-pointer hover:underline font-bold transition">Forgot Password?</span>
-                <span onclick="switchView('register')" class="text-[#0066FF] cursor-pointer hover:underline font-bold transition">Register New Account</span>
+            
+            <div class="text-center text-xs flex justify-between mt-2 px-1">
+                <span onclick="switchView('forgot')" class="text-[#0066FF] cursor-pointer hover:text-blue-800 font-bold transition">Forgot Password?</span>
+                <span onclick="switchView('register')" class="text-[#0066FF] cursor-pointer hover:text-blue-800 font-bold transition">Create an Account</span>
             </div>
         </div>
 
         <!-- REGISTER VIEW -->
         <div id="authRegisterView" class="hidden">
-            <h2 class="text-2xl font-extrabold text-gray-900 text-center mb-6">Create Account</h2>
-            <input type="email" id="regEmail" placeholder="Email Address" class="w-full border border-gray-300 rounded-lg px-4 py-3.5 text-sm mb-4 focus:outline-none focus:ring-2 focus:ring-[#0066FF] transition">
-            <input type="password" id="regPass" placeholder="Password" class="w-full border border-gray-300 rounded-lg px-4 py-3.5 text-sm mb-4 focus:outline-none focus:ring-2 focus:ring-[#0066FF] transition">
-            <button id="doRegisterBtn" class="w-full bg-[#0066FF] text-white font-bold py-3.5 shadow-sm rounded-lg w-full mb-6 hover:bg-blue-700 transition">Register & Verify</button>
-            <p class="text-center text-sm text-gray-500 font-medium">Already have an account? <span onclick="switchView('login')" class="text-[#0066FF] cursor-pointer hover:underline font-bold transition">Log In</span></p>
+            <h2 class="text-2xl font-extrabold text-gray-900 text-center mb-1.5">Create Account</h2>
+            <p class="text-sm text-gray-500 text-center mb-8 font-medium">Join Doktura AI today.</p>
+            
+            <div class="space-y-4">
+                <input type="email" id="regEmail" placeholder="Email Address" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3.5 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#0066FF] focus:border-transparent transition">
+                <input type="password" id="regPass" placeholder="Password" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3.5 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#0066FF] focus:border-transparent transition">
+            </div>
+
+            <button id="doRegisterBtn" class="w-full bg-[#d9381e] text-white font-bold py-3.5 shadow-md rounded-xl mt-6 mb-6 hover:bg-red-700 hover:shadow-lg transition transform hover:-translate-y-0.5">Register Account</button>
+            <p class="text-center text-sm text-gray-500 font-medium">Already have an account? <span onclick="switchView('login')" class="text-[#0066FF] cursor-pointer hover:text-blue-800 font-bold transition">Log In</span></p>
         </div>
 
         <!-- FORGOT PASSWORD VIEW -->
         <div id="authForgotView" class="hidden">
-            <h2 class="text-2xl font-extrabold text-gray-900 text-center mb-6">Reset Password</h2>
-            <input type="email" id="forgotEmail" placeholder="Email Address" class="w-full border border-gray-300 rounded-lg px-4 py-3.5 text-sm mb-4 focus:outline-none focus:ring-2 focus:ring-[#0066FF] transition">
-            <button id="doForgotBtn" class="w-full bg-[#0066FF] text-white font-bold py-3.5 shadow-sm rounded-lg w-full mb-6 hover:bg-blue-700 transition">Send Reset Link</button>
-            <p class="text-center text-sm text-gray-500 font-medium"><span onclick="switchView('login')" class="text-[#0066FF] cursor-pointer hover:underline font-bold transition">← Back to Login</span></p>
+            <h2 class="text-2xl font-extrabold text-gray-900 text-center mb-1.5">Reset Password</h2>
+            <p class="text-sm text-gray-500 text-center mb-8 font-medium">Enter your email to receive a reset link.</p>
+            
+            <input type="email" id="forgotEmail" placeholder="Email Address" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3.5 text-sm mb-6 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#0066FF] focus:border-transparent transition">
+            
+            <button id="doForgotBtn" class="w-full bg-[#d9381e] text-white font-bold py-3.5 shadow-md rounded-xl mb-6 hover:bg-red-700 hover:shadow-lg transition transform hover:-translate-y-0.5">Send Reset Link</button>
+            <p class="text-center text-sm text-gray-500 font-medium"><span onclick="switchView('login')" class="text-[#0066FF] cursor-pointer hover:text-blue-800 font-bold transition">← Back to Login</span></p>
         </div>
 
         <!-- PROFILE SETUP VIEW -->
         <div id="authProfileView" class="hidden">
             <h2 class="text-2xl font-extrabold text-gray-900 text-center mb-1">Complete Profile</h2>
-            <p class="text-sm text-gray-500 text-center mb-8">Let's set up your patient file.</p>
+            <p class="text-sm text-gray-500 text-center mb-8 font-medium">Let's set up your patient file.</p>
             
-            <label class="block text-xs uppercase tracking-wider text-gray-500 font-bold mb-2">Profile Photo (Optional)</label>
-            <input type="file" id="profilePhotoInput" accept="image/*" class="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm mb-5 bg-gray-50 transition cursor-pointer">
+            <label class="block text-[10px] uppercase tracking-wider text-gray-500 font-bold mb-2 ml-1">Profile Photo (Optional)</label>
+            <input type="file" id="profilePhotoInput" accept="image/*" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2.5 text-sm mb-5 transition cursor-pointer hover:bg-gray-100">
             
-            <label class="block text-xs uppercase tracking-wider text-gray-500 font-bold mb-2">Full Name</label>
-            <input type="text" id="profileName" placeholder="e.g. Ahmad Razif" class="w-full border border-gray-300 rounded-lg px-4 py-3.5 text-sm mb-5 focus:outline-none focus:ring-2 focus:ring-[#0066FF] transition">
+            <label class="block text-[10px] uppercase tracking-wider text-gray-500 font-bold mb-2 ml-1">Full Name</label>
+            <input type="text" id="profileName" placeholder="e.g. Ahmad Razif" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3.5 text-sm mb-5 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#0066FF] focus:border-transparent transition">
             
-            <label class="block text-xs uppercase tracking-wider text-gray-500 font-bold mb-2">Phone Number</label>
-            <input type="text" id="profilePhone" placeholder="+60 12-345-6789" class="w-full border border-gray-300 rounded-lg px-4 py-3.5 text-sm mb-8 focus:outline-none focus:ring-2 focus:ring-[#0066FF] transition">
+            <label class="block text-[10px] uppercase tracking-wider text-gray-500 font-bold mb-2 ml-1">Phone Number</label>
+            <input type="text" id="profilePhone" placeholder="+60 12-345-6789" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3.5 text-sm mb-8 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#0066FF] focus:border-transparent transition">
             
-            <button id="saveProfileBtn" class="w-full bg-[#0066FF] text-white font-bold py-3.5 rounded-lg shadow-sm hover:bg-blue-700 transition">Complete Setup</button>
+            <button id="saveProfileBtn" class="w-full bg-[#d9381e] text-white font-bold py-3.5 rounded-xl shadow-md hover:bg-red-700 hover:shadow-lg transition transform hover:-translate-y-0.5">Complete Setup</button>
         </div>
     </div>
 
@@ -94,7 +121,7 @@
 
         function showAlert(msg, isError=true) {
             const box = document.getElementById("authAlertBox"); box.innerText = msg;
-            box.className = isError ? "mb-4 p-3 bg-red-50 text-red-700 text-xs rounded-lg font-bold text-center border border-red-100" : "mb-4 p-3 bg-green-50 text-green-700 text-xs rounded-lg font-bold text-center border border-green-100";
+            box.className = isError ? "mb-6 p-3.5 bg-red-50 text-red-600 text-xs rounded-xl font-bold text-center border border-red-100" : "mb-6 p-3.5 bg-green-50 text-green-600 text-xs rounded-xl font-bold text-center border border-green-100";
             box.classList.remove("hidden");
         }
 
@@ -103,7 +130,44 @@
         document.getElementById("doLoginBtn").addEventListener("click", async () => {
             const btn = document.getElementById("doLoginBtn"); btn.innerText = "Logging in..."; btn.disabled = true;
             try { await signInWithEmailAndPassword(auth, document.getElementById("loginEmail").value, document.getElementById("loginPass").value); } 
-            catch(e) { showAlert("Invalid Credentials."); btn.innerText = "Login"; btn.disabled = false;}
+            catch(e) { showAlert("Invalid Credentials."); btn.innerText = "Log In"; btn.disabled = false;}
+        });
+
+        // Register Button Logic
+        document.getElementById("doRegisterBtn").addEventListener("click", async () => {
+            const email = document.getElementById("regEmail").value.trim();
+            const pass = document.getElementById("regPass").value.trim();
+            const btn = document.getElementById("doRegisterBtn");
+            if (!email || !pass) return showAlert("Please fill out all fields.");
+            if (pass.length < 6) return showAlert("Password must be at least 6 characters.");
+            
+            btn.innerText = "Registering..."; btn.disabled = true;
+            try {
+                const userCred = await createUserWithEmailAndPassword(auth, email, pass);
+                await sendEmailVerification(userCred.user);
+                showAlert("Account created! Check your email to verify.", false);
+                setTimeout(() => { switchView('login'); document.getElementById("loginEmail").value = email; }, 3000);
+            } catch(e) {
+                showAlert(e.message.includes('email-already-in-use') ? "Email is already registered." : "Registration failed.");
+            }
+            btn.innerText = "Register Account"; btn.disabled = false;
+        });
+
+        // Forgot Password Logic
+        document.getElementById("doForgotBtn").addEventListener("click", async () => {
+            const email = document.getElementById("forgotEmail").value.trim();
+            const btn = document.getElementById("doForgotBtn");
+            if (!email) return showAlert("Please enter your email.");
+            
+            btn.innerText = "Sending..."; btn.disabled = true;
+            try {
+                await sendPasswordResetEmail(auth, email);
+                showAlert("Reset link sent to your email.", false);
+                setTimeout(() => switchView('login'), 3000);
+            } catch (e) {
+                showAlert("Failed to send reset link.");
+            }
+            btn.innerText = "Send Reset Link"; btn.disabled = false;
         });
 
         onAuthStateChanged(auth, async (user) => {
@@ -115,7 +179,7 @@
                     
                     if(data.is_complete) { window.location.href = "dashboard.html"; } 
                     else { tempPhotoUrl = data.photo_url || user.photoURL; if(data.name) document.getElementById("profileName").value = data.name; switchView('profile'); }
-                } catch(e) { console.error(e); await signOut(auth); showAlert("Backend Sync Failed. Is Python running?"); document.getElementById("doLoginBtn").innerText="Login"; document.getElementById("doLoginBtn").disabled=false; }
+                } catch(e) { console.error(e); await signOut(auth); showAlert("Backend Sync Failed. Is Python running?"); document.getElementById("doLoginBtn").innerText="Log In"; document.getElementById("doLoginBtn").disabled=false; }
             }
         });
 
