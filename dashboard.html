@@ -21,7 +21,7 @@
         .typing-dot:nth-child(3) { animation-delay: 0.4s; }
         @keyframes bounce { 0%, 80%, 100% { transform: translateY(0); } 40% { transform: translateY(-6px); } }
 
-        /* Voice Orb Pulse - Updated to Bluish */
+        /* Voice Orb Pulse - Bluish */
         @keyframes pulseGlow { 0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(0, 102, 255, 0.7); } 70% { transform: scale(1.05); box-shadow: 0 0 0 30px rgba(0, 102, 255, 0); } 100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(0, 102, 255, 0); } }
         .voice-orb { width: 160px; height: 160px; background: radial-gradient(circle at 30% 30%, #93c5fd, #0066FF); border-radius: 50%; box-shadow: 0 10px 25px rgba(0,102,255,0.3); transition: transform 0.3s; }
         .orb-active { animation: pulseGlow 1.5s infinite; }
@@ -369,6 +369,7 @@
         window.currentSessionId = null;
         let voiceRec = null; 
         let isVoiceActive = false;
+        let isRecording = false; // Tracks if we are actively listening for user input
         window.pendingDeleteId = null;
         const chatLogoUrl = "https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/Vector%20(1).png?download=true";
 
@@ -429,7 +430,7 @@
         }
 
         window.switchTab = function(tab) {
-            document.getElementById('global-message-container').classList.add('hidden'); // Clear any global alerts
+            document.getElementById('global-message-container').classList.add('hidden'); 
             if(tab === 'reports' && !window.userData.is_subscribed) { 
                 document.getElementById('premium-modal').classList.remove('hidden'); 
                 document.getElementById('premium-modal').classList.add('flex'); 
@@ -547,6 +548,7 @@
             document.getElementById('voice-transcript').innerText = "Ready to listen... Press the mic to begin.";
             document.getElementById('voice-status-text').innerText = "Tap mic to speak";
             isVoiceActive = true;
+            isRecording = false;
             
             if(!voiceRec) {
                 const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -556,7 +558,8 @@
                     return null; 
                 }
                 voiceRec = new SR();
-                voiceRec.continuous = false; // Stop naturally when user finishes speaking
+                // Ensure continuous listening so it survives natural speaking pauses
+                voiceRec.continuous = true; 
                 voiceRec.interimResults = true; 
                 
                 voiceRec.onresult = (e) => {
@@ -567,20 +570,10 @@
                 };
                 
                 voiceRec.onend = () => {
-                    if (!isVoiceActive) return; // Prevent actions if user already clicked cancel
-
-                    document.getElementById('voice-orb-element').classList.remove('orb-active');
-                    let msg = document.getElementById('chat-input').value.trim();
-                    
-                    if (document.getElementById('voice-status-text').innerText === "Listening...") {
-                        if (msg) {
-                            document.getElementById('voice-status-text').innerText = "Processing...";
-                            sendChat(msg);
-                            document.getElementById('chat-input').value = '';
-                        } else {
-                            document.getElementById('voice-status-text').innerText = "Tap mic to speak";
-                            document.getElementById('voice-transcript').innerText = "Didn't catch that. Tap the mic to try again.";
-                        }
+                    // Browsers sometimes stop recognition automatically after ~15s of silence.
+                    // If we are still supposed to be recording (user hasn't clicked mic to stop), we force it to restart.
+                    if (isRecording) {
+                        try { voiceRec.start(); } catch(e) {}
                     }
                 };
             }
@@ -589,15 +582,37 @@
         window.toggleVoiceMic = () => {
             window.speechSynthesis.cancel();
             if(!voiceRec) return;
-            document.getElementById('chat-input').value = '';
-            document.getElementById('voice-transcript').innerText = 'Listening...';
-            document.getElementById('voice-status-text').innerText = "Listening...";
-            document.getElementById('voice-orb-element').classList.add('orb-active');
-            try { voiceRec.start(); } catch(e) {}
+
+            if (isRecording) {
+                // User clicked mic to STOP and process the text
+                isRecording = false; 
+                try { voiceRec.stop(); } catch(e) {}
+                
+                document.getElementById('voice-orb-element').classList.remove('orb-active');
+                
+                let msg = document.getElementById('chat-input').value.trim();
+                if (msg) {
+                    document.getElementById('voice-status-text').innerText = "Processing...";
+                    sendChat(msg);
+                    document.getElementById('chat-input').value = '';
+                } else {
+                    document.getElementById('voice-status-text').innerText = "Tap mic to speak";
+                    document.getElementById('voice-transcript').innerText = "Didn't catch that. Tap the mic to try again.";
+                }
+            } else {
+                // User clicked mic to START listening
+                isRecording = true;
+                document.getElementById('chat-input').value = '';
+                document.getElementById('voice-transcript').innerText = 'Listening...';
+                document.getElementById('voice-status-text').innerText = "Listening...";
+                document.getElementById('voice-orb-element').classList.add('orb-active');
+                try { voiceRec.start(); } catch(e) {}
+            }
         };
 
         window.exitVoiceMode = () => {
             isVoiceActive = false; 
+            isRecording = false;
             window.speechSynthesis.cancel();
             document.getElementById('voice-overlay').classList.add('hidden');
             document.getElementById('voice-overlay').classList.remove('flex');
