@@ -21,9 +21,9 @@
         .typing-dot:nth-child(3) { animation-delay: 0.4s; }
         @keyframes bounce { 0%, 80%, 100% { transform: translateY(0); } 40% { transform: translateY(-6px); } }
 
-        /* Voice Orb Pulse */
-        @keyframes pulseGlow { 0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); } 70% { transform: scale(1.05); box-shadow: 0 0 0 30px rgba(239, 68, 68, 0); } 100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); } }
-        .voice-orb { width: 160px; height: 160px; background: radial-gradient(circle at 30% 30%, #fca5a5, #ef4444); border-radius: 50%; box-shadow: 0 10px 25px rgba(239,68,68,0.3); transition: transform 0.3s; }
+        /* Voice Orb Pulse - Updated to Bluish */
+        @keyframes pulseGlow { 0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(0, 102, 255, 0.7); } 70% { transform: scale(1.05); box-shadow: 0 0 0 30px rgba(0, 102, 255, 0); } 100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(0, 102, 255, 0); } }
+        .voice-orb { width: 160px; height: 160px; background: radial-gradient(circle at 30% 30%, #93c5fd, #0066FF); border-radius: 50%; box-shadow: 0 10px 25px rgba(0,102,255,0.3); transition: transform 0.3s; }
         .orb-active { animation: pulseGlow 1.5s infinite; }
 
         /* View Switching Logic */
@@ -75,7 +75,6 @@
             <p class="px-6 py-2 text-[10px] font-bold text-gray-400 uppercase tracking-widest">Main Menu</p>
             <nav class="space-y-1 mt-1">
                 <button onclick="switchTab('chat')" id="btn-chat" class="nav-btn w-full flex items-center px-6 py-3 nav-active transition">
-                    <!-- CHANGED: Replaced the AI text circle with the provided icon image -->
                     <img src="https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/Vector%20(1).png?download=true" class="w-6 h-6 mr-3 shrink-0 object-contain" alt="AI">
                     <span class="text-sm">AI Doctor</span>
                 </button>
@@ -163,12 +162,11 @@
             <div id="voice-overlay" class="absolute inset-0 bg-[#f8fafc]/95 z-[50] hidden flex-col items-center justify-center backdrop-blur-sm">
                 <div id="voice-orb-element" class="voice-orb mb-8 flex items-center justify-center text-white"></div>
                 <h3 id="voice-status-text" class="text-3xl font-bold text-gray-900 mb-6">Tap mic to speak</h3>
-                <button onclick="toggleVoiceMic()" id="voice-action-btn" class="bg-[#d9381e] text-white rounded-full p-6 shadow-xl hover:bg-red-700 transition mb-6"><svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"></path></svg></button>
+                <button onclick="toggleVoiceMic()" id="voice-action-btn" class="bg-[#0066FF] text-white rounded-full p-6 shadow-xl hover:bg-blue-700 transition mb-6"><svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"></path></svg></button>
                 <p id="voice-transcript" class="text-gray-600 text-lg max-w-2xl text-center h-24 italic overflow-y-auto w-full px-6">Tap to start talking...</p>
                 
-                <div class="flex space-x-4 mt-8">
+                <div class="mt-8 flex justify-center w-full">
                     <button onclick="exitVoiceMode()" class="px-6 py-3 rounded-xl font-bold text-gray-500 bg-gray-200 hover:bg-gray-300 transition uppercase text-sm">Cancel</button>
-                    <button onclick="sendChatFromVoice()" class="px-8 py-3 rounded-xl font-bold text-white bg-[#0066FF] hover:bg-blue-700 transition shadow-md uppercase text-sm">Send to AI</button>
                 </div>
             </div>
             
@@ -528,7 +526,18 @@
         function speakOut(text) {
             window.speechSynthesis.cancel();
             const utterance = new SpeechSynthesisUtterance(text);
-            utterance.onend = () => { isVoiceActive = false; }; // Stop automatically speaking the NEXT input unless voice is triggered again
+            
+            if (isVoiceActive) {
+                document.getElementById('voice-status-text').innerText = "AI is speaking...";
+                document.getElementById('voice-orb-element').classList.add('orb-active');
+            }
+
+            utterance.onend = () => { 
+                if (isVoiceActive) {
+                    document.getElementById('voice-status-text').innerText = "Tap mic to speak";
+                    document.getElementById('voice-orb-element').classList.remove('orb-active');
+                }
+            }; 
             window.speechSynthesis.speak(utterance);
         }
 
@@ -536,6 +545,7 @@
             document.getElementById('voice-overlay').classList.remove('hidden');
             document.getElementById('voice-overlay').classList.add('flex');
             document.getElementById('voice-transcript').innerText = "Ready to listen... Press the mic to begin.";
+            document.getElementById('voice-status-text').innerText = "Tap mic to speak";
             isVoiceActive = true;
             
             if(!voiceRec) {
@@ -546,7 +556,7 @@
                     return null; 
                 }
                 voiceRec = new SR();
-                voiceRec.continuous = true; 
+                voiceRec.continuous = false; // Stop naturally when user finishes speaking
                 voiceRec.interimResults = true; 
                 
                 voiceRec.onresult = (e) => {
@@ -555,10 +565,22 @@
                     document.getElementById('voice-transcript').innerText = finalTxt;
                     document.getElementById('chat-input').value = finalTxt;
                 };
+                
                 voiceRec.onend = () => {
+                    if (!isVoiceActive) return; // Prevent actions if user already clicked cancel
+
                     document.getElementById('voice-orb-element').classList.remove('orb-active');
+                    let msg = document.getElementById('chat-input').value.trim();
+                    
                     if (document.getElementById('voice-status-text').innerText === "Listening...") {
-                        document.getElementById('voice-status-text').innerText = "Paused.";
+                        if (msg) {
+                            document.getElementById('voice-status-text').innerText = "Processing...";
+                            sendChat(msg);
+                            document.getElementById('chat-input').value = '';
+                        } else {
+                            document.getElementById('voice-status-text').innerText = "Tap mic to speak";
+                            document.getElementById('voice-transcript').innerText = "Didn't catch that. Tap the mic to try again.";
+                        }
                     }
                 };
             }
@@ -567,18 +589,11 @@
         window.toggleVoiceMic = () => {
             window.speechSynthesis.cancel();
             if(!voiceRec) return;
+            document.getElementById('chat-input').value = '';
+            document.getElementById('voice-transcript').innerText = 'Listening...';
             document.getElementById('voice-status-text').innerText = "Listening...";
             document.getElementById('voice-orb-element').classList.add('orb-active');
-            voiceRec.start();
-        };
-
-        // Fully gives control to the user to send their typed/spoken response to the AI manually
-        window.sendChatFromVoice = () => {
-            if(voiceRec) voiceRec.stop();
-            document.getElementById('voice-overlay').classList.add('hidden');
-            document.getElementById('voice-overlay').classList.remove('flex');
-            document.getElementById('voice-orb-element').classList.remove('orb-active');
-            sendChat();
+            try { voiceRec.start(); } catch(e) {}
         };
 
         window.exitVoiceMode = () => {
@@ -587,7 +602,9 @@
             document.getElementById('voice-overlay').classList.add('hidden');
             document.getElementById('voice-overlay').classList.remove('flex');
             document.getElementById('voice-orb-element').classList.remove('orb-active');
-            if(voiceRec) voiceRec.stop();
+            if(voiceRec) {
+                try { voiceRec.stop(); } catch(e) {}
+            }
         };
 
         // ================= DATA FETCHING / FORMS =================
@@ -634,7 +651,6 @@
                         let statColor = rep.status === 'Processing' ? 'bg-yellow-50 text-yellow-600' : (rep.status === 'Failed' ? 'bg-red-50 text-red-600' : 'bg-green-50 text-green-600');
                         let safeId = rep.id ? `'${rep.id}'` : `null`;
 
-                        // CHANGED: Logic to add the drive view icon OR a disabled icon
                         let driveBtn = rep.drive_url 
                             ? `<a href="${rep.drive_url}" target="_blank" class="text-blue-500 hover:text-blue-700 mr-4 transition" title="View Document">
                                  <svg class="w-5 h-5 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
@@ -784,7 +800,6 @@
                 
                 fetchReports(); 
                 
-                // NOTIFICATION TRIGGERS HERE INSTEAD OF THE LARGE ALERT TEXT
                 addNotification(
                     "Upload Complete", 
                     "Your report has been uploaded and analyzed. You can now chat with the AI to get a brief knowledge about it.", 
