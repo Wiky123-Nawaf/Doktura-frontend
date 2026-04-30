@@ -250,7 +250,6 @@
                 <form id="booking-online-section" onsubmit="submitBooking(event)" class="block">
                     <div class="space-y-6">
                         <div class="grid grid-cols-2 gap-4">
-                            <!-- Name and Email are now fully editable -->
                             <div><label class="block text-xs font-semibold text-gray-500 mb-1">Name</label><input type="text" id="book-name" required class="w-full border border-gray-300 rounded-lg px-4 py-3 text-sm bg-white focus:ring-2 focus:ring-[#0066FF]"></div>
                             <div><label class="block text-xs font-semibold text-gray-500 mb-1">Email</label><input type="email" id="book-email" required class="w-full border border-gray-300 rounded-lg px-4 py-3 text-sm bg-white focus:ring-2 focus:ring-[#0066FF]"></div>
                         </div>
@@ -302,7 +301,7 @@
                             <svg class="w-4 h-4 mr-2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12.01 2.502c-5.247 0-9.505 4.258-9.505 9.505s4.258 9.505 9.505 9.505 9.505-4.258 9.505-9.505-4.258-9.505-9.505-9.505zm0 17.509c-4.414 0-8.004-3.59-8.004-8.004s3.59-8.004 8.004-8.004 8.004 3.59 8.004 8.004-3.59 8.004-8.004 8.004zm-1.51-12.006l-4.503 7.82 1.501 2.602 4.503-7.82-1.501-2.602zm4.503.01l-1.501 2.602 3.003 5.218 1.501-2.602-3.003-5.218zm-3.003 6.096l-3.003 5.218h6.006l-3.003-5.218z" fill="currentColor"/></svg>
                             Link Drive
                         </button>
-                        <button onclick="document.getElementById('upload-modal').classList.remove('hidden')" class="bg-[#f59e0b] hover:bg-yellow-600 text-white text-sm font-bold py-2.5 px-6 rounded-lg shadow-sm transition">Add Document</button>
+                        <button onclick="openUploadModal()" class="bg-[#f59e0b] hover:bg-yellow-600 text-white text-sm font-bold py-2.5 px-6 rounded-lg shadow-sm transition">Add Document</button>
                     </div>
                 </div>
 
@@ -311,7 +310,7 @@
                     <svg class="w-20 h-20 mb-6 text-gray-300 opacity-60" fill="currentColor" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6zm-1 1.5L18.5 9H13V3.5zM18 20H6V4h5v6h6v10z"/></svg>
                     <h3 class="text-lg font-extrabold text-gray-900 mb-1">No medical documents found</h3>
                     <p class="text-gray-500 text-sm mb-8">Start by uploading your first medical document.</p>
-                    <button onclick="document.getElementById('upload-modal').classList.remove('hidden')" class="bg-[#f59e0b] hover:bg-yellow-600 text-white font-bold py-2.5 px-8 rounded-lg shadow-sm transition">Add Document</button>
+                    <button onclick="openUploadModal()" class="bg-[#f59e0b] hover:bg-yellow-600 text-white font-bold py-2.5 px-8 rounded-lg shadow-sm transition">Add Document</button>
                 </div>
 
                 <!-- Reports Table List -->
@@ -336,7 +335,7 @@
                 <div class="bg-white rounded-3xl p-8 max-w-lg w-full relative shadow-2xl">
                     <div class="flex justify-between items-center mb-6">
                         <h2 class="text-xl font-bold text-gray-900">Upload Your Medical Reports</h2>
-                        <button onclick="document.getElementById('upload-modal').classList.add('hidden')" class="text-gray-400 hover:text-gray-800 text-xl font-bold transition">✕</button>
+                        <button onclick="closeUploadModal()" class="text-gray-400 hover:text-gray-800 text-xl font-bold transition">✕</button>
                     </div>
                     <form onsubmit="uploadReport(event)" class="space-y-4 text-left">
                         <div><label class="block text-xs font-bold text-gray-600 mb-1">Report Name</label><input type="text" id="rep-name" required class="w-full border border-gray-300 rounded-lg p-3 text-sm focus:ring-2 focus:ring-[#0066FF]" placeholder="e.g Blood Test"></div>
@@ -350,7 +349,7 @@
                             <p class="text-xs text-gray-400 mt-1">Format is JPG, PNG or PDF</p>
                         </div>
                         <div class="flex space-x-3 pt-4">
-                            <button type="button" onclick="document.getElementById('upload-modal').classList.add('hidden')" class="flex-1 bg-white border border-gray-300 hover:bg-gray-50 transition text-gray-700 font-bold py-3 rounded-lg text-sm">Cancel</button>
+                            <button type="button" onclick="closeUploadModal()" class="flex-1 bg-white border border-gray-300 hover:bg-gray-50 transition text-gray-700 font-bold py-3 rounded-lg text-sm">Cancel</button>
                             <button type="submit" id="upload-btn" class="flex-1 bg-[#0066FF] hover:bg-blue-700 transition text-white font-bold py-3 rounded-lg shadow-sm text-sm">Add</button>
                         </div>
                     </form>
@@ -385,7 +384,7 @@
         const app = initializeApp({ apiKey: "AIzaSyCrx9BPS8ficDzgVZMbJIb4b3PQ9IqEHLw", authDomain: "doktura-ai-907d8.firebaseapp.com", projectId: "doktura-ai-907d8" });
         const auth = getAuth(app); 
         
-        window.userData = { name: "", phone: "", photo_url: "", is_subscribed: false };
+        window.userData = { name: "", phone: "", photo_url: "", is_subscribed: false, is_drive_linked: false };
         window.currentUser = null;
 
         onAuthStateChanged(auth, async (user) => {
@@ -721,6 +720,26 @@
             if(voiceRec) { try { voiceRec.stop(); } catch(e) {} }
         };
 
+        // ================= UPLOAD MODAL LOGIC =================
+        window.openUploadModal = () => {
+            // Force user to link Google Drive before uploading
+            if (!window.userData.is_drive_linked && !window.userData.drive_linked) {
+                showInlineMessage("Please link your Google Drive first to securely upload and store medical documents.", "error");
+                return;
+            }
+            
+            const modal = document.getElementById('upload-modal');
+            modal.classList.remove('hidden');
+            // 'flex' is strictly required for items-center and justify-center to properly center the modal
+            modal.classList.add('flex'); 
+        };
+
+        window.closeUploadModal = () => {
+            const modal = document.getElementById('upload-modal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        };
+
         // ================= BOOKING TAB TOGGLE LOGIC =================
         window.toggleBookingType = (type) => {
             const onlineSection = document.getElementById('booking-online-section');
@@ -894,7 +913,7 @@
                 const r = await fetch(API_BASE+'/api/upload_medical_report', { method:'POST', headers: {'Authorization': `Bearer ${await window.currentUser.getIdToken()}`}, body:fd }); 
                 const d = await r.json(); 
                 
-                document.getElementById('upload-modal').classList.add('hidden'); 
+                closeUploadModal();
                 document.getElementById('file-name-display').innerText = "Click to upload or drag and drop";
                 document.getElementById('file-name-display').classList.remove('text-[#0066FF]');
                 e.target.reset(); 
