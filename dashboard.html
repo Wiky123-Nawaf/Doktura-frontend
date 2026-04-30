@@ -884,13 +884,20 @@
                     body:JSON.stringify({ doctor_id: document.getElementById('book-doctor').value, visit_type: "online", preferred_datetime: document.getElementById('book-time').value }) 
                 });
                 const d = await r.json(); 
-                if(d.stripe_url) window.location.href = d.stripe_url; 
-                else { 
+                
+                if (d.error) {
+                    // Show the specific availability error from the backend
+                    showInlineMessage(d.message, "error"); 
+                } else if (d.stripe_url) {
+                    window.location.href = d.stripe_url; 
+                } else { 
                     showInlineMessage("Booking Confirmed Successfully!", "success"); 
                     fetchAppointments(); 
                     switchTab('schedule'); 
                 }
-            } catch(e) { showInlineMessage("Booking Failed. Please try again.", "error"); } 
+            } catch(e) { 
+                showInlineMessage("Booking Failed. Please try again.", "error"); 
+            } 
             btn.innerText = "PAY NOW";
         }
 
