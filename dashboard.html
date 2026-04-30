@@ -75,7 +75,7 @@
             <p class="px-6 py-2 text-[10px] font-bold text-gray-400 uppercase tracking-widest">Main Menu</p>
             <nav class="space-y-1 mt-1">
                 <button onclick="switchTab('chat')" id="btn-chat" class="nav-btn w-full flex items-center px-6 py-3 nav-active transition">
-                    <span class="w-5 h-5 mr-3 flex items-center justify-center bg-red-100 text-red-500 rounded-full text-[10px] font-bold shrink-0">AI</span>
+                    <img src="https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/Vector%20(1).png?download=true" class="w-8 h-8 mr-2 rounded-full border border-gray-200 bg-white object-contain p-1 shrink-0" alt="AI">
                     <span class="text-sm">AI Doctor</span>
                 </button>
                 <button onclick="switchTab('book')" id="btn-book" class="nav-btn w-full flex items-center px-6 py-3 nav-inactive transition">
@@ -632,6 +632,19 @@
                     data.reports.forEach(rep => {
                         let statColor = rep.status === 'Processing' ? 'bg-yellow-50 text-yellow-600' : 'bg-green-50 text-green-600';
                         let safeId = rep.id ? `'${rep.id}'` : `null`;
+
+                        // Add View Drive Link Icon if drive_url is populated by Python backend
+                        let driveBtn = rep.drive_url 
+                            ? `<a href="${rep.drive_url}" target="_blank" title="View Document" class="text-blue-500 hover:text-blue-700 font-bold transition mr-4 inline-flex items-center justify-center">
+                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
+                               </a>` 
+                            : `<span class="text-gray-300 mr-4 inline-flex items-center justify-center" title="No view available">
+                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"></path></svg>
+                               </span>`;
+
+                        let deleteBtn = `<button onclick="deleteReport(${safeId})" title="Delete Document" class="text-gray-400 hover:text-red-500 font-bold transition inline-flex items-center justify-center">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                        </button>`;
                         
                         tbody.innerHTML += `
                             <tr class="border-b border-gray-100 hover:bg-gray-50 transition">
@@ -639,10 +652,9 @@
                                 <td class="py-4 px-6 text-gray-600">${rep.type}</td>
                                 <td class="py-4 px-6 text-gray-600">${rep.date}</td>
                                 <td class="py-4 px-6"><span class="${statColor} px-2.5 py-1 rounded text-[10px] font-bold">${rep.status}</span></td>
-                                <td class="py-4 px-6 text-center">
-                                    <button onclick="deleteReport(${safeId})" class="text-gray-400 hover:text-red-500 font-bold transition">
-                                        <svg class="w-5 h-5 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
-                                    </button>
+                                <td class="py-4 px-6 text-center whitespace-nowrap">
+                                    ${driveBtn}
+                                    ${deleteBtn}
                                 </td>
                             </tr>
                         `;
