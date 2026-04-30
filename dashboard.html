@@ -21,10 +21,25 @@
         .typing-dot:nth-child(3) { animation-delay: 0.4s; }
         @keyframes bounce { 0%, 80%, 100% { transform: translateY(0); } 40% { transform: translateY(-6px); } }
 
-        /* Voice Orb Pulse - Bluish */
-        @keyframes pulseGlow { 0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(0, 102, 255, 0.7); } 70% { transform: scale(1.05); box-shadow: 0 0 0 30px rgba(0, 102, 255, 0); } 100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(0, 102, 255, 0); } }
-        .voice-orb { width: 160px; height: 160px; background: radial-gradient(circle at 30% 30%, #93c5fd, #0066FF); border-radius: 50%; box-shadow: 0 10px 25px rgba(0,102,255,0.3); transition: transform 0.3s; }
-        .orb-active { animation: pulseGlow 1.5s infinite; }
+        /* Smooth Voice Orb Animations */
+        @keyframes pulseGlowBlue { 0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(0, 102, 255, 0.4); } 50% { transform: scale(1.03); box-shadow: 0 0 0 25px rgba(0, 102, 255, 0); } }
+        @keyframes pulseGlowRed { 0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.5); } 50% { transform: scale(1.05); box-shadow: 0 0 0 30px rgba(239, 68, 68, 0); } }
+        @keyframes pulseGlowPurple { 0%, 100% { transform: scale(1); box-shadow: 0 0 15px rgba(168, 85, 247, 0.5); opacity: 0.95;} 50% { transform: scale(1.02); box-shadow: 0 0 35px rgba(168, 85, 247, 0.8); opacity: 1;} }
+        @keyframes pulseGlowGreen { 0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4); } 50% { transform: scale(1.04); box-shadow: 0 0 0 25px rgba(16, 185, 129, 0); } }
+
+        .orb-pulse-blue { animation: pulseGlowBlue 2.5s infinite ease-in-out; }
+        .orb-pulse-red { animation: pulseGlowRed 1.2s infinite ease-in-out; }
+        .orb-pulse-purple { animation: pulseGlowPurple 1.5s infinite ease-in-out; }
+        .orb-pulse-green { animation: pulseGlowGreen 1.8s infinite ease-in-out; }
+
+        /* Speaking Soundwaves */
+        .bar { width: 6px; height: 10px; background: white; border-radius: 4px; animation: sound 0.5s -0.1s linear infinite alternate; margin: 0 4px; }
+        .bar:nth-child(1) { animation-delay: -0.2s; }
+        .bar:nth-child(2) { animation-delay: -0.4s; }
+        .bar:nth-child(3) { animation-delay: -0.6s; }
+        .bar:nth-child(4) { animation-delay: -0.8s; }
+        .bar:nth-child(5) { animation-delay: -1.0s; }
+        @keyframes sound { 0% { height: 10px; } 100% { height: 45px; } }
 
         /* View Switching Logic */
         .app-view { display: none; }
@@ -160,20 +175,48 @@
             
             <!-- Voice View Overlay -->
             <div id="voice-overlay" class="absolute inset-0 bg-[#f8fafc]/95 z-[50] hidden flex-col items-center justify-center backdrop-blur-sm">
-                <div id="voice-orb-element" class="voice-orb mb-8 flex items-center justify-center text-white"></div>
-                <h3 id="voice-status-text" class="text-3xl font-bold text-gray-900 mb-6">Tap mic to speak</h3>
-                <button onclick="toggleVoiceMic()" id="voice-action-btn" class="bg-[#0066FF] text-white rounded-full p-6 shadow-xl hover:bg-blue-700 transition mb-6"><svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"></path></svg></button>
-                <p id="voice-transcript" class="text-gray-600 text-lg max-w-2xl text-center h-24 italic overflow-y-auto w-full px-6">Tap to start talking...</p>
                 
-                <div class="mt-8 flex justify-center w-full">
-                    <button onclick="exitVoiceMode()" class="px-6 py-3 rounded-xl font-bold text-gray-500 bg-gray-200 hover:bg-gray-300 transition uppercase text-sm">Cancel</button>
+                <!-- Central Interactive Orb -->
+                <button onclick="toggleVoiceMic()" id="voice-orb-btn" class="relative w-44 h-44 rounded-full flex items-center justify-center mb-8 transition-all duration-300 shadow-2xl focus:outline-none bg-gradient-to-br from-blue-400 to-[#0066FF] hover:scale-105 orb-pulse-blue">
+                    
+                    <!-- IDLE: Mic Icon -->
+                    <svg id="orb-icon-mic" class="w-16 h-16 text-white transition-opacity duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"></path>
+                    </svg>
+                    
+                    <!-- RECORDING: Stop Icon -->
+                    <svg id="orb-icon-stop" class="w-14 h-14 text-white hidden transition-opacity duration-200" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M6 6h12v12H6z"></path>
+                    </svg>
+
+                    <!-- PROCESSING: Loading Spinner -->
+                    <svg id="orb-icon-processing" class="w-16 h-16 text-white hidden animate-spin transition-opacity duration-200" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+
+                    <!-- SPEAKING: Soundwaves -->
+                    <div id="orb-icon-speaking" class="hidden flex items-center justify-center h-16 transition-opacity duration-200">
+                        <div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div>
+                    </div>
+
+                </button>
+
+                <!-- Status & Text Transcript -->
+                <h3 id="voice-status-text" class="text-3xl font-bold text-gray-900 mb-4 transition-colors">Tap mic to speak</h3>
+                <div class="h-28 w-full max-w-2xl px-6 flex items-start justify-center overflow-y-auto mb-2">
+                    <p id="voice-transcript" class="text-gray-600 text-xl text-center italic leading-relaxed transition-opacity">Tap to start talking...</p>
+                </div>
+                
+                <div class="mt-4 flex justify-center w-full">
+                    <button onclick="exitVoiceMode()" class="px-8 py-3.5 rounded-xl font-bold text-gray-500 bg-gray-200 hover:bg-gray-300 transition uppercase text-sm shadow-sm">Close Voice</button>
                 </div>
             </div>
             
             <!-- Input Area -->
             <div class="w-full shrink-0 bg-gradient-to-t from-[#f8fafc] via-[#f8fafc] to-transparent pt-4 pb-8 px-8 flex justify-center z-40">
                 <div class="max-w-4xl w-full bg-white border border-gray-200 rounded-xl shadow-[0_2px_15px_rgba(0,0,0,0.06)] p-2 flex items-center">
-                    <button onclick="enterVoiceMode()" class="p-3 text-gray-400 hover:text-gray-800 transition shrink-0"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"></path></svg></button>
+                    <button onclick="enterVoiceMode()" class="p-3 text-gray-400 hover:text-blue-500 transition shrink-0"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"></path></svg></button>
                     <input type="text" id="chat-input" class="flex-1 bg-transparent px-3 py-2 focus:outline-none text-gray-800 text-sm" placeholder="Type a message or tap the mic for voice mode..." onkeypress="if(event.key === 'Enter') sendChat()">
                     <button onclick="sendChat()" class="bg-[#d9381e] hover:bg-red-700 text-white px-6 py-2.5 rounded-lg font-bold text-sm shadow-sm transition shrink-0 flex items-center">
                         <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path></svg> Send
@@ -333,7 +376,6 @@
                 
                 document.getElementById('appBody').classList.remove('hidden');
                 
-                // Populate all fields across the app
                 document.getElementById('userNameSidebar').innerText = window.userData.name;
                 document.getElementById('userNameHeader').innerText = window.userData.name; 
                 document.getElementById('set-name').value = window.userData.name; 
@@ -347,14 +389,13 @@
                 document.getElementById('set-avatar').src = avatar; 
                 window.currentAvatar = avatar;
 
-                // Load last tab used from Local Storage
                 const lastTab = localStorage.getItem('doktura_active_tab') || 'chat';
                 switchTab(lastTab);
                 
                 loadSessions(); 
                 fetchDoctors(); 
                 fetchAppointments(); 
-                fetchReports(); // Load Reports into table
+                fetchReports(); 
             } catch(e) { 
                 console.error("DASHBOARD STARTUP ERROR:", e); 
                 document.getElementById('appBody').classList.remove('hidden'); 
@@ -369,11 +410,10 @@
         window.currentSessionId = null;
         let voiceRec = null; 
         let isVoiceActive = false;
-        let isRecording = false; // Tracks if we are actively listening for user input
+        let isRecording = false; 
         window.pendingDeleteId = null;
         const chatLogoUrl = "https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/Vector%20(1).png?download=true";
 
-        // ================= UI MESSAGING ENGINE =================
         window.showInlineMessage = (msg, type = 'error') => {
             const container = document.getElementById('global-message-container');
             const box = document.getElementById('global-message-box');
@@ -402,12 +442,7 @@
             const list = document.getElementById('notif-list');
             if(list.innerText.includes('No new notifications')) list.innerHTML = '';
             
-            const html = `
-                <div onclick="${action}; toggleNotifications(); document.getElementById('notif-badge').classList.add('hidden');" class="p-3 bg-white hover:bg-blue-50 rounded-lg cursor-pointer transition mb-2 border border-gray-100 hover:border-blue-200 shadow-sm">
-                    <p class="text-sm font-bold text-gray-800 mb-1">${title}</p>
-                    <p class="text-xs text-gray-500 leading-relaxed">${msg}</p>
-                </div>
-            `;
+            const html = `<div onclick="${action}; toggleNotifications(); document.getElementById('notif-badge').classList.add('hidden');" class="p-3 bg-white hover:bg-blue-50 rounded-lg cursor-pointer transition mb-2 border border-gray-100 hover:border-blue-200 shadow-sm"><p class="text-sm font-bold text-gray-800 mb-1">${title}</p><p class="text-xs text-gray-500 leading-relaxed">${msg}</p></div>`;
             list.insertAdjacentHTML('afterbegin', html);
         };
 
@@ -453,11 +488,7 @@
             document.getElementById('header-title').innerText = headerName;
         }
 
-        window.startNewSession = () => { 
-            window.currentSessionId = Date.now().toString(); 
-            loadSessions(); 
-            switchTab('chat'); 
-        }
+        window.startNewSession = () => { window.currentSessionId = Date.now().toString(); loadSessions(); switchTab('chat'); }
 
         async function loadSessions() {
             const r = await fetch(API_BASE+'/api/sessions',{method:'POST',headers:await getAuthHeaders(),body:JSON.stringify({user_id:window.currentUser.uid})});
@@ -486,14 +517,49 @@
                 data.history.forEach(m => {
                     if(m.role === 'system') return;
                     let isUser = m.role === 'user';
-                    if(isUser) {
-                        el.innerHTML += `<div class="flex flex-col items-end mb-6 w-full"><div class="flex items-center mb-1"><span class="text-xs text-gray-500 mr-2">${window.userData.name} (You)</span><img src="${window.currentAvatar}" class="w-6 h-6 rounded-full object-cover"></div><div class="bg-[#0066FF] text-white px-5 py-3.5 rounded-2xl rounded-tr-sm text-sm shadow-sm leading-relaxed">${m.content}</div></div>`;
-                    } else {
-                        el.innerHTML += `<div class="flex flex-col items-start mb-6 w-full"><div class="flex items-center mb-1"><img src="${chatLogoUrl}" class="w-8 h-8 rounded-full mr-2 border border-gray-200 bg-white object-contain"><span class="text-xs font-bold text-gray-800">doktura.ai</span></div><div class="bg-white border shadow-sm px-5 py-4 rounded-2xl rounded-tl-sm text-sm text-gray-700 max-w-[85%] leading-relaxed">${m.content.replace(/\n/g,'<br>')}</div></div>`;
-                    }
+                    if(isUser) el.innerHTML += `<div class="flex flex-col items-end mb-6 w-full"><div class="flex items-center mb-1"><span class="text-xs text-gray-500 mr-2">${window.userData.name} (You)</span><img src="${window.currentAvatar}" class="w-6 h-6 rounded-full object-cover"></div><div class="bg-[#0066FF] text-white px-5 py-3.5 rounded-2xl rounded-tr-sm text-sm shadow-sm leading-relaxed">${m.content}</div></div>`;
+                    else el.innerHTML += `<div class="flex flex-col items-start mb-6 w-full"><div class="flex items-center mb-1"><img src="${chatLogoUrl}" class="w-8 h-8 rounded-full mr-2 border border-gray-200 bg-white object-contain"><span class="text-xs font-bold text-gray-800">doktura.ai</span></div><div class="bg-white border shadow-sm px-5 py-4 rounded-2xl rounded-tl-sm text-sm text-gray-700 max-w-[85%] leading-relaxed">${m.content.replace(/\n/g,'<br>')}</div></div>`;
                 });
             }
             el.scrollTo(0, el.scrollHeight);
+        }
+
+        // ================= NEW SMOOTH VOICE UI LOGIC =================
+        function setVoiceState(state) {
+            const btn = document.getElementById('voice-orb-btn');
+            const statusText = document.getElementById('voice-status-text');
+            const iMic = document.getElementById('orb-icon-mic');
+            const iStop = document.getElementById('orb-icon-stop');
+            const iProc = document.getElementById('orb-icon-processing');
+            const iSpeak = document.getElementById('orb-icon-speaking');
+            
+            // Clean Reset
+            btn.className = "relative w-44 h-44 rounded-full flex items-center justify-center mb-8 transition-all duration-300 shadow-2xl focus:outline-none";
+            [iMic, iStop, iProc, iSpeak].forEach(el => el.classList.add('hidden'));
+            btn.disabled = false;
+            
+            if (state === 'IDLE') {
+                btn.classList.add('bg-gradient-to-br', 'from-blue-400', 'to-[#0066FF]', 'hover:scale-105', 'orb-pulse-blue');
+                statusText.innerText = "Tap mic to speak";
+                iMic.classList.remove('hidden');
+            } 
+            else if (state === 'LISTENING') {
+                btn.classList.add('bg-gradient-to-br', 'from-red-400', 'to-red-600', 'hover:scale-105', 'orb-pulse-red');
+                statusText.innerText = "Listening... Tap to stop";
+                iStop.classList.remove('hidden');
+            } 
+            else if (state === 'PROCESSING') {
+                // Locks the UI completely to show it is waiting for response
+                btn.classList.add('bg-gradient-to-br', 'from-purple-400', 'to-purple-600', 'orb-pulse-purple', 'cursor-wait');
+                btn.disabled = true; 
+                statusText.innerText = "Thinking...";
+                iProc.classList.remove('hidden');
+            } 
+            else if (state === 'SPEAKING') {
+                btn.classList.add('bg-gradient-to-br', 'from-green-400', 'to-teal-500', 'hover:scale-105', 'orb-pulse-green');
+                statusText.innerText = "AI is speaking...";
+                iSpeak.classList.remove('hidden');
+            }
         }
 
         window.sendChat = async (voiceInput = null) => {
@@ -503,7 +569,6 @@
             input.value = '';
             
             const history = document.getElementById('chat-history');
-            
             history.innerHTML += `<div class="flex flex-col items-end mb-6 w-full"><div class="flex items-center mb-1"><span class="text-xs text-gray-500 mr-2">${window.userData.name} (You)</span><img src="${window.currentAvatar}" class="w-6 h-6 rounded-full object-cover"></div><div class="bg-[#0066FF] text-white px-5 py-3.5 rounded-2xl rounded-tr-sm text-sm shadow-sm leading-relaxed">${msg}</div></div>`;
             history.scrollTo(0, history.scrollHeight);
 
@@ -511,32 +576,40 @@
             history.innerHTML += `<div id="${typeId}" class="flex flex-col items-start mb-6 w-full"><div class="flex items-center mb-1"><img src="${chatLogoUrl}" class="w-8 h-8 rounded-full mr-2 border border-gray-200 bg-white object-contain"><span class="text-xs font-bold text-gray-800">doktura.ai</span></div><div class="bg-white border shadow-sm px-5 py-4 rounded-2xl rounded-tl-sm flex space-x-1 items-center"><div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div></div></div>`;
             history.scrollTo(0, history.scrollHeight);
 
-            const r = await fetch(API_BASE+'/api/chat',{method:'POST',headers:await getAuthHeaders(),body:JSON.stringify({message:msg, session_id:window.currentSessionId || "default", user_name:window.userData.name})});
-            const data = await r.json();
-            
-            const tEl = document.getElementById(typeId);
-            if(tEl) tEl.remove();
+            // Ensure the PROCESSING state is immediately shown before awaiting the fetch
+            if (isVoiceActive) setVoiceState('PROCESSING');
 
-            history.innerHTML += `<div class="flex flex-col items-start mb-6 w-full"><div class="flex items-center mb-1"><img src="${chatLogoUrl}" class="w-8 h-8 rounded-full mr-2 border border-gray-200 bg-white object-contain"><span class="text-xs font-bold text-gray-800">doktura.ai</span></div><div class="bg-white border shadow-sm px-5 py-4 rounded-2xl rounded-tl-sm text-sm text-gray-700 max-w-[85%] leading-relaxed">${data.reply.replace(/\n/g,'<br>')}</div></div>`;
-            history.scrollTo(0, history.scrollHeight);
-            
-            if(isVoiceActive) speakOut(data.reply);
+            try {
+                const r = await fetch(API_BASE+'/api/chat',{method:'POST',headers:await getAuthHeaders(),body:JSON.stringify({message:msg, session_id:window.currentSessionId || "default", user_name:window.userData.name})});
+                const data = await r.json();
+                
+                const tEl = document.getElementById(typeId);
+                if(tEl) tEl.remove();
+
+                history.innerHTML += `<div class="flex flex-col items-start mb-6 w-full"><div class="flex items-center mb-1"><img src="${chatLogoUrl}" class="w-8 h-8 rounded-full mr-2 border border-gray-200 bg-white object-contain"><span class="text-xs font-bold text-gray-800">doktura.ai</span></div><div class="bg-white border shadow-sm px-5 py-4 rounded-2xl rounded-tl-sm text-sm text-gray-700 max-w-[85%] leading-relaxed">${data.reply.replace(/\n/g,'<br>')}</div></div>`;
+                history.scrollTo(0, history.scrollHeight);
+                
+                // Triggers AI Voice Output, which will automatically shift the state to SPEAKING
+                if(isVoiceActive) speakOut(data.reply);
+            } catch(e) {
+                if(isVoiceActive) {
+                    setVoiceState('IDLE');
+                    document.getElementById('voice-transcript').innerText = "Network Error. Please try again.";
+                }
+            }
         };
 
-        // ================= VOICE API ENGINE =================
         function speakOut(text) {
             window.speechSynthesis.cancel();
             const utterance = new SpeechSynthesisUtterance(text);
             
-            if (isVoiceActive) {
-                document.getElementById('voice-status-text').innerText = "AI is speaking...";
-                document.getElementById('voice-orb-element').classList.add('orb-active');
-            }
+            // Advance state to speaking as soon as TTS is ready to fire
+            if (isVoiceActive) setVoiceState('SPEAKING'); 
 
             utterance.onend = () => { 
-                if (isVoiceActive) {
-                    document.getElementById('voice-status-text').innerText = "Tap mic to speak";
-                    document.getElementById('voice-orb-element').classList.remove('orb-active');
+                if (isVoiceActive && !isRecording) {
+                    setVoiceState('IDLE');
+                    document.getElementById('voice-transcript').innerText = "Tap mic to ask another question.";
                 }
             }; 
             window.speechSynthesis.speak(utterance);
@@ -546,9 +619,9 @@
             document.getElementById('voice-overlay').classList.remove('hidden');
             document.getElementById('voice-overlay').classList.add('flex');
             document.getElementById('voice-transcript').innerText = "Ready to listen... Press the mic to begin.";
-            document.getElementById('voice-status-text').innerText = "Tap mic to speak";
             isVoiceActive = true;
             isRecording = false;
+            setVoiceState('IDLE');
             
             if(!voiceRec) {
                 const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -558,7 +631,6 @@
                     return null; 
                 }
                 voiceRec = new SR();
-                // Ensure continuous listening so it survives natural speaking pauses
                 voiceRec.continuous = true; 
                 voiceRec.interimResults = true; 
                 
@@ -570,42 +642,42 @@
                 };
                 
                 voiceRec.onend = () => {
-                    // Browsers sometimes stop recognition automatically after ~15s of silence.
-                    // If we are still supposed to be recording (user hasn't clicked mic to stop), we force it to restart.
-                    if (isRecording) {
-                        try { voiceRec.start(); } catch(e) {}
-                    }
+                    if (isRecording) { try { voiceRec.start(); } catch(e) {} }
                 };
             }
         };
 
         window.toggleVoiceMic = () => {
-            window.speechSynthesis.cancel();
+            // Give user control to interrupt the AI if it is speaking
+            if(window.speechSynthesis.speaking) {
+                window.speechSynthesis.cancel();
+                setVoiceState('IDLE');
+                return;
+            }
+
             if(!voiceRec) return;
 
             if (isRecording) {
-                // User clicked mic to STOP and process the text
+                // User clicked STOP manually
                 isRecording = false; 
                 try { voiceRec.stop(); } catch(e) {}
                 
-                document.getElementById('voice-orb-element').classList.remove('orb-active');
-                
                 let msg = document.getElementById('chat-input').value.trim();
                 if (msg) {
-                    document.getElementById('voice-status-text').innerText = "Processing...";
+                    // IMMEDIATELY show processing so they know it stopped listening and is thinking
+                    setVoiceState('PROCESSING'); 
                     sendChat(msg);
                     document.getElementById('chat-input').value = '';
                 } else {
-                    document.getElementById('voice-status-text').innerText = "Tap mic to speak";
+                    setVoiceState('IDLE');
                     document.getElementById('voice-transcript').innerText = "Didn't catch that. Tap the mic to try again.";
                 }
             } else {
-                // User clicked mic to START listening
+                // User clicked START to speak
                 isRecording = true;
                 document.getElementById('chat-input').value = '';
                 document.getElementById('voice-transcript').innerText = 'Listening...';
-                document.getElementById('voice-status-text').innerText = "Listening...";
-                document.getElementById('voice-orb-element').classList.add('orb-active');
+                setVoiceState('LISTENING');
                 try { voiceRec.start(); } catch(e) {}
             }
         };
@@ -616,10 +688,8 @@
             window.speechSynthesis.cancel();
             document.getElementById('voice-overlay').classList.add('hidden');
             document.getElementById('voice-overlay').classList.remove('flex');
-            document.getElementById('voice-orb-element').classList.remove('orb-active');
-            if(voiceRec) {
-                try { voiceRec.stop(); } catch(e) {}
-            }
+            setVoiceState('IDLE');
+            if(voiceRec) { try { voiceRec.stop(); } catch(e) {} }
         };
 
         // ================= DATA FETCHING / FORMS =================
@@ -674,20 +744,7 @@
                                  <svg class="w-5 h-5 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"></path></svg>
                                </span>`;
                         
-                        tbody.innerHTML += `
-                            <tr class="border-b border-gray-100 hover:bg-gray-50 transition">
-                                <td class="py-4 px-6 font-bold text-gray-900">${rep.name}</td>
-                                <td class="py-4 px-6 text-gray-600">${rep.type}</td>
-                                <td class="py-4 px-6 text-gray-600">${rep.date}</td>
-                                <td class="py-4 px-6"><span class="${statColor} px-2.5 py-1 rounded text-[10px] font-bold">${rep.status}</span></td>
-                                <td class="py-4 px-6 flex justify-center items-center">
-                                    ${driveBtn}
-                                    <button onclick="deleteReport(${safeId})" class="text-gray-400 hover:text-red-500 font-bold transition" title="Delete">
-                                        <svg class="w-5 h-5 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
-                                    </button>
-                                </td>
-                            </tr>
-                        `;
+                        tbody.innerHTML += `<tr class="border-b border-gray-100 hover:bg-gray-50 transition"><td class="py-4 px-6 font-bold text-gray-900">${rep.name}</td><td class="py-4 px-6 text-gray-600">${rep.type}</td><td class="py-4 px-6 text-gray-600">${rep.date}</td><td class="py-4 px-6"><span class="${statColor} px-2.5 py-1 rounded text-[10px] font-bold">${rep.status}</span></td><td class="py-4 px-6 flex justify-center items-center">${driveBtn}<button onclick="deleteReport(${safeId})" class="text-gray-400 hover:text-red-500 font-bold transition" title="Delete"><svg class="w-5 h-5 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg></button></td></tr>`;
                     });
                 } else {
                     document.getElementById('reports-empty').classList.remove('hidden');
@@ -721,9 +778,7 @@
                 if(r.ok) { 
                     showInlineMessage("Report deleted successfully.", "success");
                     fetchReports(); 
-                } else {
-                    showInlineMessage("Failed to delete report.", "error");
-                }
+                } else { showInlineMessage("Failed to delete report.", "error"); }
             } catch(e) { showInlineMessage("An error occurred while deleting the report.", "error"); }
             btn.innerText = "Delete";
             closeConfirmModal();
@@ -744,9 +799,7 @@
                 if(d.doctor_id) {
                     document.getElementById('book-doctor').value = d.doctor_id; 
                     showInlineMessage("Doctor auto-assigned based on your symptoms.", "success");
-                } else {
-                    showInlineMessage(d.message || "Failed to find a matching doctor.", "error"); 
-                }
+                } else { showInlineMessage(d.message || "Failed to find a matching doctor.", "error"); }
             } catch(e) { showInlineMessage("Failed to connect to AI suggestion.", "error"); }
         }
 
@@ -758,11 +811,7 @@
                 const r = await fetch(API_BASE+'/api/book_appointment', { 
                     method:'POST', 
                     headers:await getAuthHeaders(), 
-                    body:JSON.stringify({ 
-                        doctor_id: document.getElementById('book-doctor').value, 
-                        visit_type: document.querySelector('input[name="v_type"]:checked').value, 
-                        preferred_datetime: document.getElementById('book-time').value 
-                    }) 
+                    body:JSON.stringify({ doctor_id: document.getElementById('book-doctor').value, visit_type: document.querySelector('input[name="v_type"]:checked').value, preferred_datetime: document.getElementById('book-time').value }) 
                 });
                 const d = await r.json(); 
                 if(d.stripe_url) window.location.href = d.stripe_url; 
@@ -779,11 +828,7 @@
             const btn = document.getElementById('set-btn'); 
             btn.innerText = "Saving...";
             try { 
-                await fetch(`${API_BASE}/api/user/profile`, { 
-                    method: 'POST', 
-                    headers: await getAuthHeaders(), 
-                    body: JSON.stringify({ name: document.getElementById('set-name').value, phone: document.getElementById('set-phone').value }) 
-                }); 
+                await fetch(`${API_BASE}/api/user/profile`, { method: 'POST', headers: await getAuthHeaders(), body: JSON.stringify({ name: document.getElementById('set-name').value, phone: document.getElementById('set-phone').value }) }); 
                 showInlineMessage("Profile successfully updated.", "success");
                 setTimeout(() => window.location.reload(), 1500); 
             } catch(e) { showInlineMessage("Error updating profile. Please try again.", "error"); btn.innerText = "Update Profile"; }
@@ -801,11 +846,7 @@
             fd.append('report_type', document.getElementById('rep-type').value);
 
             try { 
-                const r = await fetch(API_BASE+'/api/upload_medical_report', { 
-                    method:'POST', 
-                    headers: {'Authorization': `Bearer ${await window.currentUser.getIdToken()}`}, 
-                    body:fd 
-                }); 
+                const r = await fetch(API_BASE+'/api/upload_medical_report', { method:'POST', headers: {'Authorization': `Bearer ${await window.currentUser.getIdToken()}`}, body:fd }); 
                 const d = await r.json(); 
                 
                 document.getElementById('upload-modal').classList.add('hidden'); 
@@ -815,14 +856,8 @@
                 
                 fetchReports(); 
                 
-                addNotification(
-                    "Upload Complete", 
-                    "Your report has been uploaded and analyzed. You can now chat with the AI to get a brief knowledge about it.", 
-                    "switchTab('chat')"
-                );
-            } catch(e) { 
-                showInlineMessage("Upload failed. Please check your connection and try again.", "error"); 
-            } 
+                addNotification("Upload Complete", "Your report has been uploaded and analyzed. You can now chat with the AI to get a brief knowledge about it.", "switchTab('chat')");
+            } catch(e) { showInlineMessage("Upload failed. Please check your connection and try again.", "error"); } 
             btn.innerText = "Add";
         }
     </script>
