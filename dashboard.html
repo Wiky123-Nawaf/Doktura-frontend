@@ -384,7 +384,7 @@
         const app = initializeApp({ apiKey: "AIzaSyCrx9BPS8ficDzgVZMbJIb4b3PQ9IqEHLw", authDomain: "doktura-ai-907d8.firebaseapp.com", projectId: "doktura-ai-907d8" });
         const auth = getAuth(app); 
         
-        window.userData = { name: "", phone: "", photo_url: "", is_subscribed: false, is_drive_linked: false };
+        window.userData = { name: "", phone: "", photo_url: "", is_subscribed: false };
         window.currentUser = null;
 
         onAuthStateChanged(auth, async (user) => {
@@ -720,24 +720,35 @@
             if(voiceRec) { try { voiceRec.stop(); } catch(e) {} }
         };
 
-        // ================= UPLOAD MODAL LOGIC =================
+        // ================= UPLOAD MODAL & DRIVE LINK LOGIC =================
         window.openUploadModal = () => {
-            // Force user to link Google Drive before uploading
-            if (!window.userData.is_drive_linked && !window.userData.drive_linked) {
+            // Check all possible backend variations + local storage optimistic update
+            const isDriveLinked = window.userData.is_drive_linked || 
+                                  window.userData.drive_linked || 
+                                  window.userData.google_drive_linked || 
+                                  localStorage.getItem('doktura_drive_linked') === 'true';
+
+            if (!isDriveLinked) {
                 showInlineMessage("Please link your Google Drive first to securely upload and store medical documents.", "error");
                 return;
             }
             
             const modal = document.getElementById('upload-modal');
             modal.classList.remove('hidden');
-            // 'flex' is strictly required for items-center and justify-center to properly center the modal
-            modal.classList.add('flex'); 
+            modal.classList.add('flex'); // Must use flex to center it properly
         };
 
         window.closeUploadModal = () => {
             const modal = document.getElementById('upload-modal');
             modal.classList.add('hidden');
             modal.classList.remove('flex');
+        };
+
+        window.linkGoogleDrive = () => {
+            if(!window.currentUser) return;
+            // Optimistic Update: Assume they successfully link it so they aren't blocked when returning
+            localStorage.setItem('doktura_drive_linked', 'true');
+            window.location.href = `${API_BASE}/api/auth/google?user_id=${window.currentUser.uid}`;
         };
 
         // ================= BOOKING TAB TOGGLE LOGIC =================
@@ -847,11 +858,6 @@
             btn.innerText = "Delete";
             closeConfirmModal();
         });
-
-        window.linkGoogleDrive = () => {
-            if(!window.currentUser) return;
-            window.location.href = `${API_BASE}/api/auth/google?user_id=${window.currentUser.uid}`;
-        };
 
         window.suggestDoctor = async () => { 
             const sym = document.getElementById('book-symptoms').value; 
