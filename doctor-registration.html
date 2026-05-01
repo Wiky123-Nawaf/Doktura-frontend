@@ -241,9 +241,22 @@
                     <p>We are launching soon! Register your interest early to become part of our network and manage patient consultations seamlessly.</p>
                 </div>
 
-                <!-- Form starts here -->
-                <form action="mailto:dokturamedic@gmail.com" method="post" enctype="text/plain">
+                <!-- FormSubmit Integration -->
+                <!-- enctype="multipart/form-data" is REQUIRED here so the file uploads work correctly -->
+                <form action="https://formsubmit.co/dokturamedic@gmail.com" method="POST" enctype="multipart/form-data">
                     
+                    <!-- Honeypot field to prevent spam bots -->
+                    <input type="text" name="_honey" style="display:none">
+                    
+                    <!-- Disable captcha for seamless experience -->
+                    <input type="hidden" name="_captcha" value="false">
+                    
+                    <!-- Redirect back to homepage after submission -->
+                    <input type="hidden" name="_next" value="https://doktura.ai/">
+                    
+                    <!-- Subject line for the email you receive -->
+                    <input type="hidden" name="_subject" value="New Doctor Early Registration Submission">
+
                     <h3 class="section-title">General Information</h3>
                     
                     <div class="form-row">
@@ -278,14 +291,14 @@
                     <div class="form-group">
                         <label class="form-label">Upload Resume</label>
                         <div class="file-input-wrapper">
-                            <input type="file" id="resume" name="Resume" class="file-input" accept=".pdf,.doc,.docx">
+                            <input type="file" id="resume" name="Resume" class="file-input" accept=".pdf,.doc,.docx" required>
                             <label for="resume" class="file-upload-box">
                                 <div class="file-icon">
                                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ea4335" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
                                 </div>
                                 <div class="file-info">
-                                    <span class="file-name">Resume.pdf</span>
-                                    <span class="file-type">Doc</span>
+                                    <span class="file-name">Click to browse file</span>
+                                    <span class="file-type">PDF, DOC</span>
                                 </div>
                             </label>
                         </div>
@@ -294,14 +307,14 @@
                     <div class="form-group">
                         <label class="form-label">Borang 11 (APC)</label>
                         <div class="file-input-wrapper">
-                            <input type="file" id="borang11" name="Borang_11" class="file-input" accept=".pdf,.doc,.docx">
+                            <input type="file" id="borang11" name="Borang_11" class="file-input" accept=".pdf,.doc,.docx" required>
                             <label for="borang11" class="file-upload-box">
                                 <div class="file-icon">
                                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ea4335" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
                                 </div>
                                 <div class="file-info">
-                                    <span class="file-name">Borang.pdf</span>
-                                    <span class="file-type">Doc</span>
+                                    <span class="file-name">Click to browse file</span>
+                                    <span class="file-type">PDF, DOC</span>
                                 </div>
                             </label>
                         </div>
@@ -310,14 +323,14 @@
                     <div class="form-group">
                         <label class="form-label">Borang 15 (MMC)</label>
                         <div class="file-input-wrapper">
-                            <input type="file" id="borang15" name="Borang_15" class="file-input" accept=".pdf,.doc,.docx">
+                            <input type="file" id="borang15" name="Borang_15" class="file-input" accept=".pdf,.doc,.docx" required>
                             <label for="borang15" class="file-upload-box">
                                 <div class="file-icon">
                                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ea4335" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
                                 </div>
                                 <div class="file-info">
-                                    <span class="file-name">Borang.pdf</span>
-                                    <span class="file-type">Doc</span>
+                                    <span class="file-name">Click to browse file</span>
+                                    <span class="file-type">PDF, DOC</span>
                                 </div>
                             </label>
                         </div>
@@ -326,21 +339,21 @@
                     <div class="form-group">
                         <label class="form-label">Identification Card/IC</label>
                         <div class="file-input-wrapper">
-                            <input type="file" id="ic_document" name="IC_Document" class="file-input" accept=".pdf,.jpg,.jpeg,.png">
+                            <input type="file" id="ic_document" name="IC_Document" class="file-input" accept=".pdf,.jpg,.jpeg,.png" required>
                             <label for="ic_document" class="file-upload-box">
                                 <div class="file-icon">
                                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ea4335" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
                                 </div>
                                 <div class="file-info">
-                                    <span class="file-name">ID Verification.pdf</span>
-                                    <span class="file-type">Doc</span>
+                                    <span class="file-name">Click to browse file</span>
+                                    <span class="file-type">PDF, JPG, PNG</span>
                                 </div>
                             </label>
                         </div>
                     </div>
 
                     <button type="submit" class="btn-primary">Submit Application</button>
-                    <p style="text-align: center; font-size: 12px; color: #666; margin-top: 16px;">By submitting, your details will be sent directly to dokturamedic@gmail.com for early review.</p>
+                    <p style="text-align: center; font-size: 12px; color: #666; margin-top: 16px;">By submitting, your details will be securely sent for early review.</p>
                 </form>
 
             </div>
