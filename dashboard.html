@@ -8,7 +8,7 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
         body { font-family: 'Inter', sans-serif; background-color: #f8fafc; }
-        ::-webkit-scrollbar { width: 5px; }
+        ::-webkit-scrollbar { width: 5px; height: 5px; }
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
         
         .nav-active { background-color: #eff6ff; color: #0066FF; font-weight: 700; border-left: 4px solid #0066FF; }
@@ -44,97 +44,19 @@
         /* View Switching Logic */
         .app-view { display: none; }
         .app-view.active { display: flex; }
-
-        /* ===================== RESPONSIVE: MOBILE & TABLET ===================== */
-
-        /* Sidebar overlay for mobile */
-        #sidebar-overlay {
-            display: none;
-            position: fixed;
-            inset: 0;
-            background: rgba(0,0,0,0.45);
-            z-index: 40;
-        }
-        #sidebar-overlay.visible { display: block; }
-
-        /* Mobile hamburger button */
-        #mobile-menu-btn { display: none; }
-
-        /* Tablet: sidebar narrows */
-        @media (max-width: 1024px) and (min-width: 641px) {
-            #sidebar { width: 220px; }
-        }
-
-        /* Mobile: sidebar slides in as drawer */
-        @media (max-width: 640px) {
-            #sidebar {
-                position: fixed;
-                left: -280px;
-                top: 0;
-                bottom: 0;
-                width: 260px;
-                z-index: 50;
-                transition: left 0.28s cubic-bezier(0.4,0,0.2,1);
-                box-shadow: 4px 0 24px rgba(0,0,0,0.12);
-            }
-            #sidebar.open { left: 0; }
-            #mobile-menu-btn { display: flex; }
-            #main-content { width: 100%; }
-
-            /* Header tighten on mobile */
-            #header-bar { padding-left: 1rem; padding-right: 1rem; }
-            #header-title { font-size: 0.9rem; }
-
-            /* Chat input stack on very small screens */
-            #chat-input-bar { flex-wrap: wrap; gap: 6px; }
-
-            /* Schedule table scroll */
-            #schedule-table-wrap { overflow-x: auto; }
-
-            /* Reports table scroll */
-            #reports-table-wrap { overflow-x: auto; }
-
-            /* Booking form: stack grid columns */
-            .book-grid-2 { grid-template-columns: 1fr !important; }
-
-            /* Upload modal full width on mobile */
-            #upload-modal > div { margin: 1rem; max-width: calc(100vw - 2rem) !important; width: 100% !important; }
-
-            /* Premium modal */
-            #premium-modal > div { margin: 1rem; max-width: calc(100vw - 2rem) !important; }
-
-            /* Confirm modal */
-            #confirm-modal > div { margin: 1rem; max-width: calc(100vw - 2rem) !important; }
-
-            /* Voice overlay transcript */
-            #voice-transcript { font-size: 1rem; }
-
-            /* Settings max width */
-            #view-settings .inner-wrap { padding: 1.5rem; }
-
-            /* Notification dropdown width */
-            #notif-dropdown { width: 280px; right: -60px; }
-
-            /* Slots grid on mobile: 1 col */
-            #available-slots-container { grid-template-columns: 1fr !important; }
-        }
-
-        /* Tablet adjustments */
-        @media (max-width: 1024px) {
-            #notif-dropdown { width: 300px; }
-        }
     </style>
 </head>
-<body class="hidden h-screen w-full overflow-hidden flex bg-white" id="appBody">
+<!-- Replaced h-screen with height: 100dvh inline to fix mobile browser bar cutoff -->
+<body class="hidden w-full overflow-hidden flex bg-white" id="appBody" style="height: 100dvh;">
 
     <script>const API_BASE = 'https://api.doktura.ai';</script>
 
     <!-- PREMIUM UNLOCK MODAL -->
-    <div id="premium-modal" class="fixed inset-0 bg-gray-900/60 z-[300] hidden items-center justify-center backdrop-blur-sm">
-        <div class="bg-white rounded-3xl p-10 max-w-lg w-full text-center relative shadow-2xl">
+    <div id="premium-modal" class="fixed inset-0 bg-gray-900/60 z-[300] hidden items-center justify-center backdrop-blur-sm px-4">
+        <div class="bg-white rounded-3xl p-8 sm:p-10 max-w-lg w-full text-center relative shadow-2xl">
             <button onclick="document.getElementById('premium-modal').classList.remove('flex'); document.getElementById('premium-modal').classList.add('hidden')" class="absolute top-4 right-5 text-gray-400 hover:text-gray-800 text-xl font-bold">✕</button>
             <h2 class="text-2xl font-extrabold text-gray-900 mb-3">Unlock Doktura Premium</h2>
-            <p class="text-gray-500 text-sm mb-8 px-4">Upload reports instantly, analyze scans with AI, and access records safely anywhere.</p>
+            <p class="text-gray-500 text-sm mb-8 px-0 sm:px-4">Upload reports instantly, analyze scans with AI, and access records safely anywhere.</p>
             <button onclick="triggerSubscription()" id="sub-btn" class="w-full bg-[#0066FF] hover:bg-blue-700 transition text-white font-bold py-3.5 rounded-xl shadow-md">
                 Unlock DokturaPremium – RM 50
             </button>
@@ -142,8 +64,8 @@
     </div>
 
     <!-- CONFIRM DELETE MODAL -->
-    <div id="confirm-modal" class="fixed inset-0 bg-gray-900/50 z-[400] hidden items-center justify-center backdrop-blur-sm transition-opacity">
-        <div class="bg-white rounded-3xl p-8 max-w-sm w-full relative shadow-2xl text-center">
+    <div id="confirm-modal" class="fixed inset-0 bg-gray-900/50 z-[400] hidden items-center justify-center backdrop-blur-sm transition-opacity px-4">
+        <div class="bg-white rounded-3xl p-6 sm:p-8 max-w-sm w-full relative shadow-2xl text-center">
             <h2 class="text-xl font-extrabold text-gray-900 mb-2">Delete Report?</h2>
             <p class="text-gray-500 text-sm mb-6 leading-relaxed">This action cannot be undone. Your medical document will be permanently removed.</p>
             <div class="flex space-x-3 mt-4">
@@ -153,17 +75,18 @@
         </div>
     </div>
 
-    <!-- SIDEBAR OVERLAY (mobile tap-outside to close) -->
-    <div id="sidebar-overlay" onclick="closeMobileSidebar()"></div>
+    <!-- MOBILE SIDEBAR OVERLAY -->
+    <div id="sidebar-overlay" onclick="toggleSidebar()" class="fixed inset-0 bg-gray-900/50 z-[190] hidden md:hidden backdrop-blur-sm transition-opacity"></div>
 
     <!-- LEFT SIDEBAR -->
-    <div id="sidebar" class="w-[260px] bg-white border-r border-gray-200 flex flex-col shrink-0 h-full z-10 shadow-sm">
-        <div class="p-6 pb-2">
-            <img src="https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/Logo.png?download=true" class="h-8 object-contain">
+    <div id="sidebar" class="fixed md:static inset-y-0 left-0 z-[200] w-[260px] md:w-[220px] lg:w-[260px] transform -translate-x-full md:translate-x-0 transition duration-300 ease-in-out bg-white border-r border-gray-200 flex flex-col shrink-0 h-full shadow-2xl md:shadow-sm">
+        <div class="p-6 pb-2 flex justify-between items-center">
+            <img src="https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/Logo.jpg?download=true" class="h-8 object-contain">
+            <button onclick="toggleSidebar()" class="md:hidden text-gray-400 hover:text-gray-800"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button>
         </div>
         
         <div class="px-5 py-4">
-            <button onclick="startNewSession()" class="w-full bg-[#d9381e] text-white font-bold py-2.5 rounded-lg shadow-sm flex items-center justify-center transition hover:bg-red-700">
+            <button onclick="startNewSession()" class="w-full bg-[#d9381e] text-white font-bold py-2.5 rounded-lg shadow-sm flex items-center justify-center transition hover:bg-red-700 text-sm">
                 <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg> New chat
             </button>
         </div>
@@ -207,16 +130,17 @@
     </div>
 
     <!-- MAIN CONTENT AREA -->
-    <div id="main-content" class="flex-1 flex flex-col relative h-full bg-[#f8fafc] overflow-hidden">
+    <div class="flex-1 flex flex-col relative h-full bg-[#f8fafc] overflow-hidden">
         
         <!-- HEADER -->
-        <div id="header-bar" class="h-16 border-b border-gray-200 flex items-center justify-between px-8 bg-white shrink-0 shadow-sm z-10">
-            <!-- Mobile hamburger -->
-            <button id="mobile-menu-btn" onclick="openMobileSidebar()" class="p-2 mr-2 text-gray-500 hover:text-gray-800 rounded-lg hover:bg-gray-100 transition">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
-            </button>
-            <h1 class="text-lg font-bold text-gray-800 flex-1" id="header-title">Consultation AI</h1>
+        <div class="h-16 border-b border-gray-200 flex items-center justify-between px-4 sm:px-8 bg-white shrink-0 shadow-sm z-10">
             <div class="flex items-center space-x-3">
+                <button onclick="toggleSidebar()" class="md:hidden p-2 text-gray-500 hover:text-gray-900 transition focus:outline-none rounded-md hover:bg-gray-50">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+                </button>
+                <h1 class="text-lg font-bold text-gray-800 truncate" id="header-title">Consultation AI</h1>
+            </div>
+            <div class="flex items-center space-x-2 sm:space-x-4">
                 
                 <!-- Notification Bell -->
                 <div class="relative">
@@ -225,12 +149,12 @@
                         <span id="notif-badge" class="hidden absolute top-1 right-1 w-2.5 h-2.5 bg-red-500 border-2 border-white rounded-full"></span>
                     </button>
                     <!-- Notification Dropdown -->
-                    <div id="notif-dropdown" class="hidden absolute right-0 mt-3 w-[320px] bg-white border border-gray-200 shadow-2xl rounded-xl z-50 flex flex-col overflow-hidden">
+                    <div id="notif-dropdown" class="hidden absolute right-0 mt-3 w-[300px] sm:w-[340px] bg-white border border-gray-200 shadow-2xl rounded-xl z-50 flex flex-col overflow-hidden">
                         <div class="p-4 border-b border-gray-100 font-bold text-gray-800 text-sm flex justify-between items-center">
                             Notifications
                             <button onclick="toggleNotifications()" class="text-gray-400 hover:text-gray-800 transition text-lg">✕</button>
                         </div>
-                        <div id="notif-list" class="max-h-72 overflow-y-auto p-2 bg-gray-50/50">
+                        <div id="notif-list" class="max-h-80 overflow-y-auto p-2 bg-gray-50/50">
                             <p id="empty-notif" class="text-xs text-gray-400 text-center py-6">No new notifications</p>
                         </div>
                     </div>
@@ -239,13 +163,13 @@
                 <!-- Profile Badge -->
                 <button onclick="switchTab('settings')" class="flex items-center space-x-2 border border-gray-200 rounded-lg p-1 pr-3 hover:bg-gray-50 transition shrink-0">
                     <img id="userAvatarHeader" src="" class="w-8 h-8 rounded-full object-cover">
-                    <span id="userNameHeader" class="text-xs font-bold text-gray-700 hidden sm:inline">Profile</span>
+                    <span id="userNameHeader" class="hidden sm:inline-block text-xs font-bold text-gray-700 truncate max-w-[100px]">Profile</span>
                 </button>
             </div>
         </div>
 
         <!-- GLOBAL INLINE ERROR / SUCCESS NOTIFICATIONS -->
-        <div id="global-message-container" class="hidden w-full px-8 pt-6 pb-2 z-20 shrink-0 relative bg-transparent">
+        <div id="global-message-container" class="hidden w-full px-4 sm:px-8 pt-6 pb-2 z-20 shrink-0 relative bg-transparent">
             <div id="global-message-box" class="max-w-4xl mx-auto p-4 rounded-xl text-sm font-bold border flex items-center justify-between shadow-sm">
                 <div class="flex items-center">
                     <svg id="global-message-icon" class="w-5 h-5 mr-3 shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path></svg>
@@ -257,55 +181,34 @@
         
         <!-- ================= CHAT VIEW ================= -->
         <div id="view-chat" class="app-view active flex-1 flex-col h-full overflow-hidden relative">
-            <div id="chat-history" class="flex-1 overflow-y-auto p-8 max-w-4xl w-full mx-auto"></div>
+            <div id="chat-history" class="flex-1 overflow-y-auto p-4 sm:p-8 max-w-4xl w-full mx-auto"></div>
             
             <!-- Voice View Overlay -->
-            <div id="voice-overlay" class="absolute inset-0 bg-[#f8fafc]/95 z-[50] hidden flex-col items-center justify-center backdrop-blur-sm">
-                
+            <div id="voice-overlay" class="absolute inset-0 bg-[#f8fafc]/95 z-[50] hidden flex-col items-center justify-center backdrop-blur-sm px-4">
                 <!-- Central Interactive Orb -->
-                <button onclick="toggleVoiceMic()" id="voice-orb-btn" class="relative w-44 h-44 rounded-full flex items-center justify-center mb-8 transition-all duration-300 shadow-2xl focus:outline-none bg-gradient-to-br from-blue-400 to-[#0066FF] hover:scale-105 orb-pulse-blue">
-                    
-                    <!-- IDLE: Mic Icon -->
-                    <svg id="orb-icon-mic" class="w-16 h-16 text-white transition-opacity duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"></path>
-                    </svg>
-                    
-                    <!-- RECORDING: Stop Icon -->
-                    <svg id="orb-icon-stop" class="w-14 h-14 text-white hidden transition-opacity duration-200" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M6 6h12v12H6z"></path>
-                    </svg>
-
-                    <!-- PROCESSING: Loading Spinner -->
-                    <svg id="orb-icon-processing" class="w-16 h-16 text-white hidden animate-spin transition-opacity duration-200" fill="none" viewBox="0 0 24 24">
-                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                    </svg>
-
-                    <!-- SPEAKING: Soundwaves -->
-                    <div id="orb-icon-speaking" class="hidden flex items-center justify-center h-16 transition-opacity duration-200">
-                        <div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div>
-                    </div>
-
+                <button onclick="toggleVoiceMic()" id="voice-orb-btn" class="relative w-40 h-40 sm:w-44 sm:h-44 rounded-full flex items-center justify-center mb-8 transition-all duration-300 shadow-2xl focus:outline-none bg-gradient-to-br from-blue-400 to-[#0066FF] hover:scale-105 orb-pulse-blue">
+                    <svg id="orb-icon-mic" class="w-14 h-14 sm:w-16 sm:h-16 text-white transition-opacity duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"></path></svg>
+                    <svg id="orb-icon-stop" class="w-12 h-12 sm:w-14 sm:h-14 text-white hidden transition-opacity duration-200" fill="currentColor" viewBox="0 0 24 24"><path d="M6 6h12v12H6z"></path></svg>
+                    <svg id="orb-icon-processing" class="w-14 h-14 sm:w-16 sm:h-16 text-white hidden animate-spin transition-opacity duration-200" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                    <div id="orb-icon-speaking" class="hidden flex items-center justify-center h-16 transition-opacity duration-200"><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div></div>
                 </button>
-
-                <!-- Status & Text Transcript -->
-                <h3 id="voice-status-text" class="text-3xl font-bold text-gray-900 mb-4 transition-colors">Tap mic to speak</h3>
-                <div class="h-28 w-full max-w-2xl px-6 flex items-start justify-center overflow-y-auto mb-2">
-                    <p id="voice-transcript" class="text-gray-600 text-xl text-center italic leading-relaxed transition-opacity">Tap to start talking...</p>
+                <h3 id="voice-status-text" class="text-2xl sm:text-3xl font-bold text-gray-900 mb-4 transition-colors text-center">Tap mic to speak</h3>
+                <div class="h-28 w-full max-w-2xl px-4 flex items-start justify-center overflow-y-auto mb-2">
+                    <p id="voice-transcript" class="text-gray-600 text-lg sm:text-xl text-center italic leading-relaxed transition-opacity">Tap to start talking...</p>
                 </div>
-                
                 <div class="mt-4 flex justify-center w-full">
                     <button onclick="exitVoiceMode()" class="px-8 py-3.5 rounded-xl font-bold text-gray-500 bg-gray-200 hover:bg-gray-300 transition uppercase text-sm shadow-sm">Close Voice</button>
                 </div>
             </div>
             
-            <!-- Input Area -->
-            <div class="w-full shrink-0 bg-gradient-to-t from-[#f8fafc] via-[#f8fafc] to-transparent pt-4 pb-8 px-4 sm:px-8 flex justify-center z-40">
-                <div id="chat-input-bar" class="max-w-4xl w-full bg-white border border-gray-200 rounded-xl shadow-[0_2px_15px_rgba(0,0,0,0.06)] p-2 flex items-center">
+            <!-- Input Area (adjusted bottom padding to fix cutoff on mobile browser) -->
+            <div class="w-full shrink-0 bg-gradient-to-t from-[#f8fafc] via-[#f8fafc] to-transparent pt-4 pb-4 sm:pb-8 px-4 sm:px-8 flex justify-center z-40">
+                <div class="max-w-4xl w-full bg-white border border-gray-200 rounded-xl shadow-[0_2px_15px_rgba(0,0,0,0.06)] p-1.5 sm:p-2 flex items-center">
                     <button onclick="enterVoiceMode()" class="p-3 text-gray-400 hover:text-blue-500 transition shrink-0"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"></path></svg></button>
-                    <input type="text" id="chat-input" class="flex-1 bg-transparent px-3 py-2 focus:outline-none text-gray-800 text-sm" placeholder="Type a message or tap the mic..." onkeypress="if(event.key === 'Enter') sendChat()">
+                    <input type="text" id="chat-input" class="flex-1 bg-transparent px-2 sm:px-3 py-2 focus:outline-none text-gray-800 text-sm" placeholder="Type a message..." onkeypress="if(event.key === 'Enter') sendChat()">
                     <button onclick="sendChat()" class="bg-[#d9381e] hover:bg-red-700 text-white px-4 sm:px-6 py-2.5 rounded-lg font-bold text-sm shadow-sm transition shrink-0 flex items-center">
-                        <svg class="w-4 h-4 sm:mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path></svg><span class="hidden sm:inline"> Send</span>
+                        <svg class="w-4 h-4 sm:mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path></svg> 
+                        <span class="hidden sm:inline-block">Send</span>
                     </button>
                 </div>
             </div>
@@ -314,7 +217,7 @@
         <!-- ================= BOOK CONSULTANT VIEW ================= -->
         <div id="view-book" class="app-view flex-1 flex-col overflow-y-auto">
             <div class="max-w-4xl mx-auto p-6 sm:p-10 w-full pt-4">
-                <h2 class="text-3xl font-extrabold text-gray-900 mb-2">Book a Consultant</h2>
+                <h2 class="text-2xl sm:text-3xl font-extrabold text-gray-900 mb-2">Book a Consultant</h2>
                 <p class="text-gray-500 mb-8 text-sm leading-relaxed">Schedule a follow-up video call with one of our licensed human doctors.</p>
                 
                 <!-- Toggle Form Type -->
@@ -325,8 +228,8 @@
                     </label>
                     <label class="flex-1 text-center cursor-pointer relative">
                         <input type="radio" name="v_type_toggle" value="clinic" class="peer sr-only" onchange="toggleBookingType('clinic')">
-                        <div class="py-2.5 rounded-lg text-sm font-bold text-gray-500 peer-checked:bg-white peer-checked:text-gray-900 peer-checked:shadow-sm transition flex items-center justify-center space-x-2">
-                            <span>🏥 In-Clinic Visit</span>
+                        <div class="py-2.5 rounded-lg text-sm font-bold text-gray-500 peer-checked:bg-white peer-checked:text-gray-900 peer-checked:shadow-sm transition flex items-center justify-center space-x-1 sm:space-x-2">
+                            <span>🏥 <span class="hidden sm:inline">In-Clinic</span></span>
                             <span class="bg-blue-100 text-[#0066FF] text-[9px] font-extrabold px-2 py-0.5 rounded-full uppercase tracking-wider">Soon</span>
                         </div>
                     </label>
@@ -335,34 +238,30 @@
                 <!-- ONLINE FORM -->
                 <form id="booking-online-section" onsubmit="submitBooking(event)" class="block">
                     <div class="space-y-6">
-                        <div class="grid grid-cols-2 gap-4 book-grid-2">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div><label class="block text-xs font-semibold text-gray-500 mb-1">Name & Age</label><input type="text" id="book-name" required class="w-full border border-gray-300 rounded-lg px-4 py-3 text-sm bg-white focus:ring-2 focus:ring-[#0066FF]" placeholder="e.g John Doe, 35"></div>
                             <div><label class="block text-xs font-semibold text-gray-500 mb-1">Email</label><input type="email" id="book-email" required class="w-full border border-gray-300 rounded-lg px-4 py-3 text-sm bg-white focus:ring-2 focus:ring-[#0066FF]" placeholder="e.g john@gmail.com"></div>
                         </div>
-                        <div><label class="block text-sm font-bold text-gray-700 mb-2">Symptoms</label><div class="relative"><input type="text" id="book-symptoms" placeholder="e.g skin rash, headache..." class="w-full border border-gray-300 rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-[#0066FF] pr-24"><button type="button" onclick="suggestDoctor()" class="absolute right-2 top-2 bottom-2 bg-white border border-gray-200 hover:bg-gray-50 text-gray-700 px-4 rounded-md text-xs font-bold shadow-sm transition">Find</button></div></div>
-                        <div><label class="block text-sm font-bold text-gray-700 mb-2">Doctor</label><select id="book-doctor" required class="w-full border border-gray-300 rounded-lg px-4 py-3 text-sm bg-white focus:ring-2 focus:ring-[#0066FF]" onchange="fetchDoctorSlots(this.value)"><option value="">-- Select a Doctor to view available slots --</option></select></div>
+                        <div><label class="block text-sm font-bold text-gray-700 mb-2">Symptoms</label><div class="relative"><input type="text" id="book-symptoms" placeholder="e.g skin rash, headache..." class="w-full border border-gray-300 rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-[#0066FF] pr-20 sm:pr-24"><button type="button" onclick="suggestDoctor()" class="absolute right-2 top-2 bottom-2 bg-white border border-gray-200 hover:bg-gray-50 text-gray-700 px-3 sm:px-4 rounded-md text-xs font-bold shadow-sm transition">Find</button></div></div>
+                        <div><label class="block text-sm font-bold text-gray-700 mb-2">Doctor</label><select id="book-doctor" required class="w-full border border-gray-300 rounded-lg px-4 py-3 text-sm bg-white focus:ring-2 focus:ring-[#0066FF]" onchange="fetchDoctorSlots(this.value)"><option value="">-- Select a Doctor --</option></select></div>
                         
-                        <!-- Interactive Slots Area -->
                         <div id="slots-wrapper" class="hidden">
                             <label class="block text-sm font-bold text-gray-700 mb-3">Date of Appointment</label>
-                            <div id="available-slots-container" class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                <!-- Slots injected here -->
-                            </div>
+                            <div id="available-slots-container" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4"></div>
                             <input type="hidden" id="selected-slot">
                         </div>
                     </div>
                     
                     <div class="mt-8 pt-6 border-t border-gray-200">
                         <p class="text-sm font-bold text-gray-700 mb-2">Payment (FEE: RM 38.00)</p>
-                        <div class="bg-gray-50 p-4 border border-gray-200 rounded-lg text-xs text-gray-600 font-medium flex items-center">
-                            <svg class="w-4 h-4 mr-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        <div class="bg-gray-50 p-4 border border-gray-200 rounded-lg text-xs text-gray-600 font-medium flex items-center leading-relaxed">
+                            <svg class="w-4 h-4 mr-2 shrink-0 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                             Kindly be informed that cancellations will not be eligible for a refund.
                         </div>
                     </div>
 
-                    <!-- PDPA Checkbox -->
                     <div class="mt-6 mb-6 flex items-start cursor-pointer">
-                        <input type="checkbox" id="pdpa-agree" required class="mt-0.5 mr-3 h-4 w-4 text-[#0066FF] border-gray-300 rounded focus:ring-[#0066FF] cursor-pointer">
+                        <input type="checkbox" id="pdpa-agree" required class="mt-0.5 mr-3 h-4 w-4 text-[#0066FF] border-gray-300 rounded focus:ring-[#0066FF] cursor-pointer shrink-0">
                         <label for="pdpa-agree" class="text-xs text-gray-600 leading-relaxed font-medium cursor-pointer">
                             By submitting, you agree to the processing of your personal data in accordance with the Personal Data Protection Act (PDPA) and our Privacy Policy.
                         </label>
@@ -373,14 +272,12 @@
 
                 <!-- IN-CLINIC COMING SOON -->
                 <div id="booking-clinic-section" class="hidden">
-                    <div class="bg-white border border-gray-100 shadow-[0_4px_20px_rgba(0,0,0,0.04)] rounded-3xl p-16 text-center max-w-2xl mx-auto flex flex-col items-center">
-                        <div class="w-20 h-20 bg-blue-50 text-[#0066FF] rounded-full flex items-center justify-center mb-6">
-                            <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
-                            </svg>
+                    <div class="bg-white border border-gray-100 shadow-[0_4px_20px_rgba(0,0,0,0.04)] rounded-3xl p-8 sm:p-16 text-center max-w-2xl mx-auto flex flex-col items-center">
+                        <div class="w-16 h-16 sm:w-20 sm:h-20 bg-blue-50 text-[#0066FF] rounded-full flex items-center justify-center mb-6">
+                            <svg class="w-8 h-8 sm:w-10 sm:h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
                         </div>
                         <span class="inline-block px-4 py-1.5 bg-gray-100 text-gray-600 text-xs font-extrabold rounded-full mb-4 uppercase tracking-widest border border-gray-200">Coming Soon</span>
-                        <h3 class="text-2xl font-extrabold text-gray-900 mb-3">In-Clinic Consultations</h3>
+                        <h3 class="text-xl sm:text-2xl font-extrabold text-gray-900 mb-3">In-Clinic Consultations</h3>
                         <p class="text-gray-500 text-sm leading-relaxed max-w-md">We are currently partnering with top local clinics and hospitals to allow you to seamlessly book physical visits. Stay tuned, this feature will be available shortly!</p>
                     </div>
                 </div>
@@ -391,13 +288,18 @@
         <!-- ================= SCHEDULE APPOINTMENT VIEW ================= -->
         <div id="view-schedule" class="app-view flex-1 flex-col overflow-y-auto">
             <div class="max-w-5xl mx-auto p-6 sm:p-10 w-full pt-4">
-                <h2 class="text-3xl font-extrabold text-gray-900 mb-1">Schedule Appointment</h2>
-                <p class="text-gray-500 text-sm mb-8">Manage your upcoming consultations with ease.</p>
-                <div id="schedule-table-wrap" class="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden">
-                    <table class="w-full text-left border-collapse" style="min-width:600px">
-                        <thead class="bg-gray-50 text-gray-500 text-[10px] uppercase font-bold border-b border-gray-200"><tr><th class="py-4 px-6">ID</th><th class="py-4 px-6">Type</th><th class="py-4 px-6">Doctor</th><th class="py-4 px-6">Date</th><th class="py-4 px-6">Status</th><th class="py-4 px-6 text-center">Action</th></tr></thead>
-                        <tbody id="schedule-table-body" class="text-sm text-gray-800 divide-y divide-gray-100"></tbody>
-                    </table>
+                <h2 class="text-2xl sm:text-3xl font-extrabold text-gray-900 mb-1">Schedule Appointment</h2>
+                <p class="text-gray-500 text-sm mb-6 sm:mb-8">Manage your upcoming consultations with ease.</p>
+                
+                <div class="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden w-full">
+                    <div class="overflow-x-auto w-full">
+                        <table class="w-full text-left border-collapse min-w-[600px]">
+                            <thead class="bg-gray-50 text-gray-500 text-[10px] uppercase font-bold border-b border-gray-200">
+                                <tr><th class="py-4 px-6">ID</th><th class="py-4 px-6">Type</th><th class="py-4 px-6">Doctor</th><th class="py-4 px-6">Date</th><th class="py-4 px-6">Status</th><th class="py-4 px-6 text-center">Action</th></tr>
+                            </thead>
+                            <tbody id="schedule-table-body" class="text-sm text-gray-800 divide-y divide-gray-100"></tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>
@@ -406,32 +308,32 @@
         <div id="view-reports" class="app-view flex-1 flex-col overflow-y-auto relative">
             <div class="max-w-5xl mx-auto p-6 sm:p-10 w-full pt-4">
                 <!-- Header -->
-                <div class="flex flex-wrap justify-between items-end gap-4 mb-8">
+                <div class="flex flex-col sm:flex-row justify-between sm:items-end mb-6 sm:mb-8 space-y-4 sm:space-y-0">
                     <div>
-                        <h2 class="text-3xl font-extrabold text-gray-900 mb-2">Your Medical Documents</h2>
+                        <h2 class="text-2xl sm:text-3xl font-extrabold text-gray-900 mb-2">Your Medical Documents</h2>
                         <p class="text-gray-500 text-sm">Securely store and manage your health records.</p>
                     </div>
-                    <div class="flex items-center space-x-3">
-                        <button onclick="linkGoogleDrive()" class="flex items-center border border-gray-200 bg-white hover:bg-gray-50 text-gray-700 text-sm font-bold py-2.5 px-5 rounded-lg shadow-sm transition">
+                    <div class="flex items-center space-x-3 w-full sm:w-auto">
+                        <button onclick="linkGoogleDrive()" class="flex-1 sm:flex-none flex justify-center items-center border border-gray-200 bg-white hover:bg-gray-50 text-gray-700 text-sm font-bold py-2.5 px-4 sm:px-5 rounded-lg shadow-sm transition">
                             <svg class="w-4 h-4 mr-2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12.01 2.502c-5.247 0-9.505 4.258-9.505 9.505s4.258 9.505 9.505 9.505 9.505-4.258 9.505-9.505-4.258-9.505-9.505-9.505zm0 17.509c-4.414 0-8.004-3.59-8.004-8.004s3.59-8.004 8.004-8.004 8.004 3.59 8.004 8.004-3.59 8.004-8.004 8.004zm-1.51-12.006l-4.503 7.82 1.501 2.602 4.503-7.82-1.501-2.602zm4.503.01l-1.501 2.602 3.003 5.218 1.501-2.602-3.003-5.218zm-3.003 6.096l-3.003 5.218h6.006l-3.003-5.218z" fill="currentColor"/></svg>
-                            Link Drive
+                            <span class="hidden sm:inline">Link Drive</span><span class="sm:hidden">Drive</span>
                         </button>
-                        <button onclick="openUploadModal()" class="bg-[#f59e0b] hover:bg-yellow-600 text-white text-sm font-bold py-2.5 px-6 rounded-lg shadow-sm transition">Add Document</button>
+                        <button onclick="openUploadModal()" class="flex-1 sm:flex-none justify-center bg-[#f59e0b] hover:bg-yellow-600 text-white text-sm font-bold py-2.5 px-4 sm:px-6 rounded-lg shadow-sm transition">Add Doc</button>
                     </div>
                 </div>
 
                 <!-- Empty State -->
-                <div id="reports-empty" class="bg-white border border-gray-200 rounded-2xl shadow-sm p-24 flex flex-col items-center justify-center text-center">
-                    <svg class="w-20 h-20 mb-6 text-gray-300 opacity-60" fill="currentColor" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6zm-1 1.5L18.5 9H13V3.5zM18 20H6V4h5v6h6v10z"/></svg>
+                <div id="reports-empty" class="bg-white border border-gray-200 rounded-2xl shadow-sm p-12 sm:p-24 flex flex-col items-center justify-center text-center">
+                    <svg class="w-16 h-16 sm:w-20 sm:h-20 mb-6 text-gray-300 opacity-60" fill="currentColor" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6zm-1 1.5L18.5 9H13V3.5zM18 20H6V4h5v6h6v10z"/></svg>
                     <h3 class="text-lg font-extrabold text-gray-900 mb-1">No medical documents found</h3>
                     <p class="text-gray-500 text-sm mb-8">Start by uploading your first medical document.</p>
                     <button onclick="openUploadModal()" class="bg-[#f59e0b] hover:bg-yellow-600 text-white font-bold py-2.5 px-8 rounded-lg shadow-sm transition">Add Document</button>
                 </div>
 
                 <!-- Reports Table List -->
-                <div id="reports-container" class="hidden bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm">
-                    <div id="reports-table-wrap" style="overflow-x:auto">
-                        <table class="w-full text-left border-collapse" style="min-width:560px">
+                <div id="reports-container" class="hidden bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm w-full">
+                    <div class="overflow-x-auto w-full">
+                        <table class="w-full text-left border-collapse min-w-[600px]">
                             <thead class="bg-gray-50 text-gray-500 text-[10px] uppercase font-bold border-b border-gray-200">
                                 <tr>
                                     <th class="py-4 px-6">Report Name</th>
@@ -448,19 +350,19 @@
             </div>
 
             <!-- Upload Modal -->
-            <div id="upload-modal" class="fixed inset-0 bg-gray-900/50 z-[250] hidden items-center justify-center backdrop-blur-sm p-4">
-                <div class="bg-white rounded-3xl p-8 max-w-lg w-full relative shadow-2xl">
+            <div id="upload-modal" class="fixed inset-0 bg-gray-900/50 z-[250] hidden items-center justify-center backdrop-blur-sm px-4">
+                <div class="bg-white rounded-3xl p-6 sm:p-8 max-w-lg w-full relative shadow-2xl">
                     <div class="flex justify-between items-center mb-6">
-                        <h2 class="text-xl font-bold text-gray-900">Upload Your Medical Reports</h2>
+                        <h2 class="text-xl font-bold text-gray-900">Upload Report</h2>
                         <button onclick="closeUploadModal()" class="text-gray-400 hover:text-gray-800 text-xl font-bold transition">✕</button>
                     </div>
                     <form onsubmit="uploadReport(event)" class="space-y-4 text-left">
                         <div><label class="block text-xs font-bold text-gray-600 mb-1">Report Name</label><input type="text" id="rep-name" required class="w-full border border-gray-300 rounded-lg p-3 text-sm focus:ring-2 focus:ring-[#0066FF]" placeholder="e.g Blood Test"></div>
-                        <div class="grid grid-cols-2 gap-4 book-grid-2">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div><label class="block text-xs font-bold text-gray-600 mb-1">Uploaded Date</label><input type="date" id="rep-date" required class="w-full border border-gray-300 rounded-lg p-3 text-sm focus:ring-2 focus:ring-[#0066FF]"></div>
                             <div><label class="block text-xs font-bold text-gray-600 mb-1">Report Type</label><input type="text" id="rep-type" required class="w-full border border-gray-300 rounded-lg p-3 text-sm focus:ring-2 focus:ring-[#0066FF]" placeholder="e.g MRI Scan"></div>
                         </div>
-                        <div class="border-2 border-dashed border-gray-300 rounded-xl p-8 text-center cursor-pointer hover:bg-gray-50 relative mt-4 transition">
+                        <div class="border-2 border-dashed border-gray-300 rounded-xl p-6 sm:p-8 text-center cursor-pointer hover:bg-gray-50 relative mt-4 transition">
                             <input type="file" id="report-file" required class="absolute inset-0 w-full h-full opacity-0 cursor-pointer" onchange="document.getElementById('file-name-display').innerText = this.files[0].name; document.getElementById('file-name-display').classList.add('text-[#0066FF]');">
                             <p class="text-sm font-bold text-gray-700 transition" id="file-name-display">Click to upload or drag and drop</p>
                             <p class="text-xs text-gray-400 mt-1">Format is JPG, PNG or PDF</p>
@@ -477,11 +379,12 @@
         <!-- ================= PROFILE SETTINGS VIEW ================= -->
         <div id="view-settings" class="app-view flex-1 flex-col overflow-y-auto">
             <div class="max-w-2xl mx-auto p-6 sm:p-10 w-full pt-4">
-                <div class="bg-white rounded-2xl border border-gray-200 p-8 shadow-sm inner-wrap">
-                    <h2 class="text-2xl font-extrabold text-gray-900 mb-8 border-b pb-4">Profile Settings</h2>
-                    <div class="flex items-center space-x-6 mb-8">
+                <div class="bg-white rounded-2xl border border-gray-200 p-6 sm:p-8 shadow-sm">
+                    <h2 class="text-2xl font-extrabold text-gray-900 mb-6 sm:mb-8 border-b pb-4">Profile Settings</h2>
+                    <div class="flex flex-col sm:flex-row items-start sm:items-center space-y-4 sm:space-y-0 sm:space-x-6 mb-8">
                         <img id="set-avatar" src="" class="w-20 h-20 rounded-full border border-gray-200 object-cover shadow-sm">
-                        <input type="file" id="set-photo" accept="image/*" class="text-sm text-gray-500">
+                        <!-- Added instantly visible local preview upon selecting a new image -->
+                        <input type="file" id="set-photo" accept="image/*" onchange="previewAvatar(this)" class="text-sm text-gray-500 w-full sm:w-auto cursor-pointer file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100">
                     </div>
                     <div class="space-y-5">
                         <div><label class="block text-xs font-bold text-gray-500 uppercase mb-1">Full Name</label><input type="text" id="set-name" class="w-full border border-gray-300 rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-[#0066FF]"></div>
@@ -536,8 +439,10 @@
 
                 const params = new URLSearchParams(window.location.search);
                 const urlTab = params.get('tab');
+                
                 const lastTab = urlTab || localStorage.getItem('doktura_active_tab') || 'chat';
                 switchTab(lastTab);
+                
                 if (urlTab) window.history.replaceState({}, document.title, window.location.pathname);
                 
                 loadSessions(); 
@@ -560,16 +465,21 @@
         let isVoiceActive = false;
         let isRecording = false; 
         window.pendingDeleteId = null;
+        window.notifiedAppointments = new Set();
         const chatLogoUrl = "https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/Vector%20(1).png?download=true";
 
-        // ===================== MOBILE SIDEBAR =====================
-        window.openMobileSidebar = () => {
-            document.getElementById('sidebar').classList.add('open');
-            document.getElementById('sidebar-overlay').classList.add('visible');
-        };
-        window.closeMobileSidebar = () => {
-            document.getElementById('sidebar').classList.remove('open');
-            document.getElementById('sidebar-overlay').classList.remove('visible');
+        window.toggleSidebar = () => {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebar-overlay');
+            if (sidebar.classList.contains('-translate-x-full')) {
+                sidebar.classList.remove('-translate-x-full');
+                overlay.classList.remove('hidden');
+                overlay.classList.add('block');
+            } else {
+                sidebar.classList.add('-translate-x-full');
+                overlay.classList.add('hidden');
+                overlay.classList.remove('block');
+            }
         };
 
         window.showInlineMessage = (msg, type = 'error') => {
@@ -595,41 +505,48 @@
             el.classList.toggle('hidden');
         };
 
-        // ===================== ENHANCED NOTIFICATION WITH TIMESTAMP =====================
         window.addNotification = (title, msg, action, type = 'info') => {
             document.getElementById('notif-badge').classList.remove('hidden');
             const list = document.getElementById('notif-list');
-            const emptyEl = document.getElementById('empty-notif');
-            if(emptyEl) emptyEl.remove();
+            if(list.innerText.includes('No new notifications')) list.innerHTML = '';
+            
+            const timeStr = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+            
+            let bgClass = 'hover:bg-blue-50 border-gray-100 hover:border-blue-200';
+            let dotColor = 'bg-blue-500';
+            let iconColor = 'text-blue-500';
+            let iconSvg = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>';
 
-            // Format current time as "2:34 PM"
-            const timeStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-
-            // Icon and colour by type
-            const iconMap = {
-                info:    { bg: 'bg-blue-50',   border: 'hover:border-blue-200',   dot: 'bg-[#0066FF]',  icon: 'M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z' },
-                success: { bg: 'bg-green-50',  border: 'hover:border-green-200',  dot: 'bg-green-500',  icon: 'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z' },
-                warning: { bg: 'bg-amber-50',  border: 'hover:border-amber-200',  dot: 'bg-amber-500',  icon: 'M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z' },
-            };
-            const style = iconMap[type] || iconMap.info;
+            if (type === 'success') {
+                bgClass = 'hover:bg-green-50 border-gray-100 hover:border-green-200';
+                dotColor = 'bg-green-500';
+                iconColor = 'text-green-500';
+                iconSvg = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>';
+            } else if (type === 'warning') {
+                bgClass = 'hover:bg-amber-50 border-gray-100 hover:border-amber-200';
+                dotColor = 'bg-amber-500';
+                iconColor = 'text-amber-500';
+                iconSvg = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>';
+            }
 
             const html = `
-            <div onclick="${action}; toggleNotifications(); document.getElementById('notif-badge').classList.add('hidden');"
-                 class="p-3 bg-white ${style.bg} hover:bg-opacity-80 rounded-lg cursor-pointer transition mb-2 border border-gray-100 ${style.border} shadow-sm group">
-                <div class="flex items-start gap-2.5">
-                    <div class="mt-0.5 shrink-0">
-                        <div class="w-2 h-2 rounded-full ${style.dot} mt-1"></div>
+            <div onclick="${action}; toggleNotifications(); document.getElementById('notif-badge').classList.add('hidden');" 
+                 class="group p-3 bg-white ${bgClass} rounded-lg cursor-pointer transition mb-2 border shadow-sm relative overflow-hidden flex items-start space-x-3">
+                <div class="mt-1 shrink-0 relative">
+                    <span class="w-2.5 h-2.5 rounded-full ${dotColor} block"></span>
+                </div>
+                <div class="flex-1 min-w-0">
+                    <div class="flex justify-between items-start mb-0.5">
+                        <p class="text-sm font-bold text-gray-800 truncate pr-2">${title}</p>
+                        <span class="text-[10px] text-gray-400 font-medium whitespace-nowrap shrink-0">${timeStr}</span>
                     </div>
-                    <div class="flex-1 min-w-0">
-                        <div class="flex justify-between items-start gap-2 mb-1">
-                            <p class="text-xs font-bold text-gray-800 leading-snug">${title}</p>
-                            <span class="text-[10px] text-gray-400 shrink-0 mt-0.5">${timeStr}</span>
-                        </div>
-                        <p class="text-[11px] text-gray-500 leading-relaxed">${msg}</p>
-                    </div>
-                    <svg class="w-3.5 h-3.5 text-gray-400 shrink-0 mt-0.5 opacity-0 group-hover:opacity-100 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="${style.icon}"></path></svg>
+                    <p class="text-xs text-gray-500 leading-relaxed pr-6">${msg}</p>
+                </div>
+                <div class="absolute right-3 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity ${iconColor}">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">${iconSvg}</svg>
                 </div>
             </div>`;
+            
             list.insertAdjacentHTML('afterbegin', html);
         };
 
@@ -674,8 +591,13 @@
             if (tab === 'chat') headerName = 'Consultation AI';
             document.getElementById('header-title').innerText = headerName;
 
-            // Close mobile sidebar when a tab is selected
-            closeMobileSidebar();
+            if (window.innerWidth <= 768) {
+                const sidebar = document.getElementById('sidebar');
+                const overlay = document.getElementById('sidebar-overlay');
+                sidebar.classList.add('-translate-x-full');
+                overlay.classList.add('hidden');
+                overlay.classList.remove('block');
+            }
         }
 
         window.startNewSession = () => { window.currentSessionId = Date.now().toString(); loadSessions(); switchTab('chat'); }
@@ -714,7 +636,6 @@
             el.scrollTo(0, el.scrollHeight);
         }
 
-        // ===================== VOICE UI =====================
         function setVoiceState(state) {
             const btn = document.getElementById('voice-orb-btn');
             const statusText = document.getElementById('voice-status-text');
@@ -723,7 +644,7 @@
             const iProc = document.getElementById('orb-icon-processing');
             const iSpeak = document.getElementById('orb-icon-speaking');
             
-            btn.className = "relative w-44 h-44 rounded-full flex items-center justify-center mb-8 transition-all duration-300 shadow-2xl focus:outline-none";
+            btn.className = "relative w-40 h-40 sm:w-44 sm:h-44 rounded-full flex items-center justify-center mb-8 transition-all duration-300 shadow-2xl focus:outline-none";
             [iMic, iStop, iProc, iSpeak].forEach(el => el.classList.add('hidden'));
             btn.disabled = false;
             
@@ -731,16 +652,19 @@
                 btn.classList.add('bg-gradient-to-br', 'from-blue-400', 'to-[#0066FF]', 'hover:scale-105', 'orb-pulse-blue');
                 statusText.innerText = "Tap mic to speak";
                 iMic.classList.remove('hidden');
-            } else if (state === 'LISTENING') {
+            } 
+            else if (state === 'LISTENING') {
                 btn.classList.add('bg-gradient-to-br', 'from-red-400', 'to-red-600', 'hover:scale-105', 'orb-pulse-red');
                 statusText.innerText = "Listening... Tap to stop";
                 iStop.classList.remove('hidden');
-            } else if (state === 'PROCESSING') {
+            } 
+            else if (state === 'PROCESSING') {
                 btn.classList.add('bg-gradient-to-br', 'from-purple-400', 'to-purple-600', 'orb-pulse-purple', 'cursor-wait');
                 btn.disabled = true; 
                 statusText.innerText = "Thinking...";
                 iProc.classList.remove('hidden');
-            } else if (state === 'SPEAKING') {
+            } 
+            else if (state === 'SPEAKING') {
                 btn.classList.add('bg-gradient-to-br', 'from-green-400', 'to-teal-500', 'hover:scale-105', 'orb-pulse-green');
                 statusText.innerText = "AI is speaking...";
                 iSpeak.classList.remove('hidden');
@@ -785,7 +709,9 @@
         function speakOut(text) {
             window.speechSynthesis.cancel();
             const utterance = new SpeechSynthesisUtterance(text);
+            
             if (isVoiceActive) setVoiceState('SPEAKING'); 
+
             utterance.onend = () => { 
                 if (isVoiceActive && !isRecording) {
                     setVoiceState('IDLE');
@@ -833,10 +759,13 @@
                 setVoiceState('IDLE');
                 return;
             }
+
             if(!voiceRec) return;
+
             if (isRecording) {
                 isRecording = false; 
                 try { voiceRec.stop(); } catch(e) {}
+                
                 let msg = document.getElementById('chat-input').value.trim();
                 if (msg) {
                     setVoiceState('PROCESSING'); 
@@ -865,19 +794,17 @@
             if(voiceRec) { try { voiceRec.stop(); } catch(e) {} }
         };
 
-        // ===================== UPLOAD MODAL & DRIVE LINK =====================
         window.openUploadModal = () => {
-            const isDriveLinked = window.userData.is_drive_linked || 
-                                  window.userData.drive_linked || 
-                                  window.userData.google_drive_linked || 
-                                  localStorage.getItem('doktura_drive_linked') === 'true';
+            const isDriveLinked = window.userData.is_drive_linked || window.userData.drive_linked || window.userData.google_drive_linked || localStorage.getItem('doktura_drive_linked') === 'true';
+
             if (!isDriveLinked) {
                 showInlineMessage("Please link your Google Drive first to securely upload and store medical documents.", "error");
                 return;
             }
+            
             const modal = document.getElementById('upload-modal');
             modal.classList.remove('hidden');
-            modal.classList.add('flex');
+            modal.classList.add('flex'); 
         };
 
         window.closeUploadModal = () => {
@@ -892,10 +819,10 @@
             window.location.href = `${API_BASE}/api/auth/google?user_id=${window.currentUser.uid}`;
         };
 
-        // ===================== BOOKING TOGGLE =====================
         window.toggleBookingType = (type) => {
             const onlineSection = document.getElementById('booking-online-section');
             const clinicSection = document.getElementById('booking-clinic-section');
+            
             if (type === 'online') {
                 onlineSection.classList.remove('hidden');
                 onlineSection.classList.add('block');
@@ -907,22 +834,27 @@
             }
         };
 
-        // ===================== DYNAMIC DOCTOR SLOTS =====================
         window.fetchDoctorSlots = async (doctorId) => {
             const wrapper = document.getElementById('slots-wrapper');
             const container = document.getElementById('available-slots-container');
             const selectedSlotInput = document.getElementById('selected-slot');
-            selectedSlotInput.value = '';
+            
+            selectedSlotInput.value = ''; 
+            
             if (!doctorId) { wrapper.classList.add('hidden'); return; }
-            container.innerHTML = `<div class="col-span-3 text-center py-6 text-gray-400 text-sm font-bold">Checking availability...</div>`;
+            
+            container.innerHTML = `<div class="col-span-1 sm:col-span-2 md:col-span-3 text-center py-6 text-gray-400 text-sm font-bold">Checking availability...</div>`;
             wrapper.classList.remove('hidden');
+            
             try {
                 const res = await fetch(`${API_BASE}/api/doctor_slots?doctor_id=${doctorId}`, { headers: await getAuthHeaders() });
                 const data = await res.json();
+                
                 if (!data.slots || data.slots.length === 0) {
-                    container.innerHTML = `<div class="col-span-3 text-center py-6 text-red-500 bg-red-50 rounded-xl text-sm font-bold border border-red-100">Fully booked. No slots available right now.</div>`;
+                    container.innerHTML = `<div class="col-span-1 sm:col-span-2 md:col-span-3 text-center py-6 text-red-500 bg-red-50 rounded-xl text-sm font-bold border border-red-100">Fully booked. No slots available right now.</div>`;
                     return;
                 }
+                
                 container.innerHTML = '';
                 data.slots.forEach(s => {
                     const html = `
@@ -934,81 +866,61 @@
                                 <div class="w-4 h-4 rounded-full border border-gray-300 peer-checked:border-4 peer-checked:border-[#0066FF] transition-all"></div>
                             </div>
                             <div class="font-extrabold text-gray-900 text-sm mb-4">${s.day_display}</div>
-                            <div class="text-[10px] font-bold text-[#0066FF] bg-blue-100 inline-block px-2.5 py-1.5 rounded text-center self-start tracking-wide uppercase">${s.time_display}</div>
+                            <div class="text-[10px] font-bold text-[#0066FF] bg-blue-100 inline-block px-2.5 py-1.5 rounded text-center self-start tracking-wide uppercase">
+                                ${s.time_display}
+                            </div>
                         </div>
                     </label>`;
                     container.innerHTML += html;
                 });
             } catch (e) {
-                container.innerHTML = `<div class="col-span-3 text-center py-6 text-red-500 text-sm font-bold">Error loading slots.</div>`;
+                container.innerHTML = `<div class="col-span-1 sm:col-span-2 md:col-span-3 text-center py-6 text-red-500 text-sm font-bold">Error loading slots.</div>`;
             }
         };
 
-        // ===================== DATA FETCHING =====================
+        window.checkUpcomingReminders = (appointments) => {
+            if (!appointments || !appointments.length) return;
+            const now = new Date();
+            appointments.forEach(a => {
+                if (a.status === 'Done') return;
+                try {
+                    const apptDate = new Date(`${a.date} ${a.time}`);
+                    if (isNaN(apptDate.getTime())) return;
+
+                    const diffHours = (apptDate - now) / (1000 * 60 * 60);
+
+                    if (diffHours > 0 && diffHours <= 24) {
+                        if (!window.notifiedAppointments.has(a.id)) {
+                            window.notifiedAppointments.add(a.id);
+                            addNotification(
+                                "Upcoming Appointment", 
+                                `Reminder: You have an appointment with ${a.doctor_name || 'your doctor'} on ${a.date} at ${a.time}.`, 
+                                "switchTab('schedule')", 
+                                'warning'
+                            );
+                        }
+                    }
+                } catch(e) {}
+            });
+        };
+
         async function fetchAppointments() {
             const tbody = document.getElementById('schedule-table-body');
             try {
                 const r = await fetch(API_BASE + '/api/appointments', { method: 'GET', headers: await getAuthHeaders() });
-                const data = await r.json(); 
-                tbody.innerHTML = '';
+                const data = await r.json(); tbody.innerHTML = '';
                 if(!data.appointments || data.appointments.length === 0) { 
                     tbody.innerHTML = `<tr><td colspan="6" class="py-12 text-center text-gray-400 font-medium">No appointments scheduled.</td></tr>`; 
                     return; 
                 }
                 data.appointments.forEach(a => {
                     let sColor = a.status === 'Done' ? 'text-green-600 bg-green-50' : 'text-blue-600 bg-blue-50';
-                    let btn = a.action_url ? `<a href="${API_BASE}${a.action_url}" target="_blank" class="bg-[#1e1b4b] hover:bg-gray-800 transition text-white text-[10px] font-bold px-3 py-1.5 rounded uppercase">Start Call</a>` : `<span class="text-gray-300">--</span>`;
-                    tbody.innerHTML += `<tr class="border-b border-gray-100 hover:bg-gray-50 transition"><td class="py-4 px-6 font-bold text-gray-900">${a.id}</td><td class="py-4 px-6">${a.type}</td><td class="py-4 px-6">${a.doctor_name || '--'}</td><td class="py-4 px-6">${a.date}<br><span class="text-xs text-gray-400">${a.time}</span></td><td class="py-4 px-6 font-bold"><span class="${sColor} px-2.5 py-1 rounded text-[10px]">${a.status}</span></td><td class="py-4 px-6 text-center">${btn}</td></tr>`;
+                    let btn = a.action_url ? `<a href="${API_BASE}${a.action_url}" target="_blank" class="bg-[#1e1b4b] hover:bg-gray-800 transition text-white text-[10px] font-bold px-3 py-1.5 rounded uppercase whitespace-nowrap">Start Call</a>` : `<span class="text-gray-300">--</span>`;
+                    tbody.innerHTML += `<tr class="border-b border-gray-100 hover:bg-gray-50 transition"><td class="py-4 px-6 font-bold text-gray-900">${a.id}</td><td class="py-4 px-6">${a.type}</td><td class="py-4 px-6">${a.doctor_name || '--'}</td><td class="py-4 px-6 whitespace-nowrap">${a.date}<br><span class="text-xs text-gray-400">${a.time}</span></td><td class="py-4 px-6 font-bold"><span class="${sColor} px-2.5 py-1 rounded text-[10px]">${a.status}</span></td><td class="py-4 px-6 text-center">${btn}</td></tr>`;
                 });
-
-                // ===================== UPCOMING APPOINTMENT REMINDER (1 DAY BEFORE) =====================
+                
                 checkUpcomingReminders(data.appointments);
-
             } catch (e) { console.error(e); }
-        }
-
-        // Fires a bell notification if any appointment is within 24 hours and not 'Done'
-        function checkUpcomingReminders(appointments) {
-            const now = new Date();
-            const in24h = new Date(now.getTime() + 24 * 60 * 60 * 1000);
-
-            // Track which IDs we've already notified this session to avoid duplicates
-            if (!window._remindedIds) window._remindedIds = new Set();
-
-            appointments.forEach(a => {
-                if (a.status === 'Done') return;
-                if (window._remindedIds.has(a.id)) return;
-
-                // Try to build a Date from the appointment date + time fields
-                // Expected format: a.date = "2025-07-14" or "14 Jul 2025", a.time = "10:00 AM"
-                let apptDate = null;
-                try {
-                    const raw = `${a.date} ${a.time}`.trim();
-                    apptDate = new Date(raw);
-                    if (isNaN(apptDate.getTime())) {
-                        // Fallback: try date only (no time)
-                        apptDate = new Date(a.date);
-                    }
-                } catch(e) { return; }
-
-                if (isNaN(apptDate.getTime())) return;
-
-                // Only notify if appointment is between now and 24 hours from now
-                if (apptDate > now && apptDate <= in24h) {
-                    window._remindedIds.add(a.id);
-
-                    const doctorLabel = a.doctor_name ? `with ${a.doctor_name}` : '';
-                    const timeLabel = a.time || '';
-                    const dateLabel = a.date || '';
-
-                    addNotification(
-                        '⏰ Appointment Tomorrow',
-                        `Your ${a.type || 'consultation'} ${doctorLabel} is scheduled for ${dateLabel} at ${timeLabel}. Please be ready.`,
-                        "switchTab('schedule')",
-                        'warning'
-                    );
-                }
-            });
         }
 
         async function fetchDoctors() { 
@@ -1016,7 +928,7 @@
                 const r = await fetch(API_BASE+'/api/doctors'); 
                 const docs = await r.json(); 
                 const sel = document.getElementById('book-doctor'); 
-                sel.innerHTML = '<option value="">-- Select a Doctor to view available slots --</option>'; 
+                sel.innerHTML = '<option value="">-- Select a Doctor --</option>'; 
                 docs.forEach(d => sel.innerHTML += `<option value="${d.id}">${d.name} - ${d.specialty}</option>`); 
             } catch(e) { console.error("Error fetching doctors", e); }
         }
@@ -1045,7 +957,7 @@
                                  <svg class="w-5 h-5 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"></path></svg>
                                </span>`;
                         
-                        tbody.innerHTML += `<tr class="border-b border-gray-100 hover:bg-gray-50 transition"><td class="py-4 px-6 font-bold text-gray-900">${rep.name}</td><td class="py-4 px-6 text-gray-600">${rep.type}</td><td class="py-4 px-6 text-gray-600">${rep.date}</td><td class="py-4 px-6"><span class="${statColor} px-2.5 py-1 rounded text-[10px] font-bold">${rep.status}</span></td><td class="py-4 px-6 flex justify-center items-center">${driveBtn}<button onclick="deleteReport(${safeId})" class="text-gray-400 hover:text-red-500 font-bold transition" title="Delete"><svg class="w-5 h-5 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg></button></td></tr>`;
+                        tbody.innerHTML += `<tr class="border-b border-gray-100 hover:bg-gray-50 transition"><td class="py-4 px-6 font-bold text-gray-900 whitespace-nowrap">${rep.name}</td><td class="py-4 px-6 text-gray-600 whitespace-nowrap">${rep.type}</td><td class="py-4 px-6 text-gray-600 whitespace-nowrap">${rep.date}</td><td class="py-4 px-6"><span class="${statColor} px-2.5 py-1 rounded text-[10px] font-bold">${rep.status}</span></td><td class="py-4 px-6 flex justify-center items-center">${driveBtn}<button onclick="deleteReport(${safeId})" class="text-gray-400 hover:text-red-500 font-bold transition" title="Delete"><svg class="w-5 h-5 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg></button></td></tr>`;
                     });
                 } else {
                     document.getElementById('reports-empty').classList.remove('hidden');
@@ -1072,6 +984,7 @@
             if (!window.pendingDeleteId) return;
             const id = window.pendingDeleteId;
             const btn = document.getElementById('confirm-action-btn');
+            
             btn.innerText = "Deleting...";
             try {
                 const r = await fetch(`${API_BASE}/api/reports/${id}`, { method: 'DELETE', headers: await getAuthHeaders() });
@@ -1087,6 +1000,7 @@
         window.suggestDoctor = async () => { 
             const sym = document.getElementById('book-symptoms').value; 
             if(!sym) { showInlineMessage("Please type your symptoms to find a doctor.", "error"); return; }
+            
             try {
                 const r = await fetch(API_BASE+'/api/suggest_doctor', {method:'POST',headers:await getAuthHeaders(), body:JSON.stringify({symptoms:sym})}); 
                 const d = await r.json(); 
@@ -1101,19 +1015,29 @@
 
         window.submitBooking = async (e) => {
             e.preventDefault(); 
+            
             const doctorId = document.getElementById('book-doctor').value;
             if (!doctorId) return showInlineMessage("Please select a doctor.", "error");
+            
             const preferredTime = document.getElementById('selected-slot').value;
             if (!preferredTime) return showInlineMessage("Please select an available time slot.", "error");
+
             if (!document.getElementById('pdpa-agree').checked) return showInlineMessage("You must agree to the PDPA to proceed.", "error");
+            
             const btn = document.getElementById('book-btn'); 
             btn.innerText = "Processing...";
             try {
                 const r = await fetch(API_BASE+'/api/book_appointment', { 
-                    method:'POST', headers:await getAuthHeaders(), 
-                    body:JSON.stringify({ doctor_id: doctorId, visit_type: "online", preferred_datetime: preferredTime }) 
+                    method:'POST', 
+                    headers:await getAuthHeaders(), 
+                    body:JSON.stringify({ 
+                        doctor_id: doctorId, 
+                        visit_type: "online", 
+                        preferred_datetime: preferredTime 
+                    }) 
                 });
                 const d = await r.json(); 
+                
                 if (d.error) {
                     showInlineMessage(d.message, "error"); 
                 } else if (d.stripe_url) {
@@ -1123,18 +1047,64 @@
                     fetchAppointments(); 
                     switchTab('schedule'); 
                 }
-            } catch(e) { showInlineMessage("Booking Failed. Please try again.", "error"); } 
+            } catch(e) { 
+                showInlineMessage("Booking Failed. Please try again.", "error"); 
+            } 
             btn.innerText = "Pay Now";
         }
 
+        // Preview local image selection instantly
+        window.previewAvatar = (input) => {
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('set-avatar').src = e.target.result;
+                }
+                reader.readAsDataURL(input.files[0]);
+            }
+        };
+
+        // Send FormData containing the image file to save settings
         window.saveSettings = async () => {
             const btn = document.getElementById('set-btn'); 
             btn.innerText = "Saving...";
             try { 
-                await fetch(`${API_BASE}/api/user/profile`, { method: 'POST', headers: await getAuthHeaders(), body: JSON.stringify({ name: document.getElementById('set-name').value, phone: document.getElementById('set-phone').value }) }); 
-                showInlineMessage("Profile successfully updated.", "success");
-                setTimeout(() => window.location.reload(), 1500); 
-            } catch(e) { showInlineMessage("Error updating profile. Please try again.", "error"); btn.innerText = "Update Profile"; }
+                const name = document.getElementById('set-name').value;
+                const phone = document.getElementById('set-phone').value;
+                const photoInput = document.getElementById('set-photo');
+                
+                let res;
+                // If the user selected a new profile picture, send via FormData
+                if (photoInput.files.length > 0) {
+                    const fd = new FormData();
+                    fd.append('name', name);
+                    fd.append('phone', phone);
+                    fd.append('file', photoInput.files[0]);
+                    
+                    res = await fetch(`${API_BASE}/api/user/profile`, { 
+                        method: 'POST', 
+                        headers: { 'Authorization': `Bearer ${await window.currentUser.getIdToken()}` }, 
+                        body: fd 
+                    });
+                } else {
+                    // Otherwise just send standard JSON
+                    res = await fetch(`${API_BASE}/api/user/profile`, { 
+                        method: 'POST', 
+                        headers: await getAuthHeaders(), 
+                        body: JSON.stringify({ name, phone }) 
+                    });
+                }
+
+                if (res.ok) {
+                    showInlineMessage("Profile successfully updated.", "success");
+                    setTimeout(() => window.location.reload(), 1500); 
+                } else {
+                    throw new Error("Failed to update");
+                }
+            } catch(e) { 
+                showInlineMessage("Error updating profile. Please try again.", "error"); 
+                btn.innerText = "Update Profile"; 
+            }
         }
 
         window.uploadReport = async (e) => {
@@ -1142,14 +1112,14 @@
             const btn = document.getElementById('upload-btn'); 
             btn.innerText = "Working..."; 
             
+            const repName = document.getElementById('rep-name').value;
+            const repType = document.getElementById('rep-type').value;
+
             const fd = new FormData(); 
             fd.append('file', document.getElementById('report-file').files[0]);
-            fd.append('report_name', document.getElementById('rep-name').value);
+            fd.append('report_name', repName);
             fd.append('report_date', document.getElementById('rep-date').value);
-            fd.append('report_type', document.getElementById('rep-type').value);
-
-            const reportName = document.getElementById('rep-name').value;
-            const reportType = document.getElementById('rep-type').value;
+            fd.append('report_type', repType);
 
             try { 
                 const r = await fetch(API_BASE+'/api/upload_medical_report', { method:'POST', headers: {'Authorization': `Bearer ${await window.currentUser.getIdToken()}`}, body:fd }); 
@@ -1160,16 +1130,9 @@
                 document.getElementById('file-name-display').classList.remove('text-[#0066FF]');
                 e.target.reset(); 
                 
-                fetchReports();
-
-                // ===================== ENRICHED UPLOAD NOTIFICATION =====================
-                addNotification(
-                    '📄 Report Uploaded & Analysed',
-                    `"${reportName}" (${reportType}) was uploaded successfully and is ready for AI review. Tap to chat about it.`,
-                    "switchTab('chat')",
-                    'success'
-                );
-
+                fetchReports(); 
+                
+                addNotification("Upload Complete", `"${repName}" (${repType}) was uploaded successfully and is ready for AI review.`, "switchTab('chat')", 'success');
             } catch(e) { showInlineMessage("Upload failed. Please check your connection and try again.", "error"); } 
             btn.innerText = "Add";
         }
