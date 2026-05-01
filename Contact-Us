@@ -188,7 +188,7 @@
         }
 
         .form-label span {
-            color: var(--primary-blue); /* Red or Blue asterisk */
+            color: var(--primary-blue);
         }
 
         .form-control {
@@ -355,17 +355,15 @@
     <div class="section-white">
         <div class="container">
             <header>
-                <a href="index.html">
+                <a href="https://doktura.ai/">
                     <img src="https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/Logo.jpg?download=true" alt="Doktura.ai Logo" class="logo">
                 </a>
                 <nav>
                     <div class="nav-links">
-                        <a href="index.html">Home</a>
-                        <a href="#">Company</a>
-                        <a href="#">Legal</a>
-                        <a href="#">Support</a>
+                        <a href="https://doktura.ai/">Home</a>
                     </div>
-                    <button class="btn-primary nav-btn">Login Now</button>
+                    <!-- Login button updated to link to login.html -->
+                    <a href="https://doktura.ai/login.html" class="btn-primary nav-btn">Login Now</a>
                 </nav>
             </header>
         </div>
@@ -387,8 +385,11 @@
                     <!-- Honeypot field to prevent spam bots -->
                     <input type="text" name="_honey" style="display:none">
                     
-                    <!-- Disable captcha for seamless experience (optional, remove if you want captcha) -->
+                    <!-- Disable captcha for seamless experience -->
                     <input type="hidden" name="_captcha" value="false">
+                    
+                    <!-- Redirect back to homepage after submission -->
+                    <input type="hidden" name="_next" value="https://doktura.ai/">
 
                     <div class="form-group">
                         <label class="form-label" for="name">Name <span>*</span></label>
@@ -438,7 +439,7 @@
                     <div class="footer-col">
                         <h4>Company</h4>
                         <a href="#">About</a>
-                        <a href="#">Contact Us</a>
+                        <a href="https://doktura.ai/Contact-Us.html">Contact Us</a>
                         <a href="#">HIPAA</a>
                     </div>
                     <div class="footer-col">
