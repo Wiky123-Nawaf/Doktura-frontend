@@ -7,6 +7,8 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Font Awesome for Social Media Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <style>
         /* --- Reset & Base Styles --- */
         * {
@@ -21,7 +23,7 @@
             line-height: 1.6;
             -webkit-font-smoothing: antialiased;
             overflow-x: hidden;
-            background-color: var(--bg-grayish);
+            background-color: #f8f9fc;
             display: flex;
             flex-direction: column;
             min-height: 100vh;
@@ -32,21 +34,13 @@
             color: inherit;
         }
 
-        /* --- Color Variables --- */
         :root {
             --primary-blue: #0066cc;
             --light-blue-bg: #eef5ff;
-            --bg-white: #ffffff;
-            --bg-grayish: #f8f9fc;
-            --card-grayish: #f4f6fa;
-            --text-dark: #111111;
-            --text-gray: #666666;
-            --border-gray: #e0e0e0;
             --footer-bg: #111111;
             --footer-text-muted: #a0aab5;
         }
 
-        .section-white { background-color: var(--bg-white); }
         .container { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
         main { flex-grow: 1; }
 
@@ -54,26 +48,14 @@
         .btn-primary {
             background-color: var(--primary-blue);
             color: white;
-            border: none;
             border-radius: 999px;
             padding: 10px 24px;
             font-size: 14px;
             font-weight: 600;
             display: inline-flex;
-            justify-content: center;
-            align-items: center;
             transition: all 0.2s;
         }
-        
         .btn-primary:hover { opacity: 0.9; }
-
-        .pill-label {
-            display: inline-block;
-            padding: 8px 24px;
-            border-radius: 999px;
-            font-size: 13px;
-            font-weight: 500;
-        }
 
         /* --- Header --- */
         header {
@@ -81,17 +63,15 @@
             justify-content: space-between;
             align-items: center;
             padding: 24px 0;
-            background-color: var(--bg-white);
+            background-color: #ffffff;
         }
-
         .logo { height: 32px; width: auto; }
         nav { display: flex; align-items: center; gap: 32px; }
         .nav-links { display: flex; gap: 24px; font-size: 14px; font-weight: 500; }
         .nav-links a:hover { color: var(--primary-blue); }
 
-        /* --- Content Section --- */
-        .legal-section { padding: 60px 0 100px 0; position: relative; }
-
+        /* --- Legal Content --- */
+        .legal-section { padding: 60px 0 100px 0; }
         .legal-card {
             background: #ffffff;
             border-radius: 24px;
@@ -99,60 +79,47 @@
             max-width: 860px;
             margin: 0 auto;
             padding: 64px;
-            position: relative;
-            z-index: 1;
         }
+        .legal-header { text-align: center; margin-bottom: 48px; border-bottom: 1px solid #e0e0e0; padding-bottom: 32px; }
+        .legal-header h1 { font-size: 36px; font-weight: 800; margin-bottom: 16px; }
+        .legal-content h2 { font-size: 20px; font-weight: 700; margin: 32px 0 12px 0; }
+        .legal-content p, .legal-content li { color: #666; font-size: 15px; margin-bottom: 16px; }
+        .contact-box { background-color: #f4f6fa; border-radius: 16px; padding: 32px; margin-top: 48px; text-align: center; }
 
-        .legal-header {
-            text-align: center;
-            margin-bottom: 48px;
-            padding-bottom: 32px;
-            border-bottom: 1px solid var(--border-gray);
-        }
+        /* --- Footer (Matches Screenshot) --- */
+        .footer-section { padding: 40px 24px; background-color: #f8f9fc; }
+        .footer-card { background-color: var(--footer-bg); color: #ffffff; border-radius: 40px; padding: 60px; max-width: 1200px; margin: 0 auto; }
+        
+        .footer-top { display: flex; justify-content: space-between; gap: 40px; padding-bottom: 80px; }
+        .footer-brand { max-width: 350px; }
+        .footer-logo-pill { background: white; display: inline-flex; padding: 10px 20px; border-radius: 12px; margin-bottom: 24px; }
+        .footer-brand p { color: var(--footer-text-muted); font-size: 15px; line-height: 1.5; }
 
-        .legal-header .pill-label { background-color: var(--light-blue-bg); color: var(--primary-blue); margin-bottom: 16px; }
-        .legal-header h1 { font-size: 36px; font-weight: 800; margin-bottom: 16px; color: var(--text-dark); }
-
-        .legal-content h2 { font-size: 20px; font-weight: 700; margin: 32px 0 12px 0; color: var(--text-dark); }
-        .legal-content p { color: var(--text-gray); font-size: 15px; margin-bottom: 16px; }
-        .legal-content ul { margin-bottom: 24px; padding-left: 20px; color: var(--text-gray); }
-        .legal-content li { margin-bottom: 10px; font-size: 15px; }
-        .legal-content strong { color: var(--text-dark); font-weight: 600; }
-
-        .contact-footer-box {
-            background-color: var(--card-grayish);
-            border-radius: 16px;
-            padding: 32px;
-            margin-top: 48px;
-            text-align: center;
-        }
-
-        /* --- Footer --- */
-        .footer-section { padding: 40px 24px; background-color: var(--bg-grayish); }
-        .footer-card { background-color: var(--footer-bg); color: #ffffff; border-radius: 32px; padding: 60px; max-width: 1200px; margin: 0 auto; }
-        .footer-top { display: flex; justify-content: space-between; gap: 60px; padding-bottom: 60px; }
-        .footer-brand { max-width: 380px; }
-        .footer-logo-wrapper { background: white; display: inline-block; padding: 8px 16px; border-radius: 12px; margin-bottom: 24px; }
-        .footer-links-group { display: flex; gap: 80px; }
-        .footer-col h4 { font-size: 16px; margin-bottom: 24px; color: #fff; }
-        .footer-col a { display: block; color: var(--footer-text-muted); font-size: 15px; margin-bottom: 16px; }
+        .footer-links-group { display: flex; gap: 100px; }
+        .footer-col h4 { font-size: 16px; font-weight: 700; margin-bottom: 24px; color: #fff; }
+        .footer-col a { display: block; color: var(--footer-text-muted); font-size: 15px; margin-bottom: 16px; transition: color 0.2s; }
         .footer-col a:hover { color: #ffffff; }
+
         .footer-bottom { display: flex; justify-content: space-between; align-items: center; padding-top: 40px; border-top: 1px solid rgba(255, 255, 255, 0.1); }
         .footer-bottom p { color: var(--footer-text-muted); font-size: 14px; }
 
+        .social-wrapper { display: flex; align-items: center; gap: 20px; }
+        .social-wrapper span { color: #ffffff; font-weight: 600; font-size: 15px; }
+        .social-icons { display: flex; gap: 18px; }
+        .social-icons a { color: #ffffff; font-size: 18px; transition: opacity 0.2s; }
+        .social-icons a:hover { opacity: 0.7; }
+
         @media (max-width: 768px) {
-            header { flex-direction: column; gap: 20px; }
-            .legal-card { padding: 32px 24px; }
-            .footer-top { flex-direction: column; }
-            .footer-links-group { flex-direction: column; gap: 32px; }
+            .footer-top { flex-direction: column; gap: 40px; }
+            .footer-links-group { gap: 40px; }
             .footer-bottom { flex-direction: column; gap: 24px; text-align: center; }
+            .legal-card { padding: 32px; }
         }
     </style>
 </head>
 <body>
 
-    <!-- Header -->
-    <div class="section-white">
+    <div style="background-color: #fff;">
         <div class="container">
             <header>
                 <a href="https://doktura.ai/">
@@ -172,67 +139,35 @@
         <section class="legal-section container">
             <div class="legal-card">
                 <div class="legal-header">
-                    <div class="pill-label">Safety & Security</div>
                     <h1>Privacy Policy</h1>
                     <p>Your health data is private. Here is how we protect it.</p>
                 </div>
-
                 <div class="legal-content">
                     <h2>1. Introduction</h2>
-                    <p>Welcome to Doktura AI. We value your privacy and are committed to protecting your personal and medical data. This policy explains how we collect, use, and protect your information when you use our AI Medical Assistant service.</p>
-
+                    <p>Welcome to Doktura AI. We value your privacy and are committed to protecting your personal and medical data. This policy explains how we collect, use, and protect your information.</p>
+                    
                     <h2>2. Information We Collect</h2>
-                    <ul>
-                        <li><strong>Identity Data:</strong> Full name, email address, and phone number provided during registration.</li>
-                        <li><strong>Medical Data:</strong> Medical reports, scans, and health history you choose to upload for AI analysis.</li>
-                        <li><strong>Interaction Data:</strong> Chat logs between you and the Doktura AI assistant.</li>
-                        <li><strong>Google Data:</strong> If you link your Google Drive, we only access the specific files you upload via our platform using the <code>drive.file</code> scope.</li>
-                    </ul>
+                    <p>We collect identity data (name, email), medical data (reports you upload), and interaction data (chat logs with our AI assistant).</p>
 
-                    <h2>3. How We Use Your Data</h2>
-                    <p>Doktura AI uses your data for the following purposes:</p>
-                    <ul>
-                        <li>To provide personalized medical insights and summaries using optimized AI models.</li>
-                        <li>To facilitate appointment bookings with licensed human doctors.</li>
-                        <li>To securely store your medical records in your personal Google Drive account.</li>
-                    </ul>
+                    <h2>3. Storage</h2>
+                    <p>Doktura AI does not store your medical files on our own servers. Files are transferred directly to your own Google Drive.</p>
 
-                    <h2>4. Storage and Google Drive Integration</h2>
-                    <p><strong>Doktura AI does not store your medical files on our own servers.</strong></p>
-                    <p>When you upload a report, it is transferred directly to your own Google Drive. Our application only retains a reference ID (File ID) to allow you to view the document within our interface. We never access your personal photos or non-related documents on your Drive.</p>
-
-                    <h2>5. Third-Party Services</h2>
-                    <p>We share necessary data with these trusted partners to provide our service:</p>
-                    <ul>
-                        <li><strong>LLM AI:</strong> To process and analyze medical text and images.</li>
-                        <li><strong>Stripe:</strong> To handle secure payment processing for premium subscriptions (RM 50) and doctor bookings (RM 38).</li>
-                        <li><strong>Firebase:</strong> For secure user authentication and profile storage.</li>
-                    </ul>
-
-                    <h2>6. Important Medical Disclaimer</h2>
-                    <p>Insights provided by the Doktura AI Assistant are for informational and guidance purposes only. However, <strong>Doktura AI also facilitates professional medical advice, diagnosis, and treatment through our network of licensed human doctors.</strong></p>
-                    <p>Professional clinical advice is provided exclusively during your online or physical consultations with these qualified medical practitioners. While our AI helps you understand your symptoms, it is not a substitute for the definitive clinical judgment of our licensed doctors. <strong>In the event of a medical emergency, please call 999 or proceed to the nearest emergency department immediately.</strong></p>
-
-                    <h2>7. Data Security and Deletion</h2>
-                    <p>We use industry-standard encryption (AES-256) to protect your sessions. You have the right to delete your entire account and all associated data at any time through the Profile Settings. This will also remove the link to your Google Drive.</p>
-
-                    <div class="contact-footer-box">
+                    <div class="contact-box">
                         <h2>Contact Us</h2>
-                        <p>If you have any questions about this Privacy Policy, please contact us at:</p>
-                        <p><strong><a href="https://doktura.ai/Contact-Us.html" class="text-blue" style="font-weight: 700; text-decoration: underline;">Contact Our Privacy Team</a></strong></p>
+                        <p>Questions? <strong><a href="https://doktura.ai/Contact-Us.html" style="color: var(--primary-blue); text-decoration: underline;">Contact Our Privacy Team</a></strong></p>
                     </div>
                 </div>
             </div>
         </section>
     </main>
 
-    <!-- Footer -->
+    <!-- Corrected Footer (Matches Screenshot) -->
     <footer class="footer-section">
         <div class="footer-card">
             <div class="footer-top">
                 <div class="footer-brand">
-                    <div class="footer-logo-wrapper">
-                        <img src="https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/Logo.jpg?download=true" alt="Doktura.ai Logo" style="height: 32px;">
+                    <div class="footer-logo-pill">
+                        <img src="https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/Logo.jpg?download=true" alt="Doktura.ai Logo" style="height: 28px;">
                     </div>
                     <p>Providing AI-powered medical insights and seamless doctor bookings 24/7.</p>
                 </div>
@@ -240,6 +175,7 @@
                 <div class="footer-links-group">
                     <div class="footer-col">
                         <h4>Company</h4>
+                        <a href="https://doktura.ai/about.html">About</a>
                         <a href="https://doktura.ai/Contact-Us.html">Contact Us</a>
                         <a href="https://doktura.ai/hipaa.html">HIPAA</a>
                     </div>
@@ -252,10 +188,15 @@
             </div>
             
             <div class="footer-bottom">
-                <p>Alright reserve to © Doktura 2026</p>
-                <div style="display: flex; gap: 20px;">
-                    <a href="https://www.linkedin.com/company/doktura-ai" target="_blank" style="color: white; font-size: 14px;">LinkedIn</a>
-                    <a href="https://www.instagram.com/doktura.ai/" target="_blank" style="color: white; font-size: 14px;">Instagram</a>
+                <p>All rights reserved © Doktura 2026</p>
+                <div class="social-wrapper">
+                    <span>Connect with us</span>
+                    <div class="social-icons">
+                        <a href="https://facebook.com/doktura.ai" target="_blank"><i class="fa-brands fa-facebook-f"></i></a>
+                        <a href="https://instagram.com/doktura.ai" target="_blank"><i class="fa-brands fa-instagram"></i></a>
+                        <a href="https://tiktok.com/@doktura.ai" target="_blank"><i class="fa-brands fa-tiktok"></i></a>
+                        <a href="https://linkedin.com/company/doktura-ai" target="_blank"><i class="fa-brands fa-linkedin-in"></i></a>
+                    </div>
                 </div>
             </div>
         </div>
