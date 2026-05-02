@@ -1077,35 +1077,32 @@
                 const phone = document.getElementById('set-phone').value;
                 const photoInput = document.getElementById('set-photo');
                 
-                let res;
-                // If the user selected a new profile picture, send via FormData
+                // ALWAYS use FormData because the backend now expects Form(...) data
+                const fd = new FormData();
+                fd.append('name', name || "");
+                fd.append('phone', phone || "");
+                
+                // If the user selected a new profile picture, append the file
                 if (photoInput.files.length > 0) {
-                    const fd = new FormData();
-                    fd.append('name', name);
-                    fd.append('phone', phone);
                     fd.append('file', photoInput.files[0]);
-                    
-                    // FIX: Use PUT method for updates
-                    res = await fetch(`${API_BASE}/api/user/profile`, { 
-                        method: 'PUT', 
-                        headers: { 'Authorization': `Bearer ${await window.currentUser.getIdToken()}` }, 
-                        body: fd 
-                    });
-                } else {
-                    // Otherwise just send standard JSON
-                    // FIX: Use PUT method for updates
-                    res = await fetch(`${API_BASE}/api/user/profile`, { 
-                        method: 'PUT', 
-                        headers: await getAuthHeaders(), 
-                        body: JSON.stringify({ name, phone }) 
-                    });
                 }
+                
+                // Send the PUT request with the FormData
+                const res = await fetch(`${API_BASE}/api/user/profile`, { 
+                    method: 'PUT', 
+                    // Note: Do NOT set Content-Type manually here. 
+                    // Fetch automatically sets 'multipart/form-data' with the correct boundary when passing FormData.
+                    headers: { 'Authorization': `Bearer ${await window.currentUser.getIdToken()}` }, 
+                    body: fd 
+                });
 
                 if (res.ok) {
                     showInlineMessage("Profile successfully updated.", "success");
                     setTimeout(() => window.location.reload(), 1500); 
                 } else {
-                    throw new Error("Failed to update");
+                    const err = await res.json();
+                    console.error("Profile update error:", err);
+                    throw new Error(err.detail || "Failed to update");
                 }
             } catch(e) { 
                 showInlineMessage("Error updating profile. Please try again.", "error"); 
