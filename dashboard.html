@@ -1110,8 +1110,20 @@
                 });
 
                 if (res.ok) {
+                    const data = await res.json();
                     showInlineMessage("Profile successfully updated.", "success");
-                    setTimeout(() => window.location.reload(), 1500); 
+                    
+                    // Instantly update avatars across the UI with the Base64 response
+                    if(data.photo_url) {
+                        window.userData.photo_url = data.photo_url;
+                        window.currentAvatar = data.photo_url;
+                        document.getElementById('userAvatarSidebar').src = data.photo_url;
+                        document.getElementById('userAvatarHeader').src = data.photo_url;
+                        document.getElementById('set-avatar').src = data.photo_url;
+                    }
+                    
+                    // No need to reload anymore, it is updated instantly!
+                    btn.innerText = "Update Profile";
                 } else {
                     const err = await res.json();
                     console.error("Profile update error:", err);
