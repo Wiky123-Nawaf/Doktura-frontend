@@ -449,6 +449,13 @@
                 fetchDoctors(); 
                 fetchAppointments(); 
                 fetchReports(); 
+
+                setInterval(() => { 
+                    if (window.cachedAppointments && window.cachedAppointments.length > 0) {
+                        checkUpcomingReminders(window.cachedAppointments); 
+                    } 
+                }, 5 * 60 * 1000); // check every 5 minutes
+
             } catch(e) { 
                 console.error("DASHBOARD STARTUP ERROR:", e); 
                 document.getElementById('appBody').classList.remove('hidden'); 
@@ -466,6 +473,7 @@
         let isRecording = false; 
         window.pendingDeleteId = null;
         window.notifiedAppointments = new Set();
+        window.cachedAppointments = [];
         const chatLogoUrl = "https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/Vector%20(1).png?download=true";
 
         window.toggleSidebar = () => {
@@ -882,15 +890,15 @@
             if (!appointments || !appointments.length) return;
             const now = new Date();
             appointments.forEach(a => {
-                if (a.status === 'Done') return;
+                if (a.status === 'Done' || a.status === 'Pending Payment') return;
                 try {
-                    // FIX: Make date parsing more robust by removing the comma, and adjust time check to be more inclusive.
-                    const apptDate = new Date(`${a.date.replace(',', '')} ${a.time}`);
+                    // Use the raw ISO datetime string directly — no fragile string manipulation
+                    if (!a.preferred_datetime) return;
+                    const apptDate = new Date(a.preferred_datetime.replace('T', ' '));
                     if (isNaN(apptDate.getTime())) return;
 
                     const diffHours = (apptDate - now) / (1000 * 60 * 60);
 
-                    // Check for appointments in the next 24 hours, including those that started up to 6 minutes ago.
                     if (diffHours >= -0.1 && diffHours <= 24) {
                         if (!window.notifiedAppointments.has(a.id)) {
                             window.notifiedAppointments.add(a.id);
@@ -913,10 +921,15 @@
             try {
                 const r = await fetch(API_BASE + '/api/appointments', { method: 'GET', headers: await getAuthHeaders() });
                 const data = await r.json(); tbody.innerHTML = '';
+                
                 if(!data.appointments || data.appointments.length === 0) { 
                     tbody.innerHTML = `<tr><td colspan="6" class="py-12 text-center text-gray-400 font-medium">No appointments scheduled.</td></tr>`; 
                     return; 
                 }
+                
+                // Cache for periodic reminder checks
+                window.cachedAppointments = data.appointments;
+                
                 data.appointments.forEach(a => {
                     let sColor = a.status === 'Done' ? 'text-green-600 bg-green-50' : 'text-blue-600 bg-blue-50';
                     let btn = a.action_url ? `<a href="${API_BASE}${a.action_url}" target="_blank" class="bg-[#1e1b4b] hover:bg-gray-800 transition text-white text-[10px] font-bold px-3 py-1.5 rounded uppercase whitespace-nowrap">Start Call</a>` : `<span class="text-gray-300">--</span>`;
