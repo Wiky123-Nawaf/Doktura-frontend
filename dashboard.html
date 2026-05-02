@@ -884,12 +884,14 @@
             appointments.forEach(a => {
                 if (a.status === 'Done') return;
                 try {
-                    const apptDate = new Date(`${a.date} ${a.time}`);
+                    // FIX: Make date parsing more robust by removing the comma, and adjust time check to be more inclusive.
+                    const apptDate = new Date(`${a.date.replace(',', '')} ${a.time}`);
                     if (isNaN(apptDate.getTime())) return;
 
                     const diffHours = (apptDate - now) / (1000 * 60 * 60);
 
-                    if (diffHours > 0 && diffHours <= 24) {
+                    // Check for appointments in the next 24 hours, including those that started up to 6 minutes ago.
+                    if (diffHours >= -0.1 && diffHours <= 24) {
                         if (!window.notifiedAppointments.has(a.id)) {
                             window.notifiedAppointments.add(a.id);
                             addNotification(
@@ -900,7 +902,9 @@
                             );
                         }
                     }
-                } catch(e) {}
+                } catch(e) {
+                    console.error("Error checking reminder:", e);
+                }
             });
         };
 
@@ -1081,15 +1085,17 @@
                     fd.append('phone', phone);
                     fd.append('file', photoInput.files[0]);
                     
+                    // FIX: Use PUT method for updates
                     res = await fetch(`${API_BASE}/api/user/profile`, { 
-                        method: 'POST', 
+                        method: 'PUT', 
                         headers: { 'Authorization': `Bearer ${await window.currentUser.getIdToken()}` }, 
                         body: fd 
                     });
                 } else {
                     // Otherwise just send standard JSON
+                    // FIX: Use PUT method for updates
                     res = await fetch(`${API_BASE}/api/user/profile`, { 
-                        method: 'POST', 
+                        method: 'PUT', 
                         headers: await getAuthHeaders(), 
                         body: JSON.stringify({ name, phone }) 
                     });
