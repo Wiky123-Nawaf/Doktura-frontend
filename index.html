@@ -109,12 +109,14 @@
             padding: 24px 0; 
         }
         .logo { 
-            height: 120px; /* Reduced from 120px to perfectly align with standard button heights */
+            height: 120px; 
             width: auto; 
             object-fit: contain; 
             display: block; 
         } 
-        nav { display: flex; align-items: center; gap: 32px; }
+        /* Added translateY(-12px) to move the login button slightly up on desktop */
+        nav { display: flex; align-items: center; gap: 32px; transform: translateY(-12px); }
+        
         .nav-links { display: flex; align-items: center; gap: 24px; font-size: 15px; color: var(--text-dark); font-weight: 500; }
         .nav-links a:hover { color: var(--primary-blue); }
         .header-divider { width: 1px; height: 24px; background-color: var(--line-gray); margin: 0 -8px; }
@@ -525,9 +527,13 @@
 
         @media (max-width: 768px) {
             header { padding: 16px 0; }
+            
+            /* Slightly nudged up on mobile too, but keeping it proportionate */
+            nav { transform: translateY(-4px); }
+            
             .nav-links { flex-wrap: wrap; justify-content: center; gap: 16px; }
             .header-divider { display: none; }
-            .logo { height: 104px; } /* Increased from 32px */
+            .logo { height: 44px; } /* Increased from 32px */
             
             .hero { padding: 32px 0 24px 0; gap: 16px; }
             .hero-fig2 { height: 48px; margin-bottom: 16px; }
