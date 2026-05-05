@@ -5,9 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Doktura.ai - AI Medical Assistant</title>
     
-    <!-- THIS LINE CHANGES THE BROWSER TAB LOGO -->
-    <link rel="icon" type="image/jpeg" href="https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/Group%202085665227.png?download=true">
-    
+    <link rel="icon" type="image/jpeg" href="https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/Group%202085665227.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -26,17 +24,13 @@
             -webkit-font-smoothing: antialiased;
             overflow-x: hidden;
             background-color: var(--bg-white);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
         }
 
-        a {
-            text-decoration: none;
-            color: inherit;
-        }
-
-        button {
-            font-family: inherit;
-            cursor: pointer;
-        }
+        a { text-decoration: none; color: inherit; }
+        button { font-family: inherit; cursor: pointer; }
 
         /* --- Color Variables --- */
         :root {
@@ -50,7 +44,6 @@
             --border-gray: #e0e0e0;
             --warning-bg: #fff0f0;
             --warning-text: #e02424;
-            --input-bg: #ffffff;
             --red-accent: #e53e3e;
             --red-light: #fff0f0;
             --line-gray: #e2e8f0;
@@ -61,22 +54,17 @@
             --footer-text-muted: #a0aab5;
         }
 
-        /* Custom Scrollbar for Chat Box */
         #chat-history::-webkit-scrollbar { width: 6px; }
         #chat-history::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 4px; }
         #chat-history::-webkit-scrollbar-track { background: transparent; }
 
         /* --- Layout Containers --- */
+        .main-content { flex: 1; }
         .section-white { background-color: var(--bg-white); }
         .section-grayish { background-color: var(--bg-grayish); }
         .section-faq-bg { background-color: var(--faq-bg); }
 
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 24px;
-        }
-
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
         .text-center { text-align: center; }
         .text-blue { color: var(--primary-blue); }
         .font-bold { font-weight: 700; }
@@ -88,108 +76,86 @@
             color: white;
             border: none;
             border-radius: 999px;
-            padding: 10px 24px;
+            padding: 12px 28px;
             font-size: 14px;
             font-weight: 600;
             display: inline-flex;
             align-items: center;
             justify-content: center;
             gap: 8px;
+            line-height: 1; /* Ensures perfect vertical centering inside the button */
             transition: opacity 0.2s;
         }
         .btn-primary:hover { opacity: 0.9; }
 
-        .pill-label {
-            display: inline-block;
-            padding: 8px 24px;
-            border-radius: 999px;
-            font-size: 13px;
-            font-weight: 500;
-        }
+        .pill-label { display: inline-block; padding: 8px 24px; border-radius: 999px; font-size: 13px; font-weight: 500; }
 
         /* --- Header --- */
-        header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 24px 0;
+        header { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            padding: 24px 0; 
         }
-
         .logo { 
-            height: 32px; 
+            height: 44px; /* Reduced from 120px to perfectly align with standard button heights */
             width: auto; 
             object-fit: contain; 
-            transform: translateY(1px); 
-        }
-
+            display: block; 
+        } 
         nav { display: flex; align-items: center; gap: 32px; }
-
-        .nav-links { 
-            display: flex; 
-            align-items: center; 
-            gap: 24px; 
-            font-size: 14px; 
-            color: var(--text-dark); 
-            font-weight: 500; 
-        }
+        .nav-links { display: flex; align-items: center; gap: 24px; font-size: 15px; color: var(--text-dark); font-weight: 500; }
         .nav-links a:hover { color: var(--primary-blue); }
+        .header-divider { width: 1px; height: 24px; background-color: var(--line-gray); margin: 0 -8px; }
 
         /* --- Hero Section --- */
-        .hero { display: flex; align-items: center; justify-content: space-between; padding: 60px 0 80px 0; position: relative; gap: 40px; }
-        .hero::before { content: ''; position: absolute; top: -100px; left: -150px; width: 500px; height: 500px; background: radial-gradient(circle, rgba(0, 102, 204, 0.08) 0%, rgba(255, 255, 255, 0) 70%); z-index: 0; pointer-events: none; }
-        .hero-content { flex: 1; max-width: 500px; position: relative; z-index: 1; }
-        .hero h1 { font-size: 56px; font-weight: 800; line-height: 1.1; margin-bottom: 16px; letter-spacing: -1px; }
-        .hero .subtitle { font-size: 16px; color: var(--text-gray); margin-bottom: 32px; line-height: 1.6; }
+        .hero { display: flex; flex-direction: column; align-items: center; padding: 60px 0 40px 0; text-align: center; position: relative; gap: 0; }
+        .hero-fig2 { height: 60px; width: auto; margin-bottom: 24px; object-fit: contain; } 
         
-        .social-proof { margin-top: 40px; }
-        .avatars-row { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
-        .avatars-img { height: 28px; width: auto; }
-        .avatars-count { font-size: 12px; font-weight: 700; color: var(--text-dark); }
-        .helped-text { font-size: 12px; color: var(--text-gray); }
-        .hero-image-container { flex: 1; display: flex; justify-content: flex-end; position: relative; z-index: 1; }
-        .hero-image { max-width: 100%; height: auto; object-fit: contain; }
-
-        /* --- Stats Section --- */
-        .stats-section { text-align: center; padding: 60px 0 40px 0; }
-        .counter-boxes { display: flex; justify-content: center; flex-wrap: wrap; gap: 12px; margin-bottom: 24px; }
-        .digit-box { background: #ffffff; color: var(--primary-blue); font-size: 32px; font-weight: 700; padding: 16px 24px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03); min-width: 60px; }
-        .stats-pill { background-color: var(--bg-white); color: var(--primary-blue); padding: 10px 28px; border-radius: 999px; display: inline-block; font-size: 14px; font-weight: 600; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.02); }
-
-        /* --- Headline Info Section --- */
-        .info-section { text-align: center; max-width: 700px; margin: 0 auto 50px auto; }
-        .info-section h2 { font-size: 32px; font-weight: 700; margin-bottom: 12px; }
-        .info-section p { font-size: 14px; color: var(--text-gray); margin-bottom: 24px; }
-        .warning-pill { background-color: var(--warning-bg); color: var(--warning-text); font-size: 12px; padding: 8px 20px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .hero h1 { font-size: 56px; line-height: 1.1; margin-bottom: 40px; letter-spacing: -1px; color: var(--text-dark); font-weight: 500; }
+        
+        .hero-description { max-width: 760px; width: 100%; margin: 0 auto; text-align: left; }
+        .hero-description p { font-size: 16px; color: #1a1a1a; line-height: 1.6; margin-bottom: 20px; }
+        .hero-description p:last-child { margin-bottom: 0; }
 
         /* --- Chat Interface --- */
-        .chat-section { padding-bottom: 80px; }
-        .chat-container { background: #ffffff; border-radius: 24px; box-shadow: 0 12px 40px rgba(0, 0, 0, 0.04); max-width: 800px; margin: 0 auto; padding: 40px; text-align: center; }
-        .notice-pill { background-color: var(--light-blue-bg); color: var(--primary-blue); margin-bottom: 32px; font-size: 12px; padding: 8px 20px; }
-        .chat-tabs { display: flex; justify-content: center; gap: 12px; margin-bottom: 40px; flex-wrap: wrap; }
-        .tab-btn { display: flex; align-items: center; gap: 8px; padding: 10px 24px; border-radius: 999px; border: 1px solid var(--border-gray); background: white; color: var(--text-gray); font-size: 13px; font-weight: 500; transition: all 0.2s; }
-        .tab-btn.active { border-color: var(--light-blue-bg); background-color: var(--light-blue-bg); color: var(--primary-blue); }
-        .tab-icon { display: flex; align-items: center; justify-content: center; }
+        .chat-section { padding-bottom: 0; padding-top: 40px; }
+        .chat-container { background: #ffffff; border-radius: 24px; border: 1px solid #e2e8f0; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.03); max-width: 800px; margin: 0 auto; padding: 32px; text-align: center; }
         
-        .chat-header { margin-bottom: 32px; }
-        .robot-icon { height: 56px; width: auto; margin-bottom: 16px; }
-        .chat-header h3 { font-size: 22px; font-weight: 700; color: var(--text-dark); }
-        .chat-input-area { text-align: left; max-width: 700px; margin: 0 auto; }
-        .input-wrapper { background-color: var(--card-grayish); border-radius: 12px; padding: 16px; min-height: 120px; display: flex; flex-direction: column; justify-content: space-between; margin-bottom: 24px; }
-        .input-top-row { display: flex; align-items: center; gap: 12px; }
-        .input-icons { display: flex; gap: 8px; color: var(--primary-blue); }
-        .input-field { flex: 1; border: none; background: transparent; outline: none; font-size: 14px; color: var(--text-dark); font-family: inherit; }
-        .input-field::placeholder { color: #a0aab5; }
-        .btn-send { align-self: flex-end; background-color: var(--primary-blue); color: white; border: none; border-radius: 8px; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; transition: opacity 0.2s; }
-        .btn-send:hover { opacity: 0.9; cursor: pointer; }
-        
-        .suggestion-chips { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; }
-        .chip { background: white; border: 1px solid var(--border-gray); border-radius: 999px; padding: 8px 16px; font-size: 12px; color: var(--text-dark); transition: background 0.2s; cursor: pointer; }
-        .chip:hover { background: #f4f6f8; }
+        .chat-tabs-wrapper { display: flex; justify-content: center; margin-bottom: 24px; }
+        .chat-tabs { display: inline-flex; align-items: center; background: #ffffff; border: 1px solid #f1f5f9; border-radius: 999px; padding: 4px; gap: 4px; box-shadow: 0 2px 10px rgba(0,0,0,0.02); }
+        .tab-btn { border: none; padding: 8px 24px; border-radius: 999px; font-size: 14px; font-weight: 600; color: #64748b; background: transparent; display: flex; align-items: center; gap: 8px; cursor: pointer; transition: all 0.2s; }
+        .tab-btn.active { background: #eff6ff; color: var(--primary-blue); }
 
-        /* Dynamic Chat Layout Styles */
+        .input-wrapper { background-color: #f4f6fa; border: 1px solid transparent; border-radius: 16px; padding: 16px; min-height: 140px; display: flex; flex-direction: column; justify-content: space-between; margin-bottom: 24px; text-align: left; }
+        .input-top-area { display: flex; align-items: flex-start; gap: 12px; flex: 1; }
+        .input-top-area svg { flex-shrink: 0; margin-top: 2px; }
+        .input-field { width: 100%; border: none; background: transparent; outline: none; font-size: 15px; color: var(--text-dark); font-family: inherit; resize: none; height: 100%; min-height: 48px; }
+        .input-field::placeholder { color: #94a3b8; }
+        .input-actions { display: flex; justify-content: flex-end; width: 100%; margin-top: 12px; }
+        .btn-get-started { background-color: var(--primary-blue); color: white; border: none; border-radius: 8px; padding: 8px 16px; font-size: 13px; font-weight: 600; display: inline-flex; align-items: center; gap: 8px; cursor: pointer; transition: opacity 0.2s; }
+        .btn-get-started:hover { opacity: 0.9; }
+
+        .suggestion-chips { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; margin-bottom: 20px; }
+        .chip { background: #ffffff; border: 1px solid #e2e8f0; color: #475569; padding: 8px 20px; font-size: 13px; font-weight: 500; border-radius: 999px; cursor: pointer; transition: all 0.2s; display: inline-flex; align-items: center; justify-content: center; }
+        .chip:hover { background: #f8fafc; border-color: #cbd5e1; }
+        .pdpa-text { display: flex; align-items: center; justify-content: flex-end; gap: 6px; font-size: 12px; color: #94a3b8; font-weight: 500; }
+
         #chat-history { max-height: 350px; overflow-y: auto; padding-right: 8px; margin-bottom: 24px; scroll-behavior: smooth; display: flex; flex-direction: column; }
 
-        /* --- Sections (How It Works, Diff, Features, Testimonials, Join, FAQ, Footer) ... --- */
+        /* --- Bottom Info Section --- */
+        .bottom-info { padding: 80px 0 60px 0; text-align: center; max-width: 800px; margin: 0 auto; }
+        .bottom-info h2 { font-size: 42px; font-weight: 800; margin-bottom: 16px; color: var(--text-dark); letter-spacing: -0.5px;}
+        .bottom-info p { font-size: 18px; color: var(--text-dark); margin-bottom: 40px; line-height: 1.6; font-weight: 500; }
+        .hero-fig3 { height: 60px; width: auto; object-fit: contain; margin: 0 auto; display: block; } 
+
+        /* --- Stats Counter Section --- */
+        .stats-counter-section { padding: 40px 0 80px 0; text-align: center; background-color: var(--bg-grayish); }
+        .counter-boxes { display: flex; justify-content: center; flex-wrap: wrap; gap: 12px; margin-bottom: 32px; }
+        .digit-box { background: #ffffff; color: var(--primary-blue); font-size: 42px; font-weight: 700; padding: 24px 32px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03); border: 1px solid rgba(0,0,0,0.02); min-width: 60px; display: flex; align-items: center; justify-content: center; }
+        .stats-pill { background-color: var(--bg-white); color: var(--primary-blue); padding: 14px 40px; border-radius: 999px; display: inline-block; font-size: 18px; font-weight: 700; box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04); border: 1px solid rgba(0,0,0,0.02); }
+
+        /* --- How it Works --- */
         .how-it-works-section { padding: 80px 0; text-align: center; }
         .how-pill { background-color: var(--card-grayish); color: var(--text-dark); padding: 6px 16px; border-radius: 999px; font-size: 12px; font-weight: 500; display: inline-block; margin-bottom: 20px; }
         .how-pill span { color: var(--primary-blue); }
@@ -204,34 +170,195 @@
         .step h4 { font-size: 20px; font-weight: 600; margin-bottom: 12px; color: var(--text-dark); }
         .step p { font-size: 14px; color: var(--text-gray); line-height: 1.6; }
 
-        .differences-section { padding: 100px 0; display: flex; align-items: center; gap: 60px; }
-        .differences-left { flex: 0 0 420px; max-width: 100%; }
-        .differences-left img { width: 100%; height: auto; border-radius: 24px; box-shadow: 0 20px 40px rgba(0,0,0,0.06); display: block; }
-        .differences-right { flex: 1; }
-        .diff-pill { background-color: #f0f7ff; color: var(--primary-blue); padding: 6px 16px; border-radius: 999px; font-size: 13px; font-weight: 500; display: inline-block; margin-bottom: 24px; border: 1px solid rgba(0, 102, 204, 0.08); }
-        .differences-right h2 { font-size: 36px; font-weight: 800; margin-bottom: 16px; line-height: 1.2; color: var(--text-dark); }
-        .differences-right > p { font-size: 16px; color: var(--text-gray); margin-bottom: 40px; line-height: 1.6; }
+        /* --- Differences Section --- */
+        .differences-section { padding: 100px 0; }
+        .diff-header { margin-bottom: 40px; text-align: left; }
+        .diff-pill { background-color: #f0f7ff; color: var(--primary-blue); padding: 8px 20px; border-radius: 999px; font-size: 13px; font-weight: 500; display: inline-block; margin-bottom: 20px; border: 1px solid rgba(0, 102, 204, 0.08); }
+        .diff-header h2 { font-size: 36px; font-weight: 800; margin-bottom: 16px; color: var(--text-dark); letter-spacing: -0.5px;}
+        .diff-header p { font-size: 16px; color: #475569; }
+        
         .diff-cards-container { display: flex; gap: 24px; }
-        .diff-card { background: #ffffff; border-radius: 20px; padding: 32px; flex: 1; border: 1px solid rgba(0,0,0,0.03); box-shadow: 0 10px 30px rgba(0,0,0,0.02); }
-        .diff-icon-wrapper { width: 48px; height: 48px; background-color: var(--warning-bg); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 24px; color: var(--red-accent); }
-        .diff-card h3 { font-size: 20px; font-weight: 700; margin-bottom: 12px; line-height: 1.3; color: var(--text-dark); }
-        .diff-card p { font-size: 14px; color: var(--text-gray); line-height: 1.6; }
+        .diff-card { background: #ffffff; border-radius: 20px; padding: 40px; flex: 1; border: 1px solid rgba(0,0,0,0.04); box-shadow: 0 10px 40px rgba(0,0,0,0.02); }
+        .diff-icon-wrapper { width: 56px; height: 56px; background-color: #fee2e2; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 24px; color: #dc2626; }
+        .diff-card h3 { font-size: 24px; font-weight: 700; margin-bottom: 16px; color: var(--text-dark); }
+        .diff-card p { font-size: 15px; color: #64748b; line-height: 1.6; }
 
+        /* --- Link Doctor Section --- */
+        .link-doctor-section { padding: 80px 0; text-align: center; }
+        .link-doctor-fig { width: 214px; height: 68px; object-fit: contain; margin: 0 auto 24px auto; display: block; }
+        .link-doctor-section h2 { font-size: 32px; font-weight: 700; color: var(--text-dark); margin-bottom: 24px; line-height: 1.4; letter-spacing: -0.5px;}
+        .avail-badge { display: inline-flex; align-items: center; gap: 8px; padding: 8px 24px; border-radius: 999px; border: 1px solid var(--primary-blue); color: var(--primary-blue); font-size: 13px; font-weight: 600; margin-bottom: 40px; }
+        .avail-dot { width: 6px; height: 6px; background-color: var(--primary-blue); border-radius: 50%; }
+        
+        .benefits-card { max-width: 580px; margin: 0 auto; background: #ffffff; border: 1px solid rgba(0,0,0,0.06); border-radius: 20px; padding: 12px 32px; box-shadow: 0 10px 40px rgba(0,0,0,0.03); text-align: left; }
+        .benefit-row { display: flex; align-items: center; gap: 20px; padding: 24px 0; }
+        .benefit-row:not(:last-child) { border-bottom: 1px solid #f1f5f9; }
+        .benefit-icon { width: 44px; height: 44px; flex-shrink: 0; background-color: #f0f7ff; color: var(--primary-blue); border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+        .benefit-text h4 { font-size: 16px; font-weight: 600; color: var(--text-dark); margin-bottom: 4px; }
+        .benefit-text p { font-size: 14px; color: #64748b; margin: 0; }
+
+        /* --- Features Stacked Section --- */
         .features-section { padding: 80px 0; }
-        .feature-card { background-color: var(--card-grayish); border-radius: 24px; padding: 56px; display: flex; align-items: center; gap: 60px; margin-bottom: 32px; }
+        .feature-card { background-color: var(--card-grayish); border-radius: 32px; padding: 56px; display: flex; align-items: center; gap: 60px; margin-bottom: 32px; }
         .feature-card.reverse { flex-direction: row-reverse; }
         .feature-content { flex: 1; }
-        .feature-icon { width: 56px; height: 56px; margin-bottom: 24px; display: block; }
-        .feature-content h3 { font-size: 28px; font-weight: 700; margin-bottom: 16px; line-height: 1.3; color: var(--text-dark); }
-        .feature-content p { font-size: 16px; color: var(--text-gray); line-height: 1.6; margin-bottom: 24px; }
+        
+        .feature-icon-box {
+            width: 72px;
+            height: 72px;
+            background: #ffffff;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.04);
+            margin-bottom: 32px;
+            color: #1a1a1a;
+        }
+        .feature-icon-box svg { width: 32px; height: 32px; }
+
+        .feature-content h3 { font-size: 32px; font-weight: 700; margin-bottom: 20px; line-height: 1.3; color: var(--text-dark); letter-spacing: -0.5px;}
+        .feature-content p { font-size: 16px; color: #1a1a1a; line-height: 1.6; margin-bottom: 24px; }
+        
         .feature-image-wrapper { flex: 1; display: flex; justify-content: center; align-items: center; }
-        .feature-image-wrapper img { max-width: 100%; height: auto; border-radius: 16px; }
+        
+        /* FIX: Removed global border-radius and box-shadow to prevent cropping on images that have built-in borders/shapes */
+        .feature-image-wrapper img { max-width: 100%; height: auto; }
+        
         .feature-list { list-style: none; padding: 0; margin: 0; }
         .feature-list li { display: flex; align-items: flex-start; margin-bottom: 20px; }
         .feature-list .list-icon { flex-shrink: 0; margin-right: 16px; margin-top: 2px; }
         .feature-list .list-text h4 { font-size: 16px; font-weight: 600; color: var(--text-dark); margin-bottom: 4px; }
         .feature-list .list-text p { font-size: 14px; color: var(--text-gray); margin-bottom: 0; }
 
+        /* --- Custom Animated Chat Widget --- */
+        .anim-outer-frame {
+            background-color: #f8fafc;
+            padding: 20px;
+            border-radius: 32px;
+            border: 1px solid #e2e8f0;
+            width: 100%;
+            max-width: 480px;
+        }
+        .anim-chat-widget {
+            background-color: #ffffff;
+            border-radius: 16px;
+            height: 440px; 
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.02);
+        }
+        .anim-header {
+            padding: 16px 20px;
+            border-bottom: 1px solid #f1f5f9;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .anim-avatar-large {
+            width: 40px;
+            height: 40px;
+            background-color: #eef5ff;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 4px;
+        }
+        .anim-avatar-large img { width: 100%; height: 100%; object-fit: contain; }
+        .anim-header-info { display: flex; flex-direction: column; gap: 2px; text-align: left; }
+        .anim-header-title { font-weight: 700; font-size: 15px; margin: 0; color: #1e293b; }
+        .anim-header-status { color: #2563eb; font-size: 13px; font-weight: 500; opacity: 0; transition: opacity 0.3s ease; }
+        .anim-header-status.show { opacity: 1; }
+        
+        .anim-messages {
+            flex: 1;
+            padding: 20px;
+            overflow-y: hidden;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            scroll-behavior: smooth;
+        }
+        .anim-row {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            opacity: 0;
+            transform: translateY(15px);
+            transition: opacity 0.4s ease, transform 0.4s ease;
+        }
+        .anim-row.show { opacity: 1; transform: translateY(0); }
+        .anim-row.user { justify-content: flex-end; }
+        
+        .anim-avatar-small {
+            width: 32px;
+            height: 32px;
+            background-color: #eef5ff;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            padding: 4px;
+        }
+        .anim-avatar-small img { width: 100%; height: 100%; object-fit: contain; }
+        
+        .anim-avatar-user {
+            width: 32px;
+            height: 32px;
+            background-color: #ffe4e1;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+        
+        .anim-bubble {
+            background-color: #f1f5f9;
+            color: #334155;
+            padding: 14px 18px;
+            border-radius: 12px;
+            font-size: 14px;
+            line-height: 1.5;
+            max-width: 80%;
+            text-align: left;
+        }
+        .anim-bubble.user-bubble { background-color: #e2e8f0; }
+        .anim-typing-bubble { padding: 12px 16px; display: flex; align-items: center; gap: 4px; height: 20px; }
+        
+        .anim-dot {
+            width: 4px;
+            height: 4px;
+            background-color: #64748b;
+            border-radius: 50%;
+            animation: animPulse 1.4s infinite ease-in-out both;
+        }
+        .anim-dot:nth-child(1) { animation-delay: -0.32s; }
+        .anim-dot:nth-child(2) { animation-delay: -0.16s; }
+
+        @keyframes animPulse {
+            0%, 80%, 100% { transform: scale(0.6); opacity: 0.6; }
+            40% { transform: scale(1.2); opacity: 1; }
+        }
+
+        /* --- Join as Doctor Section --- */
+        .join-doctor-section { padding: 100px 0; display: flex; align-items: center; gap: 80px; }
+        .join-doctor-left { flex: 0 0 50%; max-width: 565px; }
+        .join-doctor-left img { width: 100%; height: auto; display: block; border-radius: 32px; }
+        .join-doctor-right { flex: 1; text-align: left; }
+        .ready-pill { background-color: #f0f7ff; color: var(--primary-blue); border: 1px solid rgba(0, 102, 204, 0.1); margin-bottom: 24px; font-weight: 600; }
+        .join-doctor-right h2 { font-size: 46px; font-weight: 800; line-height: 1.15; margin-bottom: 20px; color: var(--text-dark); letter-spacing: -1px; }
+        .join-doctor-right p { font-size: 16px; color: #475569; line-height: 1.6; margin-bottom: 40px; }
+        .check-list { list-style: none; padding: 0; margin: 0 0 40px 0; }
+        .check-list li { display: flex; align-items: center; gap: 16px; margin-bottom: 20px; }
+        .check-icon { flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
+        .check-list span { font-weight: 500; color: #1e293b; font-size: 16px; }
+        .btn-large { padding: 14px 32px; font-size: 16px; text-decoration: none; display: inline-flex; }
+        .btn-glow { box-shadow: 0 8px 24px rgba(0, 102, 204, 0.3); }
+        .btn-glow:hover { box-shadow: 0 10px 28px rgba(0, 102, 204, 0.4); transform: translateY(-1px); }
+
+        /* --- Other Sections (Testimonials, FAQ) --- */
         .testimonials-section { padding: 100px 0; }
         .feedback-pill { background-color: #f0f7ff; color: var(--primary-blue); margin-bottom: 24px; border: 1px solid rgba(0, 102, 204, 0.08); }
         .testimonials-section h2 { font-size: 44px; font-weight: 800; margin-bottom: 60px; color: var(--text-dark); }
@@ -244,156 +371,204 @@
         .user-profile img { width: 44px; height: 44px; border-radius: 50%; object-fit: cover; }
         .user-profile span { font-weight: 500; color: var(--text-dark); font-size: 15px; }
 
-        .join-doctor-section { padding: 100px 0; display: flex; align-items: center; gap: 80px; }
-        .join-doctor-left { flex: 0 0 50%; max-width: 565px; }
-        .join-doctor-left img { width: 100%; height: auto; border-radius: 32px; box-shadow: 0 20px 40px rgba(0,0,0,0.08); display: block; }
-        .join-doctor-right { flex: 1; }
-        .ready-pill { background-color: var(--card-grayish); color: var(--text-dark); margin-bottom: 24px; }
-        .join-doctor-right h2 { font-size: 42px; font-weight: 800; line-height: 1.2; margin-bottom: 20px; color: var(--text-dark); }
-        .join-doctor-right p { font-size: 16px; color: var(--text-gray); line-height: 1.6; margin-bottom: 40px; }
-        .check-list { list-style: none; padding: 0; margin: 0 0 40px 0; }
-        .check-list li { display: flex; align-items: center; gap: 16px; margin-bottom: 20px; }
-        .check-icon { flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
-        .check-list span { font-weight: 600; color: var(--text-dark); font-size: 16px; }
-        .btn-large { padding: 14px 32px; font-size: 16px; text-decoration: none; display: inline-flex; }
-        .btn-glow { box-shadow: 0 8px 24px rgba(0, 102, 204, 0.3); }
-        .btn-glow:hover { box-shadow: 0 10px 28px rgba(0, 102, 204, 0.4); transform: translateY(-1px); }
+        /* --- UPDATED FAQ Section (Centered Layout) --- */
+        .faq-section { 
+            padding: 100px 0; 
+            position: relative; 
+            overflow: hidden; 
+            background-color: var(--faq-bg); 
+        }
+        .faq-section::before { 
+            content: ''; 
+            position: absolute; 
+            top: 20%; 
+            left: 50%; 
+            transform: translateX(-50%);
+            width: 800px; 
+            height: 600px; 
+            background: radial-gradient(circle, rgba(238, 245, 255, 0.8) 0%, rgba(255, 255, 255, 0) 70%); 
+            z-index: 0; 
+            pointer-events: none; 
+        }
+        
+        .faq-header-center { 
+            text-align: center; 
+            max-width: 680px; 
+            margin: 0 auto 48px auto; 
+            position: relative; 
+            z-index: 1; 
+        }
+        .faq-pill-center { 
+            color: var(--primary-blue); 
+            font-size: 14px; 
+            font-weight: 500; 
+            margin-bottom: 16px; 
+            display: inline-block; 
+        }
+        .faq-header-center h2 { 
+            font-size: 48px; 
+            font-weight: 800; 
+            color: #111111; 
+            margin-bottom: 16px; 
+            letter-spacing: -1px;
+            line-height: 1.1;
+        }
+        .faq-header-center p { 
+            font-size: 18px; 
+            color: #475569; 
+            line-height: 1.6; 
+        }
 
-        .faq-section { padding: 100px 0; position: relative; overflow: hidden; }
-        .faq-section::before { content: ''; position: absolute; top: 20%; left: 10%; width: 600px; height: 600px; background: radial-gradient(circle, rgba(238, 245, 255, 1) 0%, rgba(255, 255, 255, 0) 70%); z-index: 0; pointer-events: none; }
-        .faq-wrapper { display: flex; align-items: flex-start; gap: 80px; position: relative; z-index: 1; }
-        .faq-left { flex: 0 0 400px; max-width: 100%; }
-        .faq-right { flex: 1; display: flex; flex-direction: column; gap: 16px; }
-        .faq-pill { background-color: #ffffff; color: var(--primary-blue); border: 1px solid rgba(0, 102, 204, 0.15); margin-bottom: 24px; }
-        .faq-left h2 { font-size: 44px; font-weight: 800; line-height: 1.15; margin-bottom: 20px; color: #1a202c; }
-        .faq-left > p { font-size: 16px; color: var(--text-gray); line-height: 1.6; margin-bottom: 48px; }
-        .contact-card { background: #ffffff; border-radius: 20px; padding: 40px; box-shadow: 0 10px 40px rgba(0, 0, 0, 0.03); border: 1px solid rgba(0,0,0,0.02); }
-        .contact-card h3 { font-size: 22px; font-weight: 700; margin-bottom: 12px; color: var(--text-dark); }
-        .contact-card p { font-size: 15px; color: var(--text-gray); margin-bottom: 32px; line-height: 1.6; }
-        .faq-item { background: #ffffff; border-radius: 16px; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02); border: 1px solid rgba(0,0,0,0.03); overflow: hidden; transition: all 0.3s ease; }
-        .faq-header { padding: 24px 32px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; user-select: none; }
-        .faq-header h4 { font-size: 16px; font-weight: 700; color: var(--text-dark); margin: 0; }
-        .faq-item.active .faq-header { padding-bottom: 12px; }
-        .faq-item.active .faq-header svg { transform: rotate(180deg); }
-        .faq-body { padding: 0 32px 24px 32px; display: none; animation: fadeIn 0.3s ease-in-out; }
-        .faq-item.active .faq-body { display: block; }
-        .faq-body p { font-size: 15px; color: var(--text-gray); line-height: 1.6; margin: 0; }
+        .faq-accordion-container { 
+            max-width: 860px; 
+            margin: 0 auto; 
+            position: relative; 
+            z-index: 1; 
+            display: flex; 
+            flex-direction: column; 
+            gap: 16px; 
+        }
+        
+        .faq-item { 
+            background: #ffffff; 
+            border-radius: 16px; 
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02); 
+            border: 1px solid #eef2f6; 
+            overflow: hidden; 
+            transition: all 0.3s ease; 
+        }
+        .faq-header { 
+            padding: 28px 32px; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            cursor: pointer; 
+            user-select: none; 
+        }
+        .faq-header h4 { 
+            font-size: 16px; 
+            font-weight: 700; 
+            color: var(--text-dark); 
+            margin: 0; 
+        }
+        .faq-item.active .faq-header { 
+            padding-bottom: 16px; 
+        }
+        .faq-item.active .faq-header svg { 
+            transform: rotate(180deg); 
+        }
+        .faq-body { 
+            padding: 0 32px 28px 32px; 
+            display: none; 
+            animation: fadeIn 0.3s ease-in-out; 
+        }
+        .faq-item.active .faq-body { 
+            display: block; 
+        }
+        .faq-body p { 
+            font-size: 15px; 
+            color: var(--text-gray); 
+            line-height: 1.6; 
+            margin: 0; 
+            max-width: 580px; /* limits text width inside body like in screenshot */
+        }
 
         @keyframes fadeIn { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
 
-        .footer-section { padding: 0 24px 40px 24px; background-color: var(--bg-white); }
-        .footer-card { background-color: var(--footer-bg); color: #ffffff; border-radius: 32px; padding: 60px; max-width: 1200px; margin: 0 auto; }
+        /* --- NEW Edge-to-Edge Footer Section --- */
+        .footer-section { 
+            background-color: #111111; 
+            color: #ffffff; 
+            padding: 80px 0 40px 0; 
+            width: 100%;
+            margin-top: auto; 
+        }
+        .footer-content { max-width: 1200px; margin: 0 auto; padding: 0 24px; display: flex; flex-direction: column; }
         .footer-top { display: flex; justify-content: space-between; gap: 60px; padding-bottom: 60px; }
         .footer-brand { max-width: 380px; }
-        .footer-logo-wrapper { background: white; display: inline-block; padding: 8px 16px; border-radius: 12px; margin-bottom: 24px; }
-        .footer-brand p { color: var(--footer-text-muted); font-size: 16px; line-height: 1.6; }
-        .footer-links-group { display: flex; gap: 100px; }
+        .footer-brand img { height: 50px; width: auto; margin-bottom: 24px; display: block; }
+        .footer-brand p { color: #a0aab5; font-size: 16px; line-height: 1.6; }
+        
+        .footer-links-group { display: flex; gap: 120px; }
         .footer-col h4 { font-size: 16px; font-weight: 600; margin-bottom: 24px; color: #ffffff; }
-        .footer-col a { display: block; color: var(--footer-text-muted); font-size: 15px; margin-bottom: 16px; text-decoration: none; transition: color 0.2s; }
+        .footer-col a { display: block; color: #a0aab5; font-size: 15px; margin-bottom: 16px; text-decoration: none; transition: color 0.2s; }
         .footer-col a:hover { color: #ffffff; }
+        
         .footer-bottom { display: flex; justify-content: space-between; align-items: center; padding-top: 40px; border-top: 1px solid rgba(255, 255, 255, 0.1); }
-        .footer-bottom p { color: var(--footer-text-muted); font-size: 15px; }
+        .footer-bottom p { color: #a0aab5; font-size: 14px; }
         .social-area { display: flex; align-items: center; gap: 20px; }
         .social-area span { color: #ffffff; font-weight: 500; font-size: 15px; }
         .social-icons { display: flex; align-items: center; gap: 16px; }
         .social-icons a { color: #ffffff; transition: opacity 0.2s; display: flex; align-items: center; justify-content: center; }
         .social-icons a:hover { opacity: 0.7; }
 
-        /* ============================================================
-           IMPROVED RESPONSIVE MEDIA QUERIES (Desktop Untouched) 
-           ============================================================ */
-
         @media (max-width: 1024px) {
-            .differences-section, .join-doctor-section, .faq-wrapper { flex-direction: column; gap: 50px; }
-            .differences-left, .join-doctor-left, .faq-left { flex: auto; width: 100%; max-width: 600px; margin: 0 auto; }
+            .join-doctor-section { flex-direction: column; gap: 50px; }
+            .join-doctor-left { flex: auto; width: 100%; max-width: 600px; margin: 0 auto; }
             .feature-card { gap: 40px; padding: 40px; }
             .testimonials-grid { column-count: 2; }
-            .footer-card { padding: 40px; }
-            .footer-links-group { gap: 60px; }
-            /* Reduced paddings slightly for tablet */
-            .how-it-works-section, .differences-section, .features-section, .testimonials-section, .join-doctor-section, .faq-section { padding: 80px 0; }
+            .footer-top { flex-direction: column; gap: 40px; }
+            .footer-links-group { gap: 60px; justify-content: flex-start; }
+            .how-it-works-section, .differences-section, .link-doctor-section, .features-section, .testimonials-section, .join-doctor-section, .faq-section { padding: 80px 0; }
         }
 
         @media (max-width: 768px) {
-            /* Header */
-            header { flex-direction: column; gap: 16px; padding: 16px 0; }
+            header { padding: 16px 0; }
             .nav-links { flex-wrap: wrap; justify-content: center; gap: 16px; }
-            .logo { height: 28px; }
+            .header-divider { display: none; }
+            .logo { height: 32px; }
             
-            /* Hero */
-            .hero { flex-direction: column; text-align: center; padding: 32px 0 40px 0; gap: 32px; }
-            .hero-content { margin: 0 auto; }
-            .hero::before { width: 300px; height: 300px; top: -50px; left: 50%; transform: translateX(-50%); }
-            .hero h1 { font-size: 36px; margin-bottom: 12px; }
-            .hero .subtitle { font-size: 15px; margin-bottom: 24px; }
-            .social-proof { display: flex; flex-direction: column; align-items: center; margin-top: 32px; }
+            .hero { padding: 32px 0 24px 0; gap: 16px; }
+            .hero-fig2 { height: 48px; margin-bottom: 16px; }
+            .hero h1 { font-size: 36px; margin-bottom: 24px; }
             
-            /* Stats & Info */
-            .stats-section { padding: 40px 0 32px 0; }
-            .counter-boxes { gap: 8px; }
-            .digit-box { font-size: 24px; padding: 12px 16px; min-width: 48px; }
-            
-            .info-section { margin-bottom: 32px; }
-            .info-section h2 { font-size: 26px; margin-bottom: 16px; }
-            
-            /* Chat */
-            .chat-container { padding: 24px 16px; border-radius: 20px; }
-            .chat-tabs { flex-direction: column; gap: 12px; margin-bottom: 24px; }
-            .tab-btn { justify-content: center; width: 100%; padding: 12px 20px; }
-            .chat-header h3 { font-size: 18px; }
-            .input-wrapper { padding: 12px; min-height: 100px; }
-            .input-top-row { gap: 8px; }
+            .chat-container { padding: 24px 20px; border-radius: 20px; }
+            .input-wrapper { min-height: 120px; }
             .input-field { font-size: 14px; }
             
-            /* Smooth Horizontal Scrolling for suggestion chips on mobile */
-            .suggestion-chips { 
-                flex-wrap: nowrap; 
-                justify-content: flex-start; 
-                overflow-x: auto; 
-                padding-bottom: 8px; 
-                -webkit-overflow-scrolling: touch; 
-                scrollbar-width: none; 
-            }
+            .suggestion-chips { flex-wrap: nowrap; justify-content: flex-start; overflow-x: auto; padding-bottom: 8px; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
             .suggestion-chips::-webkit-scrollbar { display: none; }
             .chip { flex-shrink: 0; white-space: nowrap; }
             
-            /* Unified Mobile Padding for all sections */
-            .how-it-works-section, .differences-section, .features-section, .testimonials-section, .join-doctor-section, .faq-section { padding: 50px 0; }
+            .bottom-info { padding: 40px 0 60px 0; }
+            .bottom-info h2 { font-size: 28px; }
+            .hero-fig3 { height: 48px; }
             
-            /* How It Works Stacked beautifully */
+            .stats-counter-section { padding: 40px 0; }
+            .counter-boxes { gap: 8px; }
+            .digit-box { font-size: 28px; padding: 16px 20px; min-width: 48px; }
+
+            .how-it-works-section, .differences-section, .link-doctor-section, .features-section, .testimonials-section, .join-doctor-section, .faq-section { padding: 50px 0; }
             .how-it-works-section h2 { font-size: 32px; margin-bottom: 40px; }
             .steps-container { flex-direction: column; gap: 40px; align-items: center; }
-            .steps-container::before { display: none; } /* removes weird horizontal line on mobile */
+            .steps-container::before { display: none; } 
             .step { padding: 0; width: 100%; max-width: 320px; }
             
-            /* Differences */
-            .differences-right h2 { font-size: 28px; }
+            .diff-header h2 { font-size: 28px; }
             .diff-cards-container { flex-direction: column; gap: 16px; }
             .diff-card { padding: 24px; }
+
+            .link-doctor-section h2 { font-size: 26px; }
+            .benefits-card { padding: 12px 20px; }
+            .benefit-row { flex-direction: column; text-align: center; gap: 12px; }
             
-            /* Features */
             .feature-card, .feature-card.reverse { flex-direction: column; padding: 32px 20px; gap: 32px; border-radius: 20px; }
             .feature-content h3 { font-size: 24px; }
-            .feature-icon { width: 48px; height: 48px; margin-bottom: 16px; }
+            .feature-icon-box { margin-bottom: 24px; }
             
-            /* Testimonials */
             .testimonials-section h2 { font-size: 32px; margin-bottom: 40px; }
             .testimonials-grid { column-count: 1; gap: 16px; }
             .testimonial-card { padding: 24px; margin-bottom: 16px; }
             
-            /* Join Doctor */
             .join-doctor-right h2 { font-size: 30px; }
             
-            /* FAQ */
-            .faq-left h2 { font-size: 32px; margin-bottom: 16px; }
-            .faq-left > p { margin-bottom: 32px; }
-            .contact-card { padding: 24px; }
+            .faq-header-center h2 { font-size: 32px; margin-bottom: 16px; }
+            .faq-header-center p { font-size: 16px; }
             .faq-header { padding: 20px 24px; }
             .faq-body { padding: 0 24px 20px 24px; }
             
-            /* Footer */
-            .footer-section { padding: 0 16px 24px 16px; }
-            .footer-card { padding: 32px 20px; border-radius: 24px; }
+            .footer-section { padding: 50px 0 24px 0; }
+            .footer-content { padding: 0 16px; }
             .footer-top { flex-direction: column; gap: 40px; padding-bottom: 32px; }
             .footer-links-group { flex-direction: column; gap: 32px; }
             .footer-bottom { flex-direction: column; align-items: flex-start; gap: 24px; text-align: left; padding-top: 24px; }
@@ -403,7 +578,6 @@
 </head>
 <body>
 
-    <!-- Firebase Globals & Config -->
     <script>const API_BASE = 'https://api.doktura.ai';</script>
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-app.js";
@@ -414,383 +588,404 @@
         });
     </script>
 
-    <!-- Top Section (White) -->
-    <div class="section-white">
-        <div class="container">
-            <!-- Header -->
-            <header>
-                <img src="https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/Logo.png?download=true" alt="Doktura.ai Logo" class="logo">
-                <nav>
-                    <div class="nav-links">
-                        <!-- Updated Links -->
-                        <a href="https://doktura.ai/Aboutus.html">Company</a>
-                        <a href="https://doktura.ai/privacy.html">Legal</a>
-                        <a href="https://doktura.ai/Contact-Us.html">Support</a>
-                    </div>
-                    <!-- Updated Login Button -->
-                    <a href="https://doktura.ai/login.html" id="navLoginBtn" class="btn-primary">Login Now</a>
-                </nav>
-            </header>
+    <div class="main-content">
+        <!-- Top Section (White) -->
+        <div class="section-white">
+            <div class="container">
+                <!-- Header -->
+                <header>
+                    <img src="https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/Logo%20Updated.png" alt="Doktura.ai Logo" class="logo">
+                    <nav>
+                        <a href="https://doktura.ai/login.html" id="navLoginBtn" class="btn-primary">Login Now</a>
+                    </nav>
+                </header>
 
-            <!-- Hero -->
-            <section class="hero">
-                <div class="hero-content">
-                    <h1>Hi, I'm <span class="text-blue">Doktura!</span></h1>
-                    <p class="subtitle">
-                        I'm your private and personal AI doctor.<br>
-                        As an AI doctor, my service is <span class="text-blue font-bold">fast and free.</span>
-                    </p>
+                <!-- Centered Hero -->
+                <section class="hero">
+                    <img src="https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/Figure%201.png?download=true" alt="Doktura Avatars" class="hero-fig2">
+                    <h1>Hello, I'm <span style="font-weight: 800;">Dok</span><span style="font-weight: 500;">tura!</span></h1>
                     
-                    <!-- Try it now updated link -->
-                    <a href="https://doktura.ai/login.html" class="btn-primary" style="text-decoration: none;">
-                        Try it now 
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <line x1="7" y1="17" x2="17" y2="7"></line>
-                            <polyline points="7 7 17 7 17 17"></polyline>
-                        </svg>
-                    </a>
-
-                    <div class="social-proof">
-                        <div class="avatars-row">
-                            <img src="https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/Fig%203.png?download=true" alt="User Avatars" class="avatars-img">
-                            <span class="avatars-count">2k+</span>
-                        </div>
-                        <p class="helped-text">I've already helped people <span class="text-blue font-bold">23,819,892 times!</span></p>
+                    <div class="hero-description">
+                        <p>I’m your private and personal AI doctor. As an AI doctor, my service is <span class="text-blue font-bold">fast and free.</span></p>
+                        <p>Describe your symptoms and get a diagnosis and treatment plan in minutes.</p>
+                        <p>Powered by peer-reviewed medical research, with recommendations that align with board-certified clinicians over <span class="font-bold">99% of the time.</span></p>
+                        <p>Need a prescription, lab test, or doctor’s note?<br>Connect with a licensed doctor online <span class="font-bold">in under 30 minutes</span> for just <span class="font-bold">RM38 only</span> if treatment is required.</p>
+                        <p>Completely free to use and fully anonymous. No email or credit card needed.</p>
                     </div>
-                </div>
-                
-                <div class="hero-image-container">
-                    <img src="https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/Figure%201.png?download=true" alt="AI Doctor Interface" class="hero-image">
-                </div>
-            </section>
-        </div>
-    </div>
+                </section>
 
-    <!-- Middle Section (Grayish) -->
-    <div class="section-grayish">
-        <div class="container">
-            <!-- Stats -->
-            <section class="stats-section">
-                <div class="counter-boxes">
-                    <div class="digit-box">9</div>
-                    <div class="digit-box">3</div>
-                    <div class="digit-box">8</div>
-                    <div class="digit-box">1</div>
-                    <div class="digit-box">9</div>
-                    <div class="digit-box">8</div>
-                    <div class="digit-box">9</div>
-                    <div class="digit-box">2</div>
-                </div>
-                <div class="stats-pill">Consultation Accomplished</div>
-            </section>
-
-            <!-- Info & Warning -->
-            <section class="info-section">
-                <h2>#1 AI-Driven Healthcare in Malaysia</h2>
-                <p>Get instant health guidance, understand your symptoms, and explore next steps anytime, anywhere.</p>
-                <div class="pill-label warning-pill">
-                    If this is an emergency, call <span class="font-extrabold">999</span> or your local emergency number
-                </div>
-            </section>
-
-            <!-- Chat Interface with JS logic integrated -->
-            <section class="chat-section">
-                <div class="chat-container">
-                    <div class="pill-label notice-pill">
-                        Log in to unlock hands-free Voice Interaction and Premium Doctor Avatars.
-                    </div>
-
-                    <div class="chat-tabs">
-                        <button class="tab-btn active">
-                            <span class="tab-icon">
-                                <svg width="14" height="14" viewBox="0 0 24 24" fill="#0066cc">
-                                    <path d="M12 2l2.5 7.5L22 12l-7.5 2.5L12 22l-2.5-7.5L2 12l7.5-2.5z"/>
-                                </svg>
-                            </span>
-                            AI Assistant
-                        </button>
-                        <a href="https://doktura.ai/login.html" class="tab-btn" style="text-decoration: none;">
-                            <span class="tab-icon">
-                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#999" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
-                                    <line x1="16" y1="2" x2="16" y2="6"></line>
-                                    <line x1="8" y1="2" x2="8" y2="6"></line>
-                                    <line x1="3" y1="10" x2="21" y2="10"></line>
-                                </svg>
-                            </span>
-                            Book Doctor
-                            <span class="tab-icon" style="margin-left: 2px;">
-                                <svg width="10" height="10" viewBox="0 0 24 24" fill="#e02424">
-                                    <path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zM9 6c0-1.66 1.34-3 3-3s3 1.34 3 3v2H9V6zm9 14H6V10h12v10zm-6-3c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2z"/>
-                                </svg>
-                            </span>
-                        </a>
-                    </div>
-
-                    <!-- Dynamic Chat History Container -->
-                    <div id="chat-history">
-                        <div id="chat-placeholder" class="chat-header text-center">
-                            <img src="https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/Fig%204.png?download=true" alt="Robot Assistant" class="robot-icon" style="margin: 0 auto 16px auto;">
-                            <h3>What can I help you with?</h3>
-                        </div>
-                    </div>
-
-                    <div class="chat-input-area">
-                        <div class="input-wrapper">
-                            <div class="input-top-row">
-                                <div class="input-icons">
-                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                        <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path>
-                                        <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
-                                        <line x1="12" y1="19" x2="12" y2="23"></line>
-                                        <line x1="8" y1="23" x2="16" y2="23"></line>
-                                    </svg>
-                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
-                                        <path d="M12 2l2.5 7.5L22 12l-7.5 2.5L12 22l-2.5-7.5L2 12l7.5-2.5z"/>
-                                    </svg>
-                                </div>
-                                <!-- Updated Input Field with Enter key detection -->
-                                <input type="text" id="chat-input" class="input-field" placeholder="Type a message or tap the mic for voice mode" onkeypress="if(event.key === 'Enter') sendGuestChat()">
+                <!-- Chat Interface Area -->
+                <section class="chat-section">
+                    <div class="chat-container">
+                        <div class="chat-tabs-wrapper">
+                            <div class="chat-tabs">
+                                <button class="tab-btn active">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tab-icon"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path></svg>
+                                    AI Assistant
+                                </button>
+                                <a href="https://doktura.ai/login.html" class="tab-btn" style="text-decoration: none;">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tab-icon"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+                                    Book Doctor
+                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="#ef4444" style="margin-left: 2px;"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                                </a>
                             </div>
-                            <!-- Updated Send Button -->
-                            <button class="btn-send" onclick="sendGuestChat()" aria-label="Send message">
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <line x1="22" y1="2" x2="11" y2="13"></line>
-                                    <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
-                                </svg>
-                            </button>
                         </div>
 
-                        <div class="suggestion-chips">
-                            <button class="chip" onclick="document.getElementById('chat-input').value='Fever & flu'; sendGuestChat();">Fever & flu</button>
-                            <button class="chip" onclick="document.getElementById('chat-input').value='Tooth pain'; sendGuestChat();">Tooth pain</button>
-                            <button class="chip" onclick="document.getElementById('chat-input').value='Skin issues'; sendGuestChat();">Skin issues</button>
-                            <button class="chip" onclick="document.getElementById('chat-input').value='General symptoms'; sendGuestChat();">General symptoms</button>
-                            <!-- Updated Chip: Removed See More, added Know Illness -->
-                            <button class="chip" onclick="document.getElementById('chat-input').value='Know Illness'; sendGuestChat();">Know Illness</button>
+                        <div id="chat-history"></div>
+
+                        <div class="chat-input-area">
+                            <div class="input-wrapper">
+                                <div class="input-top-area">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="#0066cc" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M12 2L14.5 9.5L22 12L14.5 14.5L12 22L9.5 14.5L2 12L9.5 9.5L12 2Z"/>
+                                    </svg>
+                                    <textarea id="chat-input" class="input-field" placeholder="Get health advice.." onkeydown="if(event.key === 'Enter' && !event.shiftKey) { event.preventDefault(); sendGuestChat(); }"></textarea>
+                                </div>
+                                <div class="input-actions">
+                                    <button class="btn-get-started" onclick="sendGuestChat()" aria-label="Send message">
+                                        Get Started
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="suggestion-chips">
+                                <button class="chip" onclick="document.getElementById('chat-input').value='Fever & flu'; sendGuestChat();">Fever & flu</button>
+                                <button class="chip" onclick="document.getElementById('chat-input').value='Tooth pain'; sendGuestChat();">Tooth pain</button>
+                                <button class="chip" onclick="document.getElementById('chat-input').value='Skin issues'; sendGuestChat();">Skin issues</button>
+                                <button class="chip" onclick="document.getElementById('chat-input').value='General symptoms'; sendGuestChat();">General symptoms</button>
+                                <button class="chip" onclick="document.getElementById('chat-input').value='Tell me more'; sendGuestChat();">
+                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:middle; margin-right:4px;"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                                    See More
+                                </button>
+                            </div>
+                            
+                            <div class="pdpa-text">
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                                Data protected under PDPA
+                            </div>
                         </div>
                     </div>
-                </div>
-            </section>
-        </div>
-    </div>
+                </section>
 
-    <!-- How It Works Section (White) -->
-    <div class="section-white">
-        <!-- ... (How It Works HTML remains exactly identical to your design) ... -->
-        <div class="container">
-            <section class="how-it-works-section">
-                <div class="how-pill">How <span>to use</span></div>
-                <h2>How It Works</h2>
-                <div class="steps-container">
-                    <div class="step step-1">
-                        <div class="step-circle">1</div>
-                        <h4>Tell Us What You're Feeling</h4>
-                        <p>Our AI analyzes your input instantly to understand your condition and concerns.</p>
-                    </div>
-                    <div class="step step-2">
-                        <div class="step-circle">2</div>
-                        <h4>Get Instant Guidance & Next Steps</h4>
-                        <p>Receive personalized health insights, possible causes, and recommended next steps within seconds.</p>
-                    </div>
-                    <div class="step step-3">
-                        <div class="step-circle">3</div>
-                        <h4>Continue with a Real Doctor</h4>
-                        <p>Choose between online consultation or booking a visit to a nearby clinic.</p>
-                    </div>
-                </div>
-            </section>
+                <section class="bottom-info">
+                    <h2>#1st AI-Powered Healthcare Consult</h2>
+                    <p>Get instant health guidance, understand your symptoms, and explore next steps anytime, anywhere.</p>
+                    <img src="https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/Figure%202.png?download=true" alt="Ratings and usage statistics" class="hero-fig3">
+                </section>
+            </div>
         </div>
-    </div>
 
-    <!-- Differences Section (Grayish) -->
-    <div class="section-grayish">
-        <!-- ... (Differences HTML remains exactly identical to your design) ... -->
-        <div class="container">
-            <section class="differences-section">
-                <div class="differences-left">
-                    <img src="https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/Fig%201.png?download=true" alt="Helping users decide between AI and real doctors">
-                </div>
-                <div class="differences-right">
-                    <div class="diff-pill">Differences</div>
-                    <h2>When to Use AI vs When to See a Doctor?</h2>
-                    <p>Understand when AI is enough and when it's best to consult a real doctor.</p>
+        <!-- Website Visit Counter Section -->
+        <div class="section-grayish">
+            <div class="container">
+                <section class="stats-counter-section">
+                    <div class="counter-boxes">
+                        <div class="digit-box">9</div>
+                        <div class="digit-box">3</div>
+                        <div class="digit-box">8</div>
+                        <div class="digit-box">1</div>
+                        <div class="digit-box">9</div>
+                        <div class="digit-box">8</div>
+                        <div class="digit-box">9</div>
+                        <div class="digit-box">2</div>
+                    </div>
+                    <div class="stats-pill">Website visit</div>
+                </section>
+            </div>
+        </div>
+
+        <!-- How It Works Section -->
+        <div class="section-white">
+            <div class="container">
+                <section class="how-it-works-section">
+                    <div class="how-pill">How <span>to use</span></div>
+                    <h2>How It Works</h2>
+                    <div class="steps-container">
+                        <div class="step step-1">
+                            <div class="step-circle">1</div>
+                            <h4>Tell Us What You're Feeling</h4>
+                            <p>Our AI analyzes your input instantly to understand your condition and concerns.</p>
+                        </div>
+                        <div class="step step-2">
+                            <div class="step-circle">2</div>
+                            <h4>Get Instant Guidance & Next Steps</h4>
+                            <p>Receive personalized health insights, possible causes, and recommended next steps within seconds.</p>
+                        </div>
+                        <div class="step step-3">
+                            <div class="step-circle">3</div>
+                            <h4>Continue with a Real Doctor</h4>
+                            <p>Choose between online consultation or booking a visit to a nearby clinic.</p>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+
+        <!-- Differences Section -->
+        <div class="section-grayish">
+            <div class="container">
+                <section class="differences-section">
+                    <div class="diff-header">
+                        <div class="diff-pill">Differences</div>
+                        <h2>When to Use AI vs When to See a Doctor?</h2>
+                        <p>Understand when AI is enough and when it's best to consult a real doctor.</p>
+                    </div>
+                    
                     <div class="diff-cards-container">
                         <div class="diff-card">
                             <div class="diff-icon-wrapper">
-                                <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M12 12c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm0 2c-3.33 0-10 1.67-10 5v2h20v-2c0-3.33-6.67-5-10-5z"/>
+                                </svg>
                             </div>
                             <h3>Use AI for quick guidance</h3>
                             <p>Get instant answers to everyday health questions, understand possible causes of your symptoms, and learn what steps to take next—all in seconds. It's ideal for non-urgent concerns and general health advice.</p>
                         </div>
                         <div class="diff-card">
                             <div class="diff-icon-wrapper">
-                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"></path></svg>
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M22 12h-4l-3 9L9 3l-3 9H2"></path>
+                                </svg>
                             </div>
                             <h3>a doctor for medical care</h3>
-                            <p>Consult a licensed doctor when you need an accurate diagnosis, prescriptions, or treatment for ongoing or serious conditions. Professional care ensures you get the right medical attention when it matters most.</p>
+                            <p>Consult a doctor registered with the Malaysian Medical Council (MMC) for accurate diagnoses, medication prescriptions, and treatment.</p>
                         </div>
                     </div>
-                </div>
-            </section>
+                </section>
+            </div>
         </div>
-    </div>
 
-    <!-- Features Stacked Section (White) -->
-    <div class="section-white">
-        <!-- ... (Features HTML remains exactly identical to your design) ... -->
-        <div class="container">
-            <section class="features-section">
-                <div class="feature-card">
-                    <div class="feature-content">
-                        <img src="https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/Frame%2082.png?download=true" alt="Icon" class="feature-icon">
-                        <h3>As an AI doctor, I provide <span class="text-blue">fast and free service</span></h3>
-                        <p>Your privacy is our top priority. All conversations are completely confidential and HIPAA compliant. I've successfully helped over 23.8 million people get the health guidance they need, whenever they need it. No appointments, no waiting rooms, just instant, reliable medical assistance at your fingertips.</p>
+        <!-- Link to Doctor Section -->
+        <div class="section-white">
+            <div class="container">
+                <section class="link-doctor-section">
+                    <img src="https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/Figure%203.png?download=true" alt="Doctors" class="link-doctor-fig">
+                    
+                    <h2>When we finish chatting, I can link you to a<br>licensed doctor for just <span class="text-blue">RM38 Only</span></h2>
+                    
+                    <div class="avail-badge">
+                        <span class="avail-dot"></span> Available anytime, 24/7
                     </div>
-                    <div class="feature-image-wrapper">
-                        <img src="https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/Group%202085665223.png?download=true" alt="AI Chat Interface">
+                    
+                    <div class="benefits-card">
+                        <div class="benefit-row">
+                            <div class="benefit-icon">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+									<path d="M5 4a2 2 0 0 0 2 2v3a4 4 0 0 0 8 0V6a2 2 0 0 0 2-2"></path>
+									<path d="M11 13v4a3.5 3.5 0 0 0 7 0v-1"></path>
+									<circle cx="18" cy="14" r="2"></circle>
+								</svg>
+                            </div>
+                            <div class="benefit-text">
+                                <h4>Qualified doctors you can trust in Malaysia</h4>
+                                <p>Available in all 13 states</p>
+                            </div>
+                        </div>
+                        <div class="benefit-row">
+                            <div class="benefit-icon">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
+                                    <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
+                                    <line x1="12" y1="11" x2="12" y2="17"></line>
+                                    <line x1="9" y1="14" x2="15" y2="14"></line>
+                                </svg>
+                            </div>
+                            <div class="benefit-text">
+                                <h4>Complete care support</h4>
+                                <p>Consultation, prescriptions & referrals</p>
+                            </div>
+                        </div>
+                        <div class="benefit-row">
+                            <div class="benefit-icon">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <polyline points="20 6 9 17 4 12"></polyline>
+                                </svg>
+                            </div>
+                            <div class="benefit-text">
+                                <h4>No insurance required</h4>
+                                <p>All records securely in-app</p>
+                            </div>
+                        </div>
                     </div>
-                </div>
+                </section>
+            </div>
+        </div>
 
-                <div class="feature-card reverse">
-                    <div class="feature-content">
-                        <img src="https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/Frame%2083.png?download=true" alt="Icon" class="feature-icon">
-                        <h3>You can talk to me just like you would <br><span class="text-blue">your regular doctor</span></h3>
-                        <p>Share your symptoms, ask questions, and get personalized health insights in a natural conversation. I'm here to provide guidance, suggest next steps, and help you understand your health better all in a friendly, accessible way.</p>
+        <!-- Features Stacked Section -->
+        <div class="section-white">
+            <div class="container">
+                <section class="features-section">
+                    <!-- FEATURE CARD 1: Animation -->
+                    <div class="feature-card">
+                        <div class="feature-content">
+                            <div class="feature-icon-box">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#111" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M4.8 2.3A.3.3 0 1 0 5 2H4a2 2 0 0 0-2 2v5a6 6 0 0 0 6 6v0a6 6 0 0 0 6-6V4a2 2 0 0 0-2-2h-1"></path>
+                                    <path d="M8 15v3.5a4.5 4.5 0 0 0 4.5 4.5h0a4.5 4.5 0 0 0 4.5-4.5V16"></path>
+                                    <circle cx="15" cy="16" r="2"></circle>
+                                </svg>
+                            </div>
+                            <h3>As an AI doctor, I provide <span class="text-blue">fast and free service</span></h3>
+                            <p>Your privacy is our top priority. All conversations are completely confidential and PDPA compliant. Doctura Ai successfully guided countless people to get the health advice they need, whenever they need it. No appointments, no waiting rooms just instant, reliable medical assistance at your fingertips</p>
+                        </div>
+                        
+                        <div class="feature-image-wrapper">
+                            <div class="anim-outer-frame">
+                                <div class="anim-chat-widget">
+                                    <div class="anim-header">
+                                        <div class="anim-avatar-large">
+                                            <img src="https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/Fig%204.png" alt="AI">
+                                        </div>
+                                        <div class="anim-header-info">
+                                            <h4 class="anim-header-title">Doktura Ai</h4>
+                                            <span class="anim-header-status" id="anim-header-status">Typing...</span>
+                                        </div>
+                                    </div>
+                                    <div class="anim-messages" id="anim-chatbox">
+                                        <!-- JS injects animation here -->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <div class="feature-image-wrapper">
-                        <img src="https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/Union%20(1).png?download=true" alt="Doctor Consultation">
-                    </div>
-                </div>
 
-                <div class="feature-card">
-                    <div class="feature-content">
-                        <img src="https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/Frame%2082%20(1).png?download=true" alt="Icon" class="feature-icon">
-                        <h3>When we're done chatting, I can connect you to a <br>Real Qualified doctor from just <span class="text-blue">RM 38.00</span></h3>
-                        <p>Get professional medical care whenever you need it. Our network of licensed doctors is available 24/7 for video consultations, prescriptions, and comprehensive health services.</p>
-                        <ul class="feature-list">
+                    <!-- FEATURE CARD 2 -->
+                    <div class="feature-card reverse">
+                        <div class="feature-content">
+                            <div class="feature-icon-box">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#111" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                    <circle cx="9" cy="7" r="4"></circle>
+                                    <path d="M14 15a6 6 0 0 0-10 0"></path>
+                                    <circle cx="17" cy="11" r="3"></circle>
+                                    <path d="M21 18a5 5 0 0 0-7.2-4.5"></path>
+                                </svg>
+                            </div>
+                            <h3>You can talk to <span class="text-blue">Doctura.Ai</span> just like<br>your regular doctor</h3>
+                            <p>Share your symptoms, ask questions, and get personalized health insights in a natural conversation. I'm here to provide guidance, suggest next steps, and help you understand your health better all in a friendly, accessible way.</p>
+                        </div>
+                        <div class="feature-image-wrapper">
+                            <img src="https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/Rectangle.png" alt="Doctor Consultation" style="border-radius: 32px; box-shadow: 0 10px 40px rgba(0,0,0,0.04);">
+                        </div>
+                    </div>
+
+                    <!-- FEATURE CARD 3 -->
+                    <div class="feature-card">
+                        <div class="feature-content">
+                            <div class="feature-icon-box">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#111" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path>
+                                    <line x1="9" y1="12" x2="15" y2="12"></line>
+                                </svg>
+                            </div>
+                            <h3>When we're done chatting, I can connect you to a Real Qualified doctor from just <span class="text-blue">RM38.00</span></h3>
+                            <p>Ask questions anytime, 24/7 personalised health insights on general health, antenatal care, knee & joints, minor surgery, and weight management.</p>
+                            <ul class="feature-list">
+                                <li>
+                                    <div class="list-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="#0066cc" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="12" fill="#0066cc"/><path d="M7 12.5L10.5 16L17 8" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                                    <div class="list-text"><h4>Top licensed doctors</h4><p>Board-certified physicians ready to help</p></div>
+                                </li>
+                                <li>
+                                    <div class="list-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="#0066cc" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="12" fill="#0066cc"/><path d="M7 12.5L10.5 16L17 8" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                                    <div class="list-text"><h4>Full service care</h4><p>Consultations, prescriptions, and follow-ups</p></div>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="feature-image-wrapper">
+                            <!-- Removed global border-radius and box-shadow to prevent clipping the built-in corners/badges -->
+                            <img src="https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/Frame%202147225387.png?download=true" alt="Online Consultation App">
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+
+        <!-- Testimonials Section -->
+        <div class="section-white">
+            <div class="container">
+                <section class="testimonials-section">
+                    <div class="text-center">
+                        <div class="pill-label feedback-pill">Feedback</div>
+                        <h2>What Our Users Say</h2>
+                    </div>
+                    <div class="testimonials-grid">
+                        <div class="testimonial-card">
+                            <div class="stars"><svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg><svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg><svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg><svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg><svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg></div>
+                            <p>I was feeling unwell late at night and didn't know what to do. The AI gave me clear guidance instantly, and I booked a doctor...</p>
+                            <div class="user-profile"><img src="https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/Priya-Menon.webp" alt="Priya Menon"><span>Priya Menon</span></div>
+                        </div>
+                        <div class="testimonial-card">
+                            <div class="stars"><svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg><svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg><svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg><svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg><svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg></div>
+                            <p>I was feeling unwell late at night and didn't know what to do. The AI gave me clear guidance instantly, and I booked a doctor right after. Everything was smooth and reassuring....</p>
+                            <div class="user-profile"><img src="https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/1e37881e785c2acf3a1882b6dad6518d55813fa4.png" alt="Faisal Ahmed"><span>Faisal Ahmed</span></div>
+                        </div>
+                        <div class="testimonial-card">
+                            <div class="stars"><svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg><svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg><svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg><svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg><svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg></div>
+                            <p>I was feeling unwell late at night and didn't know what to do. The AI gave me clear guidance instantly, and I booked a doctor right after. Everything was smooth and reassuring....</p>
+                            <div class="user-profile"><img src="https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/Haris%20Lim.webp" alt="Haris Lim"><span>Haris Lim</span></div>
+                        </div>
+                        <div class="testimonial-card">
+                            <div class="stars"><svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg><svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg><svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg><svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg><svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg></div>
+                            <p>I was feeling unwell late at night and didn't know what to do. The AI gave me clear guidance instantly, and I booked a doctor right after. Everything was smooth and reassuring....</p>
+                            <div class="user-profile"><img src="https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/Mei%20Ling%20Chan(1).webp" alt="Mei Ling Chan"><span>Mei Ling Chan</span></div>
+                        </div>
+                        <div class="testimonial-card">
+                            <div class="stars"><svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg><svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg><svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg><svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg><svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg></div>
+                            <p>I was feeling unwell late at night and didn't know what to do. The AI gave me clear guidance instantly, and I booked a doctor...</p>
+                            <div class="user-profile"><img src="https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/Diego%20Martinez.webp" alt="Diego Martinez"><span>Diego Martinez</span></div>
+                        </div>
+                        <div class="testimonial-card">
+                            <div class="stars"><svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg><svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg><svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg><svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg><svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg></div>
+                            <p>I was feeling unwell late at night and didn't know what to do. The AI gave me clear guidance instantly, and I booked a doctor...</p>
+                            <div class="user-profile"><img src="https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/Zara%20Lee.webp" alt="Zara Lee"><span>Zara Lee</span></div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+
+        <!-- Join as Doctor Section -->
+        <div class="section-white">
+            <div class="container">
+                <section class="join-doctor-section">
+                    <div class="join-doctor-left">
+                        <img src="https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/Frame%202131330284.png" alt="Doctor connecting with patients">
+                    </div>
+                    <div class="join-doctor-right">
+                        <div class="pill-label ready-pill">Ready When you are</div>
+                        <h2>Join AI-Powered Healthcare<br>with <span class="text-blue">Doktura.Ai</span></h2>
+                        <p>Connect with patients anytime, anywhere.<br>Grow your practice with secure, AI-powered consultations.</p>
+                        <ul class="check-list">
                             <li>
-                                <div class="list-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="#0066cc" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="12" fill="#0066cc"/><path d="M7 12.5L10.5 16L17 8" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-                                <div class="list-text"><h4>Top licensed doctors</h4><p>Board-certified physicians ready to help</p></div>
+                                <div class="check-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="12" fill="#0066cc"/><path d="M7 12.5L10.5 16L17 8" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                                <span>Reach more patients online</span>
                             </li>
                             <li>
-                                <div class="list-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="#0066cc" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="12" fill="#0066cc"/><path d="M7 12.5L10.5 16L17 8" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-                                <div class="list-text"><h4>Full service care</h4><p>Consultations, prescriptions, and follow-ups</p></div>
+                                <div class="check-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="12" fill="#0066cc"/><path d="M7 12.5L10.5 16L17 8" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                                <span>Flexible schedule, work on your terms</span>
+                            </li>
+                            <li>
+                                <div class="check-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="12" fill="#0066cc"/><path d="M7 12.5L10.5 16L17 8" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                                <span>Secure & seamless consultation system</span>
                             </li>
                         </ul>
+                        <a href="https://doktura.ai/doctor-registration.html" class="btn-primary btn-large btn-glow">Join as Doctor</a>
                     </div>
-                    <div class="feature-image-wrapper">
-                        <img src="https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/Frame%202147225379%20(1).png?download=true" alt="Online Consultation App">
-                    </div>
-                </div>
-            </section>
+                </section>
+            </div>
         </div>
-    </div>
 
-    <!-- Testimonials Section (White) -->
-    <div class="section-white">
-        <!-- ... (Testimonials HTML remains exactly identical to your design) ... -->
-        <div class="container">
-            <section class="testimonials-section">
-                <div class="text-center">
-                    <div class="pill-label feedback-pill">Feedback</div>
-                    <h2>What Our Users Say</h2>
-                </div>
-                <div class="testimonials-grid">
-                    <div class="testimonial-card">
-                        <div class="stars"><svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg><svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg><svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg><svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg><svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg></div>
-                        <p>I was feeling unwell late at night and didn't know what to do. The AI gave me clear guidance instantly, and I booked a doctor...</p>
-                        <div class="user-profile"><img src="https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/Priya-Menon.webp?download=true" alt="Priya Menon"><span>Priya Menon</span></div>
-                    </div>
-                    <div class="testimonial-card">
-                        <div class="stars"><svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg><svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg><svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg><svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg><svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg></div>
-                        <p>I was feeling unwell late at night and didn't know what to do. The AI gave me clear guidance instantly, and I booked a doctor right after. Everything was smooth and reassuring....</p>
-                        <div class="user-profile"><img src="https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/1e37881e785c2acf3a1882b6dad6518d55813fa4.png?download=true" alt="Faisal Ahmed"><span>Faisal Ahmed</span></div>
-                    </div>
-                    <div class="testimonial-card">
-                        <div class="stars"><svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg><svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg><svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg><svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg><svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg></div>
-                        <p>I was feeling unwell late at night and didn't know what to do. The AI gave me clear guidance instantly, and I booked a doctor right after. Everything was smooth and reassuring....</p>
-                        <div class="user-profile"><img src="https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/Haris%20Lim.webp?download=true" alt="Haris Lim"><span>Haris Lim</span></div>
-                    </div>
-                    <div class="testimonial-card">
-                        <div class="stars"><svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg><svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg><svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg><svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg><svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg></div>
-                        <p>I was feeling unwell late at night and didn't know what to do. The AI gave me clear guidance instantly, and I booked a doctor right after. Everything was smooth and reassuring....</p>
-                        <div class="user-profile"><img src="https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/Mei%20Ling%20Chan(1).webp?download=true" alt="Mei Ling Chan"><span>Mei Ling Chan</span></div>
-                    </div>
-                    <div class="testimonial-card">
-                        <div class="stars"><svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg><svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg><svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg><svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg><svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg></div>
-                        <p>I was feeling unwell late at night and didn't know what to do. The AI gave me clear guidance instantly, and I booked a doctor...</p>
-                        <div class="user-profile"><img src="https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/Diego%20Martinez.webp?download=true" alt="Diego Martinez"><span>Diego Martinez</span></div>
-                    </div>
-                    <div class="testimonial-card">
-                        <div class="stars"><svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg><svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg><svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg><svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg><svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg></div>
-                        <p>I was feeling unwell late at night and didn't know what to do. The AI gave me clear guidance instantly, and I booked a doctor...</p>
-                        <div class="user-profile"><img src="https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/Zara%20Lee.webp?download=true" alt="Zara Lee"><span>Zara Lee</span></div>
-                    </div>
-                </div>
-            </section>
-        </div>
-    </div>
-
-    <!-- Join as Doctor Section (White) -->
-    <div class="section-white">
-        <div class="container">
-            <section class="join-doctor-section">
-                <div class="join-doctor-left">
-                    <img src="https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/Frame%202131330284.png?download=true" alt="Doctor connecting with patients">
-                </div>
-                <div class="join-doctor-right">
-                    <div class="pill-label ready-pill">Ready When you are</div>
-                    <h2>Join the Future of Healthcare with <span class="text-blue">Doktura</span></h2>
-                    <p>Connect with patients anytime, anywhere.<br>Grow your practice with secure, AI-powered consultations.</p>
-                    <ul class="check-list">
-                        <li>
-                            <div class="check-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="12" fill="#0066cc"/><path d="M7 12.5L10.5 16L17 8" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-                            <span>Reach more patients online</span>
-                        </li>
-                        <li>
-                            <div class="check-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="12" fill="#0066cc"/><path d="M7 12.5L10.5 16L17 8" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-                            <span>Flexible schedule, work on your terms</span>
-                        </li>
-                        <li>
-                            <div class="check-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="12" fill="#0066cc"/><path d="M7 12.5L10.5 16L17 8" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-                            <span>Secure & seamless consultation system</span>
-                        </li>
-                    </ul>
-                    <!-- Updated Join as Doctor link -->
-                    <a href="https://doktura.ai/doctor-registration.html" class="btn-primary btn-large btn-glow">Join as Doctor</a>
-                </div>
-            </section>
-        </div>
-    </div>
-
-    <!-- FAQ Section -->
-    <div class="section-faq-bg">
-        <div class="container">
-            <section class="faq-section">
-                <div class="faq-wrapper">
-                    <!-- Left Side -->
-                    <div class="faq-left">
-                        <div class="pill-label faq-pill">FAQ's</div>
-                        <h2>Your question<br>answered</h2>
-                        <p>Here are answers to some of the most<br>common questions we receive.</p>
-
-                        <div class="contact-card">
-                            <h3>Still have questions?</h3>
-                            <p>Can't find the answer you're looking for?<br>Our team is happy to help.</p>
-                            <!-- Updated Contact Link -->
-                            <a href="https://doktura.ai/Contact-Us.html" class="btn-primary" style="display: inline-flex; text-decoration: none;">
-                                Contact
-                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <line x1="7" y1="17" x2="17" y2="7"></line>
-                                    <polyline points="7 7 17 7 17 17"></polyline>
-                                </svg>
-                            </a>
-                        </div>
+        <!-- UPDATED FAQ Section -->
+        <div class="section-faq-bg">
+            <div class="container">
+                <section class="faq-section">
+                    <div class="faq-header-center">
+                        <div class="faq-pill-center">FAQ's</div>
+                        <h2>Your question answered</h2>
+                        <p>Here are answers to some of the most common questions we receive.</p>
                     </div>
 
-                    <!-- Right Side (Accordion) -->
-                    <div class="faq-right">
+                    <div class="faq-accordion-container">
                         <div class="faq-item">
                             <div class="faq-header">
                                 <h4>Can the AI replace a real doctor?</h4>
@@ -798,13 +993,16 @@
                             </div>
                             <div class="faq-body"><p>No, our AI is designed to provide quick guidance and health insights, but it cannot replace a licensed professional for accurate medical diagnosis and treatment. Always consult a real doctor for serious concerns.</p></div>
                         </div>
+                        
+                        <!-- Open active state specifically matching screenshot text -->
                         <div class="faq-item active">
                             <div class="faq-header">
                                 <h4>Is my personal health information safe?</h4>
                                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
                             </div>
-                            <div class="faq-body"><p>Yes, your privacy is our top priority. All conversations are completely confidential, encrypted, and HIPAA compliant. We do not sell your personal data.</p></div>
+                            <div class="faq-body"><p>Yes. We offer emergency dental care for urgent issues such as tooth pain, swelling, or broken teeth. Same-day appointments may be available.</p></div>
                         </div>
+                        
                         <div class="faq-item">
                             <div class="faq-header">
                                 <h4>When should I see a real doctor?</h4>
@@ -812,6 +1010,7 @@
                             </div>
                             <div class="faq-body"><p>You should see a real doctor if you experience severe symptoms, need a medical prescription, require an official diagnosis, or have an ongoing condition that needs professional management.</p></div>
                         </div>
+                        
                         <div class="faq-item">
                             <div class="faq-header">
                                 <h4>How much does it cost?</h4>
@@ -819,6 +1018,7 @@
                             </div>
                             <div class="faq-body"><p>Chatting with our AI assistant is completely free! If you decide you need professional care, consultations with a real qualified doctor start from just RM 38.00.</p></div>
                         </div>
+                        
                         <div class="faq-item">
                             <div class="faq-header">
                                 <h4>Can I book both online and in-clinic consultations?</h4>
@@ -827,55 +1027,54 @@
                             <div class="faq-body"><p>Absolutely. Our platform gives you the flexibility to easily book secure video consultations or schedule in-person visits to verified nearby clinics, whichever works best for you.</p></div>
                         </div>
                     </div>
-                </div>
-            </section>
+                </section>
+            </div>
         </div>
-    </div>
+    </div> <!-- End Main Content -->
 
-    <!-- Footer Section -->
+    <!-- FULL WIDTH Edge-to-Edge Footer Section -->
     <footer class="footer-section">
-        <div class="footer-card">
+        <div class="footer-content">
             <div class="footer-top">
                 <div class="footer-brand">
-                    <div class="footer-logo-wrapper">
-                        <img src="https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/Logo.png?download=true" alt="Doktura.ai Logo" style="height: 32px; display: block;">
-                    </div>
-                    <p>Providing AI-powered medical insights and seamless doctor bookings 24/7.</p>
+                    <img src="https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/Vector%20(3).png" alt="Doktura.ai Logo">
+                    <p>Providing AI-powered medical insights and<br>seamless doctor bookings 24/7.</p>
                 </div>
 
                 <div class="footer-links-group">
                     <div class="footer-col">
                         <h4>Company</h4>
-                        <!-- Updated Links -->
                         <a href="https://doktura.ai/Aboutus.html">About</a>
+                        <a href="#">Careers</a>
                         <a href="https://doktura.ai/Contact-Us.html">Contact Us</a>
-                        <a href="https://doktura.ai/HIPAA.html">HIPAA</a>
                     </div>
                     <div class="footer-col">
                         <h4>Legal</h4>
-                        <!-- Updated Links -->
                         <a href="https://doktura.ai/privacy.html">Privacy Policy</a>
                         <a href="https://doktura.ai/terms.html">Terms of Service</a>
+                        <a href="#">PDPA</a>
                     </div>
                 </div>
             </div>
             
             <div class="footer-bottom">
-                <p>Alright reserve to © Doktura 2026</p>
+                <p>Copyright 2026 © Doktura Plt Registration No. 202604000898 (LLP0046127-LGN)</p>
                 <div class="social-area">
                     <span>Connect with us</span>
                     <div class="social-icons">
-                        <a href="https://www.facebook.com/dokturaai/" target="_blank" aria-label="Facebook"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path></svg></a>
-                        <a href="https://www.instagram.com/doktura.ai/" target="_blank" aria-label="Instagram"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg></a>
-                        <a href="https://www.tiktok.com/@doktura_ai" target="_blank" aria-label="TikTok"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 12a4 4 0 1 0 4 4V4a5 5 0 0 0 5 5"></path><path d="M15 8a4 4 0 1 0 0-8c0 2.5 2 4.5 4.5 4.5V8A4 4 0 0 1 15 8z"></path></svg></a>
-                        <a href="https://www.linkedin.com/company/doktura-ai" target="_blank" aria-label="LinkedIn"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle></svg></a>
+                        <a href="https://www.instagram.com/doktura.ai/" target="_blank" aria-label="Instagram">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
+                        </a>
+                        <a href="https://www.linkedin.com/company/doktura-ai" target="_blank" aria-label="LinkedIn">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle></svg>
+                        </a>
                     </div>
                 </div>
             </div>
         </div>
     </footer>
 
-    <!-- JavaScript for Expandable FAQ -->
+    <!-- FAQ Accordion Script -->
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const faqHeaders = document.querySelectorAll('.faq-header');
@@ -894,7 +1093,7 @@
         });
     </script>
 
-    <!-- Chat Logic Integrated -->
+    <!-- Main Chat Implementation -->
     <script>
         window.sendGuestChat = async function() {
             const input = document.getElementById('chat-input');
@@ -902,11 +1101,6 @@
             const message = input.value.trim();
             if(!message) return;
 
-            // Hide the initial placeholder message
-            const placeholder = document.getElementById('chat-placeholder');
-            if(placeholder) placeholder.style.display = 'none';
-
-            // Insert User Message (Styled for the new design)
             history.innerHTML += `
                 <div style="display: flex; justify-content: flex-end; margin-top: 16px;">
                     <div style="background: var(--primary-blue); color: white; padding: 12px 16px; border-radius: 16px 16px 4px 16px; max-width: 80%; text-align: left; font-size: 14px; box-shadow: 0 4px 12px rgba(0,102,204,0.15);">
@@ -916,11 +1110,10 @@
             input.value = ''; 
             history.scrollTop = history.scrollHeight;
 
-            // Insert "Thinking" loader
             const loadId = 'load-' + Date.now();
             history.innerHTML += `
                 <div id="${loadId}" style="display: flex; gap: 12px; margin-top: 16px; opacity: 0.6;">
-                    <img src="https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/Fig%204.png?download=true" style="width: 32px; height: 32px; border-radius: 50%; border: 1px solid var(--border-gray); background: white;">
+                    <img src="https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/Fig%204.png" style="width: 32px; height: 32px; border-radius: 50%; border: 1px solid var(--border-gray); background: white;">
                     <div style="background: var(--card-grayish); color: var(--text-dark); padding: 12px 16px; border-radius: 16px 16px 16px 4px; font-size: 14px;">Thinking...</div>
                 </div>`;
             history.scrollTop = history.scrollHeight;
@@ -937,11 +1130,10 @@
                 if(!res.ok) throw new Error("Backend Error");
                 const data = await res.json();
                 
-                // Remove Loader and append Bot Response (Styled for the new design)
                 document.getElementById(loadId).remove();
                 history.innerHTML += `
                 <div style="display: flex; gap: 12px; margin-top: 16px;">
-                    <img src="https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/Fig%204.png?download=true" style="width: 32px; height: 32px; border-radius: 50%; border: 1px solid var(--border-gray); background: white;">
+                    <img src="https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/Fig%204.png" style="width: 32px; height: 32px; border-radius: 50%; border: 1px solid var(--border-gray); background: white;">
                     <div style="background: #f0f7ff; border: 1px solid rgba(0, 102, 204, 0.1); color: var(--text-dark); padding: 12px 16px; border-radius: 16px 16px 16px 4px; font-size: 14px; text-align: left; line-height: 1.6; max-width: 85%;">
                         ${data.reply.replace(/\n/g, '<br>')}
                     </div>
@@ -953,6 +1145,92 @@
                 history.innerHTML += `<div style="text-align: center; color: var(--red-accent); font-size: 12px; margin-top: 12px; font-weight: 600;">⚠️ Backend Server Offline.</div>`;
             }
         }
+    </script>
+
+    <!-- Animated Feature Chat Widget Script -->
+    <script>
+        function startFeatureAnimation() {
+            const chatbox = document.getElementById('anim-chatbox');
+            const headerStatus = document.getElementById('anim-header-status');
+            
+            chatbox.innerHTML = '';
+            
+            const wait = ms => new Promise(r => setTimeout(r, ms));
+            
+            const addMsg = async (type, text) => {
+                const row = document.createElement('div');
+                row.className = `anim-row ${type}`;
+                if (type === 'ai') {
+                    row.innerHTML = `
+                        <div class="anim-avatar-small"><img src="https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/Fig%204.png" alt="AI"></div>
+                        <div class="anim-bubble">${text}</div>
+                    `;
+                } else {
+                    row.innerHTML = `
+                        <div class="anim-bubble user-bubble">${text}</div>
+                        <div class="anim-avatar-user"></div>
+                    `;
+                }
+                chatbox.appendChild(row);
+                await wait(50); 
+                row.classList.add('show');
+                chatbox.scrollTop = chatbox.scrollHeight;
+            };
+
+            const addTyping = async () => {
+                headerStatus.classList.add('show');
+                const row = document.createElement('div');
+                row.className = `anim-row ai`;
+                row.innerHTML = `
+                    <div class="anim-avatar-small"><img src="https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/Fig%204.png" alt="AI"></div>
+                    <div class="anim-bubble anim-typing-bubble">
+                        <div class="anim-dot"></div><div class="anim-dot"></div><div class="anim-dot"></div>
+                    </div>
+                `;
+                chatbox.appendChild(row);
+                await wait(50);
+                row.classList.add('show');
+                chatbox.scrollTop = chatbox.scrollHeight;
+                return row;
+            };
+
+            const runAnimationSequence = async () => {
+                headerStatus.classList.add('show');
+                await wait(800);
+                headerStatus.classList.remove('show');
+                
+                await addMsg('ai', "Hello! Type your symptoms below and i'll help you right away.");
+                await wait(1800);
+                
+                await addMsg('user', 'I have Flu and my body is warm');
+                await wait(1000);
+                
+                let typingNode = await addTyping();
+                await wait(3500); 
+                
+                typingNode.remove();
+                headerStatus.classList.remove('show');
+                chatbox.innerHTML = '';
+                runAnimationSequence();
+            };
+            
+            runAnimationSequence();
+        }
+
+        document.addEventListener("DOMContentLoaded", () => {
+            const animBox = document.getElementById('anim-chatbox');
+            if(window.IntersectionObserver) {
+                const observer = new IntersectionObserver((entries) => {
+                    if(entries[0].isIntersecting) {
+                        startFeatureAnimation();
+                        observer.disconnect();
+                    }
+                }, { threshold: 0.5 });
+                observer.observe(animBox);
+            } else {
+                startFeatureAnimation();
+            }
+        });
     </script>
 </body>
 </html>
