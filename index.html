@@ -156,8 +156,19 @@
 
         #chat-history { max-height: 350px; overflow-y: auto; padding-right: 8px; margin-bottom: 24px; scroll-behavior: smooth; display: flex; flex-direction: column; }
 
-        /* --- Bottom Info Section --- */
+        /* --- Bottom Info Section with Plus Icon --- */
         .bottom-info { padding: 80px 0 60px 0; text-align: center; max-width: 800px; margin: 0 auto; }
+        .plus-icon-wrap {
+            width: 48px;
+            height: 48px;
+            background-color: #f8fafc;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 24px auto;
+            color: #111;
+        }
         .bottom-info h2 { font-size: 42px; font-weight: 800; margin-bottom: 16px; color: var(--text-dark); letter-spacing: -0.5px;}
         .bottom-info p { font-size: 18px; color: var(--text-dark); margin-bottom: 40px; line-height: 1.6; font-weight: 500; }
         .hero-fig3 { height: 60px; width: auto; object-fit: contain; margin: 0 auto; display: block; } 
@@ -170,8 +181,20 @@
 
         /* --- How it Works --- */
         .how-it-works-section { padding: 80px 0; text-align: center; }
-        .how-pill { background-color: var(--card-grayish); color: var(--text-dark); padding: 6px 16px; border-radius: 999px; font-size: 12px; font-weight: 500; display: inline-block; margin-bottom: 20px; }
-        .how-pill span { color: var(--primary-blue); }
+        .how-pill { 
+            background-color: #f8fafc; 
+            color: #111; 
+            padding: 8px 24px; 
+            border-radius: 999px; 
+            font-size: 14px; 
+            font-weight: 500; 
+            display: inline-flex; 
+            align-items: center; 
+            justify-content: center; 
+            margin-bottom: 20px; 
+            border: 1px solid #eef2f6; 
+        }
+        .how-pill span { color: var(--primary-blue); margin-left: 4px;}
         .how-it-works-section h2 { font-size: 40px; font-weight: 800; margin-bottom: 60px; }
         .steps-container { display: flex; justify-content: space-between; align-items: flex-start; position: relative; max-width: 1000px; margin: 0 auto; }
         .steps-container::before { content: ''; position: absolute; top: 30px; left: 10%; right: 10%; height: 1px; background: linear-gradient(90deg, rgba(255,255,255,0) 0%, var(--red-accent) 15%, var(--primary-blue) 50%, var(--primary-blue) 85%, rgba(255,255,255,0) 100%); z-index: 0; }
@@ -182,6 +205,17 @@
         .step-3 .step-circle { background-color: var(--card-grayish); color: var(--text-dark); }
         .step h4 { font-size: 20px; font-weight: 600; margin-bottom: 12px; color: var(--text-dark); }
         .step p { font-size: 14px; color: var(--text-gray); line-height: 1.6; }
+
+        /* --- Typewriter Animation Class --- */
+        .typing-cursor {
+            border-right: 2px solid var(--primary-blue);
+            padding-right: 4px;
+            animation: blink-cursor 0.75s step-end infinite;
+        }
+        @keyframes blink-cursor {
+            0%, 100% { border-color: transparent; }
+            50% { border-color: var(--primary-blue); }
+        }
 
         /* --- Differences Section --- */
         .differences-section { padding: 100px 0; }
@@ -234,8 +268,6 @@
         .feature-content p { font-size: 16px; color: #1a1a1a; line-height: 1.6; margin-bottom: 24px; }
         
         .feature-image-wrapper { flex: 1; display: flex; justify-content: center; align-items: center; }
-        
-        /* FIX: Removed global border-radius and box-shadow to prevent cropping on images that have built-in borders/shapes */
         .feature-image-wrapper img { max-width: 100%; height: auto; }
         
         .feature-list { list-style: none; padding: 0; margin: 0; }
@@ -384,7 +416,7 @@
         .user-profile img { width: 44px; height: 44px; border-radius: 50%; object-fit: cover; }
         .user-profile span { font-weight: 500; color: var(--text-dark); font-size: 15px; }
 
-        /* --- UPDATED FAQ Section (Centered Layout) --- */
+        /* --- UPDATED FAQ Section --- */
         .faq-section { 
             padding: 100px 0; 
             position: relative; 
@@ -488,7 +520,7 @@
 
         @keyframes fadeIn { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* --- NEW Edge-to-Edge Footer Section --- */
+        /* --- Footer Section --- */
         .footer-section { 
             background-color: #111111; 
             color: #ffffff; 
@@ -527,13 +559,10 @@
 
         @media (max-width: 768px) {
             header { padding: 16px 0; }
-            
-            /* Slightly nudged up on mobile too, but keeping it proportionate */
             nav { transform: translateY(-2px); }
-            
             .nav-links { flex-wrap: wrap; justify-content: center; gap: 16px; }
             .header-divider { display: none; }
-            .logo { height: 84px; } /* Increased from 32px */
+            .logo { height: 84px; } 
             
             .hero { padding: 32px 0 24px 0; gap: 16px; }
             .hero-fig2 { height: 48px; margin-bottom: 16px; }
@@ -551,7 +580,6 @@
             .bottom-info h2 { font-size: 28px; }
             .hero-fig3 { height: 48px; }
             
-            /* Counter Update */
             .stats-counter-section { padding: 32px 0; }
             .counter-boxes { gap: 6px; margin-bottom: 24px; }
             .digit-box { font-size: 20px; padding: 12px 14px; min-width: 32px; border-radius: 6px; border: 1px solid #f1f5f9;}
@@ -572,7 +600,6 @@
             .diff-cards-container { flex-direction: column; gap: 16px; }
             .diff-card { padding: 24px; }
 
-            /* Link to Doctor Update */
             .link-doctor-section { text-align: left; }
             .link-doctor-fig { margin: 0 0 16px 0; width: 160px; height: auto; }
             .link-doctor-section h2 { text-align: left; font-size: 26px; }
@@ -586,18 +613,15 @@
             .feature-content h3 { font-size: 24px; }
             .feature-icon-box { margin-bottom: 24px; }
             
-            /* Feedback Section Update */
             .testimonials-section > .text-center { text-align: left; }
             .testimonials-section h2 { font-size: 32px; margin-bottom: 40px; }
             .testimonials-grid { column-count: 1; gap: 16px; }
             .testimonial-card { padding: 24px; margin-bottom: 16px; }
             
-            /* Join Doctor Reverse Layout applied globally up to 1024px but refining here */
             .join-doctor-section { flex-direction: column-reverse; gap: 40px; }
             .join-doctor-right { text-align: left; }
             .join-doctor-right h2 { font-size: 30px; }
             
-            /* FAQ Update */
             .faq-header-center { text-align: left; margin-bottom: 32px; }
             .faq-pill-center { margin-bottom: 12px; }
             .faq-header-center h2 { font-size: 32px; margin-bottom: 16px; }
@@ -644,7 +668,7 @@
                     <h1>Hello, I'm <span style="font-weight: 800;">Dok</span><span style="font-weight: 500;">tura!</span></h1>
                     
                     <div class="hero-description">
-                        <p>I’m your private and personal AI doctor. As an AI doctor, my service is <span class="text-blue font-bold">fast and free.</span></p>
+                        <p>I’m your private and personal AI doctor. As an AI doctor, my service is <span class="text-blue font-bold typing-cursor" id="typewriter-text">fast and free.</span></p>
                         <p>Describe your symptoms and get a diagnosis and treatment plan in minutes.</p>
                         <p>Powered by peer-reviewed medical research, with recommendations that align with board-certified clinicians over <span class="font-bold">99% of the time.</span></p>
                         <p>Need a prescription, lab test, or doctor’s note?<br>Connect with a licensed doctor online <span class="font-bold">in under 30 minutes</span> for just <span class="font-bold">RM38 only</span> if treatment is required.</p>
@@ -707,6 +731,12 @@
                 </section>
 
                 <section class="bottom-info">
+                    <div class="plus-icon-wrap">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#111" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="12" y1="5" x2="12" y2="19"></line>
+                            <line x1="5" y1="12" x2="19" y2="12"></line>
+                        </svg>
+                    </div>
                     <h2>#1st AI-Powered Healthcare Consult</h2>
                     <p>Get instant health guidance, understand your symptoms, and explore next steps anytime, anywhere.</p>
                     <img src="https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/Figure%202.png?download=true" alt="Ratings and usage statistics" class="hero-fig3">
@@ -774,7 +804,7 @@
                         <div class="diff-card">
                             <div class="diff-icon-wrapper">
                                 <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-                                    <path d="M12 12c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm0 2c-3.33 0-10 1.67-10 5v2h20v-2c0-3.33-6.67-5-10-5z"/>
+                                    <path d="M12 12c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm0 2c-3.33 0-10 1.67-10 5v2h20v-2c0-3.33-6.67-5-10-5z"/>
                                 </svg>
                             </div>
                             <h3>Use AI for quick guidance</h3>
@@ -930,7 +960,6 @@
                             </ul>
                         </div>
                         <div class="feature-image-wrapper">
-                            <!-- Removed global border-radius and box-shadow to prevent clipping the built-in corners/badges -->
                             <img src="https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/Frame%202147225387.png?download=true" alt="Online Consultation App">
                         </div>
                     </div>
@@ -1032,7 +1061,6 @@
                             <div class="faq-body"><p>No, our AI is designed to provide quick guidance and health insights, but it cannot replace a licensed professional for accurate medical diagnosis and treatment. Always consult a real doctor for serious concerns.</p></div>
                         </div>
                         
-                        <!-- Open active state specifically matching screenshot text -->
                         <div class="faq-item active">
                             <div class="faq-header">
                                 <h4>Is my personal health information safe?</h4>
@@ -1128,6 +1156,41 @@
                     }
                 });
             });
+        });
+    </script>
+    
+    <!-- Typewriter Backspace Animation Script -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const typeTarget = document.getElementById('typewriter-text');
+            if (!typeTarget) return;
+
+            const originalText = typeTarget.textContent; // "fast and free."
+            let index = originalText.length; 
+            let isDeleting = true;
+
+            function typeLoop() {
+                let speed = isDeleting ? 40 : 80; 
+
+                if (isDeleting) {
+                    index--;
+                    if (index === 0) {
+                        isDeleting = false;
+                        speed = 400; // brief pause before retyping
+                    }
+                } else {
+                    index++;
+                    if (index === originalText.length) {
+                        isDeleting = true;
+                        speed = 2500; // pause before deleting
+                    }
+                }
+                
+                typeTarget.textContent = originalText.substring(0, index);
+                setTimeout(typeLoop, speed);
+            }
+
+            setTimeout(typeLoop, 2500); // Start animation after a 2.5s delay
         });
     </script>
 
