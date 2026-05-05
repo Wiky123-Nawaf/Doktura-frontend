@@ -3,6 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Enforce light mode and ignore device dark mode preference -->
+    <meta name="color-scheme" content="light">
     <title>Doktura.ai - AI Medical Assistant</title>
     
     <link rel="icon" type="image/jpeg" href="https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/Group%202085665227.png">
@@ -19,14 +21,22 @@
 
         body {
             font-family: 'Inter', sans-serif;
-            color: #1a1a1a;
+            color: #1a1a1a !important;
             line-height: 1.5;
             -webkit-font-smoothing: antialiased;
             overflow-x: hidden;
-            background-color: var(--bg-white);
+            background-color: #ffffff !important;
             display: flex;
             flex-direction: column;
             min-height: 100vh;
+        }
+
+        /* Additional override for dark mode leakage */
+        @media (prefers-color-scheme: dark) {
+            body {
+                background-color: #ffffff !important;
+                color: #1a1a1a !important;
+            }
         }
 
         a { text-decoration: none; color: inherit; }
@@ -471,7 +481,7 @@
             color: var(--text-gray); 
             line-height: 1.6; 
             margin: 0; 
-            max-width: 580px; /* limits text width inside body like in screenshot */
+            max-width: 580px; 
         }
 
         @keyframes fadeIn { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
@@ -504,7 +514,7 @@
         .social-icons a:hover { opacity: 0.7; }
 
         @media (max-width: 1024px) {
-            .join-doctor-section { flex-direction: column; gap: 50px; }
+            .join-doctor-section { flex-direction: column-reverse; gap: 50px; }
             .join-doctor-left { flex: auto; width: 100%; max-width: 600px; margin: 0 auto; }
             .feature-card { gap: 40px; padding: 40px; }
             .testimonials-grid { column-count: 2; }
@@ -517,7 +527,7 @@
             header { padding: 16px 0; }
             .nav-links { flex-wrap: wrap; justify-content: center; gap: 16px; }
             .header-divider { display: none; }
-            .logo { height: 32px; }
+            .logo { height: 44px; } /* Increased from 32px */
             
             .hero { padding: 32px 0 24px 0; gap: 16px; }
             .hero-fig2 { height: 48px; margin-bottom: 16px; }
@@ -535,37 +545,58 @@
             .bottom-info h2 { font-size: 28px; }
             .hero-fig3 { height: 48px; }
             
-            .stats-counter-section { padding: 40px 0; }
-            .counter-boxes { gap: 8px; }
-            .digit-box { font-size: 28px; padding: 16px 20px; min-width: 48px; }
+            /* Counter Update */
+            .stats-counter-section { padding: 32px 0; }
+            .counter-boxes { gap: 6px; margin-bottom: 24px; }
+            .digit-box { font-size: 20px; padding: 12px 14px; min-width: 32px; border-radius: 6px; border: 1px solid #f1f5f9;}
+            .stats-pill { font-size: 14px; padding: 10px 24px; }
 
             .how-it-works-section, .differences-section, .link-doctor-section, .features-section, .testimonials-section, .join-doctor-section, .faq-section { padding: 50px 0; }
-            .how-it-works-section h2 { font-size: 32px; margin-bottom: 40px; }
-            .steps-container { flex-direction: column; gap: 40px; align-items: center; }
+            
+            /* How to Use Update */
+            .how-it-works-section { text-align: left; }
+            .how-it-works-section .how-pill { margin-bottom: 16px; }
+            .how-it-works-section h2 { text-align: left; font-size: 32px; margin-bottom: 32px; }
+            .steps-container { flex-direction: column; gap: 32px; align-items: flex-start; }
             .steps-container::before { display: none; } 
-            .step { padding: 0; width: 100%; max-width: 320px; }
+            .step { padding: 0; width: 100%; max-width: 100%; text-align: left; }
+            .step-circle { margin-left: 0; margin-right: auto; margin-bottom: 16px; }
             
             .diff-header h2 { font-size: 28px; }
             .diff-cards-container { flex-direction: column; gap: 16px; }
             .diff-card { padding: 24px; }
 
-            .link-doctor-section h2 { font-size: 26px; }
-            .benefits-card { padding: 12px 20px; }
-            .benefit-row { flex-direction: column; text-align: center; gap: 12px; }
+            /* Link to Doctor Update */
+            .link-doctor-section { text-align: left; }
+            .link-doctor-fig { margin: 0 0 16px 0; width: 160px; height: auto; }
+            .link-doctor-section h2 { text-align: left; font-size: 26px; }
+            .link-doctor-section h2 br { display: none; }
+            .avail-badge { margin: 0 0 24px 0; }
+            .benefits-card { padding: 16px; border-radius: 12px;}
+            .benefit-row { flex-direction: row; text-align: left; gap: 16px; align-items: flex-start; padding: 16px 0; }
+            .benefit-icon { width: 36px; height: 36px; }
             
             .feature-card, .feature-card.reverse { flex-direction: column; padding: 32px 20px; gap: 32px; border-radius: 20px; }
             .feature-content h3 { font-size: 24px; }
             .feature-icon-box { margin-bottom: 24px; }
             
+            /* Feedback Section Update */
+            .testimonials-section > .text-center { text-align: left; }
             .testimonials-section h2 { font-size: 32px; margin-bottom: 40px; }
             .testimonials-grid { column-count: 1; gap: 16px; }
             .testimonial-card { padding: 24px; margin-bottom: 16px; }
             
+            /* Join Doctor Reverse Layout applied globally up to 1024px but refining here */
+            .join-doctor-section { flex-direction: column-reverse; gap: 40px; }
+            .join-doctor-right { text-align: left; }
             .join-doctor-right h2 { font-size: 30px; }
             
+            /* FAQ Update */
+            .faq-header-center { text-align: left; margin-bottom: 32px; }
+            .faq-pill-center { margin-bottom: 12px; }
             .faq-header-center h2 { font-size: 32px; margin-bottom: 16px; }
             .faq-header-center p { font-size: 16px; }
-            .faq-header { padding: 20px 24px; }
+            .faq-header { padding: 20px 24px; text-align: left; }
             .faq-body { padding: 0 24px 20px 24px; }
             
             .footer-section { padding: 50px 0 24px 0; }
@@ -1207,10 +1238,13 @@
                 await wait(1000);
                 
                 let typingNode = await addTyping();
-                await wait(3500); 
+                await wait(2500); 
                 
                 typingNode.remove();
+                await addMsg('ai', "It might be Influenza.<br>Take rest, stay hydrated, and you can use Paracetamol if needed.<br><br>If your fever gets high or symptoms become serious, you should consult a real doctor by logging in Doktura.");
                 headerStatus.classList.remove('show');
+                
+                await wait(6000);
                 chatbox.innerHTML = '';
                 runAnimationSequence();
             };
