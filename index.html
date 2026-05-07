@@ -115,6 +115,8 @@
         .hero-description { max-width: 760px; width: 100%; margin: 0 auto; text-align: left; }
         .hero-description p { font-size: 16px; color: #1a1a1a; line-height: 1.6; margin-bottom: 20px; }
         .hero-description p:last-child { margin-bottom: 0; }
+        
+        .mobile-secondary-text { display: block; }
 
         /* --- Chat Interface --- */
         .hero-chat-wrapper { display: block; }
@@ -361,52 +363,49 @@
                 font-size: 14.5px !important;
             }
 
-            /* --- CRITICAL FIX FOR MOBILE: FULL SCREEN FIRST VIEW --- */
-            /* Using dynamic viewport units (dvh) and clamp() to ensure everything fits perfectly on ANY device screen without cutting off */
             .hero-chat-wrapper {
-                display: flex;
+                display: flex; 
                 flex-direction: column;
-                justify-content: center;
-                /* Minimum height is 100% of viewport minus the header height (~60px) */
+                justify-content: space-between;
                 min-height: calc(100dvh - 60px);
-                padding-top: 10px;
-                padding-bottom: max(16px, env(safe-area-inset-bottom));
             }
             
             .hero-content-top {
-                display: flex;
-                flex-direction: column;
-                flex: 0 1 auto;
+                display: block;
                 padding-bottom: 0px; 
             }
 
             .chat-content-bottom {
                 position: relative; 
-                flex: 0 0 auto;
-                width: 100%;
                 bottom: auto;
                 z-index: auto;
-                margin: 0; 
-                padding: 0;
+                margin: auto 0 0 0; 
+                padding: 0 0 24px 0;
                 background: transparent;
                 backdrop-filter: none;
                 -webkit-backdrop-filter: none;
                 border-top: none;
                 box-shadow: none;
+                width: 100%;
             }
 
-            .hero { padding: 0; align-items: flex-start; text-align: left; margin: 0; }
+            .mobile-secondary-text {
+                display: none;
+            }
+
+            /* --- CRITICAL FIX FOR MOBILE: COMPRESSING VERTICAL SPACE --- */
+            /* This pulls the chat box up, so it stays entirely visible above the Android nav bar */
+            .hero { padding: 8px 0; align-items: flex-start; text-align: left; }
             
-            /* Fluid sizing: scales between a min and max value based on screen height/width */
             .hero-fig2 { 
-                height: clamp(24px, 4vh, 36px); 
-                margin: 0 auto clamp(8px, 1.5vh, 16px) auto; 
+                height: 36px; /* Slightly smaller to save space */
+                margin: 0 auto 12px auto; 
                 display: block; 
             }
             
             .hero h1 { 
-                font-size: clamp(22px, 6vw, 28px); 
-                margin-bottom: clamp(8px, 1.5vh, 16px); 
+                font-size: 28px; 
+                margin-bottom: 12px; /* Tighter margin */
                 text-align: center; 
                 width: 100%; 
                 letter-spacing: -0.5px; 
@@ -416,16 +415,16 @@
             
             .hero-description { padding: 0; width: 100%; }
             .hero-description p { 
-                font-size: clamp(12px, 3.5vw, 14px);
-                margin-bottom: clamp(4px, 1vh, 8px); 
-                line-height: 1.35; 
+                font-size: 14px; /* Scaled slightly down to naturally shorten the block */
+                margin-bottom: 8px; /* Tighter margins between paragraphs */
+                line-height: 1.4; 
                 color: #1a1a1a; 
             }
             
             /* Compact Chat Interface */
-            .chat-section { padding-top: clamp(12px, 2vh, 20px); padding-bottom: 0; }
+            .chat-section { padding-top: 12px; padding-bottom: 0; }
             .chat-container {
-                padding: clamp(12px, 3vw, 16px);
+                padding: 16px; /* Reduced from 24px/32px to save space */
                 border-radius: 16px;
                 margin: 0 auto; 
                 width: 100%;
@@ -433,7 +432,7 @@
                 border: 1px solid #e2e8f0;
                 box-shadow: 0 8px 24px rgba(0, 0, 0, 0.04);
             }
-            .chat-tabs-wrapper { margin-bottom: clamp(10px, 2vh, 16px); } 
+            .chat-tabs-wrapper { margin-bottom: 16px; } /* Reduced space */
             .chat-tabs {
                 width: 100%;
                 justify-content: space-between;
@@ -446,9 +445,9 @@
             .tab-btn {
                 flex: 1;
                 justify-content: center;
-                padding: 8px 4px !important; 
+                padding: 8px 4px !important; /* Tighter padding */
                 background: transparent !important;
-                font-size: clamp(11px, 3.5vw, 13px) !important; 
+                font-size: clamp(11px, 3.5vw, 13px) !important; /* Scaled for very narrow phones */
                 color: #94a3b8;
                 font-weight: 500;
                 white-space: nowrap !important; 
@@ -457,8 +456,8 @@
             .tab-icon { margin-right: 6px; width: 14px; height: 14px; }
 
             .input-wrapper {
-                min-height: clamp(80px, 12vh, 110px); 
-                padding: clamp(10px, 3vw, 12px); 
+                min-height: 110px; /* Reduced to save screen space */
+                padding: 12px; 
                 margin-bottom: 0;
                 background-color: #f8fafc;
                 border: 1px solid #f1f5f9;
@@ -466,8 +465,8 @@
             }
             .input-top-area { gap: 8px; }
             .input-top-area svg { width: 16px; height: 16px; margin-top: 2px; }
-            .input-field { font-size: clamp(13px, 3.5vw, 14px); min-height: 30px; height: auto; }
-            .input-actions { margin-top: clamp(8px, 1.5vh, 12px); }
+            .input-field { font-size: 14px; min-height: 40px; height: auto; }
+            .input-actions { margin-top: 12px; }
             
             .btn-get-started { 
                 padding: 8px 16px; 
@@ -481,8 +480,9 @@
                 justify-content: center; 
                 font-size: 11px; 
                 color: #64748b; 
-                margin-top: clamp(8px, 1.5vh, 12px); 
-                padding-bottom: 0; /* Padding moved to wrapper to prevent overlaps */
+                margin-top: 12px; 
+                /* Adds padding at the very bottom to ensure OS Navigation bars don't overlap it */
+                padding-bottom: max(12px, env(safe-area-inset-bottom));
             }
 
             /* Below-the-fold content mobile optimizations */
@@ -692,11 +692,13 @@
                         <h1>Hello, I'm <strong>Dok</strong>tura!</h1>
                         
                         <div class="hero-description">
-                            <p>I’m your private and personal AI doctor. As an AI doctor, my service is <span class="text-blue font-bold typing-cursor" id="typewriter-text">fast and free.</span></p>
-                            <p>Describe your symptoms and get a diagnosis and treatment plan in minutes.</p>
-                            <p>Powered by peer-reviewed medical research, with recommendations that align with board-certified clinicians over <span class="font-bold">99% of the time.</span></p>
-                            <p>Need a prescription, lab test, or doctor’s note?<br>Connect with a licensed doctor online <span class="font-bold">in under 30 minutes</span> for just <span class="font-bold">RM38 only</span> if treatment is required.</p>
-                            <p>Completely free to use and fully anonymous. No email or credit card needed.</p>
+                            <p class="hero-main-text">I’m your private and personal AI doctor. As an AI doctor, my service is <span class="text-blue font-bold typing-cursor" id="typewriter-text">fast and free.</span></p>
+                            <div class="mobile-secondary-text">
+                                <p>Describe your symptoms and get a diagnosis and treatment plan in minutes.</p>
+                                <p>Powered by peer-reviewed medical research, with recommendations that align with board-certified clinicians over <span class="font-bold">99% of the time.</span></p>
+                                <p>Need a prescription, lab test, or doctor’s note?<br>Connect with a licensed doctor online <span class="font-bold">in under 30 minutes</span> for just <span class="font-bold">RM38 only</span> if treatment is required.</p>
+                                <p>Completely free to use and fully anonymous. No email or credit card needed.</p>
+                            </div>
                         </div>
                     </section>
                 </div>
