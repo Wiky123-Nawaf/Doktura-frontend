@@ -361,22 +361,33 @@
                 font-size: 14.5px !important;
             }
 
+            /* --- CRITICAL FIX FOR MOBILE: FULL SCREEN FIRST VIEW --- */
+            /* Using dynamic viewport units (dvh) and clamp() to ensure everything fits perfectly on ANY device screen without cutting off */
             .hero-chat-wrapper {
-                display: block; 
-                min-height: auto;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                /* Minimum height is 100% of viewport minus the header height (~60px) */
+                min-height: calc(100dvh - 60px);
+                padding-top: 10px;
+                padding-bottom: max(16px, env(safe-area-inset-bottom));
             }
             
             .hero-content-top {
-                display: block;
+                display: flex;
+                flex-direction: column;
+                flex: 0 1 auto;
                 padding-bottom: 0px; 
             }
 
             .chat-content-bottom {
                 position: relative; 
+                flex: 0 0 auto;
+                width: 100%;
                 bottom: auto;
                 z-index: auto;
                 margin: 0; 
-                padding: 0 0 24px 0;
+                padding: 0;
                 background: transparent;
                 backdrop-filter: none;
                 -webkit-backdrop-filter: none;
@@ -384,19 +395,18 @@
                 box-shadow: none;
             }
 
-            /* --- CRITICAL FIX FOR MOBILE: COMPRESSING VERTICAL SPACE --- */
-            /* This pulls the chat box up, so it stays entirely visible above the Android nav bar */
-            .hero { padding: 8px 0; align-items: flex-start; text-align: left; }
+            .hero { padding: 0; align-items: flex-start; text-align: left; margin: 0; }
             
+            /* Fluid sizing: scales between a min and max value based on screen height/width */
             .hero-fig2 { 
-                height: 36px; /* Slightly smaller to save space */
-                margin: 0 auto 12px auto; 
+                height: clamp(24px, 4vh, 36px); 
+                margin: 0 auto clamp(8px, 1.5vh, 16px) auto; 
                 display: block; 
             }
             
             .hero h1 { 
-                font-size: 28px; 
-                margin-bottom: 12px; /* Tighter margin */
+                font-size: clamp(22px, 6vw, 28px); 
+                margin-bottom: clamp(8px, 1.5vh, 16px); 
                 text-align: center; 
                 width: 100%; 
                 letter-spacing: -0.5px; 
@@ -406,16 +416,16 @@
             
             .hero-description { padding: 0; width: 100%; }
             .hero-description p { 
-                font-size: 14px; /* Scaled slightly down to naturally shorten the block */
-                margin-bottom: 8px; /* Tighter margins between paragraphs */
-                line-height: 1.4; 
+                font-size: clamp(12px, 3.5vw, 14px);
+                margin-bottom: clamp(4px, 1vh, 8px); 
+                line-height: 1.35; 
                 color: #1a1a1a; 
             }
             
             /* Compact Chat Interface */
-            .chat-section { padding-top: 12px; padding-bottom: 0; }
+            .chat-section { padding-top: clamp(12px, 2vh, 20px); padding-bottom: 0; }
             .chat-container {
-                padding: 16px; /* Reduced from 24px/32px to save space */
+                padding: clamp(12px, 3vw, 16px);
                 border-radius: 16px;
                 margin: 0 auto; 
                 width: 100%;
@@ -423,7 +433,7 @@
                 border: 1px solid #e2e8f0;
                 box-shadow: 0 8px 24px rgba(0, 0, 0, 0.04);
             }
-            .chat-tabs-wrapper { margin-bottom: 16px; } /* Reduced space */
+            .chat-tabs-wrapper { margin-bottom: clamp(10px, 2vh, 16px); } 
             .chat-tabs {
                 width: 100%;
                 justify-content: space-between;
@@ -436,9 +446,9 @@
             .tab-btn {
                 flex: 1;
                 justify-content: center;
-                padding: 8px 4px !important; /* Tighter padding */
+                padding: 8px 4px !important; 
                 background: transparent !important;
-                font-size: clamp(11px, 3.5vw, 13px) !important; /* Scaled for very narrow phones */
+                font-size: clamp(11px, 3.5vw, 13px) !important; 
                 color: #94a3b8;
                 font-weight: 500;
                 white-space: nowrap !important; 
@@ -447,8 +457,8 @@
             .tab-icon { margin-right: 6px; width: 14px; height: 14px; }
 
             .input-wrapper {
-                min-height: 110px; /* Reduced to save screen space */
-                padding: 12px; 
+                min-height: clamp(80px, 12vh, 110px); 
+                padding: clamp(10px, 3vw, 12px); 
                 margin-bottom: 0;
                 background-color: #f8fafc;
                 border: 1px solid #f1f5f9;
@@ -456,8 +466,8 @@
             }
             .input-top-area { gap: 8px; }
             .input-top-area svg { width: 16px; height: 16px; margin-top: 2px; }
-            .input-field { font-size: 14px; min-height: 40px; height: auto; }
-            .input-actions { margin-top: 12px; }
+            .input-field { font-size: clamp(13px, 3.5vw, 14px); min-height: 30px; height: auto; }
+            .input-actions { margin-top: clamp(8px, 1.5vh, 12px); }
             
             .btn-get-started { 
                 padding: 8px 16px; 
@@ -471,9 +481,8 @@
                 justify-content: center; 
                 font-size: 11px; 
                 color: #64748b; 
-                margin-top: 12px; 
-                /* Adds padding at the very bottom to ensure OS Navigation bars don't overlap it */
-                padding-bottom: max(12px, env(safe-area-inset-bottom));
+                margin-top: clamp(8px, 1.5vh, 12px); 
+                padding-bottom: 0; /* Padding moved to wrapper to prevent overlaps */
             }
 
             /* Below-the-fold content mobile optimizations */
