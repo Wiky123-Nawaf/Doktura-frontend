@@ -661,6 +661,23 @@
             </div>
         </div>
 
+        <!-- ================= 2.5 VERIFY EMAIL PROMPT (For Cross-Device Links) ================= -->
+        <div id="view-verify-email-prompt" class="card" style="display: none;">
+            <div class="card-header">
+                <h1>Confirm your email</h1>
+                <p>You opened this link on a different device or browser. To continue signing in securely, please confirm the email address you used.</p>
+            </div>
+            
+            <form id="confirmEmailForm">
+                <div class="form-group">
+                    <label for="confirmEmailInput">Email</label>
+                    <input type="email" id="confirmEmailInput" class="form-control" placeholder="Enter your email" required>
+                </div>
+
+                <button type="submit" id="doConfirmEmailBtn" class="btn btn-primary" style="margin-top: 8px;">Complete Sign In</button>
+            </form>
+        </div>
+
         <!-- ================= 3. COMPLETE DATA VIEW ================= -->
         <div id="view-complete-data" class="card" style="display: none;">
             <div class="card-header">
@@ -811,7 +828,7 @@
             if (event) event.preventDefault();
             window.closeAllModals();
             
-            const views = ['view-login', 'view-signup', 'view-forgot-password', 'view-complete-data', 'view-reset-password'];
+            const views = ['view-login', 'view-signup', 'view-forgot-password', 'view-complete-data', 'view-reset-password', 'view-verify-email-prompt'];
             views.forEach(id => {
                 const el = document.getElementById(id);
                 if(el) el.style.display = (id === targetId) ? 'block' : 'none';
@@ -913,28 +930,39 @@
         const isResetPassword = (mode === 'resetPassword' && oobCode);
         const isProcessingLink = isEmailLinkSignIn || isResetPassword;
 
+        // Helper function for processing the Email Verification link logic
+        function executeEmailSignIn(email, buttonToReset = null) {
+            signInWithEmailLink(auth, email, window.location.href)
+                .then((result) => {
+                    window.localStorage.removeItem('emailForSignIn');
+                    // Strip auth codes out of URL so refreshing doesn't break it
+                    window.history.replaceState({}, document.title, window.location.pathname);
+                    setupCompleteDataForm(result.user);
+                    window.showView('view-complete-data');
+                })
+                .catch((error) => {
+                    showAlert("Invalid or expired sign-in link. Please request a new one.", true);
+                    window.showView('view-login');
+                })
+                .finally(() => {
+                    if (buttonToReset) {
+                        buttonToReset.innerText = 'Complete Sign In'; 
+                        buttonToReset.disabled = false;
+                    }
+                });
+        }
+
         // Process sign in link specifically to force showing the complete data view directly
         if (isEmailLinkSignIn) {
             let email = window.localStorage.getItem('emailForSignIn');
-            if (!email) {
-                email = window.prompt('Please provide your email for confirmation');
-            }
+            
             if (email) {
-                signInWithEmailLink(auth, email, window.location.href)
-                    .then((result) => {
-                        window.localStorage.removeItem('emailForSignIn');
-                        window.history.replaceState({}, document.title, window.location.pathname);
-                        
-                        // Force view update immediately to avoid glitch
-                        setupCompleteDataForm(result.user);
-                        window.showView('view-complete-data');
-                    })
-                    .catch((error) => {
-                        showAlert("Invalid or expired sign-in link.", true);
-                        window.showView('view-login');
-                    });
+                // Happy Path: They are on the exact same browser/device they requested it from
+                executeEmailSignIn(email);
             } else {
-                window.showView('view-login');
+                // Edge Case: User opened the link in a different browser/device (like a phone's built in mail app)
+                // Instead of a window.prompt (which looks awful), we show our custom beautiful form!
+                window.showView('view-verify-email-prompt');
             }
         } else if (isResetPassword) {
             verifyPasswordResetCode(auth, oobCode).then((email) => {
@@ -945,6 +973,16 @@
                 window.showView('view-login');
             });
         }
+
+        // Form handler for cross-device email confirmation
+        document.getElementById('confirmEmailForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('doConfirmEmailBtn');
+            const emailInput = document.getElementById('confirmEmailInput').value.trim();
+            btn.innerText = 'Verifying...'; 
+            btn.disabled = true;
+            executeEmailSignIn(emailInput, btn);
+        });
 
 
         // Helper function for populating Complete Data form gracefully
@@ -1094,14 +1132,19 @@
                     if(data.is_complete) { 
                         window.location.href = "dashboard.html"; 
                     } else { 
-                        setupCompleteDataForm(user, data);
-                        window.showView('view-complete-data'); 
+                        // Do not interrupt if we are currently handling the email link
+                        if(!isEmailLinkSignIn) {
+                            setupCompleteDataForm(user, data);
+                            window.showView('view-complete-data'); 
+                        }
                     }
                 } catch(e) { 
                     console.warn("Backend Sync Failed - Falling back to local form rendering.");
                     // Fallback to prevent logout loop if backend is incomplete/missing
-                    setupCompleteDataForm(user);
-                    window.showView('view-complete-data');
+                    if(!isEmailLinkSignIn) {
+                        setupCompleteDataForm(user);
+                        window.showView('view-complete-data');
+                    }
                 }
             } else {
                 if (!isProcessingLink) {
@@ -1140,16 +1183,25 @@
                 }
 
                 // Sync profile data to backend
-                await fetch(`${API_BASE}/api/user/profile`, { 
+                const response = await fetch(`${API_BASE}/api/user/profile`, { 
                     method: 'POST', 
                     headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${await auth.currentUser.getIdToken()}` }, 
                     body: JSON.stringify({ name: combinedName, phone, photo_url: tempPhotoUrl }) 
                 });
                 
-                // Immediately Redirect to Dashboard
+                // If the backend refuses to save the data for any reason, show the actual error instead of refreshing!
+                if (!response.ok) {
+                    const errTxt = await response.text();
+                    throw new Error(errTxt || `Server error: ${response.status}`);
+                }
+                
+                // Immediately Redirect to Dashboard if successfully saved
                 window.location.href = "dashboard.html";
-            } catch(e) { 
-                showAlert(e.message || "Failed to save profile configuration."); 
+
+            } catch(error) { 
+                console.error(error);
+                // Shows exactly what went wrong if your backend fails to save
+                showAlert("Error saving profile: " + (error.message || "Unknown server error")); 
                 btn.innerText = "Continue"; btn.disabled = false;
             }
         });
