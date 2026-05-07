@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="color-scheme" content="light">
     <title>Doktura.ai - AI Medical Assistant</title>
     
@@ -335,10 +335,8 @@
         /* EXACT MOBILE VIEW OVERRIDES TO MATCH PROVIDED SCREEN */
         /* ---------------------------------------------------- */
         @media (max-width: 768px) {
-            /* Container padding controls all side margins */
             .container { padding: 0 20px; }
 
-            /* Relaxed Header */
             header { padding: 12px 20px; }
             header button[onclick="toggleSidebar()"] {
                 background-color: #f8fafc;
@@ -354,7 +352,6 @@
             }
             header button[onclick="toggleSidebar()"] svg { width: 24px; height: 24px; }
             
-            /* Solid Blue Login Button */
             #navLoginBtn {
                 background-color: var(--primary-blue) !important;
                 color: #ffffff !important;
@@ -364,7 +361,6 @@
                 font-size: 14.5px !important;
             }
 
-            /* --- Fixed Smooth Scrolling View --- */
             .hero-chat-wrapper {
                 display: block; 
                 min-height: auto;
@@ -376,7 +372,7 @@
             }
 
             .chat-content-bottom {
-                position: relative; /* Reverted from sticky */
+                position: relative; 
                 bottom: auto;
                 z-index: auto;
                 margin: 0; 
@@ -388,16 +384,19 @@
                 box-shadow: none;
             }
 
-            /* Inflated Hero Section, Autoscale to fit screen size */
-            .hero { padding: clamp(4px, 1.5vh, 12px) 0; align-items: flex-start; text-align: left; }
+            /* --- CRITICAL FIX FOR MOBILE: COMPRESSING VERTICAL SPACE --- */
+            /* This pulls the chat box up, so it stays entirely visible above the Android nav bar */
+            .hero { padding: 8px 0; align-items: flex-start; text-align: left; }
+            
             .hero-fig2 { 
-                height: clamp(32px, 6vh, 44px); 
-                margin: 0 auto clamp(8px, 2vh, 16px) auto; 
+                height: 36px; /* Slightly smaller to save space */
+                margin: 0 auto 12px auto; 
                 display: block; 
             }
+            
             .hero h1 { 
-                font-size: clamp(1.8rem, 7vw, 2.8rem); 
-                margin-bottom: clamp(8px, 2vh, 16px); 
+                font-size: 28px; 
+                margin-bottom: 12px; /* Tighter margin */
                 text-align: center; 
                 width: 100%; 
                 letter-spacing: -0.5px; 
@@ -407,24 +406,24 @@
             
             .hero-description { padding: 0; width: 100%; }
             .hero-description p { 
-                font-size: clamp(0.85rem, 3.5vw, 0.95rem); 
-                margin-bottom: clamp(6px, 1.5vh, 12px); 
+                font-size: 14px; /* Scaled slightly down to naturally shorten the block */
+                margin-bottom: 8px; /* Tighter margins between paragraphs */
                 line-height: 1.4; 
                 color: #1a1a1a; 
             }
             
-            /* Chat Interface matching desktop style but scaled for mobile */
-            .chat-section { padding-top: 16px; padding-bottom: 0; }
+            /* Compact Chat Interface */
+            .chat-section { padding-top: 12px; padding-bottom: 0; }
             .chat-container {
-                padding: 24px 20px; 
-                border-radius: 20px;
+                padding: 16px; /* Reduced from 24px/32px to save space */
+                border-radius: 16px;
                 margin: 0 auto; 
                 width: 100%;
                 background-color: #ffffff;
                 border: 1px solid #e2e8f0;
                 box-shadow: 0 8px 24px rgba(0, 0, 0, 0.04);
             }
-            .chat-tabs-wrapper { margin-bottom: 20px; } 
+            .chat-tabs-wrapper { margin-bottom: 16px; } /* Reduced space */
             .chat-tabs {
                 width: 100%;
                 justify-content: space-between;
@@ -437,9 +436,9 @@
             .tab-btn {
                 flex: 1;
                 justify-content: center;
-                padding: 8px 12px !important;
+                padding: 8px 4px !important; /* Tighter padding */
                 background: transparent !important;
-                font-size: 13px; 
+                font-size: clamp(11px, 3.5vw, 13px) !important; /* Scaled for very narrow phones */
                 color: #94a3b8;
                 font-weight: 500;
                 white-space: nowrap !important; 
@@ -448,8 +447,8 @@
             .tab-icon { margin-right: 6px; width: 14px; height: 14px; }
 
             .input-wrapper {
-                min-height: 130px; 
-                padding: 16px; 
+                min-height: 110px; /* Reduced to save screen space */
+                padding: 12px; 
                 margin-bottom: 0;
                 background-color: #f8fafc;
                 border: 1px solid #f1f5f9;
@@ -457,7 +456,7 @@
             }
             .input-top-area { gap: 8px; }
             .input-top-area svg { width: 16px; height: 16px; margin-top: 2px; }
-            .input-field { font-size: 14px; min-height: 48px; height: auto; }
+            .input-field { font-size: 14px; min-height: 40px; height: auto; }
             .input-actions { margin-top: 12px; }
             
             .btn-get-started { 
@@ -466,17 +465,18 @@
                 border-radius: 8px; 
             }
 
-            /* Hide chips on mobile as requested */
             .suggestion-chips { display: none !important; }
             
             .pdpa-text { 
                 justify-content: center; 
-                font-size: 12px; 
+                font-size: 11px; 
                 color: #64748b; 
-                margin-top: 16px; 
+                margin-top: 12px; 
+                /* Adds padding at the very bottom to ensure OS Navigation bars don't overlap it */
+                padding-bottom: max(12px, env(safe-area-inset-bottom));
             }
 
-            /* Other mobile layout corrections below the fold */
+            /* Below-the-fold content mobile optimizations */
             .bottom-info { padding: 40px 0 32px 0; text-align: center; } 
             .plus-icon-wrap { margin: 0 auto 20px auto; } 
             .bottom-info h2 { font-size: 28px; text-align: center; margin-bottom: 16px; } 
@@ -553,7 +553,7 @@
     </style>
 </head>
 
-<body class="flex h-[100dvh] bg-white overflow-hidden relative">
+<body class="flex h-[100dvh] h-screen bg-white overflow-hidden relative">
 
     <!-- Firebase Auth & Dynamic Login state -->
     <script>const API_BASE = 'https://api.doktura.ai';</script>
@@ -678,7 +678,7 @@
                 <div class="hero-content-top">
                     <!-- Centered Hero -->
                     <section class="hero">
-                        <img src="https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/Figure%203.png?download=true" alt="Doktura Avatars" class="hero-fig2">
+                        <img src="https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/Figure%201.png?download=true" alt="Doktura Avatars" class="hero-fig2">
                         
                         <h1>Hello, I'm <strong>Dok</strong>tura!</h1>
                         
