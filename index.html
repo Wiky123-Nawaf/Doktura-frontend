@@ -364,53 +364,40 @@
                 font-size: 14.5px !important;
             }
 
-            /* --- NEW: Fixed Bottom Chat Layout & Scaled Hero for Mobile --- */
+            /* --- Fixed Smooth Scrolling View --- */
             .hero-chat-wrapper {
-                display: flex;
-                flex-direction: column;
-                justify-content: space-between;
-                min-height: 100dvh; 
-                padding-bottom: 90px; 
+                display: block; 
+                min-height: auto;
             }
             
             .hero-content-top {
-                flex: 1 1 auto;
-                display: flex;
-                flex-direction: column;
-                justify-content: center;
-                padding-top: 16px;
-                gap: 12px;
+                display: block;
+                padding-bottom: 0px; 
             }
 
             .chat-content-bottom {
-                position: fixed;
-                bottom: 0;
-                left: 0;
-                width: 100%;
-                z-index: 150;
-                background: #ffffff;
-                padding: 12px 20px max(12px, env(safe-area-inset-bottom));
-                border-top: 1px solid #f1f5f9;
-                box-shadow: 0 -4px 24px rgba(0,0,0,0.06);
-                transform: translateZ(0); /* Anti-glitch hardware acceleration */
-                will-change: transform;
+                position: relative; /* Reverted from sticky */
+                bottom: auto;
+                z-index: auto;
+                margin: 0; 
+                padding: 0 0 24px 0;
+                background: transparent;
+                backdrop-filter: none;
+                -webkit-backdrop-filter: none;
+                border-top: none;
+                box-shadow: none;
             }
 
-            /* Main Scroll Area padding so the entire page bottom (footer) clears the chat */
-            #main-scroll-area {
-                padding-bottom: 90px;
-            }
-
-            /* Inflated Hero Section, Autoscale to fit */
-            .hero { padding: 16px 0; align-items: flex-start; text-align: left; }
+            /* Inflated Hero Section, Autoscale to fit screen size */
+            .hero { padding: clamp(4px, 1.5vh, 12px) 0; align-items: flex-start; text-align: left; }
             .hero-fig2 { 
-                height: clamp(32px, 6vw, 44px); 
-                margin: 0 auto 12px auto; 
+                height: clamp(32px, 6vh, 44px); 
+                margin: 0 auto clamp(8px, 2vh, 16px) auto; 
                 display: block; 
             }
             .hero h1 { 
-                font-size: clamp(1.8rem, 5vw, 3.5rem); 
-                margin-bottom: 12px; 
+                font-size: clamp(1.8rem, 7vw, 2.8rem); 
+                margin-bottom: clamp(8px, 2vh, 16px); 
                 text-align: center; 
                 width: 100%; 
                 letter-spacing: -0.5px; 
@@ -420,59 +407,58 @@
             
             .hero-description { padding: 0; width: 100%; }
             .hero-description p { 
-                font-size: clamp(0.85rem, 3.5vw, 1rem); 
-                margin-bottom: 10px; 
+                font-size: clamp(0.85rem, 3.5vw, 0.95rem); 
+                margin-bottom: clamp(6px, 1.5vh, 12px); 
                 line-height: 1.4; 
                 color: #1a1a1a; 
             }
             
-            /* Compact Chat Interface */
-            .chat-section { padding-top: 0; padding-bottom: 0; }
+            /* Chat Interface matching desktop style but scaled for mobile */
+            .chat-section { padding-top: 16px; padding-bottom: 0; }
             .chat-container {
-                padding: 0; 
-                border-radius: 0;
-                margin: 0; 
+                padding: 24px 20px; 
+                border-radius: 20px;
+                margin: 0 auto; 
                 width: 100%;
-                background-color: transparent;
-                border: none;
-                box-shadow: none;
+                background-color: #ffffff;
+                border: 1px solid #e2e8f0;
+                box-shadow: 0 8px 24px rgba(0, 0, 0, 0.04);
             }
-            .chat-tabs-wrapper { margin-bottom: 10px; } 
+            .chat-tabs-wrapper { margin-bottom: 20px; } 
             .chat-tabs {
-                background: transparent;
-                border: none;
-                box-shadow: none;
-                padding: 0;
                 width: 100%;
-                justify-content: center;
-                gap: 16px; 
+                justify-content: space-between;
+                background: #ffffff;
+                border: 1px solid #f1f5f9;
+                box-shadow: 0 2px 10px rgba(0,0,0,0.02);
+                padding: 4px;
+                border-radius: 999px;
             }
             .tab-btn {
-                padding: 2px 0;
+                flex: 1;
+                justify-content: center;
+                padding: 8px 12px !important;
                 background: transparent !important;
                 font-size: 13px; 
                 color: #94a3b8;
                 font-weight: 500;
                 white-space: nowrap !important; 
-                display: flex !important;
-                flex-direction: row !important; 
-                align-items: center;
             }
-            .tab-btn.active { color: var(--primary-blue); font-weight: 600; }
+            .tab-btn.active { color: var(--primary-blue); font-weight: 600; background: #eff6ff !important; }
             .tab-icon { margin-right: 6px; width: 14px; height: 14px; }
 
             .input-wrapper {
-                min-height: unset; 
-                padding: 10px 14px; 
+                min-height: 130px; 
+                padding: 16px; 
                 margin-bottom: 0;
-                background-color: #f4f6fa;
-                border: 1px solid #e2e8f0;
-                border-radius: 14px;
+                background-color: #f8fafc;
+                border: 1px solid #f1f5f9;
+                border-radius: 16px;
             }
             .input-top-area { gap: 8px; }
             .input-top-area svg { width: 16px; height: 16px; margin-top: 2px; }
-            .input-field { font-size: 14px; min-height: 24px; height: 24px; }
-            .input-actions { margin-top: 8px; }
+            .input-field { font-size: 14px; min-height: 48px; height: auto; }
+            .input-actions { margin-top: 12px; }
             
             .btn-get-started { 
                 padding: 8px 16px; 
@@ -480,9 +466,15 @@
                 border-radius: 8px; 
             }
 
-            .suggestion-chips { display: none; }
+            /* Hide chips on mobile as requested */
+            .suggestion-chips { display: none !important; }
             
-            .pdpa-text { justify-content: flex-end; font-size: 11px; color: #64748b; margin-top: 8px; }
+            .pdpa-text { 
+                justify-content: center; 
+                font-size: 12px; 
+                color: #64748b; 
+                margin-top: 16px; 
+            }
 
             /* Other mobile layout corrections below the fold */
             .bottom-info { padding: 40px 0 32px 0; text-align: center; } 
@@ -504,7 +496,7 @@
             .digit-box { font-size: 18px; padding: 10px 8px; min-width: 24px; border-radius: 6px; border: 1px solid #f1f5f9;}
             .stats-pill { font-size: 14px; padding: 10px 24px; }
 
-            .how-it-works-section, .differences-section, .link-doctor-section, .features-section, .testimonials-section, .join-doctor-section, .faq-section { padding: 32px 0; gap: 12px; }
+            .how-it-works-section, .differences-section, .link-doctor-section, .features-section, .testimonials-section, .join-doctor-section, .faq-section { padding: 50px 0; }
             
             .how-it-works-section { text-align: left; }
             .how-it-works-section .how-pill { margin-bottom: 16px; }
@@ -557,19 +549,6 @@
             .footer-links-group { flex-direction: column; gap: 32px; }
             .footer-bottom { flex-direction: column; align-items: flex-start; gap: 24px; text-align: left; padding-top: 24px; }
             .social-area { flex-direction: column; align-items: flex-start; gap: 16px; }
-        }
-
-        /* --- Short Screen Mobile Optimizations (e.g., small Androids) --- */
-        @media (max-width: 768px) and (max-height: 660px) {
-            .hero h1 { font-size: clamp(1.5rem, 4.5vw, 2.5rem); margin-bottom: 8px; }
-            .hero-fig2 { height: 28px; margin-bottom: 8px; }
-            .hero-description p { font-size: 0.85rem; margin-bottom: 6px; line-height: 1.3; }
-            .hero-chat-wrapper { padding-bottom: 80px; min-height: 100svh; }
-            .chat-content-bottom { padding: 8px 16px max(8px, env(safe-area-inset-bottom)); }
-            .input-wrapper { padding: 8px 12px; }
-            .input-field { min-height: 20px; height: 20px; }
-            .btn-get-started { padding: 6px 12px; font-size: 12px; }
-            #main-scroll-area { padding-bottom: 80px; }
         }
     </style>
 </head>
