@@ -100,6 +100,17 @@
             }
         }
 
+        /* Mobile specific adjustments to avoid scrolling */
+        @media (max-width: 767px) {
+            .header { padding: 16px 20px; }
+            .main-content { padding: 16px; justify-content: flex-start; }
+            .card { padding: 24px 16px; margin-top: 10px; }
+            .card-header { margin-bottom: 20px; }
+            .card-header h1 { font-size: 24px; margin-bottom: 8px; }
+            .form-group { margin-bottom: 16px; }
+            .page-footer { padding: 24px 16px; margin-top: 24px; }
+        }
+
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(5px); }
             to { opacity: 1; transform: translateY(0); }
@@ -108,12 +119,6 @@
         .card-header {
             margin-bottom: 32px;
             text-align: left;
-        }
-
-        @media (min-width: 768px) {
-            .card-header {
-                text-align: left;
-            }
         }
 
         .card-header h1 {
@@ -262,7 +267,7 @@
         .strength-list {
             list-style: none;
             padding: 0;
-            margin: 0 0 24px 0;
+            margin: 0 0 20px 0;
             text-align: left;
         }
 
@@ -358,7 +363,7 @@
             display: flex;
             flex-direction: column;
             gap: 12px;
-            margin-bottom: 24px;
+            margin-bottom: 20px;
         }
 
         .btn {
@@ -707,7 +712,7 @@
                     </ul>
                 </div>
 
-                <button type="submit" id="saveProfileBtn" class="btn btn-primary" style="margin-top: 16px;">Continue</button>
+                <button type="submit" id="saveProfileBtn" class="btn btn-primary" style="margin-top: 8px;">Continue</button>
             </form>
         </div>
 
@@ -903,20 +908,26 @@
         const mode = urlParams.get('mode');
         const oobCode = urlParams.get('oobCode');
 
-        // Flag to prevent flash of login screen during link processing
-        const isProcessingLink = isSignInWithEmailLink(auth, window.location.href) || (mode === 'resetPassword');
+        // Robust flags to prevent the screen from flashing login during link processing
+        const isEmailLinkSignIn = isSignInWithEmailLink(auth, window.location.href);
+        const isResetPassword = (mode === 'resetPassword' && oobCode);
+        const isProcessingLink = isEmailLinkSignIn || isResetPassword;
 
-        if (isSignInWithEmailLink(auth, window.location.href)) {
+        // Process sign in link specifically to force showing the complete data view directly
+        if (isEmailLinkSignIn) {
             let email = window.localStorage.getItem('emailForSignIn');
             if (!email) {
                 email = window.prompt('Please provide your email for confirmation');
             }
             if (email) {
                 signInWithEmailLink(auth, email, window.location.href)
-                    .then(() => {
+                    .then((result) => {
                         window.localStorage.removeItem('emailForSignIn');
                         window.history.replaceState({}, document.title, window.location.pathname);
-                        // onAuthStateChanged will handle switching to complete data view seamlessly
+                        
+                        // Force view update immediately to avoid glitch
+                        setupCompleteDataForm(result.user);
+                        window.showView('view-complete-data');
                     })
                     .catch((error) => {
                         showAlert("Invalid or expired sign-in link.", true);
@@ -925,7 +936,7 @@
             } else {
                 window.showView('view-login');
             }
-        } else if (mode === 'resetPassword' && oobCode) {
+        } else if (isResetPassword) {
             verifyPasswordResetCode(auth, oobCode).then((email) => {
                 document.getElementById('reset-email-display').innerText = email;
                 window.showView('view-reset-password');
@@ -933,6 +944,31 @@
                 showAlert("The reset link has expired or is invalid.", true);
                 window.showView('view-login');
             });
+        }
+
+
+        // Helper function for populating Complete Data form gracefully
+        function setupCompleteDataForm(user, data = {}) {
+            tempPhotoUrl = data.photo_url || user.photoURL || ""; 
+            if(data.name || user.displayName) {
+                const nameToUse = data.name || user.displayName;
+                const parts = nameToUse.split(' ');
+                document.getElementById("profileFirstName").value = parts[0] || '';
+                if(parts.length > 1) document.getElementById("profileLastName").value = parts.slice(1).join(' ');
+            }
+
+            // Hide password if authenticated via Google
+            const isGoogle = user.providerData && user.providerData.some(p => p.providerId === 'google.com');
+            const passContainer = document.getElementById('profilePassContainer');
+            const passInput = document.getElementById('profilePass');
+            
+            if(isGoogle) {
+                passContainer.style.display = 'none';
+                passInput.removeAttribute('required');
+            } else {
+                passContainer.style.display = 'block';
+                passInput.setAttribute('required', 'true');
+            }
         }
 
 
@@ -1050,38 +1086,22 @@
                         headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }, 
                         body: JSON.stringify({ email: user.email, name: user.displayName, photo_url: user.photoURL }) 
                     });
+                    
+                    if (!res.ok) throw new Error("Sync failed");
+                    
                     const data = await res.json();
                     
                     if(data.is_complete) { 
                         window.location.href = "dashboard.html"; 
                     } else { 
-                        // Populate basic details if available
-                        tempPhotoUrl = data.photo_url || user.photoURL; 
-                        if(data.name) {
-                            const parts = data.name.split(' ');
-                            document.getElementById("profileFirstName").value = parts[0] || '';
-                            if(parts.length > 1) document.getElementById("profileLastName").value = parts.slice(1).join(' ');
-                        }
-
-                        // Determine if we should require password (skip if Google Auth)
-                        const isGoogle = user.providerData.some(p => p.providerId === 'google.com');
-                        const passContainer = document.getElementById('profilePassContainer');
-                        const passInput = document.getElementById('profilePass');
-                        
-                        if(isGoogle) {
-                            passContainer.style.display = 'none';
-                            passInput.removeAttribute('required');
-                        } else {
-                            passContainer.style.display = 'block';
-                            passInput.setAttribute('required', 'true');
-                        }
-
+                        setupCompleteDataForm(user, data);
                         window.showView('view-complete-data'); 
                     }
                 } catch(e) { 
-                    await signOut(auth); 
-                    showAlert("Backend Sync Failed. Unable to load profile data."); 
-                    if (!isProcessingLink) window.showView('view-login');
+                    console.warn("Backend Sync Failed - Falling back to local form rendering.");
+                    // Fallback to prevent logout loop if backend is incomplete/missing
+                    setupCompleteDataForm(user);
+                    window.showView('view-complete-data');
                 }
             } else {
                 if (!isProcessingLink) {
@@ -1105,7 +1125,7 @@
             btn.innerText = "Saving..."; btn.disabled = true;
             
             try {
-                // If password is required and visible, update it in Firebase auth
+                // If password is required and visible, update it in Firebase auth securely
                 if (passContainer.style.display !== 'none') {
                     const pass = passInput.value;
                     const hasUpper = /[A-Z]/.test(pass);
