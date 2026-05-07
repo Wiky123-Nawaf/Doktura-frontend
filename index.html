@@ -329,8 +329,11 @@
         /* EXACT MOBILE VIEW OVERRIDES TO MATCH PROVIDED SCREEN */
         /* ---------------------------------------------------- */
         @media (max-width: 768px) {
+            /* Container padding controls all side margins */
+            .container { padding: 0 20px; }
+
             /* Relaxed Header */
-            header { padding: 16px 20px; }
+            header { padding: 12px 20px; }
             header button[onclick="toggleSidebar()"] {
                 background-color: #f8fafc;
                 border-radius: 50%;
@@ -345,24 +348,25 @@
             }
             header button[onclick="toggleSidebar()"] svg { width: 24px; height: 24px; }
             
+            /* Solid Blue Login Button */
             #navLoginBtn {
-                background-color: #eff6ff !important;
-                color: var(--primary-blue) !important;
+                background-color: var(--primary-blue) !important;
+                color: #ffffff !important;
                 font-weight: 600;
-                padding: 8px 18px !important;
+                padding: 8px 20px !important;
                 border-radius: 999px;
                 font-size: 14.5px !important;
             }
 
-            /* Inflated Hero Section */
-            .hero { padding: 12px 16px 20px 16px; text-align: left; align-items: flex-start; }
+            /* Inflated Hero Section, Stretched full width inside container */
+            .hero { padding: 12px 0 20px 0; align-items: flex-start; text-align: left; }
             .hero-fig2 { height: 44px; margin: 0 auto 16px auto; display: block; }
             .hero h1 { font-size: 28px; margin-bottom: 16px; text-align: center; width: 100%; letter-spacing: -0.5px; font-weight: 800; }
             
-            .hero-description { padding: 0 4px; }
+            .hero-description { padding: 0; width: 100%; }
             .hero-description p { 
-                font-size: 14px; /* Restored larger, readable text size */
-                margin-bottom: 12px; /* Increased gaps */
+                font-size: 14px; 
+                margin-bottom: 12px; 
                 line-height: 1.5; 
                 color: #1a1a1a; 
             }
@@ -370,14 +374,15 @@
             /* Relaxed Chat Interface */
             .chat-section { padding-top: 0; padding-bottom: 24px; }
             .chat-container {
-                padding: 20px; /* Bigger padding */
+                padding: 20px; 
                 border-radius: 18px;
-                margin: 0 16px;
+                margin: 0; /* Let container handle the side margins */
+                width: 100%;
                 background-color: #ffffff;
                 border: 1px solid #f1f5f9;
                 box-shadow: 0 4px 24px rgba(0,0,0,0.03);
             }
-            .chat-tabs-wrapper { margin-bottom: 20px; } /* Increased space */
+            .chat-tabs-wrapper { margin-bottom: 20px; } 
             .chat-tabs {
                 background: transparent;
                 border: none;
@@ -385,12 +390,12 @@
                 padding: 0;
                 width: 100%;
                 justify-content: center;
-                gap: 24px; /* Spread tabs more */
+                gap: 24px; 
             }
             .tab-btn {
                 padding: 4px 0;
                 background: transparent !important;
-                font-size: 14.5px; /* Slightly larger tab text */
+                font-size: 14.5px; 
                 color: #94a3b8;
                 font-weight: 500;
                 white-space: nowrap !important; 
@@ -402,8 +407,8 @@
             .tab-icon { margin-right: 6px; width: 16px; height: 16px; }
 
             .input-wrapper {
-                min-height: 110px; /* Bit taller */
-                padding: 16px; /* More padding inside */
+                min-height: 110px; 
+                padding: 16px; 
                 margin-bottom: 16px;
                 background-color: #ffffff;
                 border: 1px solid #e2e8f0;
@@ -415,21 +420,30 @@
             .input-actions { margin-top: auto; }
             
             .btn-get-started { 
-                padding: 10px 16px; /* Bigger button */
+                padding: 10px 16px; 
                 font-size: 13px; 
                 border-radius: 8px; 
             }
 
-            /* Hide suggestion chips on initial mobile load to match clean screenshot */
             .suggestion-chips { display: none; }
             
             .pdpa-text { justify-content: center; font-size: 12px; color: #64748b; margin-top: 16px; }
 
-            /* Other general mobile fixes below the fold */
-            .bottom-info { padding: 40px 20px; text-align: left; }
-            .bottom-info h2 { font-size: 28px; text-align: left; }
-            .bottom-info p { text-align: left; }
-            .hero-fig3 { height: 48px; margin: 0; }
+            /* Perfectly Aligned '#1st AI-Powered' Section */
+            .bottom-info { padding: 40px 0 32px 0; text-align: left; }
+            .plus-icon-wrap { margin: 0 0 20px 0; } /* Left aligned */
+            .bottom-info h2 { font-size: 28px; text-align: left; margin-bottom: 16px; }
+            .bottom-info p { text-align: left; margin-bottom: 28px; font-size: 15px; }
+            
+            /* Forces image to perfectly align left and maintain its correct aspect ratio */
+            .hero-fig3 { 
+                margin: 0; 
+                height: auto; 
+                max-height: 44px; 
+                max-width: 100%; 
+                object-fit: contain; 
+                object-position: left center; /* Critical for matching text alignment */
+            }
             
             .stats-counter-section { padding: 32px 0; }
             .counter-boxes { gap: 4px; margin-bottom: 24px; flex-wrap: nowrap; justify-content: center; }
@@ -635,7 +649,6 @@
                     <div class="chat-container relative z-20">
                         <div class="chat-tabs-wrapper">
                             <div class="chat-tabs">
-                                <!-- Updated SVG Icons to Match User Screenshot -->
                                 <button class="tab-btn active">
                                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tab-icon"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
                                     AI Assistant
