@@ -20,6 +20,7 @@
             display: flex;
             flex-direction: column;
             min-height: 100vh;
+            overflow-x: hidden;
         }
 
         /* Prevent scrolling when modal is open */
@@ -76,19 +77,20 @@
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            padding: 32px 16px;
+            padding: 24px 16px;
         }
 
         /* Base Card Styles */
         .card {
             background: #ffffff;
             border-radius: 16px;
-            padding: 32px 24px;
+            padding: 32px 20px;
             width: 100%;
-            max-width: 500px; 
+            max-width: 480px; 
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
             border: 1px solid #f3f4f6;
             animation: fadeIn 0.3s ease-in-out;
+            margin: auto;
         }
 
         @media (min-width: 768px) {
@@ -110,7 +112,7 @@
 
         @media (min-width: 768px) {
             .card-header {
-                text-align: center;
+                text-align: left;
             }
         }
 
@@ -133,7 +135,7 @@
             line-height: 1.5;
         }
 
-        /* Highlight emails in blue (as per your screenshot) */
+        /* Highlight emails in blue */
         .highlight-email {
             color: #0066cc;
             font-weight: 500;
@@ -235,7 +237,7 @@
             display: flex;
             gap: 8px;
             margin-top: 12px;
-            margin-bottom: 16px;
+            margin-bottom: 12px;
         }
 
         .strength-bar {
@@ -243,9 +245,12 @@
             border-radius: 2px;
             flex: 1;
             background-color: #e5e7eb;
+            transition: background-color 0.3s;
         }
 
         .strength-bar.red { background-color: #ea4335; }
+        .strength-bar.yellow { background-color: #fbbc05; }
+        .strength-bar.green { background-color: #34a853; }
 
         .strength-text {
             font-size: 14px;
@@ -279,6 +284,7 @@
             display: flex;
             justify-content: center;
             align-items: center;
+            color: white;
         }
 
         .icon-circle.green { background-color: #34a853; }
@@ -399,7 +405,7 @@
 
         .btn-outline-primary {
             background-color: #ffffff;
-            border: 1px solid #99c2ff;
+            border: 1px solid #0066cc;
             color: #0066cc;
             font-weight: 600;
         }
@@ -468,7 +474,7 @@
             border-radius: 16px;
             padding: 40px 24px;
             width: 100%;
-            max-width: 440px;
+            max-width: 420px;
             position: relative;
             text-align: center;
             box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
@@ -537,6 +543,10 @@
             margin-bottom: 32px;
             padding: 0 10px;
         }
+
+        .modal-card .btn-outline-primary {
+            width: 100%;
+        }
     </style>
 </head>
 <body>
@@ -545,7 +555,7 @@
         <div class="logo-container" onclick="showView('view-login')">
             <img src="https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/Group%202085665235.png?download=true" alt="doktura.ai logo">
         </div>
-        <div id="authCloseBtnContainer">
+        <div id="authCloseBtnContainer" style="display: none;">
             <a href="index.html">← Back Home</a>
         </div>
     </header>
@@ -553,12 +563,12 @@
     <main class="main-content">
         
         <!-- Reusable Dynamic Alert Box -->
-        <div id="authAlertContainer" style="width: 100%; max-width: 500px;">
+        <div id="authAlertContainer" style="width: 100%; max-width: 480px;">
             <div id="authAlertBox" style="display: none; margin-bottom: 20px; padding: 14px; border-radius: 8px; font-size: 14px; text-align: center; font-weight: 500;"></div>
         </div>
 
         <!-- ================= 1. LOGIN VIEW ================= -->
-        <div id="view-login" class="card">
+        <div id="view-login" class="card" style="display: none;">
             <div class="card-header">
                 <h1>Welcome back</h1>
                 <p>Login with your account and Password<br>or create new account</p>
@@ -609,7 +619,7 @@
             </div>
         </div>
 
-        <!-- ================= 2. SIGN-UP VIEW ================= -->
+        <!-- ================= 2. SIGN-UP VIEW (Email Link Auth) ================= -->
         <div id="view-signup" class="card" style="display: none;">
             <div class="card-header">
                 <h1>Let’s get started</h1>
@@ -622,15 +632,7 @@
                     <input type="email" id="regEmail" class="form-control" placeholder="Enter your email" required>
                 </div>
 
-                <div class="form-group">
-                    <label for="regPass">Password</label>
-                    <div class="input-wrapper">
-                        <input type="password" id="regPass" class="form-control" placeholder="Create a password" required>
-                        <button type="button" class="icon-btn" onclick="togglePasswordVisibility(this)" aria-label="Toggle password visibility">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
-                        </button>
-                    </div>
-                </div>
+                <!-- Password field completely removed for email link verification step -->
 
                 <div class="divider"><span>Or continue with</span></div>
 
@@ -669,13 +671,8 @@
                     </div>
                     <div class="form-group">
                         <label>Last Name</label>
-                        <input type="text" id="profileLastName" class="form-control" placeholder="Enter">
+                        <input type="text" id="profileLastName" class="form-control" placeholder="Enter" required>
                     </div>
-                </div>
-
-                <div class="form-group">
-                    <label>Date of birth</label>
-                    <input type="date" id="profileDob" class="form-control" required>
                 </div>
 
                 <div class="form-group">
@@ -686,7 +683,31 @@
                     </div>
                 </div>
 
-                <button type="submit" id="saveProfileBtn" class="btn btn-primary mt-8">Continue</button>
+                <div class="form-group" id="profilePassContainer">
+                    <label>Password</label>
+                    <div class="input-wrapper">
+                        <input type="password" id="profilePass" class="form-control" placeholder="Enter your password">
+                        <button type="button" class="icon-btn" onclick="togglePasswordVisibility(this)" aria-label="Toggle password visibility">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                        </button>
+                    </div>
+                    
+                    <div class="strength-bars" id="strengthBars">
+                        <div class="strength-bar"></div>
+                        <div class="strength-bar"></div>
+                        <div class="strength-bar"></div>
+                    </div>
+
+                    <div class="strength-text" id="strengthText">Weak password. Must contain :</div>
+                    
+                    <ul class="strength-list">
+                        <li id="reqUpper"><span class="icon-circle grey"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></span> At least 1 uppercase</li>
+                        <li id="reqNum"><span class="icon-circle grey"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></span> At least 1 number</li>
+                        <li id="reqLen"><span class="icon-circle grey"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></span> At least 8 characters</li>
+                    </ul>
+                </div>
+
+                <button type="submit" id="saveProfileBtn" class="btn btn-primary" style="margin-top: 16px;">Continue</button>
             </form>
         </div>
 
@@ -708,7 +729,7 @@
             </div>
         </div>
 
-        <!-- ================= 5. NEW: RESET PASSWORD (ACTION URL) VIEW ================= -->
+        <!-- ================= 5. RESET PASSWORD (ACTION URL) VIEW ================= -->
         <div id="view-reset-password" class="card" style="display: none;">
             <div class="card-header">
                 <h1 style="font-size: 26px;">Reset your password</h1>
@@ -750,36 +771,27 @@
     <!-- ================= MODALS ================= -->
     <div id="modal-verification-sent" class="modal-overlay" style="display: none;">
         <div class="modal-card">
-            <button class="modal-close-btn" onclick="closeAllModals(); showView('view-login');" aria-label="Close modal">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+            <button class="modal-close-btn" onclick="closeAllModals();" aria-label="Close modal">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
             </button>
             <div class="modal-icon-wrapper">
-                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M4 7.00005L10.2 11.65C11.2667 12.45 12.7333 12.45 13.8 11.65L20 7" stroke="#005bb5" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/><rect x="3" y="5" width="18" height="14" rx="2" stroke="#005bb5" stroke-width="2.5" stroke-linecap="round"/></svg>
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#0066cc" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
             </div>
             <h2>Verification Email has been sent</h2>
-            <p>Please check your email inbox or spam to verify your account.</p>
-            <button class="btn btn-outline-primary" onclick="closeAllModals(); showView('view-login');">Go back to Login</button>
-        </div>
-    </div>
-
-    <div id="modal-email-sent" class="modal-overlay" style="display: none;">
-        <div class="modal-card">
-            <button class="modal-close-btn" onclick="closeAllModals(); showView('view-login');" aria-label="Close modal">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
-            </button>
-            <div class="modal-icon-wrapper">
-                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M4 7.00005L10.2 11.65C11.2667 12.45 12.7333 12.45 13.8 11.65L20 7" stroke="#005bb5" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/><rect x="3" y="5" width="18" height="14" rx="2" stroke="#005bb5" stroke-width="2.5" stroke-linecap="round"/></svg>
-            </div>
-            <h2>Email has been sent</h2>
-            <p>Please check your email inbox for a resetting password link.</p>
-            <button class="btn btn-outline-primary" onclick="closeAllModals(); showView('view-login');">Go back to Login</button>
+            <p>Please check your email inbox or spam for Email verification.</p>
+            <button id="resendLinkBtn" class="btn btn-outline-primary" onclick="resendVerificationLink()">Resend Link</button>
         </div>
     </div>
 
     <!-- Firebase and Logic Scripts -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-app.js";
-        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut, sendPasswordResetEmail, sendEmailVerification, verifyPasswordResetCode, confirmPasswordReset, applyActionCode } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-auth.js";
+        import { 
+            getAuth, signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, 
+            onAuthStateChanged, signOut, sendPasswordResetEmail, verifyPasswordResetCode, 
+            confirmPasswordReset, isSignInWithEmailLink, signInWithEmailLink, 
+            sendSignInLinkToEmail, updatePassword 
+        } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-auth.js";
 
         // Global Configs
         const API_BASE = 'https://api.doktura.ai';
@@ -794,7 +806,7 @@
             if (event) event.preventDefault();
             window.closeAllModals();
             
-            const views =['view-login', 'view-signup', 'view-forgot-password', 'view-complete-data', 'view-reset-password'];
+            const views = ['view-login', 'view-signup', 'view-forgot-password', 'view-complete-data', 'view-reset-password'];
             views.forEach(id => {
                 const el = document.getElementById(id);
                 if(el) el.style.display = (id === targetId) ? 'block' : 'none';
@@ -804,7 +816,7 @@
 
             const closeBtn = document.getElementById("authCloseBtnContainer");
             if(closeBtn) {
-                closeBtn.style.display = (targetId === 'view-complete-data') ? 'none' : 'block';
+                closeBtn.style.display = (targetId === 'view-complete-data' || targetId === 'view-reset-password') ? 'none' : 'block';
             }
         }
 
@@ -815,7 +827,6 @@
 
         window.closeAllModals = function() {
             document.getElementById('modal-verification-sent').style.display = 'none';
-            document.getElementById('modal-email-sent').style.display = 'none';
             document.body.classList.remove('modal-open');
         }
 
@@ -839,13 +850,82 @@
             }
         }
 
-        // ================= INTERCEPT FIREBASE ACTION URLS (EMAIL LINKS) ================= //
+        // ================= PASSWORD STRENGTH UI LOGIC ================= //
+        function updateReqUI(id, isValid) {
+            const li = document.getElementById(id);
+            const icon = li.querySelector('.icon-circle');
+            if (isValid) {
+                li.classList.add('valid');
+                icon.className = 'icon-circle green';
+                icon.innerHTML = '<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>';
+            } else {
+                li.classList.remove('valid');
+                icon.className = 'icon-circle grey';
+                icon.innerHTML = '<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>';
+            }
+        }
+
+        document.getElementById('profilePass').addEventListener('input', function(e) {
+            const val = e.target.value;
+            const hasUpper = /[A-Z]/.test(val);
+            const hasNum = /[0-9]/.test(val);
+            const hasLen = val.length >= 8;
+
+            updateReqUI('reqUpper', hasUpper);
+            updateReqUI('reqNum', hasNum);
+            updateReqUI('reqLen', hasLen);
+
+            let score = hasUpper + hasNum + hasLen;
+            const bars = document.querySelectorAll('#strengthBars .strength-bar');
+            bars.forEach(b => b.className = 'strength-bar'); 
+
+            const textEl = document.getElementById('strengthText');
+            if (score === 0 || val.length === 0) {
+                textEl.innerText = 'Weak password. Must contain :';
+            } else if (score === 1) {
+                bars[0].classList.add('red');
+                textEl.innerText = 'Weak password. Must contain :';
+            } else if (score === 2) {
+                bars[0].classList.add('yellow');
+                bars[1].classList.add('yellow');
+                textEl.innerText = 'Moderate password. Must contain :';
+            } else if (score === 3) {
+                bars[0].classList.add('green');
+                bars[1].classList.add('green');
+                bars[2].classList.add('green');
+                textEl.innerText = 'Strong password.';
+            }
+        });
+
+
+        // ================= INTERCEPT FIREBASE ACTION URLS ================= //
         const urlParams = new URLSearchParams(window.location.search);
         const mode = urlParams.get('mode');
         const oobCode = urlParams.get('oobCode');
 
-        if (mode === 'resetPassword' && oobCode) {
-            // Setup custom UI to reset password
+        // Flag to prevent flash of login screen during link processing
+        const isProcessingLink = isSignInWithEmailLink(auth, window.location.href) || (mode === 'resetPassword');
+
+        if (isSignInWithEmailLink(auth, window.location.href)) {
+            let email = window.localStorage.getItem('emailForSignIn');
+            if (!email) {
+                email = window.prompt('Please provide your email for confirmation');
+            }
+            if (email) {
+                signInWithEmailLink(auth, email, window.location.href)
+                    .then(() => {
+                        window.localStorage.removeItem('emailForSignIn');
+                        window.history.replaceState({}, document.title, window.location.pathname);
+                        // onAuthStateChanged will handle switching to complete data view seamlessly
+                    })
+                    .catch((error) => {
+                        showAlert("Invalid or expired sign-in link.", true);
+                        window.showView('view-login');
+                    });
+            } else {
+                window.showView('view-login');
+            }
+        } else if (mode === 'resetPassword' && oobCode) {
             verifyPasswordResetCode(auth, oobCode).then((email) => {
                 document.getElementById('reset-email-display').innerText = email;
                 window.showView('view-reset-password');
@@ -853,20 +933,8 @@
                 showAlert("The reset link has expired or is invalid.", true);
                 window.showView('view-login');
             });
-        } else if (mode === 'verifyEmail' && oobCode) {
-            // Automatically verify email and direct user back to login
-            applyActionCode(auth, oobCode).then(() => {
-                showAlert("Email verified successfully! You can now log in.", false);
-                window.history.replaceState({}, document.title, window.location.pathname); 
-                window.showView('view-login');
-            }).catch((error) => {
-                showAlert("The verification link has expired or is invalid.", true);
-                window.showView('view-login');
-            });
-        } else {
-            // Default load behavior
-            window.showView('view-login');
         }
+
 
         // ================= FIREBASE AUTH FORM HANDLERS ================= //
         
@@ -877,7 +945,7 @@
             const pass2 = document.getElementById("resetPass2").value;
             
             if (pass1 !== pass2) return showAlert("Passwords do not match.", true);
-            if (pass1.length < 6) return showAlert("Password must be at least 6 characters.", true);
+            if (pass1.length < 8) return showAlert("Password must be at least 8 characters.", true);
 
             const btn = document.getElementById("doResetFinalBtn");
             btn.innerText = "Resetting..."; btn.disabled = true;
@@ -885,11 +953,7 @@
             try {
                 await confirmPasswordReset(auth, oobCode, pass1);
                 showAlert("Password updated successfully! Please login.", false);
-                
-                // Clear the URL query parameters so refresh doesn't trigger flow again
                 window.history.replaceState({}, document.title, window.location.pathname);
-                
-                // Route user to the login form
                 window.showView('view-login');
             } catch(e) {
                 showAlert("Failed to reset password. Link might be expired.", true);
@@ -910,25 +974,48 @@
             }
         });
 
-        // Email Registration Process
+        // Email Registration Process (Passwordless Email Link Auth)
         document.getElementById("signupForm").addEventListener("submit", async (e) => {
             e.preventDefault();
             const email = document.getElementById("regEmail").value.trim();
-            const pass = document.getElementById("regPass").value.trim();
             const btn = document.getElementById("doRegisterBtn");
             
-            if (pass.length < 6) return showAlert("Password must be at least 6 characters.");
-            
-            btn.innerText = "Registering..."; btn.disabled = true;
+            btn.innerText = "Sending..."; btn.disabled = true;
             try {
-                const userCred = await createUserWithEmailAndPassword(auth, email, pass);
-                await sendEmailVerification(userCred.user);
+                const actionCodeSettings = {
+                    url: window.location.origin + window.location.pathname,
+                    handleCodeInApp: true
+                };
+                await sendSignInLinkToEmail(auth, email, actionCodeSettings);
+                window.localStorage.setItem('emailForSignIn', email);
                 window.showModal('modal-verification-sent');
             } catch(e) {
-                showAlert(e.message.includes('email-already-in-use') ? "Email is already registered." : "Registration failed.");
+                showAlert("Registration failed: " + e.message);
             }
             btn.innerText = "Continue"; btn.disabled = false;
         });
+
+        // Resend Verification Link
+        window.resendVerificationLink = async function() {
+            const email = window.localStorage.getItem('emailForSignIn') || document.getElementById("regEmail").value.trim();
+            if(!email) return showAlert("No email found to resend.", true);
+            
+            const btn = document.getElementById("resendLinkBtn");
+            const originalText = btn.innerText;
+            btn.innerText = "Resending..."; btn.disabled = true;
+            
+            try {
+                const actionCodeSettings = {
+                    url: window.location.origin + window.location.pathname,
+                    handleCodeInApp: true
+                };
+                await sendSignInLinkToEmail(auth, email, actionCodeSettings);
+                showAlert("Verification email resent successfully!", false);
+            } catch(e) {
+                showAlert("Failed to resend link.", true);
+            }
+            btn.innerText = originalText; btn.disabled = false;
+        };
 
         // Forgot Password Link Request
         document.getElementById("forgotForm").addEventListener("submit", async (e) => {
@@ -939,7 +1026,7 @@
             btn.innerText = "Sending..."; btn.disabled = true;
             try {
                 await sendPasswordResetEmail(auth, email);
-                window.showModal('modal-email-sent');
+                showAlert("Reset link sent! Please check your email inbox.", false);
             } catch (e) {
                 showAlert("Failed to send reset link.");
             }
@@ -968,40 +1055,78 @@
                     if(data.is_complete) { 
                         window.location.href = "dashboard.html"; 
                     } else { 
+                        // Populate basic details if available
                         tempPhotoUrl = data.photo_url || user.photoURL; 
                         if(data.name) {
                             const parts = data.name.split(' ');
                             document.getElementById("profileFirstName").value = parts[0] || '';
                             if(parts.length > 1) document.getElementById("profileLastName").value = parts.slice(1).join(' ');
                         }
+
+                        // Determine if we should require password (skip if Google Auth)
+                        const isGoogle = user.providerData.some(p => p.providerId === 'google.com');
+                        const passContainer = document.getElementById('profilePassContainer');
+                        const passInput = document.getElementById('profilePass');
+                        
+                        if(isGoogle) {
+                            passContainer.style.display = 'none';
+                            passInput.removeAttribute('required');
+                        } else {
+                            passContainer.style.display = 'block';
+                            passInput.setAttribute('required', 'true');
+                        }
+
                         window.showView('view-complete-data'); 
                     }
                 } catch(e) { 
                     await signOut(auth); 
                     showAlert("Backend Sync Failed. Unable to load profile data."); 
-                    document.getElementById("doLoginBtn").innerText="Continue"; document.getElementById("doLoginBtn").disabled=false;
+                    if (!isProcessingLink) window.showView('view-login');
+                }
+            } else {
+                if (!isProcessingLink) {
+                    window.showView('view-login');
                 }
             }
         });
 
-        // Save Profile Logic
+        // Save Profile Logic (Final Step)
         document.getElementById("profileForm").addEventListener("submit", async (e) => {
             e.preventDefault();
             const fName = document.getElementById("profileFirstName").value.trim();
             const lName = document.getElementById("profileLastName").value.trim();
-            const dob = document.getElementById("profileDob").value;
             const phone = document.getElementById("profilePhone").value.trim();
             const combinedName = fName + (lName ? " " + lName : "");
+
+            const passContainer = document.getElementById('profilePassContainer');
+            const passInput = document.getElementById('profilePass');
 
             const btn = document.getElementById("saveProfileBtn");
             btn.innerText = "Saving..."; btn.disabled = true;
             
             try {
+                // If password is required and visible, update it in Firebase auth
+                if (passContainer.style.display !== 'none') {
+                    const pass = passInput.value;
+                    const hasUpper = /[A-Z]/.test(pass);
+                    const hasNum = /[0-9]/.test(pass);
+                    const hasLen = pass.length >= 8;
+                    
+                    if (!hasUpper || !hasNum || !hasLen) {
+                        btn.innerText = "Continue"; btn.disabled = false;
+                        return showAlert("Please ensure your password meets all requirements.", true);
+                    }
+                    await updatePassword(auth.currentUser, pass);
+                }
+
+                // Sync profile data to backend
                 await fetch(`${API_BASE}/api/user/profile`, { 
                     method: 'POST', 
                     headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${await auth.currentUser.getIdToken()}` }, 
-                    body: JSON.stringify({ name: combinedName, phone, dob, photo_url: tempPhotoUrl }) 
+                    body: JSON.stringify({ name: combinedName, phone, photo_url: tempPhotoUrl }) 
                 });
+                
+                // Immediately Redirect to Dashboard
                 window.location.href = "dashboard.html";
             } catch(e) { 
                 showAlert(e.message || "Failed to save profile configuration."); 
