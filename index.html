@@ -363,12 +363,14 @@
                 font-size: 14.5px !important;
             }
 
+            /* --- Polished Organic Layout for Mobile --- */
             .hero-chat-wrapper {
                 display: flex; 
                 flex-direction: column;
-                justify-content: space-between;
-                min-height: calc(100dvh - 64px); /* Pushes chat down dynamically */
-                padding: 0; /* Removing internal padding so container padding handles edges */
+                justify-content: flex-start; /* Flows naturally, avoiding empty bottom space */
+                min-height: auto; /* Avoid forced layout to prevent cutoff */
+                padding: 0; 
+                gap: 20px; /* Consistent natural spacing between text and chat container */
             }
             
             .hero-content-top {
@@ -381,8 +383,8 @@
                 position: relative; 
                 bottom: auto;
                 z-index: auto;
-                margin: auto 0 0 0; 
-                padding: 12px 0 20px 0; /* Chat container padding sets exactly flush to text bounds */
+                margin: 0; 
+                padding: 0 0 32px 0; /* Clean space below chatbox */
                 background: transparent;
                 backdrop-filter: none;
                 -webkit-backdrop-filter: none;
@@ -391,104 +393,115 @@
                 width: 100%;
             }
 
-            /* Responsive Scaling & Layout adjustments for Mobile Heights */
             .hero { 
-                padding: 4px 0 0 0; 
+                padding: 16px 0 0 0; 
                 align-items: flex-start; 
                 text-align: left; 
                 width: 100%;
             }
             
             .hero-fig2 { 
-                /* Scaling size and dynamic margins base on screen height */
-                height: clamp(32px, 5vh, 48px); 
-                margin: clamp(0px, 1vh, 8px) auto clamp(8px, 2vh, 16px) auto; 
+                height: 44px; 
+                margin: 0 auto 16px auto; 
                 display: block; 
             }
             
             .hero h1 { 
-                font-size: clamp(24px, 4.5vh, 32px); 
-                margin-bottom: clamp(8px, 1.5vh, 16px); 
+                font-size: 28px; 
+                margin-bottom: 16px; 
                 text-align: center; 
                 width: 100%; 
                 letter-spacing: -0.5px; 
-                font-weight: 500; 
-                line-height: 1.1;
+                font-weight: 600; 
+                line-height: 1.25;
+                padding: 0 16px; /* Aligns with the inner boundary of the chatbox padding */
             }
             
             .hero-description { 
-                padding: 0; 
+                padding: 0 16px; /* Exact alignment with the chat input bounds */
                 width: 100%; 
             }
             
             .hero-description p { 
-                font-size: clamp(12.5px, 2vh, 15px); /* Big on big screens, small on small screens */
-                margin-bottom: clamp(6px, 1.5vh, 12px); 
-                line-height: 1.35; 
-                color: #1a1a1a; 
+                font-size: 14.5px; 
+                margin-bottom: 14px; 
+                line-height: 1.55; 
+                color: #334155; /* Softer dark gray for improved mobile readability */
             }
             
-            /* Ensures Chat Interface Left/Right exact alignment with text */
-            .chat-section { padding-top: 0; padding-bottom: 0; }
+            /* --- Responsive & Aligned Chat Interface --- */
+            .chat-section { padding: 0; }
             .chat-container {
-                padding: clamp(12px, 2vh, 16px);
-                border-radius: 16px;
-                margin: 0; /* Flushed exact to grid lines defined by parent container */
+                padding: 16px; /* Uniform internal padding */
+                border-radius: 20px;
+                margin: 0; 
                 width: 100%;
                 background-color: #ffffff;
                 border: 1px solid #e2e8f0;
                 box-shadow: 0 8px 24px rgba(0, 0, 0, 0.04);
             }
-            .chat-tabs-wrapper { margin-bottom: clamp(12px, 2vh, 16px); } 
+            
+            .chat-tabs-wrapper { margin-bottom: 16px; } 
+            
+            /* Styled to look like a clean mobile segmented control */
             .chat-tabs {
                 width: 100%;
                 justify-content: space-between;
-                background: #ffffff;
-                border: 1px solid #f1f5f9;
-                box-shadow: 0 2px 10px rgba(0,0,0,0.02);
+                background: #f1f5f9;
+                border: 1px solid #e2e8f0;
+                box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);
                 padding: 4px;
-                border-radius: 999px;
+                border-radius: 12px;
             }
             .tab-btn {
                 flex: 1;
                 justify-content: center;
-                padding: 8px 4px !important; 
+                padding: 10px 4px !important; 
                 background: transparent !important;
-                font-size: clamp(11px, 3.5vw, 13px) !important; 
-                color: #94a3b8;
+                font-size: 13px !important; 
+                color: #64748b;
                 font-weight: 500;
-                white-space: nowrap !important; 
+                white-space: nowrap !important;
+                border-radius: 8px; 
+                transition: all 0.2s ease;
             }
-            .tab-btn.active { color: var(--primary-blue); font-weight: 600; background: #eff6ff !important; }
+            .tab-btn.active { 
+                color: var(--primary-blue); 
+                font-weight: 600; 
+                background: #ffffff !important; 
+                box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+            }
             .tab-icon { margin-right: 6px; width: 14px; height: 14px; }
 
             .input-wrapper {
-                min-height: clamp(80px, 12vh, 110px); 
-                padding: 12px; 
+                min-height: auto; 
+                padding: 16px; 
                 margin-bottom: 0;
                 background-color: #f8fafc;
-                border: 1px solid #f1f5f9;
+                border: 1px solid #e2e8f0;
                 border-radius: 16px;
             }
-            .input-top-area { gap: 8px; }
+            .input-top-area { gap: 10px; }
             .input-top-area svg { width: 16px; height: 16px; margin-top: 2px; }
-            .input-field { font-size: 14px; min-height: 40px; height: auto; }
-            .input-actions { margin-top: 12px; }
+            .input-field { font-size: 14.5px; min-height: 48px; height: auto; }
+            .input-actions { margin-top: 16px; width: 100%; }
             
             .btn-get-started { 
-                padding: 8px 16px; 
-                font-size: 13px; 
-                border-radius: 8px; 
+                width: 100%; /* Better tap target for mobile */
+                justify-content: center;
+                padding: 12px 16px; 
+                font-size: 14px; 
+                border-radius: 10px; 
             }
 
             .suggestion-chips { display: none !important; }
             
             .pdpa-text { 
                 justify-content: center; 
-                font-size: 11px; 
-                color: #64748b; 
-                margin-top: 12px; 
-                padding-bottom: max(12px, env(safe-area-inset-bottom));
+                font-size: 11.5px; 
+                color: #94a3b8; 
+                margin-top: 16px; 
+                padding-bottom: 0; 
             }
 
             /* Below-the-fold content mobile optimizations */
