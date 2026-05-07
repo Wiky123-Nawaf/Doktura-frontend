@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="color-scheme" content="light">
     <title>Doktura.ai - AI Medical Assistant</title>
     
@@ -28,6 +28,7 @@
             line-height: 1.5;
             -webkit-font-smoothing: antialiased;
             background-color: #ffffff !important;
+            overflow-x: hidden;
         }
 
         @media (prefers-color-scheme: dark) {
@@ -104,23 +105,24 @@
 
         .pill-label { display: inline-block; padding: 8px 24px; border-radius: 999px; font-size: 13px; font-weight: 500; }
 
-        /* --- Hero Section & Desktop Defaults --- */
-        .hero-text-content { 
-            display: flex; flex-direction: column; align-items: center; 
-            padding: 4px 0 32px 0; text-align: center; position: relative; gap: 0; 
-        }
-        .hero-fig2 { height: 60px; width: auto; margin-bottom: 24px; object-fit: contain; display: block; } 
+        /* --- Hero Section --- */
+        .hero { display: flex; flex-direction: column; align-items: center; padding: 4px 0 32px 0; text-align: center; position: relative; gap: 0; }
+        .hero-fig2 { height: 60px; width: auto; margin-bottom: 24px; object-fit: contain; } 
         
-        .hero-text-content h1 { font-size: 56px; line-height: 1.1; margin-bottom: 32px; letter-spacing: -1px; color: var(--text-dark); font-weight: 500; }
-        .hero-text-content h1 strong { font-weight: 800; }
+        .hero h1 { font-size: 56px; line-height: 1.1; margin-bottom: 32px; letter-spacing: -1px; color: var(--text-dark); font-weight: 500; }
+        .hero h1 strong { font-weight: 800; }
         
-        .hero-text-content p { 
-            max-width: 760px; width: 100%; margin: 0 auto 20px auto; 
-            text-align: left; font-size: 16px; color: #1a1a1a; line-height: 1.6; 
-        }
-        .hero-text-content p:last-child { margin-bottom: 0; }
+        .hero-description { max-width: 760px; width: 100%; margin: 0 auto; text-align: left; }
+        .hero-description p { font-size: 16px; color: #1a1a1a; line-height: 1.6; margin-bottom: 20px; }
+        .hero-description p:last-child { margin-bottom: 0; }
+        
+        .mobile-secondary-text { display: block; }
 
         /* --- Chat Interface --- */
+        .hero-chat-wrapper { display: block; }
+        .hero-content-top { display: block; }
+        .chat-content-bottom { display: block; }
+
         .chat-section { padding-bottom: 0; padding-top: 24px; }
         .chat-container { background: #ffffff; border-radius: 24px; border: 1px solid #e2e8f0; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.03); max-width: 800px; margin: 0 auto; padding: 32px; text-align: center; }
         
@@ -335,10 +337,8 @@
         /* EXACT MOBILE VIEW OVERRIDES TO MATCH PROVIDED SCREEN */
         /* ---------------------------------------------------- */
         @media (max-width: 768px) {
-            /* Container padding controls all side margins */
             .container { padding: 0 20px; }
 
-            /* Relaxed Header */
             header { padding: 12px 20px; }
             header button[onclick="toggleSidebar()"] {
                 background-color: #f8fafc;
@@ -354,7 +354,6 @@
             }
             header button[onclick="toggleSidebar()"] svg { width: 24px; height: 24px; }
             
-            /* Solid Blue Login Button */
             #navLoginBtn {
                 background-color: var(--primary-blue) !important;
                 color: #ffffff !important;
@@ -364,125 +363,135 @@
                 font-size: 14.5px !important;
             }
 
-            /* --- FLUID HERO LAYOUT (Fits ALL mobile screens perfectly) --- */
-            .mobile-hero-container {
-                min-height: calc(100dvh - 65px); /* Full screen minus header */
-                display: flex;
+            .hero-chat-wrapper {
+                display: flex; 
                 flex-direction: column;
-                padding: clamp(12px, 4vw, 20px) 0;
-                box-sizing: border-box;
+                justify-content: space-between;
+                min-height: calc(100dvh - 64px); /* Pushes chat down dynamically */
+                padding: 0; /* Removing internal padding so container padding handles edges */
+            }
+            
+            .hero-content-top {
+                display: block;
+                padding: 0; 
+                width: 100%;
+            }
+
+            .chat-content-bottom {
+                position: relative; 
+                bottom: auto;
+                z-index: auto;
+                margin: auto 0 0 0; 
+                padding: 12px 0 20px 0; /* Chat container padding sets exactly flush to text bounds */
                 background: transparent;
+                backdrop-filter: none;
+                -webkit-backdrop-filter: none;
+                border-top: none;
+                box-shadow: none;
+                width: 100%;
             }
 
-            .hero-text-content {
-                flex: 1;
-                display: flex;
-                flex-direction: column;
-                justify-content: center; /* Centers text vertically in the free space */
-                align-items: flex-start;
-                text-align: left;
-                padding: 0;
-                gap: clamp(6px, 1.5dvh, 10px); /* Spacing scales with screen height */
+            /* Responsive Scaling & Layout adjustments for Mobile Heights */
+            .hero { 
+                padding: 4px 0 0 0; 
+                align-items: flex-start; 
+                text-align: left; 
+                width: 100%;
             }
-
+            
             .hero-fig2 { 
-                height: clamp(36px, 5dvh, 44px); 
-                margin: 0 auto clamp(8px, 1.5dvh, 16px) auto !important; 
+                /* Scaling size and dynamic margins base on screen height */
+                height: clamp(32px, 5vh, 48px); 
+                margin: clamp(0px, 1vh, 8px) auto clamp(8px, 2vh, 16px) auto; 
                 display: block; 
             }
-
-            /* Fluid typography for heading */
-            .hero-text-content h1 {
-                font-size: clamp(1.4rem, 3.5dvh, 1.75rem) !important;
-                line-height: 1.2 !important;
-                margin: 0 0 clamp(4px, 1dvh, 8px) 0 !important;
-                text-align: center;
-                width: 100%;
-                letter-spacing: -0.5px;
+            
+            .hero h1 { 
+                font-size: clamp(24px, 4.5vh, 32px); 
+                margin-bottom: clamp(8px, 1.5vh, 16px); 
+                text-align: center; 
+                width: 100%; 
+                letter-spacing: -0.5px; 
+                font-weight: 500; 
+                line-height: 1.1;
             }
-
-            /* Fluid typography for paragraphs (No Truncation) */
-            .hero-text-content p {
-                font-size: clamp(0.75rem, 1.8dvh, 0.9rem) !important;
-                line-height: 1.4 !important;
-                margin: 0 !important;
-                display: block !important; 
-                color: #1a1a1a;
+            
+            .hero-description { 
+                padding: 0; 
+                width: 100%; 
             }
-
-            /* Chat bar automatically sticks to bottom */
-            .chat-bar-container {
-                margin-top: auto; 
-                width: 100%;
-                padding-top: clamp(8px, 1.5dvh, 12px);
+            
+            .hero-description p { 
+                font-size: clamp(12.5px, 2vh, 15px); /* Big on big screens, small on small screens */
+                margin-bottom: clamp(6px, 1.5vh, 12px); 
+                line-height: 1.35; 
+                color: #1a1a1a; 
             }
-
-            .chat-section { padding: 0 !important; }
+            
+            /* Ensures Chat Interface Left/Right exact alignment with text */
+            .chat-section { padding-top: 0; padding-bottom: 0; }
             .chat-container {
-                padding: clamp(12px, 2.5dvh, 16px) !important; 
+                padding: clamp(12px, 2vh, 16px);
                 border-radius: 16px;
-                margin: 0; 
+                margin: 0; /* Flushed exact to grid lines defined by parent container */
                 width: 100%;
                 background-color: #ffffff;
-                border: 1px solid #f1f5f9;
-                box-shadow: 0 4px 24px rgba(0,0,0,0.03);
+                border: 1px solid #e2e8f0;
+                box-shadow: 0 8px 24px rgba(0, 0, 0, 0.04);
             }
-            
-            .chat-tabs-wrapper { margin-bottom: clamp(10px, 2dvh, 14px) !important; } 
+            .chat-tabs-wrapper { margin-bottom: clamp(12px, 2vh, 16px); } 
             .chat-tabs {
-                background: transparent;
-                border: none;
-                box-shadow: none;
-                padding: 0;
                 width: 100%;
-                justify-content: center;
-                gap: 16px; 
+                justify-content: space-between;
+                background: #ffffff;
+                border: 1px solid #f1f5f9;
+                box-shadow: 0 2px 10px rgba(0,0,0,0.02);
+                padding: 4px;
+                border-radius: 999px;
             }
-            
             .tab-btn {
-                padding: 4px 0 !important;
+                flex: 1;
+                justify-content: center;
+                padding: 8px 4px !important; 
                 background: transparent !important;
-                font-size: clamp(0.75rem, 1.4dvh, 0.9rem) !important;
+                font-size: clamp(11px, 3.5vw, 13px) !important; 
                 color: #94a3b8;
                 font-weight: 500;
                 white-space: nowrap !important; 
-                display: flex !important;
-                flex-direction: row !important; 
-                align-items: center;
-                min-height: auto !important;
             }
-            .tab-btn.active { color: var(--primary-blue); font-weight: 600; }
-            .tab-icon { margin-right: 6px; width: 16px; height: 16px; }
+            .tab-btn.active { color: var(--primary-blue); font-weight: 600; background: #eff6ff !important; }
+            .tab-icon { margin-right: 6px; width: 14px; height: 14px; }
 
             .input-wrapper {
-                min-height: clamp(60px, 10dvh, 80px) !important; 
-                padding: clamp(10px, 1.5dvh, 12px) 14px !important; 
-                margin-bottom: clamp(6px, 1dvh, 8px) !important;
-                background-color: #ffffff;
-                border: 1px solid #e2e8f0;
-                border-radius: 12px;
+                min-height: clamp(80px, 12vh, 110px); 
+                padding: 12px; 
+                margin-bottom: 0;
+                background-color: #f8fafc;
+                border: 1px solid #f1f5f9;
+                border-radius: 16px;
             }
-            .input-top-area { gap: 10px; }
+            .input-top-area { gap: 8px; }
             .input-top-area svg { width: 16px; height: 16px; margin-top: 2px; }
-            
-            .input-field { 
-                font-size: clamp(0.8rem, 1.5dvh, 0.95rem) !important;
-                min-height: 24px !important; 
-            }
-            .input-actions { margin-top: 10px; }
+            .input-field { font-size: 14px; min-height: 40px; height: auto; }
+            .input-actions { margin-top: 12px; }
             
             .btn-get-started { 
-                padding: clamp(6px, 1dvh, 8px) 14px !important; 
-                font-size: clamp(0.75rem, 1.4dvh, 0.9rem) !important;
+                padding: 8px 16px; 
+                font-size: 13px; 
                 border-radius: 8px; 
-                height: auto !important;
             }
 
-            .suggestion-chips { display: none; }
+            .suggestion-chips { display: none !important; }
             
-            .pdpa-text { justify-content: flex-start; font-size: 12px; color: #64748b; margin-top: 8px; }
+            .pdpa-text { 
+                justify-content: center; 
+                font-size: 11px; 
+                color: #64748b; 
+                margin-top: 12px; 
+                padding-bottom: max(12px, env(safe-area-inset-bottom));
+            }
 
-            /* Perfectly Aligned '#1st AI-Powered' Section */
+            /* Below-the-fold content mobile optimizations */
             .bottom-info { padding: 40px 0 32px 0; text-align: center; } 
             .plus-icon-wrap { margin: 0 auto 20px auto; } 
             .bottom-info h2 { font-size: 28px; text-align: center; margin-bottom: 16px; } 
@@ -556,21 +565,10 @@
             .footer-bottom { flex-direction: column; align-items: flex-start; gap: 24px; text-align: left; padding-top: 24px; }
             .social-area { flex-direction: column; align-items: flex-start; gap: 16px; }
         }
-
-        /* Desktop Reset for the new wrappers */
-        @media screen and (min-width: 769px) {
-            .mobile-hero-container {
-                min-height: auto;
-                display: block;
-            }
-            .chat-bar-container {
-                margin-top: 0;
-            }
-        }
     </style>
 </head>
 
-<body class="flex h-[100dvh] bg-white overflow-hidden relative">
+<body class="flex h-[100dvh] h-screen bg-white overflow-hidden relative">
 
     <!-- Firebase Auth & Dynamic Login state -->
     <script>const API_BASE = 'https://api.doktura.ai';</script>
@@ -584,9 +582,9 @@
             if (user) {
                 const navBtn = document.getElementById("navLoginBtn");
                 navBtn.href = "https://doktura.ai/dashboard.html";
-                navBtn.className = "w-9 h-9 border border-gray-200 rounded-full hover:bg-gray-50 transition flex items-center justify-center bg-white shadow-sm overflow-hidden";
-                navBtn.style = "padding: 0;";
-                navBtn.innerHTML = `<img src="${user.photoURL || 'https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/Vector%20(4).png?download=true'}" class="w-full h-full object-cover">`;
+                navBtn.className = "btn-primary";
+                navBtn.style = "padding: 8px 16px; font-size: 13px;";
+                navBtn.innerHTML = `Dashboard`;
                 
                 document.getElementById("userNameSidebar").innerText = user.displayName || user.email.split('@')[0];
                 document.getElementById("userAvatarSidebar").src = user.photoURL || 'https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/Vector%20(4).png?download=true';
@@ -690,23 +688,29 @@
 
         <!-- Top Section -->
         <div class="section-white flex-1">
-            <div class="container relative z-10 mobile-hero-container">
+            <div class="container relative z-10 hero-chat-wrapper">
                 
-                <!-- Fluid Hero Content Wrapper -->
-                <div class="hero-text-content">
-                    <img src="https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/Figure%201.png?download=true" alt="Doktura Avatars" class="hero-fig2">
-                    
-                    <h1>Hello, I'm <strong>Dok</strong>tura!</h1>
-                    
-                    <p>I’m your private and personal AI doctor. As an AI doctor, my service is <span class="text-blue font-bold typing-cursor" id="typewriter-text">fast and free.</span></p>
-                    <p>Describe your symptoms and get a diagnosis and treatment plan in minutes.</p>
-                    <p>Powered by peer-reviewed medical research, with recommendations that align with board-certified clinicians over <span class="font-bold">99% of the time.</span></p>
-                    <p>Need a prescription, lab test, or doctor’s note?<br>Connect with a licensed doctor online <span class="font-bold">in under 30 minutes</span> for just <span class="font-bold">RM38 only</span> if treatment is required.</p>
-                    <p>Completely free to use and fully anonymous. No email or credit card needed.</p>
+                <div class="hero-content-top">
+                    <!-- Centered Hero -->
+                    <section class="hero">
+                        <img src="https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/Figure%201.png?download=true" alt="Doktura Avatars" class="hero-fig2">
+                        
+                        <h1>Hello, I'm <strong>Dok</strong>tura!</h1>
+                        
+                        <div class="hero-description">
+                            <p class="hero-main-text">I’m your private and personal AI doctor. As an AI doctor, my service is <span class="text-blue font-bold typing-cursor" id="typewriter-text">fast and free.</span></p>
+                            <div class="mobile-secondary-text">
+                                <p>Describe your symptoms and get a diagnosis and treatment plan in minutes.</p>
+                                <p>Powered by peer-reviewed medical research, with recommendations that align with board-certified clinicians over <span class="font-bold">99% of the time.</span></p>
+                                <p>Need a prescription, lab test, or doctor’s note?<br>Connect with a licensed doctor online <span class="font-bold">in under 30 minutes</span> for just <span class="font-bold">RM38 only</span> if treatment is required.</p>
+                                <p>Completely free to use and fully anonymous. No email or credit card needed.</p>
+                            </div>
+                        </div>
+                    </section>
                 </div>
 
-                <!-- Chat Interface Area -->
-                <div class="chat-bar-container">
+                <div class="chat-content-bottom">
+                    <!-- Chat Interface Area -->
                     <section class="chat-section">
                         <div class="chat-container relative z-20">
                             <div class="chat-tabs-wrapper">
@@ -763,11 +767,10 @@
                         </div>
                     </section>
                 </div>
+
             </div>
-        </div>
-        
-        <div class="section-white">
-            <div class="container">
+
+            <div class="container relative z-10">
                 <section class="bottom-info">
                     <div class="plus-icon-wrap">
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#111" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
