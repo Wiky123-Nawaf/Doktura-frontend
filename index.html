@@ -361,22 +361,27 @@
                 font-size: 14.5px !important;
             }
 
+            /* --- FULL SCREEN FIX --- */
+            /* Forces the Hero & Chat wrap to exactly equal the viewport height, pushing everything else out of view initially */
             .hero-chat-wrapper {
-                display: block; 
-                min-height: auto;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                min-height: calc(100dvh - 64px); 
+                padding-bottom: env(safe-area-inset-bottom); /* Saftey gap for bottom navigation bars */
             }
             
             .hero-content-top {
                 display: block;
-                padding-bottom: 0px; 
+                flex: 0 0 auto; 
             }
 
             .chat-content-bottom {
+                display: block;
+                flex: 0 0 auto;
                 position: relative; 
-                bottom: auto;
-                z-index: auto;
                 margin: 0; 
-                padding: 0 0 24px 0;
+                padding: 0;
                 background: transparent;
                 backdrop-filter: none;
                 -webkit-backdrop-filter: none;
@@ -384,19 +389,19 @@
                 box-shadow: none;
             }
 
-            /* --- CRITICAL FIX FOR MOBILE: COMPRESSING VERTICAL SPACE --- */
-            /* This pulls the chat box up, so it stays entirely visible above the Android nav bar */
-            .hero { padding: 8px 0; align-items: flex-start; text-align: left; }
+            /* --- HEIGHT COMPRESSION --- */
+            /* Aggressively tightened margins and text sizes so it fits cleanly into smaller phones */
+            .hero { padding: 0; align-items: flex-start; text-align: left; }
             
             .hero-fig2 { 
-                height: 36px; /* Slightly smaller to save space */
+                height: 32px; 
                 margin: 0 auto 12px auto; 
                 display: block; 
             }
             
             .hero h1 { 
-                font-size: 28px; 
-                margin-bottom: 12px; /* Tighter margin */
+                font-size: clamp(22px, 6vw, 26px); 
+                margin-bottom: 8px; 
                 text-align: center; 
                 width: 100%; 
                 letter-spacing: -0.5px; 
@@ -406,16 +411,16 @@
             
             .hero-description { padding: 0; width: 100%; }
             .hero-description p { 
-                font-size: 14px; /* Scaled slightly down to naturally shorten the block */
-                margin-bottom: 8px; /* Tighter margins between paragraphs */
-                line-height: 1.4; 
+                font-size: clamp(12.5px, 3.5vw, 13.5px); 
+                margin-bottom: 6px; 
+                line-height: 1.35; 
                 color: #1a1a1a; 
             }
             
             /* Compact Chat Interface */
             .chat-section { padding-top: 12px; padding-bottom: 0; }
             .chat-container {
-                padding: 16px; /* Reduced from 24px/32px to save space */
+                padding: 12px 14px; 
                 border-radius: 16px;
                 margin: 0 auto; 
                 width: 100%;
@@ -423,7 +428,7 @@
                 border: 1px solid #e2e8f0;
                 box-shadow: 0 8px 24px rgba(0, 0, 0, 0.04);
             }
-            .chat-tabs-wrapper { margin-bottom: 16px; } /* Reduced space */
+            .chat-tabs-wrapper { margin-bottom: 12px; } 
             .chat-tabs {
                 width: 100%;
                 justify-content: space-between;
@@ -436,9 +441,9 @@
             .tab-btn {
                 flex: 1;
                 justify-content: center;
-                padding: 8px 4px !important; /* Tighter padding */
+                padding: 8px 4px !important; 
                 background: transparent !important;
-                font-size: clamp(11px, 3.5vw, 13px) !important; /* Scaled for very narrow phones */
+                font-size: clamp(11px, 3vw, 13px) !important; 
                 color: #94a3b8;
                 font-weight: 500;
                 white-space: nowrap !important; 
@@ -447,21 +452,21 @@
             .tab-icon { margin-right: 6px; width: 14px; height: 14px; }
 
             .input-wrapper {
-                min-height: 110px; /* Reduced to save screen space */
-                padding: 12px; 
+                min-height: 80px; 
+                padding: 10px 12px; 
                 margin-bottom: 0;
                 background-color: #f8fafc;
                 border: 1px solid #f1f5f9;
-                border-radius: 16px;
+                border-radius: 12px;
             }
             .input-top-area { gap: 8px; }
             .input-top-area svg { width: 16px; height: 16px; margin-top: 2px; }
-            .input-field { font-size: 14px; min-height: 40px; height: auto; }
-            .input-actions { margin-top: 12px; }
+            .input-field { font-size: 13px; min-height: 32px; height: auto; }
+            .input-actions { margin-top: 8px; }
             
             .btn-get-started { 
-                padding: 8px 16px; 
-                font-size: 13px; 
+                padding: 6px 14px; 
+                font-size: 12px; 
                 border-radius: 8px; 
             }
 
@@ -469,11 +474,9 @@
             
             .pdpa-text { 
                 justify-content: center; 
-                font-size: 11px; 
+                font-size: 10px; 
                 color: #64748b; 
-                margin-top: 12px; 
-                /* Adds padding at the very bottom to ensure OS Navigation bars don't overlap it */
-                padding-bottom: max(12px, env(safe-area-inset-bottom));
+                margin-top: 10px; 
             }
 
             /* Below-the-fold content mobile optimizations */
@@ -678,7 +681,7 @@
                 <div class="hero-content-top">
                     <!-- Centered Hero -->
                     <section class="hero">
-                        <img src="https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/Figure%203.png?download=true" alt="Doktura Avatars" class="hero-fig2">
+                        <img src="https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/Figure%201.png?download=true" alt="Doktura Avatars" class="hero-fig2">
                         
                         <h1>Hello, I'm <strong>Dok</strong>tura!</h1>
                         
