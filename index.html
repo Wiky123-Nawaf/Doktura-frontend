@@ -329,55 +329,55 @@
         /* EXACT MOBILE VIEW OVERRIDES TO MATCH PROVIDED SCREEN */
         /* ---------------------------------------------------- */
         @media (max-width: 768px) {
-            /* Compact Header */
-            header { padding: 12px 16px; }
+            /* Relaxed Header */
+            header { padding: 16px 20px; }
             header button[onclick="toggleSidebar()"] {
                 background-color: #f8fafc;
                 border-radius: 50%;
-                padding: 6px;
-                width: 38px;
-                height: 38px;
+                padding: 8px;
+                width: 40px;
+                height: 40px;
                 display: flex;
                 align-items: center;
                 justify-content: center;
                 color: #64748b;
                 margin-left: 0;
             }
-            header button[onclick="toggleSidebar()"] svg { width: 22px; height: 22px; }
+            header button[onclick="toggleSidebar()"] svg { width: 24px; height: 24px; }
             
             #navLoginBtn {
                 background-color: #eff6ff !important;
                 color: var(--primary-blue) !important;
                 font-weight: 600;
-                padding: 6px 16px !important;
+                padding: 8px 18px !important;
                 border-radius: 999px;
-                font-size: 14px !important;
+                font-size: 14.5px !important;
             }
 
-            /* Highly Compact Hero Section */
-            .hero { padding: 8px 16px 12px 16px; text-align: left; align-items: flex-start; }
-            .hero-fig2 { height: 36px; margin: 0 auto 12px auto; display: block; }
-            .hero h1 { font-size: 26px; margin-bottom: 12px; text-align: center; width: 100%; letter-spacing: -0.5px; font-weight: 800; }
+            /* Inflated Hero Section */
+            .hero { padding: 12px 16px 20px 16px; text-align: left; align-items: flex-start; }
+            .hero-fig2 { height: 44px; margin: 0 auto 16px auto; display: block; }
+            .hero h1 { font-size: 28px; margin-bottom: 16px; text-align: center; width: 100%; letter-spacing: -0.5px; font-weight: 800; }
             
             .hero-description { padding: 0 4px; }
             .hero-description p { 
-                font-size: 13px; /* Smaller text */
-                margin-bottom: 8px; /* Tighter gaps */
-                line-height: 1.45; 
+                font-size: 14px; /* Restored larger, readable text size */
+                margin-bottom: 12px; /* Increased gaps */
+                line-height: 1.5; 
                 color: #1a1a1a; 
             }
             
-            /* Compact Chat Interface */
+            /* Relaxed Chat Interface */
             .chat-section { padding-top: 0; padding-bottom: 24px; }
             .chat-container {
-                padding: 16px;
-                border-radius: 16px;
+                padding: 20px; /* Bigger padding */
+                border-radius: 18px;
                 margin: 0 16px;
                 background-color: #ffffff;
                 border: 1px solid #f1f5f9;
                 box-shadow: 0 4px 24px rgba(0,0,0,0.03);
             }
-            .chat-tabs-wrapper { margin-bottom: 16px; }
+            .chat-tabs-wrapper { margin-bottom: 20px; } /* Increased space */
             .chat-tabs {
                 background: transparent;
                 border: none;
@@ -385,45 +385,45 @@
                 padding: 0;
                 width: 100%;
                 justify-content: center;
-                gap: 16px; /* Reduced gap */
+                gap: 24px; /* Spread tabs more */
             }
             .tab-btn {
                 padding: 4px 0;
                 background: transparent !important;
-                font-size: 14px;
+                font-size: 14.5px; /* Slightly larger tab text */
                 color: #94a3b8;
                 font-weight: 500;
-                white-space: nowrap !important; /* Force text on one line */
+                white-space: nowrap !important; 
                 display: flex !important;
-                flex-direction: row !important; /* Force icons next to text */
+                flex-direction: row !important; 
                 align-items: center;
             }
             .tab-btn.active { color: var(--primary-blue); font-weight: 600; }
-            .tab-icon { margin-right: 6px; width: 14px; height: 14px; }
+            .tab-icon { margin-right: 6px; width: 16px; height: 16px; }
 
             .input-wrapper {
-                min-height: 100px; /* Reduced height */
-                padding: 12px;
-                margin-bottom: 12px;
+                min-height: 110px; /* Bit taller */
+                padding: 16px; /* More padding inside */
+                margin-bottom: 16px;
                 background-color: #ffffff;
                 border: 1px solid #e2e8f0;
                 border-radius: 12px;
             }
-            .input-top-area { gap: 8px; }
-            .input-top-area svg { width: 16px; height: 16px; margin-top: 2px; }
-            .input-field { font-size: 13px; min-height: 40px; }
+            .input-top-area { gap: 10px; }
+            .input-top-area svg { width: 18px; height: 18px; margin-top: 2px; }
+            .input-field { font-size: 14px; min-height: 44px; }
             .input-actions { margin-top: auto; }
             
             .btn-get-started { 
-                padding: 8px 14px; 
-                font-size: 12px; 
+                padding: 10px 16px; /* Bigger button */
+                font-size: 13px; 
                 border-radius: 8px; 
             }
 
             /* Hide suggestion chips on initial mobile load to match clean screenshot */
             .suggestion-chips { display: none; }
             
-            .pdpa-text { justify-content: center; font-size: 11px; color: #64748b; margin-top: 12px; }
+            .pdpa-text { justify-content: center; font-size: 12px; color: #64748b; margin-top: 16px; }
 
             /* Other general mobile fixes below the fold */
             .bottom-info { padding: 40px 20px; text-align: left; }
