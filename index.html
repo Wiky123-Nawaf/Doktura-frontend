@@ -352,13 +352,19 @@
             }
             header button[onclick="toggleSidebar()"] svg { width: 24px; height: 24px; }
             
+            /* --- UPDATED MOBILE LOGIN BUTTON --- */
             #navLoginBtn {
                 background-color: var(--primary-blue) !important;
                 color: #ffffff !important;
-                font-weight: 600;
-                padding: 8px 20px !important;
-                border-radius: 999px;
-                font-size: 14.5px !important;
+                font-weight: 600 !important;
+                padding: 6px 14px !important; /* Smaller, compact padding like image */
+                border-radius: 10px !important; /* Rounded rectangle instead of full pill */
+                font-size: 13px !important; /* Smaller text size */
+                height: 32px !important; /* Fixed compact height */
+                display: inline-flex !important;
+                align-items: center !important;
+                justify-content: center !important;
+                white-space: nowrap !important;
             }
 
             .hero-chat-wrapper {
@@ -569,7 +575,7 @@
                 navBtn.href = "https://doktura.ai/dashboard.html";
                 navBtn.className = "btn-primary";
                 navBtn.style = "padding: 8px 16px; font-size: 13px;";
-                navBtn.innerHTML = `Login`;
+                navBtn.innerHTML = `Log in`;
                 
                 document.getElementById("userNameSidebar").innerText = user.displayName || user.email.split('@')[0];
                 document.getElementById("userAvatarSidebar").src = user.photoURL || 'https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/Vector%20(4).png?download=true';
@@ -667,7 +673,7 @@
                 </button>
             </div>
             <nav class="ml-auto">
-                <a href="https://doktura.ai/login.html" id="navLoginBtn" class="btn-primary" style="padding: 8px 16px; font-size: 13px;">Login Now</a>
+                <a href="https://doktura.ai/login.html" id="navLoginBtn" class="btn-primary" style="padding: 8px 16px; font-size: 13px;">Log in</a>
             </nav>
         </header>
 
