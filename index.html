@@ -338,6 +338,8 @@
             .container { padding: 0 20px; }
 
             header { padding: 12px 20px; }
+            
+            /* --- UPDATED HAMBURGER MENU BUTTON --- */
             header button[onclick="toggleSidebar()"] {
                 background-color: #f8fafc;
                 border-radius: 50%;
@@ -348,7 +350,8 @@
                 align-items: center;
                 justify-content: center;
                 color: #64748b;
-                margin-left: 0;
+                /* SHIFTED EXACTLY TO THE LEFT: -8px removes the inner padding offset so the strokes line up perfectly with the text below */
+                margin-left: -8px; 
             }
             header button[onclick="toggleSidebar()"] svg { width: 24px; height: 24px; }
             
@@ -357,10 +360,16 @@
                 background-color: var(--primary-blue) !important;
                 color: #ffffff !important;
                 font-weight: 600 !important;
-                padding: 6px 14px !important; /* Smaller, compact padding like image */
-                border-radius: 10px !important; /* Rounded rectangle instead of full pill */
-                font-size: 13px !important; /* Smaller text size */
-                height: 32px !important; /* Fixed compact height */
+                
+                /* ========================================================= */
+                /* TO CHANGE LOGIN BUTTON SIZE, EXPERIMENT WITH THESE VALUES */
+                /* ========================================================= */
+                padding: 4px 12px !important;    /* Left/Right and Top/Bottom padding inside button */
+                height: 30px !important;         /* Overall height of the button */
+                font-size: 12.5px !important;    /* Size of the text inside */
+                border-radius: 8px !important;   /* How round the corners are */
+                /* ========================================================= */
+
                 display: inline-flex !important;
                 align-items: center !important;
                 justify-content: center !important;
