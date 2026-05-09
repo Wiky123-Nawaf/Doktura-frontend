@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Doktura AI - Doctor Portal</title>
+    <link rel="icon" type="image/jpeg" href="https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/Group%202085665227.png?download=true">
+    <style>
+        /* ================= BASE STYLES (Identical to Patient Auth) ================= */
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background-color: #f4f5f7; color: #111827; display: flex; flex-direction: column; min-height: 100vh; overflow-x: hidden; }
+        body.modal-open { overflow: hidden; }
+        a { text-decoration: none; cursor: pointer; }
+        .header { padding: 20px 24px; border-bottom: 1px solid #e5e7eb; display: flex; justify-content: space-between; align-items: center; }
+        @media (min-width: 768px) { .header { padding: 24px 48px; } }
+        .logo-container { display: inline-flex; align-items: center; cursor: pointer; }
+        .logo-container img { height: 32px; width: auto; }
+        
+        .main-content { flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 24px 16px; }
+        .card { background: #ffffff; border-radius: 16px; padding: 32px 20px; width: 100%; max-width: 480px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); border: 1px solid #f3f4f6; animation: fadeIn 0.3s ease-in-out; margin: auto; }
+        @media (min-width: 768px) { .card { padding: 48px 40px; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05); } }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .card-header { margin-bottom: 32px; text-align: left; }
+        .card-header h1 { font-size: 26px; font-weight: 700; margin-bottom: 12px; letter-spacing: -0.5px; }
+        .card-header p { font-size: 14px; color: #4b5563; line-height: 1.5; }
+        
+        .form-group { margin-bottom: 20px; text-align: left; }
+        .form-group label { display: block; font-size: 14px; font-weight: 500; margin-bottom: 8px; color: #111827; }
+        .input-wrapper { position: relative; }
+        .form-control { width: 100%; padding: 12px 16px; border: 1px solid #e5e7eb; border-radius: 8px; font-size: 14px; background-color: #f9fafb; transition: border-color 0.2s; font-family: inherit; }
+        .form-control:focus { outline: none; border-color: #0ea5e9; background-color: #ffffff; box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.1); }
+        .icon-btn { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; color: #6b7280; display: flex; padding: 4px; }
+        
+        .form-row { display: flex; flex-direction: column; gap: 0; }
+        @media (min-width: 768px) { .form-row { flex-direction: row; gap: 16px; } .form-row .form-group { flex: 1; margin-bottom: 20px; } }
+        .phone-input-wrapper { position: relative; display: flex; align-items: center; }
+        .phone-prefix { position: absolute; left: 16px; font-size: 14px; z-index: 1; }
+        .phone-input-wrapper .form-control { padding-left: 54px; }
+        
+        /* Options & Buttons */
+        .options-row { display: flex; justify-content: space-between; align-items: center; margin-top: 8px; margin-bottom: 24px; font-size: 14px; }
+        .btn-container { display: flex; flex-direction: column; gap: 12px; margin-bottom: 20px; }
+        .btn { width: 100%; display: flex; justify-content: center; align-items: center; gap: 10px; padding: 12px 24px; border-radius: 8px; font-size: 15px; font-weight: 500; cursor: pointer; transition: all 0.2s; font-family: inherit; }
+        .btn:disabled { opacity: 0.7; cursor: not-allowed; }
+        .btn-social { background-color: #ffffff; border: 1px solid #e5e7eb; color: #111827; }
+        .btn-social:hover { background-color: #f9fafb; border-color: #d1d5db; }
+        .btn-primary { background-color: #0066cc; border: 1px solid #0066cc; color: #ffffff; font-weight: 600; }
+        .btn-primary:hover:not(:disabled) { background-color: #005bb5; }
+        
+        .divider { display: flex; align-items: center; text-align: center; margin: 24px 0; color: #6b7280; font-size: 13px; }
+        .divider::before, .divider::after { content: ''; flex: 1; border-bottom: 1px solid #e5e7eb; }
+        .divider span { padding: 0 16px; }
+        
+        .card-footer { text-align: center; font-size: 14px; color: #4b5563; margin-top: 24px; }
+        .card-footer a { color: #0066cc; font-weight: 500; }
+
+        /* ================= DOCTOR SPECIFIC UPLOAD STYLES ================= */
+        /* Increased max-width for the doctor form since it has more fields */
+        #view-complete-data.card { max-width: 650px; } 
+        
+        .file-upload-box {
+            border: 1px dashed #d1d5db; border-radius: 8px; padding: 16px; text-align: center;
+            background-color: #f9fafb; cursor: pointer; transition: 0.2s; position: relative;
+            font-size: 13px; color: #4b5563;
+        }
+        .file-upload-box:hover { border-color: #0066cc; background-color: #f0f7ff; }
+        .file-upload-box input[type="file"] { opacity: 0; position: absolute; top: 0; left: 0; width: 100%; height: 100%; cursor: pointer; }
+        .file-name-display { font-size: 12px; color: #0066cc; margin-top: 8px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+        .page-footer { padding: 24px; border-top: 1px solid #e5e7eb; text-align: center; font-size: 13px; color: #4b5563; margin-top: auto; }
+    </style>
+</head>
+<body>
+
+    <header class="header">
+        <div class="logo-container" onclick="showView('view-login')">
+            <!-- You can change this logo to a "Doktura for Doctors" version if you have one -->
+            <img src="https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/Group%202085665235.png?download=true" alt="doktura.ai logo">
+        </div>
+    </header>
+
+    <main class="main-content">
+        
+        <div id="authAlertContainer" style="width: 100%; max-width: 480px;">
+            <div id="authAlertBox" style="display: none; margin-bottom: 20px; padding: 14px; border-radius: 8px; font-size: 14px; text-align: center; font-weight: 500;"></div>
+        </div>
+
+        <!-- ================= 1. LOGIN VIEW ================= -->
+        <div id="view-login" class="card" style="display: none;">
+            <div class="card-header">
+                <h1>Doctor Portal</h1>
+                <p>Login with your admin-provided credentials<br>or continue with Google</p>
+            </div>
+
+            <form id="loginForm">
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" id="loginEmail" class="form-control" placeholder="doctor@clinic.com" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Password</label>
+                    <div class="input-wrapper">
+                        <input type="password" id="loginPass" class="form-control" placeholder="Enter your password" required>
+                        <button type="button" class="icon-btn" onclick="togglePasswordVisibility(this)">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="options-row">
+                    <a href="#" class="forgot-link" onclick="showView('view-forgot-password', event)">Forgot password?</a>
+                </div>
+
+                <button type="submit" id="doLoginBtn" class="btn btn-primary">Sign In</button>
+                
+                <div class="divider"><span>Or continue with</span></div>
+
+                <div class="btn-container">
+                    <button type="button" id="doGoogleLoginBtn" class="btn btn-social">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+                            <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+                            <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
+                            <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+                        </svg>
+                        Sign-in with Google
+                    </button>
+                </div>
+            </form>
+
+            <div class="card-footer">
+                <p>New Doctor? <a href="#" onclick="showView('view-signup', event)">Apply Here</a></p>
+            </div>
+        </div>
+
+        <!-- ================= 2. SIGN-UP VIEW ================= -->
+        <div id="view-signup" class="card" style="display: none;">
+            <div class="card-header">
+                <h1>Apply as a Doctor</h1>
+                <p>Start your application process to join Doktura.ai</p>
+            </div>
+
+            <form id="signupForm">
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" id="regEmail" class="form-control" placeholder="Enter your email" required>
+                </div>
+
+                <div class="divider"><span>Or continue with</span></div>
+
+                <div class="btn-container">
+                    <button type="button" id="doGoogleRegBtn" class="btn btn-social">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+                            <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+                        </svg>
+                        Sign-up with Google
+                    </button>
+                </div>
+
+                <button type="submit" id="doRegisterBtn" class="btn btn-primary">Send Login Link</button>
+            </form>
+
+            <div class="card-footer">
+                <p>Already approved? <a href="#" onclick="showView('view-login', event)">Sign-in</a></p>
+            </div>
+        </div>
+
+        <!-- ================= 3. DOCTOR COMPLETE DATA (Includes Documents) ================= -->
+        <div id="view-complete-data" class="card" style="display: none;">
+            <div class="card-header">
+                <h1>Complete your Profile</h1>
+                <p>Upload your professional documents. Our admin team will verify your credentials before your account becomes active.</p>
+            </div>
+
+            <!-- Notice we use encType for files, but fetch API will use FormData directly -->
+            <form id="profileForm">
+                
+                <h3 style="font-size: 15px; margin-bottom: 16px;">Personal Details</h3>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Full Name (with Title)</label>
+                        <input type="text" id="docName" class="form-control" placeholder="e.g. Dr. Muaz Syahrir" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Speciality</label>
+                        <input type="text" id="docSpecialty" class="form-control" placeholder="e.g. General Practitioner" required>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Contact Number</label>
+                        <div class="phone-input-wrapper">
+                            <span class="phone-prefix">+60</span>
+                            <input type="tel" id="docPhone" class="form-control" placeholder="123 456 789" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Clinic Location</label>
+                        <input type="text" id="docLocation" class="form-control" placeholder="e.g. Dental Clinic KL" required>
+                    </div>
+                </div>
+
+                <!-- Password field if they signed in via Email Link instead of pre-assigned pass -->
+                <div class="form-group" id="profilePassContainer" style="display:none;">
+                    <label>Set your Password</label>
+                    <input type="password" id="docPass" class="form-control" placeholder="At least 8 characters">
+                </div>
+
+                <hr style="border: 0; border-top: 1px solid #e5e7eb; margin: 24px 0;">
+                <h3 style="font-size: 15px; margin-bottom: 16px;">Required Documents</h3>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Profile Photo</label>
+                        <div class="file-upload-box">
+                            <span>Upload Photo (JPG/PNG)</span>
+                            <input type="file" id="docPhoto" accept="image/*" required onchange="updateFileName(this, 'photoName')">
+                            <div id="photoName" class="file-name-display"></div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Resume / CV</label>
+                        <div class="file-upload-box">
+                            <span>Upload Resume (PDF)</span>
+                            <input type="file" id="docResume" accept=".pdf,.doc,.docx" required onchange="updateFileName(this, 'resumeName')">
+                            <div id="resumeName" class="file-name-display"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Borang 11 (APC)</label>
+                        <div class="file-upload-box">
+                            <span>Upload APC (PDF)</span>
+                            <input type="file" id="docAPC" accept=".pdf" required onchange="updateFileName(this, 'apcName')">
+                            <div id="apcName" class="file-name-display"></div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Borang 15 (MMC)</label>
+                        <div class="file-upload-box">
+                            <span>Upload MMC (PDF)</span>
+                            <input type="file" id="docMMC" accept=".pdf" required onchange="updateFileName(this, 'mmcName')">
+                            <div id="mmcName" class="file-name-display"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Identification Card (IC)</label>
+                    <div class="file-upload-box" style="padding: 24px;">
+                        <span>Upload IC Front & Back (PDF or Image)</span>
+                        <input type="file" id="docIC" accept=".pdf,image/*" required onchange="updateFileName(this, 'icName')">
+                        <div id="icName" class="file-name-display"></div>
+                    </div>
+                </div>
+
+                <button type="submit" id="saveProfileBtn" class="btn btn-primary" style="margin-top: 16px;">Submit for Verification</button>
+            </form>
+        </div>
+
+        <!-- FORGOT PASSWORD VIEW -->
+        <div id="view-forgot-password" class="card" style="display: none;">
+            <div class="card-header">
+                <h1>Forgot password?</h1>
+                <p>Enter your doctor email. We'll send you a link to reset your password.</p>
+            </div>
+            <form id="forgotForm">
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" id="forgotEmail" class="form-control" placeholder="doctor@clinic.com" required>
+                </div>
+                <button type="submit" id="doForgotBtn" class="btn btn-primary">Reset password</button>
+            </form>
+            <div class="card-footer">
+                <p><a href="#" onclick="showView('view-login', event)">← Back to Login</a></p>
+            </div>
+        </div>
+
+    </main>
+
+    <footer class="page-footer">
+        <div>Copyright 2026 © Doktura Plt Registration No. 202604000898 (LLP0046127-LGN)</div>
+    </footer>
+
+    <!-- Firebase and Logic Scripts -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-app.js";
+        import { 
+            getAuth, signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, 
+            onAuthStateChanged, sendPasswordResetEmail, sendSignInLinkToEmail, 
+            isSignInWithEmailLink, signInWithEmailLink, updatePassword 
+        } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-auth.js";
+
+        // Global Configs
+        const API_BASE = 'https://api.doktura.ai'; // Your FastAPI backend
+        const app = initializeApp({ apiKey: "YOUR_API_KEY", authDomain: "YOUR_DOMAIN", projectId: "YOUR_PROJECT" });
+        const auth = getAuth(app);
+
+        const alertBox = document.getElementById("authAlertBox");
+
+        window.showView = function(targetId, event) {
+            if (event) event.preventDefault();
+            const views = ['view-login', 'view-signup', 'view-forgot-password', 'view-complete-data'];
+            views.forEach(id => {
+                const el = document.getElementById(id);
+                if(el) el.style.display = (id === targetId) ? 'block' : 'none';
+            });
+            if(alertBox) alertBox.style.display = 'none';
+        }
+
+        function showAlert(msg, isError=true) {
+            alertBox.innerText = msg;
+            alertBox.style.display = 'block';
+            if(isError) {
+                alertBox.style.backgroundColor = '#fef2f2'; alertBox.style.color = '#dc2626'; alertBox.style.border = '1px solid #fee2e2';
+            } else {
+                alertBox.style.backgroundColor = '#f0fdf4'; alertBox.style.color = '#16a34a'; alertBox.style.border = '1px solid #dcfce7';
+            }
+            window.scrollTo(0,0);
+        }
+
+        window.togglePasswordVisibility = function(button) {
+            const input = button.previousElementSibling;
+            input.type = (input.type === "password") ? "text" : "password";
+        }
+
+        window.updateFileName = function(input, displayId) {
+            if(input.files.length > 0) {
+                document.getElementById(displayId).innerText = "Selected: " + input.files[0].name;
+            }
+        };
+
+        // ================= FIREBASE AUTH FORM HANDLERS ================= //
+
+        // 1. Email/Password Login (For pre-approved Admin-invited doctors)
+        document.getElementById("loginForm").addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById("doLoginBtn"); 
+            btn.innerText = "Authenticating..."; btn.disabled = true;
+            try { 
+                await signInWithEmailAndPassword(auth, document.getElementById("loginEmail").value.trim(), document.getElementById("loginPass").value.trim()); 
+            } catch(e) { 
+                showAlert("Invalid Credentials. Please check your email and password."); 
+                btn.innerText = "Sign In"; btn.disabled = false;
+            }
+        });
+
+        // 2. Google Login (For new doctors or existing ones)
+        const handleGoogleLogin = async () => { 
+            try { await signInWithPopup(auth, new GoogleAuthProvider()); } catch(e) { showAlert("Google Authentication Failed."); } 
+        };
+        document.getElementById("doGoogleLoginBtn").addEventListener("click", handleGoogleLogin);
+        document.getElementById("doGoogleRegBtn").addEventListener("click", handleGoogleLogin);
+
+
+        // ================= BACKEND SYNC LOGIC ================= //
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                try {
+                    const token = await user.getIdToken();
+                    
+                    // Call the DOCTOR specific sync route (Notice it goes to /api/doctor/sync)
+                    const res = await fetch(`${API_BASE}/api/doctor/sync`, { 
+                        method: 'POST', 
+                        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }, 
+                        body: JSON.stringify({ email: user.email }) 
+                    });
+                    
+                    if (!res.ok) throw new Error("Sync failed");
+                    
+                    const data = await res.json();
+                    
+                    if(data.is_complete) { 
+                        // If they already uploaded documents, go straight to dashboard
+                        window.location.href = "doctor_dashboard.html"; 
+                    } else { 
+                        // Show Complete Data screen
+                        window.showView('view-complete-data'); 
+                        
+                        // Prefill Name if available from Google
+                        if(user.displayName) document.getElementById('docName').value = user.displayName;
+
+                        // If they logged in via Passwordless/Google, they don't have an explicitly known password. 
+                        // If they logged in via Admin-provided email/pass, they don't need to set one.
+                        // (We keep this hidden unless specifically needed, handled by your logic).
+                    }
+                } catch(e) { 
+                    console.error("Backend Sync Error:", e);
+                    showAlert("Error connecting to server. Please try again.");
+                }
+            } else {
+                window.showView('view-login');
+            }
+        });
+
+
+        // ================= COMPLETE PROFILE & UPLOAD LOGIC ================= //
+        document.getElementById("profileForm").addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById("saveProfileBtn");
+            btn.innerText = "Uploading Files... Please wait"; 
+            btn.disabled = true;
+
+            try {
+                const token = await auth.currentUser.getIdToken();
+                
+                // Construct FormData object because we are sending FILES
+                const formData = new FormData();
+                formData.append("name", document.getElementById("docName").value.trim());
+                formData.append("phone", "+60" + document.getElementById("docPhone").value.trim());
+                formData.append("specialty", document.getElementById("docSpecialty").value.trim());
+                formData.append("location", document.getElementById("docLocation").value.trim());
+                
+                formData.append("photo", document.getElementById("docPhoto").files[0]);
+                formData.append("resume", document.getElementById("docResume").files[0]);
+                formData.append("apc", document.getElementById("docAPC").files[0]);
+                formData.append("mmc", document.getElementById("docMMC").files[0]);
+                formData.append("ic", document.getElementById("docIC").files[0]);
+
+                // Post to the Doctor Complete Profile Route
+                const response = await fetch(`${API_BASE}/api/doctor/complete_profile`, {
+                    method: "POST",
+                    headers: { 'Authorization': `Bearer ${token}` }, // NO Content-Type here! Browser sets it for FormData
+                    body: formData
+                });
+
+                if(!response.ok) {
+                    const err = await response.text();
+                    throw new Error(err || "Upload failed");
+                }
+
+                alert("Documents uploaded successfully! Your account is pending admin review.");
+                // Redirect to dashboard (Dashboard logic should show "Pending Approval" state)
+                window.location.href = "doctor_dashboard.html"; 
+
+            } catch (error) {
+                console.error(error);
+                showAlert("Error saving profile: " + (error.message || "Unknown server error")); 
+                btn.innerText = "Submit for Verification"; 
+                btn.disabled = false;
+            }
+        });
+
+    </script>
+</body>
+</html>
