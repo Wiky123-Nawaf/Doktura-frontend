@@ -289,6 +289,7 @@
     </footer>
 
     <!-- Firebase and Logic Scripts -->
+    <!-- Firebase and Logic Scripts -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-app.js";
         import { 
@@ -298,15 +299,21 @@
         } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-auth.js";
 
         // Global Configs
-        const API_BASE = 'https://api.doktura.ai'; // Your FastAPI backend
-        const app = initializeApp({ apiKey: "YOUR_API_KEY", authDomain: "YOUR_DOMAIN", projectId: "YOUR_PROJECT" });
+        const API_BASE = 'https://api.doktura.ai'; // Or http://localhost:8000 if testing locally
+        
+        // ADDED YOUR ACTUAL FIREBASE CONFIG HERE
+        const app = initializeApp({ 
+            apiKey: "AIzaSyCrx9BPS8ficDzgVZMbJIb4b3PQ9IqEHLw", 
+            authDomain: "doktura-ai-907d8.firebaseapp.com", 
+            projectId: "doktura-ai-907d8" 
+        });
         const auth = getAuth(app);
 
         const alertBox = document.getElementById("authAlertBox");
 
         window.showView = function(targetId, event) {
             if (event) event.preventDefault();
-            const views = ['view-login', 'view-signup', 'view-forgot-password', 'view-complete-data'];
+            const views =['view-login', 'view-signup', 'view-forgot-password', 'view-complete-data'];
             views.forEach(id => {
                 const el = document.getElementById(id);
                 if(el) el.style.display = (id === targetId) ? 'block' : 'none';
@@ -338,7 +345,7 @@
 
         // ================= FIREBASE AUTH FORM HANDLERS ================= //
 
-        // 1. Email/Password Login (For pre-approved Admin-invited doctors)
+        // 1. Email/Password Login
         document.getElementById("loginForm").addEventListener("submit", async (e) => {
             e.preventDefault();
             const btn = document.getElementById("doLoginBtn"); 
@@ -351,9 +358,13 @@
             }
         });
 
-        // 2. Google Login (For new doctors or existing ones)
+        // 2. Google Login
         const handleGoogleLogin = async () => { 
-            try { await signInWithPopup(auth, new GoogleAuthProvider()); } catch(e) { showAlert("Google Authentication Failed."); } 
+            try { 
+                await signInWithPopup(auth, new GoogleAuthProvider()); 
+            } catch(e) { 
+                showAlert("Google Authentication Failed: " + e.message); 
+            } 
         };
         document.getElementById("doGoogleLoginBtn").addEventListener("click", handleGoogleLogin);
         document.getElementById("doGoogleRegBtn").addEventListener("click", handleGoogleLogin);
@@ -365,7 +376,6 @@
                 try {
                     const token = await user.getIdToken();
                     
-                    // Call the DOCTOR specific sync route (Notice it goes to /api/doctor/sync)
                     const res = await fetch(`${API_BASE}/api/doctor/sync`, { 
                         method: 'POST', 
                         headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }, 
@@ -377,18 +387,10 @@
                     const data = await res.json();
                     
                     if(data.is_complete) { 
-                        // If they already uploaded documents, go straight to dashboard
                         window.location.href = "doctor_dashboard.html"; 
                     } else { 
-                        // Show Complete Data screen
                         window.showView('view-complete-data'); 
-                        
-                        // Prefill Name if available from Google
                         if(user.displayName) document.getElementById('docName').value = user.displayName;
-
-                        // If they logged in via Passwordless/Google, they don't have an explicitly known password. 
-                        // If they logged in via Admin-provided email/pass, they don't need to set one.
-                        // (We keep this hidden unless specifically needed, handled by your logic).
                     }
                 } catch(e) { 
                     console.error("Backend Sync Error:", e);
@@ -410,7 +412,6 @@
             try {
                 const token = await auth.currentUser.getIdToken();
                 
-                // Construct FormData object because we are sending FILES
                 const formData = new FormData();
                 formData.append("name", document.getElementById("docName").value.trim());
                 formData.append("phone", "+60" + document.getElementById("docPhone").value.trim());
@@ -423,10 +424,9 @@
                 formData.append("mmc", document.getElementById("docMMC").files[0]);
                 formData.append("ic", document.getElementById("docIC").files[0]);
 
-                // Post to the Doctor Complete Profile Route
                 const response = await fetch(`${API_BASE}/api/doctor/complete_profile`, {
                     method: "POST",
-                    headers: { 'Authorization': `Bearer ${token}` }, // NO Content-Type here! Browser sets it for FormData
+                    headers: { 'Authorization': `Bearer ${token}` },
                     body: formData
                 });
 
@@ -436,7 +436,6 @@
                 }
 
                 alert("Documents uploaded successfully! Your account is pending admin review.");
-                // Redirect to dashboard (Dashboard logic should show "Pending Approval" state)
                 window.location.href = "doctor_dashboard.html"; 
 
             } catch (error) {
@@ -446,7 +445,6 @@
                 btn.disabled = false;
             }
         });
-
     </script>
 </body>
 </html>
