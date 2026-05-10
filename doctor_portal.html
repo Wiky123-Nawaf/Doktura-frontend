@@ -155,12 +155,6 @@
         .review-text { font-size: 14px; color: #4b5563; line-height: 1.6; }
         .review-title { font-weight: 600; color: #111827; margin-bottom: 4px; }
 
-        /* Images Collage Placeholder */
-        .collage-row { display: flex; gap: 4px; margin-top: 24px; border-radius: 8px; overflow: hidden; height: 80px;}
-        .collage-img { flex: 1; background: #e5e7eb; background-size: cover; background-position: center; }
-        .collage-img.more { position: relative; }
-        .collage-img.more::after { content: '+56'; position: absolute; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.5); color: white; display: flex; justify-content: center; align-items: center; font-weight: 600; font-size: 16px;}
-
 
         /* ================= MODAL & PRESCRIPTION FORM ================= */
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(17, 24, 39, 0.7); display: flex; justify-content: center; align-items: center; z-index: 999; padding: 20px; }
@@ -285,9 +279,9 @@
                 </div>
             </div>
 
-            <!-- 3. DOCTOR INITIAL COMPLETE DATA (First Time Only) -->
+            <!-- 3. DOCTOR INITIAL COMPLETE DATA -->
             <div id="view-complete-data" class="card" style="display: none;">
-                <!-- NEW: Sign Out button here so they can escape if wrong email -->
+                <!-- Sign Out button here so they can escape if wrong email -->
                 <div style="display: flex; justify-content: space-between; align-items: flex-start;">
                     <div class="card-header" style="margin-bottom: 24px;">
                         <h1>Complete your Profile</h1>
@@ -376,7 +370,7 @@
 
             <div class="sidebar-footer">
                 <div class="doc-mini-profile">
-                    <img src="https://via.placeholder.com/40" id="sidebarAvatar" class="doc-avatar">
+                    <img src="data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40' viewBox='0 0 24 24' fill='none' stroke='%239ca3af' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2'/%3E%3Ccircle cx='12' cy='7' r='4'/%3E%3C/svg%3E" id="sidebarAvatar" class="doc-avatar">
                     <div class="doc-mini-info">
                         <h4 id="sidebarName">Doctor</h4>
                         <p id="sidebarEmail">doctor@clinic.com</p>
@@ -409,7 +403,7 @@
                             </div>
                         </div>
                     </div>
-                    <img src="https://via.placeholder.com/40" id="topAvatar" class="doc-avatar">
+                    <img src="data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40' viewBox='0 0 24 24' fill='none' stroke='%239ca3af' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2'/%3E%3Ccircle cx='12' cy='7' r='4'/%3E%3C/svg%3E" id="topAvatar" class="doc-avatar">
                 </div>
             </header>
 
@@ -546,7 +540,6 @@
                             Schedule management is disabled while your account is pending approval.
                         </div>
 
-                        <!-- Full Schedule Layout to match Screenshot -->
                         <div id="scheduleDaysContainer"></div>
 
                         <button id="saveScheduleBtn" class="btn btn-primary" style="margin-top: 24px; width: auto; padding: 12px 32px;">Save Schedule</button>
@@ -626,11 +619,14 @@
                         <div class="ratings-meta" id="ratingsMetaText">0 ratings • 0 reviews</div>
 
                         <div id="starBarsContainer">
+                            <!-- Star Bars Injected -->
+                        </div>
+                    </div> <!-- FIXED: Closed ratings-summary-card -->
+
                     <!-- Right Reviews List -->
                     <div>
                         <h2 style="font-size: 20px; font-weight: 600; color:#111827; margin-bottom: 24px;">Patient Reviews</h2>
                         <div id="reviewsListContainer">
-                            <!-- Reviews Injected -->
                             <div style="color:#6b7280; text-align:center; padding: 40px;">Loading reviews...</div>
                         </div>
                     </div>
@@ -838,7 +834,7 @@
             });
         }
 
-        // ================= SMART REMINDER LOOP (Every 1 min) =================
+        // ================= SMART REMINDER LOOP =================
         setInterval(() => {
             if(currentAppointments.length === 0) return;
             const now = Date.now();
@@ -870,7 +866,7 @@
                 if(!res.ok) throw new Error("Fetch failed");
                 const data = await res.json();
 
-                // 1. Update Left Panel Stats
+                // Update Left Panel Stats
                 const total = data.total_reviews || 0;
                 const avg = parseFloat(data.overall_rating).toFixed(1);
                 
@@ -881,7 +877,6 @@
                 let satText = total > 0 ? (avg >= 4.0 ? "100% of patients are satisfied" : "Most patients are satisfied") : "No reviews yet";
                 document.getElementById('satisfactionText').innerText = satText;
 
-                // Build star bars based on actual distribution (we'll count them)
                 let counts = {5:0, 4:0, 3:0, 2:0, 1:0};
                 data.reviews.forEach(r => { counts[r.stars] = (counts[r.stars] || 0) + 1; });
                 
@@ -901,7 +896,7 @@
                 });
                 document.getElementById('starBarsContainer').innerHTML = barsHTML;
 
-                // 2. Update Right Panel List
+                // Update Right Panel List
                 if(data.reviews.length === 0) {
                     listEl.innerHTML = '<div style="color:#6b7280; padding: 20px;">No patient reviews yet.</div>';
                     return;
@@ -917,7 +912,6 @@
                         starsHTML += `<svg width="16" height="16" viewBox="0 0 24 24" fill="${i<=r.stars?'#eab308':'#e5e7eb'}" stroke="${i<=r.stars?'#eab308':'#e5e7eb'}" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>`;
                     }
 
-                    // Extract first sentence for bold title
                     let summary = r.comment.split('.')[0] + (r.comment.includes('.') ? '.' : '');
                     
                     listEl.innerHTML += `
@@ -1174,7 +1168,6 @@
 
         // ================= AUTH HANDLERS & AUTO-FILL ================= //
         
-        // 1. Email & Password Login
         document.getElementById("loginForm").addEventListener("submit", async (e) => {
             e.preventDefault();
             const btn = document.getElementById("doLoginBtn"); 
@@ -1187,7 +1180,6 @@
             }
         });
 
-        // 2. Email & Password Sign-Up (Re-added)
         document.getElementById("signupForm").addEventListener("submit", async (e) => {
             e.preventDefault();
             const email = document.getElementById("regEmail").value.trim();
@@ -1197,14 +1189,12 @@
             btn.innerText = "Creating Account..."; btn.disabled = true;
             try {
                 await createUserWithEmailAndPassword(auth, email, pass);
-                // Firebase will automatically log them in and trigger onAuthStateChanged
             } catch(e) {
                 showAlert(e.message);
                 btn.innerText = "Sign Up"; btn.disabled = false;
             }
         });
 
-        // 3. Forgot Password
         document.getElementById("forgotForm").addEventListener("submit", async (e) => {
             e.preventDefault();
             const email = document.getElementById("forgotEmail").value.trim();
@@ -1220,7 +1210,6 @@
             btn.innerText = "Reset password"; btn.disabled = false;
         });
 
-        // 4. Google Login
         document.getElementById("doGoogleLoginBtn").addEventListener("click", async () => { 
             try { await signInWithPopup(auth, new GoogleAuthProvider()); } catch(e) {} 
         });
@@ -1228,7 +1217,7 @@
             try { await signInWithPopup(auth, new GoogleAuthProvider()); } catch(e) {} 
         });
 
-        // ================= SYNC LOGIC (FIXED HANG) ================= //
+        // ================= SYNC LOGIC ================= //
         onAuthStateChanged(auth, async (user) => {
             if (user) {
                 try {
@@ -1280,10 +1269,9 @@
                     }
                 } catch(e) { 
                     console.error("Sync Error - Starting Fresh:", e);
-                    // Safely wipes corrupted session and returns to login!
                     await signOut(auth);
                     window.showView('view-login');
-                    showAlert("Session error or server restart. Please log in again.", true);
+                    showAlert("Session reset due to server update. Please log in again.", true);
                 }
             } else {
                 window.showView('view-login');
