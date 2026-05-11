@@ -228,7 +228,7 @@
                 <div class="card-footer"><p>New Doctor? <a href="javascript:void(0)" onclick="showView('view-signup', event)">Apply Here</a></p></div>
             </div>
 
-            <!-- 2. SIGN-UP VIEW -->
+            <!-- 2. SIGN-UP VIEW (Now uses Email & Password) -->
             <div id="view-signup" class="card" style="display: none;">
                 <div class="card-header">
                     <h1>Apply as a Doctor</h1>
@@ -893,8 +893,7 @@
                 let counts = {5:0, 4:0, 3:0, 2:0, 1:0};
                 data.reviews.forEach(r => { counts[r.stars] = (counts[r.stars] || 0) + 1; });
                 
-                let barsHTML = '';
-                [5,4,3,2,1].forEach(star => {
+                let barsHTML = '';[5,4,3,2,1].forEach(star => {
                     let pct = total > 0 ? (counts[star] / total) * 100 : 0;
                     barsHTML += `
                         <div class="star-row">
@@ -1228,7 +1227,7 @@
             try { await signInWithPopup(auth, new GoogleAuthProvider()); } catch(e) {} 
         });
 
-        // ================= SYNC LOGIC ================= //
+        // ================= SYNC LOGIC (ROBUST VERSION) ================= //
         onAuthStateChanged(auth, async (user) => {
             if (user) {
                 try {
@@ -1240,7 +1239,11 @@
                         body: JSON.stringify({ email: user.email }) 
                     });
                     
-                    if (!res.ok) throw new Error("Backend sync failed. Server might be restarting.");
+                    if (!res.ok) {
+                        let errMsg = "Backend sync failed.";
+                        try { const errData = await res.json(); errMsg = errData.detail || errMsg; } catch(_) {}
+                        throw new Error(errMsg);
+                    }
                     
                     const data = await res.json();
                     
@@ -1248,7 +1251,7 @@
                     if(phoneClean.startsWith("+60")) phoneClean = phoneClean.substring(3).trim();
                     
                     if(data.is_complete) { 
-                        window.showView('view-dashboard'); 
+                        window.showView('view-dashboard', null, false); 
                         setDashboardStatus(data.status);
 
                         document.getElementById('sidebarName').innerText = data.name || user.displayName || "Doctor";
@@ -1272,20 +1275,20 @@
                         }
 
                     } else { 
-                        window.showView('view-complete-data'); 
+                        window.showView('view-complete-data', null, false); 
                         document.getElementById('docName').value = data.name || user.displayName || "";
                         document.getElementById('docSpecialty').value = data.specialty || "";
                         document.getElementById('docPhone').value = phoneClean;
                         document.getElementById('docLocation').value = data.location || "";
                     }
                 } catch(e) { 
-                    console.error("Sync Error - Starting Fresh:", e);
-                    await signOut(auth);
-                    window.showView('view-login');
-                    showAlert("Session reset due to server update. Please log in again.", true);
+                    console.error("Sync Error:", e);
+                    // Prevent looping by removing automatic signOut
+                    window.showView('view-login', null, false);
+                    showAlert("Sync Error: " + e.message, true);
                 }
             } else {
-                window.showView('view-login');
+                window.showView('view-login', null, false);
             }
         });
 
