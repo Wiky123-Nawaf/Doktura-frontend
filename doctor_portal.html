@@ -1250,7 +1250,7 @@
                     let phoneClean = data.phone || "";
                     if(phoneClean.startsWith("+60")) phoneClean = phoneClean.substring(3).trim();
                     
-                    if(data.is_complete) { 
+                    if(data.is_complete || data.status === 'approved') { 
                         window.showView('view-dashboard', null, false); 
                         setDashboardStatus(data.status);
 
