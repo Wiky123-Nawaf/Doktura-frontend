@@ -2,1473 +2,1440 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Doktura AI - Doctor Portal</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="color-scheme" content="light">
+    <title>Doktura.ai - AI Medical Assistant</title>
+
     <link rel="icon" type="image/jpeg" href="https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/Vector%20(4).png?download=true">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
     <style>
-        /* ================= BASE STYLES ================= */
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background-color: #f4f5f7; color: #111827; display: flex; flex-direction: column; min-height: 100vh; overflow-x: hidden; }
-        body.modal-open { overflow: hidden; }
-        a { text-decoration: none; cursor: pointer; }
-        
-        #authWrapper { display: flex; flex-direction: column; flex: 1; width: 100%; }
+        /* --- Reset & Base Styles --- */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-        .header { padding: 20px 24px; border-bottom: 1px solid #e5e7eb; display: flex; justify-content: space-between; align-items: center; background-color: #fff; }
-        @media (min-width: 768px) { .header { padding: 24px 48px; } }
-        .logo-container { display: inline-flex; align-items: center; cursor: pointer; }
-        .logo-container img { height: 32px; width: auto; }
-        
-        .main-content { flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 24px 16px; }
-        .card { background: #ffffff; border-radius: 16px; padding: 32px 20px; width: 100%; max-width: 480px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); border: 1px solid #f3f4f6; animation: fadeIn 0.3s ease-in-out; margin: auto; }
-        @media (min-width: 768px) { .card { padding: 48px 40px; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05); } }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
-        
-        .card-header { margin-bottom: 32px; text-align: left; }
-        .card-header h1 { font-size: 26px; font-weight: 700; margin-bottom: 12px; letter-spacing: -0.5px; }
-        .card-header p { font-size: 14px; color: #4b5563; line-height: 1.5; }
-        
-        .form-group { margin-bottom: 20px; text-align: left; }
-        .form-group label { display: block; font-size: 14px; font-weight: 500; margin-bottom: 8px; color: #111827; }
-        .input-wrapper { position: relative; }
-        .form-control { width: 100%; padding: 12px 16px; border: 1px solid #e5e7eb; border-radius: 8px; font-size: 14px; background-color: #f9fafb; transition: border-color 0.2s; font-family: inherit; }
-        .form-control:focus { outline: none; border-color: #0ea5e9; background-color: #ffffff; box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.1); }
-        .form-control:disabled, .form-control[readonly] { background-color: #f3f4f6; color: #6b7280; cursor: not-allowed; }
-        .icon-btn { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; color: #6b7280; display: flex; padding: 4px; }
-        
-        .form-row { display: flex; flex-direction: column; gap: 0; }
-        @media (min-width: 768px) { .form-row { flex-direction: row; gap: 16px; } .form-row .form-group { flex: 1; margin-bottom: 20px; } }
-        .phone-input-wrapper { position: relative; display: flex; align-items: center; }
-        .phone-prefix { position: absolute; left: 16px; font-size: 14px; z-index: 1; }
-        .phone-input-wrapper .form-control { padding-left: 54px; }
-        
-        .btn-container { display: flex; flex-direction: column; gap: 12px; margin-bottom: 20px; }
-        .btn { width: 100%; display: flex; justify-content: center; align-items: center; gap: 10px; padding: 10px 24px; border-radius: 8px; font-size: 14px; font-weight: 500; cursor: pointer; transition: all 0.2s; font-family: inherit; }
-        .btn:disabled { opacity: 0.7; cursor: not-allowed; }
-        .btn-social { background-color: #ffffff; border: 1px solid #e5e7eb; color: #111827; }
-        .btn-social:hover { background-color: #f9fafb; border-color: #d1d5db; }
-        .btn-primary { background-color: #0066cc; border: 1px solid #0066cc; color: #ffffff; font-weight: 600; }
-        .btn-primary:hover:not(:disabled) { background-color: #005bb5; }
-        
-        .divider { display: flex; align-items: center; text-align: center; margin: 24px 0; color: #6b7280; font-size: 13px; }
-        .divider::before, .divider::after { content: ''; flex: 1; border-bottom: 1px solid #e5e7eb; }
-        .divider span { padding: 0 16px; }
-        
-        .card-footer { text-align: center; font-size: 14px; color: #4b5563; margin-top: 24px; }
-        .card-footer a { color: #0066cc; font-weight: 500; }
-        .forgot-link { font-size: 13px; font-weight: 500; color: #0066cc; float: right; margin-bottom: 12px; margin-top: -10px;}
+        body {
+            font-family: 'Inter', sans-serif;
+            color: #1a1a1a !important;
+            line-height: 1.5;
+            -webkit-font-smoothing: antialiased;
+            background-color: #ffffff !important;
+            overflow-x: hidden;
+        }
 
-        /* Auth Footer - Added border-top here */
-        .auth-footer { padding: 20px 24px; text-align: left; font-size: 13px; color: #6b7280; width: 100%; border-top: 1px solid #e5e7eb; }
-        @media (min-width: 768px) { .auth-footer { padding: 24px 48px; } }
+        @media (prefers-color-scheme: dark) {
+            body {
+                background-color: #ffffff !important;
+                color: #1a1a1a !important;
+            }
+        }
 
-        /* ================= DOCTOR SPECIFIC UPLOAD STYLES ================= */
-        #view-complete-data.card { max-width: 650px; } 
-        .file-upload-box { border: 1px dashed #d1d5db; border-radius: 8px; padding: 16px; text-align: center; background-color: #f9fafb; cursor: pointer; transition: 0.2s; position: relative; font-size: 13px; color: #4b5563; }
-        .file-upload-box:hover:not(.disabled) { border-color: #0066cc; background-color: #f0f7ff; }
-        .file-upload-box.disabled { opacity: 0.6; cursor: not-allowed; }
-        .file-upload-box input[type="file"] { opacity: 0; position: absolute; top: 0; left: 0; width: 100%; height: 100%; cursor: pointer; }
-        .file-upload-box input[type="file"]:disabled { cursor: not-allowed; }
-        .file-name-display { font-size: 12px; color: #0066cc; margin-top: 8px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        a { text-decoration: none; color: inherit; }
+        button { font-family: inherit; cursor: pointer; }
 
-        /* ================= DOCTOR DASHBOARD UI ================= */
-        .dashboard-layout { display: flex; height: 100vh; width: 100%; background-color: #f4f5f7; overflow: hidden; }
-        
-        /* Sidebar */
-        .sidebar { width: 260px; background: #ffffff; border-right: 1px solid #e5e7eb; display: flex; flex-direction: column; }
-        .sidebar-header { height: 72px; padding: 0 24px; border-bottom: 1px solid #e5e7eb; display: flex; align-items: center; } 
-        .sidebar-menu { flex: 1; padding: 24px 16px; overflow-y: auto; }
-        .menu-title { font-size: 11px; font-weight: 600; color: #9ca3af; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 12px; padding-left: 8px; }
-        .menu-item { display: flex; align-items: center; gap: 12px; padding: 12px 16px; color: #4b5563; border-radius: 8px; font-size: 14px; font-weight: 500; transition: background 0.2s; cursor: pointer; margin-bottom: 4px; }
-        .menu-item:hover { background-color: #f9fafb; color: #111827; }
-        .menu-item.active { background-color: #eff6ff; color: #0066cc; }
-        
-        .sidebar-footer { padding: 20px; border-top: 1px solid #f3f4f6; display: flex; justify-content: space-between; align-items: center; }
-        .doc-mini-profile { display: flex; align-items: center; gap: 12px; }
-        .doc-avatar { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; background-color: #f3f4f6; padding: 2px;}
-        .doc-mini-info h4 { font-size: 14px; font-weight: 600; color: #111827; margin: 0; }
-        .doc-mini-info p { font-size: 12px; color: #6b7280; margin: 0; max-width: 120px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-        
-        /* Main Dashboard Content */
-        .dash-content { flex: 1; display: flex; flex-direction: column; overflow-y: auto; position: relative;}
-        .dash-header { height: 72px; min-height: 72px; padding: 0 40px; display: flex; justify-content: space-between; align-items: center; background: #ffffff; border-bottom: 1px solid #e5e7eb; position: sticky; top:0; z-index: 10;}
-        .search-bar { display: flex; align-items: center; background: #f3f4f6; padding: 8px 16px; border-radius: 8px; width: 300px; }
-        .search-bar input { border: none; background: transparent; outline: none; margin-left: 8px; width: 100%; font-size: 14px; }
-        
-        /* Notification Bell */
-        .notification-wrapper { position: relative; cursor: pointer; display: flex; align-items: center; }
-        .bell-badge { position: absolute; top: -4px; right: -4px; background: #ef4444; color: white; font-size: 10px; font-weight: bold; width: 16px; height: 16px; border-radius: 50%; display: flex; justify-content: center; align-items: center; border: 2px solid #fff; }
-        .notif-dropdown { display: none; position: absolute; top: 35px; right: 0; width: 320px; background: white; border: 1px solid #e5e7eb; border-radius: 8px; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); z-index: 100; overflow: hidden; }
-        .notif-dropdown.show { display: block; animation: fadeIn 0.2s; }
-        .notif-header { padding: 12px 16px; font-weight: 600; border-bottom: 1px solid #e5e7eb; background: #f9fafb; font-size: 14px;}
-        .notif-list { max-height: 300px; overflow-y: auto; }
-        .notif-item { padding: 12px 16px; border-bottom: 1px solid #f3f4f6; font-size: 13px; color: #4b5563; }
-        .notif-item.unread { background: #eff6ff; color: #111827; }
+        /* --- Color Variables --- */
+        :root {
+            color-scheme: light;
+            --primary-blue: #0066cc;
+            --light-blue-bg: #eef5ff;
+            --bg-white: #ffffff;
+            --bg-grayish: #f8f9fc;
+            --card-grayish: #f4f6fa;
+            --text-dark: #111111;
+            --text-gray: #666666;
+            --border-gray: #e0e0e0;
+            --line-gray: #e2e8f0;
+            --star-gold: #facc15;
+            --review-bg: #f5f9ff;
+            --faq-bg: #f8fafc;
+            --footer-bg: #111111;
+            --footer-text-muted: #a0aab5;
+        }
 
-        .dash-body { padding: 40px; max-width: 1100px; margin: 0 auto; width: 100%; }
-        .dash-title { font-size: 28px; font-weight: 700; color: #111827; margin-bottom: 8px; }
-        .dash-subtitle { font-size: 14px; color: #6b7280; margin-bottom: 32px; }
-        
-        .dash-card { background: #ffffff; border-radius: 16px; padding: 32px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); }
-        .dash-tabs { display: inline-flex; background: #f3f4f6; border-radius: 8px; padding: 4px; margin-bottom: 32px; }
-        .dash-tab { padding: 8px 24px; font-size: 14px; font-weight: 600; color: #6b7280; border-radius: 6px; cursor: pointer; transition: all 0.2s; }
-        .dash-tab.active { background: #ffffff; color: #111827; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
-        
-        .tab-content { display: none; animation: fadeIn 0.3s ease-in-out; }
-        .tab-content.active { display: block; }
-        
-        .profile-header-row { display: flex; align-items: center; gap: 16px; margin-bottom: 24px; }
-        .status-badge { padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; }
-        .status-badge.available { background: #dcfce7; color: #16a34a; }
-        .status-badge.pending { background: #fef9c3; color: #d97706; }
-        
-        /* Appointments Table Styles */
-        .table-container { width: 100%; overflow-x: auto; background: #fff; border-radius: 12px; border: 1px solid #e5e7eb; }
-        .dash-table { width: 100%; border-collapse: collapse; font-size: 14px; text-align: left; }
-        .dash-table th { background: #f9fafb; color: #6b7280; font-weight: 600; padding: 16px; border-bottom: 1px solid #e5e7eb; }
-        .dash-table td { padding: 16px; border-bottom: 1px solid #e5e7eb; color: #111827; vertical-align: middle; }
-        .tag { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: 500; }
-        .tag.online { background: #e0f2fe; color: #1d4ed8; }
-        .tag.clinic { background: #f1f5f9; color: #475569; }
+        /* --- Custom Scrollbars --- */
+        #chat-history::-webkit-scrollbar { width: 6px; }
+        #chat-history::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 4px; }
+        #chat-history::-webkit-scrollbar-track { background: transparent; }
 
-        .btn-call { background: #0ea5e9; color: white; padding: 6px 16px; border-radius: 6px; font-size: 13px; font-weight: 600; border: none; cursor: pointer; transition: 0.2s;}
-        .btn-call:hover { background: #0284c7; }
-        .btn-record { background: transparent; border: none; cursor: pointer; color: #6b7280; display: flex; align-items: center; justify-content: center; padding: 6px;}
-        .btn-record:hover { color: #0ea5e9; }
+        .sidebar-scroll::-webkit-scrollbar { width: 4px; }
+        .sidebar-scroll::-webkit-scrollbar-track { background: transparent; }
+        .sidebar-scroll::-webkit-scrollbar-thumb { background: transparent; border-radius: 4px; }
+        .sidebar-scroll:hover::-webkit-scrollbar-thumb { background: #cbd5e1; }
 
-        /* ================= RATINGS UI ================= */
-        .ratings-grid { display: grid; grid-template-columns: 1fr 1.5fr; gap: 32px; align-items: start;}
-        .ratings-summary-card { background: #fff; border: 1px solid #e5e7eb; border-radius: 16px; padding: 24px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
-        .ratings-header-flex { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
-        .ratings-score { font-size: 32px; font-weight: 700; color: #111827; }
-        .ratings-score-total { font-size: 20px; color: #9ca3af; font-weight: 500; }
-        .ratings-sub { font-size: 14px; font-weight: 600; color: #111827; margin-bottom: 4px; }
-        .ratings-meta { font-size: 12px; color: #6b7280; margin-bottom: 24px; }
-        
-        .star-row { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; font-size: 13px; color: #4b5563; font-weight: 500; }
-        .star-bar-bg { flex: 1; height: 6px; background: #f3f4f6; border-radius: 3px; overflow: hidden; position: relative; }
-        .star-bar-fill { position: absolute; top: 0; left: 0; height: 100%; background: #22c55e; border-radius: 3px; }
-        .star-bar-fill.grey { background: #d1d5db; }
-        .star-count { width: 24px; text-align: right; color: #9ca3af; }
+        .nav-active { background-color: #eff6ff; color: #0066FF; font-weight: 700; border-left: 4px solid #0066FF; }
+        .nav-inactive { color: #64748b; font-weight: 500; border-left: 4px solid transparent; }
+        .nav-inactive:hover { background-color: #eff6ff; color: #0066FF; }
 
-        .review-item { border-bottom: 1px solid #f3f4f6; padding: 24px 0; }
-        .review-item:last-child { border-bottom: none; padding-bottom: 0;}
-        .review-user-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
-        .review-user-info { display: flex; align-items: center; gap: 12px; }
-        .review-avatar { width: 40px; height: 40px; border-radius: 50%; background: #e5e7eb; object-fit: cover; }
-        .review-name { font-size: 15px; font-weight: 600; color: #111827; }
-        .review-date { font-size: 12px; color: #9ca3af; }
-        .review-stars { color: #eab308; margin-bottom: 8px; display: flex; gap: 4px;}
-        .review-text { font-size: 14px; color: #4b5563; line-height: 1.6; }
-        .review-title { font-weight: 600; color: #111827; margin-bottom: 4px; }
+        /* --- Layout Containers --- */
+        .section-white { background-color: var(--bg-white); }
+        .section-grayish { background-color: var(--bg-grayish); }
+        .section-faq-bg { background-color: var(--faq-bg); }
 
-        /* ================= MODAL & PRESCRIPTION FORM ================= */
-        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(17, 24, 39, 0.7); display: flex; justify-content: center; align-items: center; z-index: 999; padding: 20px; }
-        .presc-modal { background: #fff; border-radius: 16px; width: 100%; max-width: 600px; max-height: 90vh; display: flex; flex-direction: column; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); }
-        .presc-header { padding: 24px; border-bottom: 1px solid #e5e7eb; display: flex; justify-content: space-between; align-items: center; }
-        .presc-header h2 { font-size: 18px; font-weight: 700; margin: 0; }
-        .presc-close { background: none; border: none; font-size: 24px; cursor: pointer; color: #6b7280; }
-        .presc-body { padding: 24px; overflow-y: auto; flex: 1; }
-        .presc-footer { padding: 24px; border-top: 1px solid #e5e7eb; }
-        
-        .med-block { background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 12px; padding: 20px; margin-bottom: 16px; position: relative;}
-        .med-block-title { font-size: 14px; font-weight: 700; margin-bottom: 16px; display: flex; justify-content: space-between;}
-        .med-block-title span { color: #ef4444; font-size: 12px; font-weight: 500; cursor: pointer; }
-        
-        .autocomplete-wrapper { position: relative; }
-        .autocomplete-list { position: absolute; top: 100%; left: 0; width: 100%; background: white; border: 1px solid #e5e7eb; border-radius: 8px; max-height: 200px; overflow-y: auto; z-index: 50; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); display: none; }
-        .ac-item { padding: 10px 16px; font-size: 13px; cursor: pointer; border-bottom: 1px solid #f3f4f6; }
-        .ac-item:hover { background: #f9fafb; }
-        .ac-item.out-stock { color: #ef4444; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
+        .text-center { text-align: center; }
+        .text-blue { color: var(--primary-blue); }
+        .font-bold { font-weight: 700; }
+        .font-extrabold { font-weight: 800; }
 
-        .radio-group { display: flex; gap: 16px; margin-top: 8px; }
-        .radio-group label { display: flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 500; cursor: pointer; color: #4b5563;}
-        .radio-group input { accent-color: #0ea5e9; width: 16px; height: 16px;}
+        /* --- Components --- */
+        .btn-primary {
+            background-color: var(--primary-blue);
+            color: white;
+            border: none;
+            border-radius: 999px;
+            padding: 12px 28px;
+            font-size: 14px;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            line-height: 1;
+            transition: opacity 0.2s;
+        }
+        .btn-primary:hover { opacity: 0.9; }
 
+        .pill-label { display: inline-block; padding: 8px 24px; border-radius: 999px; font-size: 13px; font-weight: 500; }
+
+        /* --- Hero Section --- */
+        .hero { display: flex; flex-direction: column; align-items: center; padding: 4px 0 32px 0; text-align: center; position: relative; gap: 0; }
+        .hero-fig2 { height: 60px; width: auto; margin-bottom: 24px; object-fit: contain; } 
+
+        .hero h1 { font-size: 56px; line-height: 1.1; margin-bottom: 32px; letter-spacing: -1px; color: var(--text-dark); font-weight: 500; }
+        .hero h1 strong { font-weight: 800; }
+
+        .hero-description { max-width: 760px; width: 100%; margin: 0 auto; text-align: left; }
+        .hero-description p { font-size: 16px; color: #1a1a1a; line-height: 1.6; margin-bottom: 20px; }
+        .hero-description p:last-child { margin-bottom: 0; }
+
+        /* --- Chat Interface --- */
+        .hero-chat-wrapper { display: block; }
+        .hero-content-top { display: block; }
+        .chat-content-bottom { display: block; }
+
+        .chat-section { padding-bottom: 0; padding-top: 24px; }
+        .chat-container { background: #ffffff; border-radius: 24px; border: 1px solid #e2e8f0; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.03); max-width: 800px; margin: 0 auto; padding: 32px; text-align: center; }
+
+        .chat-tabs-wrapper { display: flex; justify-content: center; margin-bottom: 24px; }
+        .chat-tabs { display: inline-flex; align-items: center; background: #ffffff; border: 1px solid #f1f5f9; border-radius: 999px; padding: 4px; gap: 4px; box-shadow: 0 2px 10px rgba(0,0,0,0.02); }
+        .tab-btn { border: none; padding: 8px 24px; border-radius: 999px; font-size: 14px; font-weight: 600; color: #64748b; background: transparent; display: flex; align-items: center; gap: 8px; cursor: pointer; transition: all 0.2s; white-space: nowrap; }
+        .tab-btn.active { background: #eff6ff; color: var(--primary-blue); }
+
+        #chat-history {
+            min-height: 220px;
+            max-height: 450px;
+            overflow-y: auto;
+            padding-right: 8px;
+            scroll-behavior: smooth;
+            margin-bottom: 16px;
+        }
+
+        .input-wrapper { background-color: #f4f6fa; border: 1px solid transparent; border-radius: 16px; padding: 16px; min-height: 140px; display: flex; flex-direction: column; justify-content: space-between; margin-bottom: 24px; text-align: left; }
+        .input-top-area { display: flex; align-items: flex-start; gap: 12px; flex: 1; }
+        .input-top-area svg { flex-shrink: 0; margin-top: 2px; }
+        .input-field { width: 100%; border: none; background: transparent; outline: none; font-size: 15px; color: var(--text-dark); font-family: inherit; resize: none; height: 100%; min-height: 48px; }
+        .input-field::placeholder { color: #94a3b8; }
+        .input-actions { display: flex; justify-content: flex-end; width: 100%; margin-top: 12px; }
+        .btn-get-started { background-color: var(--primary-blue); color: white; border: none; border-radius: 8px; padding: 8px 16px; font-size: 13px; font-weight: 600; display: inline-flex; align-items: center; gap: 8px; cursor: pointer; transition: opacity 0.2s; }
+        .btn-get-started:hover { opacity: 0.9; }
+
+        .suggestion-chips { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; margin-bottom: 20px; }
+        .chip { background: #ffffff; border: 1px solid #e2e8f0; color: #475569; padding: 8px 20px; font-size: 13px; font-weight: 500; border-radius: 999px; cursor: pointer; transition: all 0.2s; display: inline-flex; align-items: center; justify-content: center; }
+        .chip:hover { background: #f8fafc; border-color: #cbd5e1; }
+        .pdpa-text { display: flex; align-items: center; justify-content: flex-end; gap: 6px; font-size: 12px; color: #94a3b8; font-weight: 500; }
+
+        /* --- Bottom Info Section --- */
+        .bottom-info { padding: 80px 0 60px 0; text-align: center; max-width: 800px; margin: 0 auto; }
+        .plus-icon-wrap { width: 48px; height: 48px; background-color: #f8fafc; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 24px auto; color: #111; }
+        .bottom-info h2 { font-size: 42px; font-weight: 800; margin-bottom: 16px; color: var(--text-dark); letter-spacing: -0.5px;}
+        .bottom-info p { font-size: 18px; color: var(--text-dark); margin-bottom: 40px; line-height: 1.6; font-weight: 500; }
+        .hero-fig3 { height: 60px; width: auto; object-fit: contain; margin: 0 auto; display: block; } 
+
+        /* --- Stats Counter Section --- */
+        .stats-counter-section { padding: 40px 0 80px 0; text-align: center; background-color: var(--bg-grayish); }
+        .counter-boxes { display: flex; justify-content: center; flex-wrap: wrap; gap: 12px; margin-bottom: 32px; }
+        .digit-box { background: #ffffff; color: var(--primary-blue); font-size: 42px; font-weight: 700; padding: 24px 32px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03); border: 1px solid rgba(0,0,0,0.02); min-width: 60px; display: flex; align-items: center; justify-content: center; }
+        .stats-pill { background-color: var(--bg-white); color: var(--primary-blue); padding: 14px 40px; border-radius: 999px; display: inline-block; font-size: 18px; font-weight: 700; box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04); border: 1px solid rgba(0,0,0,0.02); }
+
+        /* --- How it Works --- */
+        .how-it-works-section { padding: 80px 0; text-align: center; }
+        .how-pill { background-color: #ffffff; color: #111; padding: 8px 24px; border-radius: 999px; font-size: 14px; font-weight: 500; display: inline-flex; align-items: center; justify-content: center; margin-bottom: 20px; border: 1px solid #eef2f6; }
+        .how-pill span { color: var(--primary-blue); margin-left: 4px;}
+        .how-it-works-section h2 { font-size: 40px; font-weight: 800; margin-bottom: 60px; }
+
+        .steps-container { display: flex; justify-content: space-between; align-items: flex-start; position: relative; max-width: 1000px; margin: 0 auto; }
+        .steps-container::before { 
+            content: ''; 
+            position: absolute; 
+            top: 30px; 
+            left: 15%; 
+            right: 15%; 
+            height: 1.5px; 
+            background: linear-gradient(90deg, rgba(255,255,255,0) 0%, #ef4444 25%, #0066cc 50%, #0066cc 75%, rgba(255,255,255,0) 100%); 
+            z-index: 0; 
+        }
+        .step { flex: 1; padding: 0 20px; position: relative; z-index: 1; }
+        .step-circle { width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 24px auto; font-size: 20px; font-weight: 700; background-color: #ffffff; }
+
+        .step-1 .step-circle { color: #ef4444; border: 1px solid #ef4444; box-shadow: 0 0 0 6px #fff0f0; }
+        .step-2 .step-circle { color: var(--primary-blue); border: 1px solid var(--primary-blue); box-shadow: 0 0 0 6px var(--light-blue-bg); }
+        .step-3 .step-circle { color: var(--text-dark); border: none; background-color: #f8fafc; }
+
+        .step h4 { font-size: 20px; font-weight: 600; margin-bottom: 12px; color: var(--text-dark); }
+        .step p { font-size: 14px; color: var(--text-gray); line-height: 1.6; }
+
+        /* --- Typewriter Animation Class --- */
+        .typing-cursor { border-right: 2px solid var(--primary-blue); padding-right: 4px; animation: blink-cursor 0.75s step-end infinite; }
+        @keyframes blink-cursor { 0%, 100% { border-color: transparent; } 50% { border-color: var(--primary-blue); } }
+
+        /* --- Differences Section --- */
+        .differences-section { padding: 100px 0; }
+        .diff-header { margin-bottom: 40px; text-align: left; }
+        .diff-pill { background-color: #f0f7ff; color: var(--primary-blue); padding: 8px 20px; border-radius: 999px; font-size: 13px; font-weight: 500; display: inline-block; margin-bottom: 20px; border: 1px solid rgba(0, 102, 204, 0.08); }
+        .diff-header h2 { font-size: 36px; font-weight: 800; margin-bottom: 16px; color: var(--text-dark); letter-spacing: -0.5px;}
+        .diff-header p { font-size: 16px; color: #475569; }
+        .diff-cards-container { display: flex; gap: 24px; }
+        .diff-card { background: #ffffff; border-radius: 20px; padding: 40px; flex: 1; border: 1px solid rgba(0,0,0,0.04); box-shadow: 0 10px 40px rgba(0,0,0,0.02); }
+        .diff-icon-wrapper { width: 56px; height: 56px; background-color: #f0f7ff; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 24px; color: var(--primary-blue); }
+        .diff-card h3 { font-size: 24px; font-weight: 700; margin-bottom: 16px; color: var(--text-dark); }
+        .diff-card p { font-size: 15px; color: #64748b; line-height: 1.6; }
+
+        /* --- Link Doctor Section --- */
+        .link-doctor-section { padding: 80px 0; text-align: center; }
+        .link-doctor-fig { width: 214px; height: 68px; object-fit: contain; margin: 0 auto 24px auto; display: block; }
+        .link-doctor-section h2 { font-size: 32px; font-weight: 700; color: var(--text-dark); margin-bottom: 24px; line-height: 1.4; letter-spacing: -0.5px;}
+        .avail-badge { display: inline-flex; align-items: center; gap: 8px; padding: 8px 24px; border-radius: 999px; border: 1px solid var(--primary-blue); color: var(--primary-blue); font-size: 13px; font-weight: 600; margin-bottom: 40px; }
+        .avail-dot { width: 6px; height: 6px; background-color: var(--primary-blue); border-radius: 50%; }
+        .benefits-card { max-width: 580px; margin: 0 auto; background: #ffffff; border: 1px solid rgba(0,0,0,0.06); border-radius: 20px; padding: 12px 32px; box-shadow: 0 10px 40px rgba(0,0,0,0.03); text-align: left; }
+        .benefit-row { display: flex; align-items: center; gap: 20px; padding: 24px 0; }
+        .benefit-row:not(:last-child) { border-bottom: 1px solid #f1f5f9; }
+        .benefit-icon { width: 44px; height: 44px; flex-shrink: 0; background-color: #f0f7ff; color: var(--primary-blue); border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+        .benefit-text h4 { font-size: 16px; font-weight: 600; color: var(--text-dark); margin-bottom: 4px; }
+        .benefit-text p { font-size: 14px; color: #64748b; margin: 0; }
+
+        /* --- Features Stacked Section --- */
+        .features-section { padding: 80px 0; }
+        .feature-card { background-color: var(--card-grayish); border-radius: 32px; padding: 56px; display: flex; align-items: center; gap: 60px; margin-bottom: 32px; }
+        .feature-card.reverse { flex-direction: row-reverse; }
+        .feature-content { flex: 1; }
+        .feature-icon-box { width: 72px; height: 72px; background: #ffffff; border-radius: 16px; display: flex; align-items: center; justify-content: center; box-shadow: 0 8px 24px rgba(0,0,0,0.04); margin-bottom: 32px; color: #1a1a1a; }
+        .feature-icon-box svg { width: 32px; height: 32px; }
+        .feature-content h3 { font-size: 32px; font-weight: 700; margin-bottom: 20px; line-height: 1.3; color: var(--text-dark); letter-spacing: -0.5px;}
+        .feature-content p { font-size: 16px; color: #1a1a1a; line-height: 1.6; margin-bottom: 24px; }
+        .feature-image-wrapper { flex: 1; display: flex; justify-content: center; align-items: center; }
+        .feature-image-wrapper img { max-width: 100%; height: auto; }
+        .feature-list { list-style: none; padding: 0; margin: 0; }
+        .feature-list li { display: flex; align-items: flex-start; margin-bottom: 20px; }
+        .feature-list .list-icon { flex-shrink: 0; margin-right: 16px; margin-top: 2px; }
+        .feature-list .list-text h4 { font-size: 16px; font-weight: 600; color: var(--text-dark); margin-bottom: 4px; }
+        .feature-list .list-text p { font-size: 14px; color: var(--text-gray); margin-bottom: 0; }
+
+        /* --- Custom Animated Chat Widget --- */
+        .anim-outer-frame { background-color: #f8fafc; padding: 20px; border-radius: 32px; border: 1px solid #e2e8f0; width: 100%; max-width: 480px; }
+        .anim-chat-widget { background-color: #ffffff; border-radius: 16px; height: 440px; display: flex; flex-direction: column; overflow: hidden; border: 1px solid #e2e8f0; box-shadow: 0 4px 20px rgba(0,0,0,0.02); }
+        .anim-header { padding: 16px 20px; border-bottom: 1px solid #f1f5f9; display: flex; align-items: center; gap: 12px; }
+        .anim-avatar-large { width: 40px; height: 40px; background-color: #eef5ff; border-radius: 50%; display: flex; align-items: center; justify-content: center; padding: 4px; }
+        .anim-avatar-large img { width: 100%; height: 100%; object-fit: contain; }
+        .anim-header-info { display: flex; flex-direction: column; gap: 2px; text-align: left; }
+        .anim-header-title { font-weight: 700; font-size: 15px; margin: 0; color: #1e293b; }
+        .anim-header-status { color: #2563eb; font-size: 13px; font-weight: 500; opacity: 0; transition: opacity 0.3s ease; }
+        .anim-header-status.show { opacity: 1; }
+        .anim-messages { flex: 1; padding: 20px; overflow-y: hidden; display: flex; flex-direction: column; gap: 20px; scroll-behavior: smooth; }
+        .anim-row { display: flex; align-items: flex-start; gap: 12px; opacity: 0; transform: translateY(15px); transition: opacity 0.4s ease, transform 0.4s ease; }
+        .anim-row.show { opacity: 1; transform: translateY(0); }
+        .anim-row.user { justify-content: flex-end; }
+        .anim-avatar-small { width: 32px; height: 32px; background-color: #eef5ff; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; padding: 4px; }
+        .anim-avatar-small img { width: 100%; height: 100%; object-fit: contain; }
+        .anim-avatar-user { width: 32px; height: 32px; background-color: #eef5ff; border-radius: 50%; flex-shrink: 0; }
+        .anim-bubble { background-color: #f1f5f9; color: #334155; padding: 14px 18px; border-radius: 12px; font-size: 14px; line-height: 1.5; max-width: 80%; text-align: left; }
+        .anim-bubble.user-bubble { background-color: #e2e8f0; }
+        .anim-typing-bubble { padding: 12px 16px; display: flex; align-items: center; gap: 4px; height: 20px; }
+        .anim-dot { width: 4px; height: 4px; background-color: #64748b; border-radius: 50%; animation: animPulse 1.4s infinite ease-in-out both; }
+        .anim-dot:nth-child(1) { animation-delay: -0.32s; }
+        .anim-dot:nth-child(2) { animation-delay: -0.16s; }
+        @keyframes animPulse { 0%, 80%, 100% { transform: scale(0.6); opacity: 0.6; } 40% { transform: scale(1.2); opacity: 1; } }
+
+        /* --- Join as Doctor Section --- */
+        .join-doctor-section { padding: 100px 0; display: flex; align-items: center; gap: 80px; }
+        .join-doctor-left { flex: 0 0 50%; max-width: 565px; }
+        .join-doctor-left img { width: 100%; height: auto; display: block; border-radius: 32px; }
+        .join-doctor-right { flex: 1; text-align: left; }
+        .ready-pill { background-color: #f0f7ff; color: var(--primary-blue); border: 1px solid rgba(0, 102, 204, 0.1); margin-bottom: 24px; font-weight: 600; }
+        .join-doctor-right h2 { font-size: 46px; font-weight: 800; line-height: 1.15; margin-bottom: 20px; color: var(--text-dark); letter-spacing: -1px; }
+        .join-doctor-right p { font-size: 16px; color: #475569; line-height: 1.6; margin-bottom: 40px; }
+        .check-list { list-style: none; padding: 0; margin: 0 0 40px 0; }
+        .check-list li { display: flex; align-items: center; gap: 16px; margin-bottom: 20px; }
+        .check-icon { flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
+        .check-list span { font-weight: 500; color: #1e293b; font-size: 16px; }
+        .btn-large { padding: 14px 32px; font-size: 16px; text-decoration: none; display: inline-flex; }
+        .btn-glow { box-shadow: 0 8px 24px rgba(0, 102, 204, 0.3); }
+        .btn-glow:hover { box-shadow: 0 10px 28px rgba(0, 102, 204, 0.4); transform: translateY(-1px); }
+
+        /* --- Other Sections (Testimonials, FAQ) --- */
+        .testimonials-section { padding: 100px 0; }
+        .feedback-pill { background-color: #f0f7ff; color: var(--primary-blue); margin-bottom: 24px; border: 1px solid rgba(0, 102, 204, 0.08); }
+        .testimonials-section h2 { font-size: 44px; font-weight: 800; margin-bottom: 60px; color: var(--text-dark); }
+        .testimonials-grid { column-count: 3; column-gap: 24px; }
+        .testimonial-card { background-color: var(--review-bg); border-radius: 20px; padding: 32px; break-inside: avoid; margin-bottom: 24px; border: 1px solid rgba(0, 102, 204, 0.04); display: flex; flex-direction: column; }
+        .stars { display: flex; gap: 4px; margin-bottom: 16px; color: var(--star-gold); }
+        .stars svg { width: 16px; height: 16px; fill: currentColor; }
+        .testimonial-card p { font-size: 16px; color: var(--text-dark); line-height: 1.6; margin-bottom: 24px; flex-grow: 1; }
+        .user-profile { display: flex; align-items: center; gap: 16px; }
+        .user-profile img { width: 44px; height: 44px; border-radius: 50%; object-fit: cover; }
+        .user-profile span { font-weight: 500; color: var(--text-dark); font-size: 15px; }
+
+        /* --- UPDATED FAQ Section --- */
+        .faq-section { padding: 100px 0; position: relative; overflow: hidden; background-color: var(--faq-bg); }
+        .faq-section::before { content: ''; position: absolute; top: 20%; left: 50%; transform: translateX(-50%); width: 800px; height: 600px; background: radial-gradient(circle, rgba(238, 245, 255, 0.8) 0%, rgba(255, 255, 255, 0) 70%); z-index: 0; pointer-events: none; }
+        .faq-header-center { text-align: center; max-width: 680px; margin: 0 auto 48px auto; position: relative; z-index: 1; }
+        .faq-pill-center { color: var(--primary-blue); font-size: 14px; font-weight: 500; margin-bottom: 16px; display: inline-block; }
+        .faq-header-center h2 { font-size: 48px; font-weight: 800; color: #111111; margin-bottom: 16px; letter-spacing: -1px; line-height: 1.1; }
+        .faq-header-center p { font-size: 18px; color: #475569; line-height: 1.6; }
+        .faq-accordion-container { max-width: 860px; margin: 0 auto; position: relative; z-index: 1; display: flex; flex-direction: column; gap: 16px; }
+        .faq-item { background: #ffffff; border-radius: 16px; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02); border: 1px solid #eef2f6; overflow: hidden; transition: all 0.3s ease; }
+        .faq-header { padding: 28px 32px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; user-select: none; }
+        .faq-header h4 { font-size: 16px; font-weight: 700; color: var(--text-dark); margin: 0; }
+        .faq-item.active .faq-header { padding-bottom: 16px; }
+        .faq-item.active .faq-header svg { transform: rotate(180deg); }
+        .faq-body { padding: 0 32px 28px 32px; display: none; animation: fadeIn 0.3s ease-in-out; }
+        .faq-item.active .faq-body { display: block; }
+        .faq-body p { font-size: 15px; color: var(--text-gray); line-height: 1.6; margin: 0; max-width: 580px; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* --- Footer Section --- */
+        .footer-section { background-color: #111111; color: #ffffff; padding: 80px 0 40px 0; width: 100%; margin-top: auto; }
+        .footer-content { max-width: 1200px; margin: 0 auto; padding: 0 24px; display: flex; flex-direction: column; }
+        .footer-top { display: flex; justify-content: space-between; gap: 60px; padding-bottom: 60px; }
+        .footer-brand { max-width: 380px; }
+        .footer-brand img { height: 50px; width: auto; margin-bottom: 24px; display: block; margin-left: -12px;}
+        .footer-brand p { color: #a0aab5; font-size: 16px; line-height: 1.6; }
+        .footer-links-group { display: flex; gap: 120px; }
+        .footer-col h4 { font-size: 16px; font-weight: 600; margin-bottom: 24px; color: #ffffff; }
+        .footer-col a { display: block; color: #a0aab5; font-size: 15px; margin-bottom: 16px; text-decoration: none; transition: color 0.2s; }
+        .footer-col a:hover { color: #ffffff; }
+        .footer-bottom { display: flex; justify-content: space-between; align-items: center; padding-top: 40px; border-top: 1px solid rgba(255, 255, 255, 0.1); }
+        .footer-bottom p { color: #a0aab5; font-size: 14px; }
+        .social-area { display: flex; align-items: center; gap: 20px; }
+        .social-area span { color: #ffffff; font-weight: 500; font-size: 15px; }
+        .social-icons { display: flex; align-items: center; gap: 16px; }
+        .social-icons a { color: #ffffff; transition: opacity 0.2s; display: flex; align-items: center; justify-content: center; }
+        .social-icons a:hover { opacity: 0.7; }
+
+        @media (max-width: 1024px) {
+            .join-doctor-section { flex-direction: column-reverse; gap: 50px; }
+            .join-doctor-left { flex: auto; width: 100%; max-width: 600px; margin: 0 auto; }
+            .feature-card { gap: 40px; padding: 40px; }
+            .testimonials-grid { column-count: 2; }
+            .footer-top { flex-direction: column; gap: 40px; }
+            .footer-links-group { gap: 60px; justify-content: flex-start; }
+            .how-it-works-section, .differences-section, .link-doctor-section, .features-section, .testimonials-section, .join-doctor-section, .faq-section { padding: 80px 0; }
+        }
+
+        /* ---------------------------------------------------- */
+        /* EXACT MOBILE VIEW OVERRIDES TO MATCH PROVIDED SCREEN */
+        /* ---------------------------------------------------- */
+        @media (max-width: 768px) {
+            .container { padding: 0 20px; }
+
+            header { padding: 12px 20px; }
+            
+            /* --- UPDATED HAMBURGER MENU BUTTON --- */
+            header button[onclick="toggleSidebar()"] {
+                background-color: #f8fafc;
+                border-radius: 50%;
+                padding: 8px;
+                width: 40px;
+                height: 40px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                color: #64748b;
+                margin-left: -8px; 
+            }
+            header button[onclick="toggleSidebar()"] svg { width: 24px; height: 24px; }
+
+            /* --- UPDATED MOBILE LOGIN BUTTON --- */
+            #navLoginBtn {
+                background-color: var(--primary-blue) !important;
+                color: #ffffff !important;
+                font-weight: 600 !important;
+                padding: 4px 12px !important; 
+                height: 30px !important; 
+                font-size: 12.5px !important; 
+                border-radius: 8px !important;
+                display: inline-flex !important;
+                align-items: center !important;
+                justify-content: center !important;
+                white-space: nowrap !important;
+            }
+
+            .hero-chat-wrapper { display: block; min-height: auto; }
+            .hero-content-top { display: block; padding-bottom: 0px; }
+            .chat-content-bottom {
+                position: relative; 
+                bottom: auto;
+                z-index: auto;
+                margin: 0; 
+                padding: 0 0 24px 0;
+                background: transparent;
+                backdrop-filter: none;
+                -webkit-backdrop-filter: none;
+                border-top: none;
+                box-shadow: none;
+            }
+
+            .hero { padding: 8px 0; align-items: flex-start; text-align: left; }
+            .hero-fig2 { height: 36px; margin: 0 auto 12px auto; display: block; }
+            .hero h1 { font-size: 28px; margin-bottom: 12px; text-align: center; width: 100%; letter-spacing: -0.5px; font-weight: 500; line-height: 1.1; }
+            .hero-description { padding: 0; width: 100%; }
+            .hero-description p { font-size: 14px; margin-bottom: 8px; line-height: 1.4; color: #1a1a1a; }
+
+            .chat-section { padding-top: 12px; padding-bottom: 0; }
+            .chat-container { padding: 16px; border-radius: 16px; margin: 0 auto; width: 100%; background-color: #ffffff; border: 1px solid #e2e8f0; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.04); }
+            .chat-tabs-wrapper { margin-bottom: 16px; } 
+            .chat-tabs { width: 100%; justify-content: space-between; background: #ffffff; border: 1px solid #f1f5f9; box-shadow: 0 2px 10px rgba(0,0,0,0.02); padding: 4px; border-radius: 999px; }
+            .tab-btn { flex: 1; justify-content: center; padding: 8px 4px !important; background: transparent !important; font-size: clamp(11px, 3.5vw, 13px) !important; color: #94a3b8; font-weight: 500; white-space: nowrap !important; }
+            .tab-btn.active { color: var(--primary-blue); font-weight: 600; background: #eff6ff !important; }
+            .tab-icon { margin-right: 6px; width: 14px; height: 14px; }
+
+            .input-wrapper { min-height: 110px; padding: 12px; margin-bottom: 0; background-color: #f8fafc; border: 1px solid #f1f5f9; border-radius: 16px; }
+            .input-top-area { gap: 8px; }
+            .input-top-area svg { width: 16px; height: 16px; margin-top: 2px; }
+            .input-field { font-size: 14px; min-height: 40px; height: auto; }
+            .input-actions { margin-top: 12px; }
+            .btn-get-started { padding: 8px 16px; font-size: 13px; border-radius: 8px; }
+            .suggestion-chips { display: none !important; }
+            .pdpa-text { justify-content: center; font-size: 11px; color: #64748b; margin-top: 12px; padding-bottom: max(12px, env(safe-area-inset-bottom)); }
+
+            .bottom-info { padding: 40px 0 32px 0; text-align: center; } 
+            .plus-icon-wrap { margin: 0 auto 20px auto; } 
+            .bottom-info h2 { font-size: 28px; text-align: center; margin-bottom: 16px; } 
+            .bottom-info p { text-align: center; margin-bottom: 28px; font-size: 15px; } 
+            .hero-fig3 { margin: 0 auto; height: auto; max-height: 44px; max-width: 100%; object-fit: contain; object-position: center; }
+
+            .stats-counter-section { padding: 32px 0; }
+            .counter-boxes { gap: 4px; margin-bottom: 24px; flex-wrap: nowrap; justify-content: center; }
+            .digit-box { font-size: 18px; padding: 10px 8px; min-width: 24px; border-radius: 6px; border: 1px solid #f1f5f9;}
+            .stats-pill { font-size: 14px; padding: 10px 24px; }
+
+            .how-it-works-section, .differences-section, .link-doctor-section, .features-section, .testimonials-section, .join-doctor-section, .faq-section { padding: 50px 0; }
+            .how-it-works-section { text-align: left; }
+            .how-it-works-section .how-pill { margin-bottom: 16px; }
+            .how-it-works-section h2 { text-align: left; font-size: 32px; margin-bottom: 32px; }
+            .steps-container { flex-direction: column; gap: 32px; align-items: flex-start; }
+            .steps-container::before { display: none; } 
+            .step { padding: 0; width: 100%; max-width: 100%; text-align: left; }
+            .step-circle { margin-left: 0; margin-right: auto; margin-bottom: 16px; }
+
+            .diff-header h2 { font-size: 28px; }
+            .diff-cards-container { flex-direction: column; gap: 16px; }
+            .diff-card { padding: 24px; }
+
+            .link-doctor-section { text-align: left; }
+            .link-doctor-fig { margin: 0 0 16px 0; width: 160px; height: auto; }
+            .link-doctor-section h2 { text-align: left; font-size: 26px; }
+            .link-doctor-section h2 br { display: none; }
+            .avail-badge { margin: 0 0 24px 0; }
+            .benefits-card { padding: 16px; border-radius: 12px;}
+            .benefit-row { flex-direction: row; text-align: left; gap: 16px; align-items: flex-start; padding: 16px 0; }
+            .benefit-icon { width: 36px; height: 36px; }
+
+            .feature-card, .feature-card.reverse { flex-direction: column; padding: 32px 20px; gap: 32px; border-radius: 20px; }
+            .feature-content h3 { font-size: 24px; }
+            .feature-icon-box { margin-bottom: 24px; }
+            .feature-image-wrapper { width: 100%; } 
+            .anim-outer-frame { width: 100%; padding: 16px; }
+            .anim-chat-widget { height: 440px !important; min-height: 440px !important; max-height: 440px !important; flex-shrink: 0; width: 100%; }
+
+            .testimonials-section > .text-center { text-align: left; }
+            .testimonials-section h2 { font-size: 32px; margin-bottom: 40px; }
+            .testimonials-grid { column-count: 1; gap: 16px; }
+            .testimonial-card { padding: 24px; margin-bottom: 16px; }
+
+            .join-doctor-section { flex-direction: column-reverse; gap: 40px; }
+            .join-doctor-right { text-align: left; }
+            .join-doctor-right h2 { font-size: 30px; }
+
+            .faq-header-center { text-align: left; margin-bottom: 32px; }
+            .faq-pill-center { margin-bottom: 12px; }
+            .faq-header-center h2 { font-size: 32px; margin-bottom: 16px; }
+            .faq-header-center p { font-size: 16px; }
+            .faq-header { padding: 20px 24px; text-align: left; }
+            .faq-body { padding: 0 24px 20px 24px; }
+
+            .footer-section { padding: 50px 0 24px 0; }
+            .footer-content { padding: 0 16px; }
+            .footer-top { flex-direction: column; gap: 40px; padding-bottom: 32px; }
+            .footer-links-group { flex-direction: column; gap: 32px; }
+            .footer-bottom { flex-direction: column; align-items: flex-start; gap: 24px; text-align: left; padding-top: 24px; }
+            .social-area { flex-direction: column; align-items: flex-start; gap: 16px; }
+        }
     </style>
 </head>
-<body>
 
-    <!-- AUTHENTICATION WRAPPER -->
-    <div id="authWrapper">
-        <header class="header">
-            <div class="logo-container" onclick="showView('view-login')">
-                <img src="https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/Group%202085665235.png?download=true" alt="doktura.ai logo">
-            </div>
-        </header>
+<body class="flex h-[100dvh] h-screen bg-white overflow-hidden relative">
 
-        <main class="main-content">
-            <div id="authAlertContainer" style="width: 100%; max-width: 480px;">
-                <div id="authAlertBox" style="display: none; margin-bottom: 20px; padding: 14px; border-radius: 8px; font-size: 14px; text-align: center; font-weight: 500;"></div>
-            </div>
-
-            <!-- 1. LOGIN VIEW -->
-            <div id="view-login" class="card" style="display: none;">
-                <div class="card-header">
-                    <h1>Welcome back</h1>
-                    <p>Login with your account and Password<br>or create new account</p>
-                </div>
-                <form id="loginForm">
-                    <div class="form-group">
-                        <label>Email</label>
-                        <input type="email" id="loginEmail" class="form-control" placeholder="Enter your email" required>
-                    </div>
-                    <div class="form-group">
-                        <label>Password</label>
-                        <div class="input-wrapper">
-                            <input type="password" id="loginPass" class="form-control" placeholder="Enter your password" required>
-                            <button type="button" class="icon-btn" onclick="togglePasswordVisibility(this)">
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
-                            </button>
-                        </div>
-                    </div>
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
-                        <label style="display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 400; cursor: pointer; color: #4b5563;">
-                            <input type="checkbox" style="width: 16px; height: 16px; accent-color: #0066cc;"> Keep me logged in
-                        </label>
-                        <a href="javascript:void(0)" class="forgot-link" style="margin-bottom: 0;" onclick="showView('view-forgot-password', event)">Forgot password?</a>
-                    </div>
-                    
-                    <div class="divider"><span>Or continue with</span></div>
-                    
-                    <div class="btn-container">
-                        <button type="button" id="doGoogleLoginBtn" class="btn btn-social">
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
-                            Sign-in with Google
-                        </button>
-                    </div>
-
-                    <button type="submit" id="doLoginBtn" class="btn btn-primary" style="margin-top: 12px; padding: 14px;">Continue</button>
-                </form>
-                <div class="card-footer"><p>Didn't have an account? <a href="javascript:void(0)" onclick="showView('view-signup', event)">Sign-up</a></p></div>
-            </div>
-
-            <!-- 2. SIGN-UP VIEW -->
-            <div id="view-signup" class="card" style="display: none;">
-                <div class="card-header">
-                    <h1>Apply as a Doctor</h1>
-                    <p>Start your application process to join Doktura.ai</p>
-                </div>
-                <form id="signupForm">
-                    <div class="form-group">
-                        <label>Email</label>
-                        <input type="email" id="regEmail" class="form-control" placeholder="Enter your email" required>
-                    </div>
-                    <div class="form-group">
-                        <label>Create Password</label>
-                        <div class="input-wrapper">
-                            <input type="password" id="regPass" class="form-control" placeholder="At least 8 characters" required>
-                            <button type="button" class="icon-btn" onclick="togglePasswordVisibility(this)">
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
-                            </button>
-                        </div>
-                    </div>
-                    
-                    <div class="divider"><span>Or continue with</span></div>
-                    
-                    <div class="btn-container">
-                        <button type="button" id="doGoogleRegBtn" class="btn btn-social">
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
-                            Sign-up with Google
-                        </button>
-                    </div>
-
-                    <button type="submit" id="doRegisterBtn" class="btn btn-primary" style="margin-top: 16px; padding: 14px;">Sign Up</button>
-                </form>
-                <div class="card-footer"><p>Already approved? <a href="javascript:void(0)" onclick="showView('view-login', event)">Sign-in</a></p></div>
-            </div>
-
-            <!-- FORGOT PASSWORD VIEW -->
-            <div id="view-forgot-password" class="card" style="display: none;">
-                <div class="card-header">
-                    <h1>Forgot password?</h1>
-                    <p>Enter your doctor email. We'll send you a link to reset your password.</p>
-                </div>
-                <form id="forgotForm">
-                    <div class="form-group">
-                        <label>Email</label>
-                        <input type="email" id="forgotEmail" class="form-control" placeholder="doctor@clinic.com" required>
-                    </div>
-                    <button type="submit" id="doForgotBtn" class="btn btn-primary" style="margin-top: 16px;">Reset password</button>
-                </form>
-                <div class="card-footer">
-                    <p><a href="javascript:void(0)" onclick="showView('view-login', event)">← Back to Login</a></p>
-                </div>
-            </div>
-
-            <!-- 3. DOCTOR INITIAL COMPLETE DATA -->
-            <div id="view-complete-data" class="card" style="display: none;">
-                <div style="display: flex; justify-content: space-between; align-items: flex-start;">
-                    <div class="card-header" style="margin-bottom: 24px;">
-                        <h1>Complete your Profile</h1>
-                        <p>Upload your professional documents. Our admin team will verify your credentials before your account becomes active.</p>
-                    </div>
-                    <button onclick="logoutDoctor()" class="btn btn-social" style="width:auto; padding:6px 12px; font-size:12px; border-color:#ef4444; color:#ef4444;">Sign out & Switch Account</button>
-                </div>
-                
-                <form id="profileForm">
-                    <div class="form-row">
-                        <div class="form-group"><label>Full Name (with Title)</label><input type="text" id="docName" class="form-control" required></div>
-                        <div class="form-group"><label>Speciality</label><input type="text" id="docSpecialty" class="form-control" required></div>
-                    </div>
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>Contact Number</label>
-                            <div class="phone-input-wrapper">
-                                <span class="phone-prefix">+60</span>
-                                <input type="tel" id="docPhone" class="form-control" required>
-                            </div>
-                        </div>
-                        <div class="form-group"><label>Clinic Location</label><input type="text" id="docLocation" class="form-control" required></div>
-                    </div>
-                    <hr style="border: 0; border-top: 1px solid #e5e7eb; margin: 24px 0;">
-                    <h3 style="font-size: 15px; margin-bottom: 16px;">Required Documents</h3>
-                    
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>Profile Photo</label>
-                            <div class="file-upload-box"><input type="file" id="docPhoto" required onchange="updateFileName(this, 'photoName')"><div id="photoName" class="file-name-display">Upload Photo</div></div>
-                        </div>
-                        <div class="form-group">
-                            <label>Resume / CV</label>
-                            <div class="file-upload-box"><input type="file" id="docResume" required onchange="updateFileName(this, 'resumeName')"><div id="resumeName" class="file-name-display">Upload PDF</div></div>
-                        </div>
-                    </div>
-                    
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>Borang 11 (APC)</label>
-                            <div class="file-upload-box"><input type="file" id="docAPC" required onchange="updateFileName(this, 'apcName')"><div id="apcName" class="file-name-display">Upload PDF</div></div>
-                        </div>
-                        <div class="form-group">
-                            <label>Borang 15 (MMC)</label>
-                            <div class="file-upload-box"><input type="file" id="docMMC" required onchange="updateFileName(this, 'mmcName')"><div id="mmcName" class="file-name-display">Upload PDF</div></div>
-                        </div>
-                    </div>
-                    
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>Identification Card (IC)</label>
-                            <div class="file-upload-box"><input type="file" id="docIC" required onchange="updateFileName(this, 'icName')"><div id="icName" class="file-name-display">Upload Front/Back</div></div>
-                        </div>
-                        <div class="form-group"></div>
-                    </div>
-                    <button type="submit" id="saveProfileBtn" class="btn btn-primary" style="margin-top: 16px;">Submit for Verification</button>
-                </form>
-            </div>
-        </main>
-        
-        <!-- ================= ADDED FOOTER FOR AUTH PAGES ================= -->
-        <footer class="auth-footer">
-            Copyright 2026 © Doktura Plt Registration No. 202604000898 (LLP0046127-LGN)
-        </footer>
-        
-    </div>
-
-    <!-- ================= DASHBOARD UI ================= -->
-    <div id="view-dashboard" class="dashboard-layout" style="display: none;">
-        
-        <!-- Sidebar -->
-        <aside class="sidebar">
-            <div class="sidebar-header">
-                <img src="https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/Group%202085665235.png?download=true" alt="doktura.ai logo" style="height: 28px;">
-            </div>
-            
-            <div class="sidebar-menu">
-                <div class="menu-title">MAIN MENU</div>
-                <div class="menu-item active" onclick="switchDashboardMainView('profile', this)">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
-                    Profile & Availability
-                </div>
-                <div class="menu-item" onclick="switchDashboardMainView('appointments', this)">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
-                    My Appointments
-                </div>
-                <div class="menu-item" onclick="switchDashboardMainView('rating', this)">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
-                    Rating
-                </div>
-            </div>
-
-            <div class="sidebar-footer">
-                <div class="doc-mini-profile">
-                    <img src="data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40' viewBox='0 0 24 24' fill='none' stroke='%239ca3af' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2'/%3E%3Ccircle cx='12' cy='7' r='4'/%3E%3C/svg%3E" id="sidebarAvatar" class="doc-avatar">
-                    <div class="doc-mini-info">
-                        <h4 id="sidebarName">Doctor</h4>
-                        <p id="sidebarEmail">doctor@clinic.com</p>
-                    </div>
-                </div>
-                <a href="javascript:void(0)" onclick="logoutDoctor()" style="color: #6b7280;" title="Logout">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
-                </a>
-            </div>
-        </aside>
-
-        <!-- Main Panel -->
-        <div class="dash-content">
-            <header class="dash-header">
-                <div class="search-bar">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-                    <input type="text" placeholder="Search">
-                </div>
-                
-                <div style="display:flex; align-items:center; gap:24px;">
-                    <!-- Notification Bell -->
-                    <div class="notification-wrapper" onclick="toggleNotifications()">
-                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#4b5563" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
-                        <div id="notifBadge" class="bell-badge" style="display: none;">0</div>
-                        
-                        <div id="notifDropdown" class="notif-dropdown">
-                            <div class="notif-header">Notifications</div>
-                            <div class="notif-list" id="notifList">
-                                <div style="padding: 16px; text-align: center; color: #9ca3af; font-size: 13px;">No new notifications</div>
-                            </div>
-                        </div>
-                    </div>
-                    <img src="data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40' viewBox='0 0 24 24' fill='none' stroke='%239ca3af' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2'/%3E%3Ccircle cx='12' cy='7' r='4'/%3E%3C/svg%3E" id="topAvatar" class="doc-avatar">
-                </div>
-            </header>
-
-            <!-- ================= VIEW: PROFILE & SCHEDULE ================= -->
-            <div id="dashViewProfile" class="dash-body" style="display: block;">
-                <h1 class="dash-title">Profile and Weekly Schedule</h1>
-                <p class="dash-subtitle">Set your specific working hours and update your credentials.</p>
-
-                <div class="dash-card">
-                    <div class="dash-tabs">
-                        <div class="dash-tab active" onclick="switchDashboardTab('profile', this)">Profile Doctor</div>
-                        <div class="dash-tab" onclick="switchDashboardTab('schedule', this)">Weekly Schedule</div>
-                    </div>
-
-                    <!-- PROFILE TAB -->
-                    <div id="tab-profile" class="tab-content active">
-                        <div class="profile-header-row">
-                            <div style="display:flex; align-items:center; gap:8px;">
-                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#0066cc" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
-                                <span style="font-weight:600; color:#111827;">Detail Doctor</span>
-                            </div>
-                            <span id="dashStatusBadge" class="status-badge pending">Pending Approval</span>
-                        </div>
-
-                        <div id="pendingWarning" style="background:#fffbeb; color:#92400e; padding:12px 16px; border-radius:8px; font-size:13px; margin-bottom:24px; display:none;">
-                            Your documents are currently being reviewed. Profile updates and schedule changes are disabled until approved.
-                        </div>
-
-                        <form id="dashUpdateForm">
-                            <h3 style="font-size: 14px; font-weight: 600; margin-bottom: 16px;">General Information</h3>
-                            <div class="form-row">
-                                <div class="form-group"><label>Name</label><input type="text" id="dashName" class="form-control dash-input"></div>
-                                <div class="form-group"><label>Speciality</label><input type="text" id="dashSpecialty" class="form-control dash-input"></div>
-                            </div>
-                            <div class="form-row">
-                                <div class="form-group"><label>Email</label><input type="email" id="dashEmail" class="form-control" disabled></div>
-                                <div class="form-group">
-                                    <label>Contact</label>
-                                    <div class="phone-input-wrapper">
-                                        <span class="phone-prefix">+60</span>
-                                        <input type="tel" id="dashPhone" class="form-control dash-input">
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label>Location</label><input type="text" id="dashLocation" class="form-control dash-input">
-                            </div>
-
-                            <hr style="border: 0; border-top: 1px solid #f3f4f6; margin: 32px 0;">
-                            <h3 style="font-size: 14px; font-weight: 600; margin-bottom: 16px;">Update Documents (Optional)</h3>
-
-                            <div class="form-row">
-                                <div class="form-group">
-                                    <label>Profile Photo</label>
-                                    <div class="file-upload-box dash-file-box">
-                                        <input type="file" id="dashPhoto" class="dash-input" accept="image/*" onchange="updateFileName(this, 'dashPhotoName')">
-                                        <div style="display:flex; align-items:center; gap:12px; justify-content:center;">
-                                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
-                                            <div style="text-align:left;">
-                                                <div style="font-weight:500; color:#111827;">Photo.jpg</div>
-                                                <div id="dashPhotoName" style="font-size:11px; color:#6b7280;">Click to update</div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="form-group">
-                                    <label>Resume / CV</label>
-                                    <div class="file-upload-box dash-file-box">
-                                        <input type="file" id="dashResume" class="dash-input" accept=".pdf" onchange="updateFileName(this, 'dashResumeName')">
-                                        <div style="display:flex; align-items:center; gap:12px; justify-content:center;">
-                                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
-                                            <div style="text-align:left;">
-                                                <div style="font-weight:500; color:#111827;">Resume.pdf</div>
-                                                <div id="dashResumeName" style="font-size:11px; color:#6b7280;">Click to update</div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <div class="form-row">
-                                <div class="form-group">
-                                    <label>Borang 11 (APC)</label>
-                                    <div class="file-upload-box dash-file-box">
-                                        <input type="file" id="dashAPC" class="dash-input" accept=".pdf" onchange="updateFileName(this, 'dashApcName')">
-                                        <div style="display:flex; align-items:center; gap:12px; justify-content:center;">
-                                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
-                                            <div style="text-align:left;">
-                                                <div style="font-weight:500; color:#111827;">Borang.pdf</div>
-                                                <div id="dashApcName" style="font-size:11px; color:#6b7280;">Click to update</div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="form-group">
-                                    <label>Borang 15 (MMC)</label>
-                                    <div class="file-upload-box dash-file-box">
-                                        <input type="file" id="dashMMC" class="dash-input" accept=".pdf" onchange="updateFileName(this, 'dashMmcName')">
-                                        <div style="display:flex; align-items:center; gap:12px; justify-content:center;">
-                                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
-                                            <div style="text-align:left;">
-                                                <div style="font-weight:500; color:#111827;">Borang.pdf</div>
-                                                <div id="dashMmcName" style="font-size:11px; color:#6b7280;">Click to update</div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="form-row">
-                                <div class="form-group">
-                                    <label>Identification Card (IC)</label>
-                                    <div class="file-upload-box dash-file-box">
-                                        <input type="file" id="dashIC" class="dash-input" accept=".pdf,image/*" onchange="updateFileName(this, 'dashIcName')">
-                                        <div style="display:flex; align-items:center; gap:12px; justify-content:center;">
-                                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
-                                            <div style="text-align:left;">
-                                                <div style="font-weight:500; color:#111827;">ID_Verification.pdf</div>
-                                                <div id="dashIcName" style="font-size:11px; color:#6b7280;">Click to update</div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="form-group"></div>
-                            </div>
-
-                            <button type="submit" id="dashSaveProfileBtn" class="btn btn-primary" style="margin-top: 16px; width: auto; padding: 12px 32px;">Update Profile</button>
-                        </form>
-                    </div>
-
-                    <!-- SCHEDULE TAB -->
-                    <div id="tab-schedule" class="tab-content">
-                        <div id="schedulePendingWarning" style="background:#fffbeb; color:#92400e; padding:12px 16px; border-radius:8px; font-size:13px; margin-bottom:24px; display:none;">
-                            Schedule management is disabled while your account is pending approval.
-                        </div>
-
-                        <div id="scheduleDaysContainer"></div>
-
-                        <button id="saveScheduleBtn" class="btn btn-primary" style="margin-top: 24px; width: auto; padding: 12px 32px;">Save Schedule</button>
-                    </div>
-
-                </div>
-            </div>
-
-            <!-- ================= VIEW: MY APPOINTMENTS ================= -->
-            <div id="dashViewAppointments" class="dash-body" style="display: none; max-width: 1200px;">
-                <h1 class="dash-title">Appointment Timeline</h1>
-                <p class="dash-subtitle">Manage your online and physical visits below.</p>
-
-                <div class="dash-card" style="padding: 24px;">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
-                        <div style="font-weight: 600; display: flex; align-items: center; gap: 8px;">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#4b5563" stroke-width="2"><circle cx="12" cy="7" r="4"></circle><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path></svg>
-                            Patients Details
-                        </div>
-                        <button class="btn btn-social" style="width: auto; padding: 8px 16px;" onclick="loadAppointments()">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"></polyline><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path></svg>
-                            Refresh
-                        </button>
-                    </div>
-
-                    <div class="table-container">
-                        <table class="dash-table">
-                            <thead>
-                                <tr>
-                                    <th>Patient Details</th>
-                                    <th>Patient ID</th>
-                                    <th>Visit Type</th>
-                                    <th>Appointment Date</th>
-                                    <th>Appointment Time</th>
-                                    <th>Action</th>
-                                    <th style="text-align:center;">Add Record</th>
-                                </tr>
-                            </thead>
-                            <tbody id="appointmentsTableBody">
-                                <tr><td colspan="7" style="text-align: center; color: #6b7280; padding: 32px;">Loading appointments...</td></tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-
-            <!-- ================= VIEW: RATINGS ================= -->
-            <div id="dashViewRating" class="dash-body" style="display: none; max-width: 1100px;">
-                <h1 class="dash-title">Doctor Ratings</h1>
-                <p class="dash-subtitle">See what patients are saying</p>
-
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
-                    <div style="font-weight: 500; color:#111827;">Based on patient reviews and ratings</div>
-                    <div style="display:flex; gap:12px;">
-                        <div class="search-bar" style="background: #fff; border: 1px solid #e5e7eb; width: 200px; padding:6px 12px;">
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-                            <input type="text" placeholder="Search">
-                        </div>
-                        <button class="btn btn-social" style="width: auto; padding: 6px 12px;" onclick="loadReviews()">
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"></polyline><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path></svg> Refresh
-                        </button>
-                    </div>
-                </div>
-
-                <div style="border-bottom: 1px solid #e5e7eb; margin-bottom: 32px;">
-                    <div style="display:inline-block; border-bottom: 2px solid #111827; padding-bottom: 12px; font-weight: 600; color: #111827;">Reviews (<span id="totalReviewsCount">0</span>)</div>
-                </div>
-
-                <div class="ratings-grid">
-                    <!-- Left Summary -->
-                    <div class="ratings-summary-card">
-                        <div class="ratings-header-flex">
-                            <svg width="28" height="28" viewBox="0 0 24 24" fill="#eab308" stroke="#eab308" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
-                            <span class="ratings-score" id="avgScore">5.0</span><span class="ratings-score-total">/5.0</span>
-                        </div>
-                        <div class="ratings-sub" id="satisfactionText">100% of patients are satisfied</div>
-                        <div class="ratings-meta" id="ratingsMetaText">0 ratings • 0 reviews</div>
-
-                        <div id="starBarsContainer">
-                            <!-- Star Bars Injected -->
-                        </div>
-                    </div> <!-- LEFT SUMMARY CLOSED CORRECTLY HERE -->
-
-                    <!-- Right Reviews List -->
-                    <div>
-                        <h2 style="font-size: 20px; font-weight: 600; color:#111827; margin-bottom: 24px;">Patient Reviews</h2>
-                        <div id="reviewsListContainer">
-                            <div style="color:#6b7280; text-align:center; padding: 40px;">Loading reviews...</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-        </div>
-    </div>
-
-    <!-- ================= MODAL: ADD NEW PRESCRIPTION ================= -->
-    <div id="prescriptionModal" class="modal-overlay" style="display: none;">
-        <div class="presc-modal">
-            <div class="presc-header">
-                <h2>Add New Prescription</h2>
-                <button class="presc-close" onclick="closePrescriptionModal()">&times;</button>
-            </div>
-            <div class="presc-body">
-                <div style="display: flex; gap: 12px; margin-bottom: 24px;">
-                    <div style="width: 40px; height: 40px; background: #f3f4f6; border-radius: 50%; display: flex; justify-content: center; align-items: center;">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#4b5563" stroke-width="2"><path d="M10 2v7.31"></path><path d="M14 9.3V1.99"></path><path d="M8.5 2h7"></path><path d="M14 9.3a6.5 6.5 0 1 1-4 0"></path><path d="M5.52 16h12.96"></path></svg>
-                    </div>
-                    <div>
-                        <div style="font-weight: 600;">Medication Form</div>
-                        <div style="font-size: 12px; color: #6b7280;">Fill out components for patient treatment</div>
-                    </div>
-                </div>
-
-                <div id="medicationsContainer">
-                    <!-- Med blocks will be injected here -->
-                </div>
-
-                <div style="margin-top: 16px; margin-bottom: 24px;">
-                    <button class="btn btn-social" style="color: #0ea5e9; font-size: 13px; font-weight: 600; border: none; padding: 0; background: transparent; justify-content: flex-start;" onclick="addMedicationBlock()">
-                        + Add New Medication
-                    </button>
-                </div>
-
-                <div style="border-top: 1px dashed #e5e7eb; padding-top: 24px; margin-bottom: 16px;">
-                    <div class="form-group">
-                        <label>Doctor's Note <span style="color:#0ea5e9;">*</span></label>
-                        <textarea id="prescNotes" class="form-control" rows="3" placeholder="Additional instructions..." required></textarea>
-                    </div>
-                </div>
-
-                <!-- MC Section -->
-                <div style="margin-bottom: 8px;">
-                    <label style="display:flex; align-items:center; gap:8px; font-size:14px; font-weight:500; cursor:pointer;">
-                        <input type="checkbox" id="mcCheckbox" style="accent-color:#0ea5e9; width:16px; height:16px;" onchange="toggleMCDays()">
-                        MC Needed (Medical Certificate)
-                    </label>
-                </div>
-                <div class="form-group" id="mcDaysContainer" style="display:none; margin-left: 24px;">
-                    <label>Number of Days</label>
-                    <input type="text" id="mcDays" class="form-control" placeholder="e.g., 2 Days" style="width: 200px;">
-                </div>
-
-            </div>
-            <div class="presc-footer">
-                <button id="submitPrescriptionBtn" class="btn btn-primary" onclick="submitPrescription()">Add Record & Send to Patient</button>
-            </div>
-        </div>
-    </div>
-
-
-    <!-- ================= SCRIPTS ================= -->
+    <!-- Firebase Auth & Dynamic Login state -->
+    <script>const API_BASE = 'https://api.doktura.ai';</script>
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-app.js";
-        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, sendPasswordResetEmail, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-auth.js";
-        import { getFirestore, collection, query, onSnapshot, orderBy } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore.js";
-
-        const API_BASE = 'https://api.doktura.ai'; 
-        
-        const app = initializeApp({ 
-            apiKey: "AIzaSyCrx9BPS8ficDzgVZMbJIb4b3PQ9IqEHLw", 
-            authDomain: "doktura-ai-907d8.firebaseapp.com", 
-            projectId: "doktura-ai-907d8" 
-        });
+        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-auth.js";
+        const app = initializeApp({ apiKey: "AIzaSyCrx9BPS8ficDzgVZMbJIb4b3PQ9IqEHLw", authDomain: "doktura-ai-907d8.firebaseapp.com", projectId: "doktura-ai-907d8" });
         const auth = getAuth(app);
-        const db = getFirestore(app);
 
-        let currentAppointments =[];
-        let activeAppointmentIdForPrescription = null;
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                const navBtn = document.getElementById("navLoginBtn");
+                navBtn.href = "https://doktura.ai/dashboard.html";
+                navBtn.className = "btn-primary";
+                navBtn.style = "padding: 8px 16px; font-size: 13px;";
+                navBtn.innerHTML = `Log in`;
 
-        // ================= UI CORE =================
-        const alertBox = document.getElementById("authAlertBox");
+                document.getElementById("userNameSidebar").innerText = user.displayName || user.email.split('@')[0];
+                document.getElementById("userAvatarSidebar").src = user.photoURL || 'https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/Vector%20(4).png?download=true';
 
-        window.showView = function(targetId, event, pushHistory = true) {
-            if (event) event.preventDefault();
-            
-            if(targetId === 'view-dashboard') {
-                document.getElementById('authWrapper').style.display = 'none';
-                document.getElementById('view-dashboard').style.display = 'flex';
-                if (pushHistory) history.pushState({view: targetId}, "", "#dashboard");
-                return;
-            }
-
-            document.getElementById('authWrapper').style.display = 'flex';
-            document.getElementById('view-dashboard').style.display = 'none';
-
-            const views =['view-login', 'view-signup', 'view-forgot-password', 'view-complete-data'];
-            views.forEach(id => {
-                const el = document.getElementById(id);
-                if(el) el.style.display = (id === targetId) ? 'block' : 'none';
-            });
-            
-            if(alertBox) alertBox.style.display = 'none';
-            
-            if (pushHistory && targetId !== 'view-complete-data') {
-                history.pushState({view: targetId}, "", "#" + targetId.replace('view-', ''));
-            }
-        }
-
-        window.addEventListener('popstate', (e) => {
-            if (e.state && e.state.view) {
-                showView(e.state.view, null, false);
-            } else {
-                showView('view-login', null, false);
+                const logoutBtn = document.getElementById("logoutBtn");
+                logoutBtn.innerHTML = `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>`;
+                logoutBtn.removeAttribute("href");
+                logoutBtn.onclick = (e) => {
+                    e.preventDefault();
+                    signOut(auth).then(() => window.location.reload());
+                };
             }
         });
+    </script>
 
-        window.switchDashboardMainView = function(view, element) {
-            document.querySelectorAll('.sidebar .menu-item').forEach(el => el.classList.remove('active'));
-            element.classList.add('active');
-            
-            document.getElementById('dashViewProfile').style.display = 'none';
-            document.getElementById('dashViewAppointments').style.display = 'none';
-            document.getElementById('dashViewRating').style.display = 'none';
+    <div id="sidebar-overlay" onclick="toggleSidebar()" class="fixed inset-0 bg-gray-900/50 z-[190] hidden backdrop-blur-sm transition-opacity"></div>
 
-            if(view === 'profile') {
-                document.getElementById('dashViewProfile').style.display = 'block';
-            } else if (view === 'appointments') {
-                document.getElementById('dashViewAppointments').style.display = 'block';
-                loadAppointments();
-            } else if (view === 'rating') {
-                document.getElementById('dashViewRating').style.display = 'block';
-                loadReviews();
-            }
-        }
+    <div id="sidebar" class="fixed inset-y-0 left-0 z-[200] w-[260px] transform -translate-x-full transition duration-300 ease-in-out bg-white border-r border-gray-200 flex flex-col h-full shadow-2xl shrink-0">
+        <div class="p-6 pb-4 flex justify-between items-center shrink-0">
+            <a href="index.html" class="flex-shrink-0">
+                <img src="https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/Group%202085665235.png?download=true" class="h-8 object-contain" alt="Doktura Logo">
+            </a>
+            <button onclick="toggleSidebar()" class="text-gray-400 hover:text-gray-800 focus:outline-none">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
+        </div>
 
-        window.switchDashboardTab = function(tab, element) {
-            document.querySelectorAll('.dash-tab').forEach(t => t.classList.remove('active'));
-            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-            element.classList.add('active');
-            document.getElementById('tab-' + tab).classList.add('active');
-        }
+        <div class="flex-1 overflow-y-auto sidebar-scroll">
+            <div class="px-5 py-2 mb-2">
+                <button onclick="startNewSession()" class="w-full bg-[#0066cc] text-white font-bold py-2.5 rounded-lg shadow-sm flex items-center justify-center transition hover:bg-blue-700 text-sm">
+                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg> New Consult
+                </button>
+            </div>
 
-        function showAlert(msg, isError=true) {
-            alertBox.innerText = msg;
-            alertBox.style.display = 'block';
-            if(isError) { alertBox.style.backgroundColor = '#fef2f2'; alertBox.style.color = '#dc2626'; alertBox.style.border = '1px solid #fee2e2'; } 
-            else { alertBox.style.backgroundColor = '#f0fdf4'; alertBox.style.color = '#16a34a'; alertBox.style.border = '1px solid #dcfce7'; }
-            window.scrollTo(0,0);
-        }
+            <p class="px-6 py-2 text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-2">Explore</p>
+            <nav class="space-y-1">
+                <button onclick="switchTab('chat')" id="btn-chat" class="nav-btn w-full flex items-center justify-between px-6 py-3 nav-active transition">
+                    <div class="flex items-center flex-1 pr-2">
+                        <img src="https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/Group%202085665227.png?download=true" class="w-6 h-6 mr-3 shrink-0 object-contain" alt="AI">
+                        <span class="text-sm block text-left leading-snug">AI Doctor Chat</span>
+                    </div>
+                    <svg class="w-4 h-4 text-gray-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                </button>
+                <button onclick="switchTab('book')" id="btn-book" class="nav-btn w-full flex items-center justify-between px-6 py-3 nav-inactive transition">
+                    <div class="flex items-center flex-1 pr-2">
+                        <svg class="w-5 h-5 mr-3 shrink-0 opacity-60" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                        <span class="text-sm block text-left leading-snug">Book Consultation</span>
+                    </div>
+                    <svg class="w-4 h-4 text-gray-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                </button>
+                <button onclick="switchTab('schedule')" id="btn-schedule" class="nav-btn w-full flex items-center justify-between px-6 py-3 nav-inactive transition">
+                    <div class="flex items-center flex-1 pr-2">
+                        <svg class="w-5 h-5 mr-3 shrink-0 opacity-60" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path></svg>
+                        <span class="text-sm block text-left leading-snug">Schedule Appointments</span>
+                    </div>
+                    <svg class="w-4 h-4 text-gray-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                </button>
+                <button onclick="switchTab('reports')" id="btn-reports" class="nav-btn w-full flex items-center justify-between px-6 py-3 nav-inactive transition">
+                    <div class="flex items-center flex-1 pr-2">
+                        <svg class="w-5 h-5 mr-3 shrink-0 opacity-60" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                        <span class="text-sm block text-left leading-snug">Medical Reports</span>
+                    </div>
+                    <svg class="w-4 h-4 text-gray-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                </button>
+            </nav>
 
-        window.togglePasswordVisibility = function(button) {
-            const input = button.previousElementSibling;
-            input.type = (input.type === "password") ? "text" : "password";
-        }
+            <p class="px-6 py-2 text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-4">Company</p>
+            <nav class="space-y-1 mb-6">
+                <a href="https://doktura.ai/Aboutus.html" class="nav-btn w-full flex items-center px-6 py-2.5 nav-inactive transition"><span class="text-sm block text-left">About us</span></a>
+                <a href="https://doktura.ai/privacy.html" class="nav-btn w-full flex items-center px-6 py-2.5 nav-inactive transition"><span class="text-sm block text-left">Privacy Policy</span></a>
+                <a href="https://doktura.ai/pdpa.html" class="nav-btn w-full flex items-center px-6 py-2.5 nav-inactive transition"><span class="text-sm block text-left">PDPA Privacy Policy</span></a>
+                <a href="https://doktura.ai/doctor-registration.html" class="nav-btn w-full flex items-center px-6 py-2.5 nav-inactive transition"><span class="text-sm block text-left">Join as Doctor</span></a>
+            </nav>
 
-        window.updateFileName = function(input, displayId) {
-            if(input.files.length > 0) {
-                document.getElementById(displayId).innerText = "Selected: " + input.files[0].name;
-                document.getElementById(displayId).style.color = "#16a34a"; 
+        </div>
+
+        <div class="p-4 border-t border-gray-200 flex items-center justify-between shrink-0 bg-white">
+            <div class="flex items-center space-x-3 truncate">
+                <img id="userAvatarSidebar" src="https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/Vector%20(4).png?download=true" class="w-9 h-9 rounded-full object-cover">
+                <span id="userNameSidebar" class="text-xs font-bold truncate text-gray-600">Guest User</span>
+            </div>
+            <a href="https://doktura.ai/login.html" id="logoutBtn" class="text-gray-400 hover:text-blue-500 p-2" title="Log In / Log Out">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"></path></svg>
+            </a>
+        </div>
+    </div>
+
+    <!-- MAIN SCROLLABLE CONTENT AREA -->
+    <div class="flex-1 flex flex-col relative h-full overflow-y-auto overflow-x-hidden w-full scroll-smooth" id="main-scroll-area">
+
+        <header class="w-full flex justify-between items-center bg-white px-6 md:px-8 py-2 sticky top-0 z-[100]">
+            <div class="flex items-center gap-4">
+                <button onclick="toggleSidebar()" class="text-gray-500 hover:text-[#0066cc] transition focus:outline-none p-1 -ml-2 rounded-md">
+                    <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+                </button>
+            </div>
+            <nav class="ml-auto">
+                <a href="https://doktura.ai/login.html" id="navLoginBtn" class="btn-primary" style="padding: 8px 16px; font-size: 13px;">Log in</a>
+            </nav>
+        </header>
+
+        <!-- Top Section -->
+        <div class="section-white flex-1">
+            <div class="container relative z-10 hero-chat-wrapper">
+
+                <div class="hero-content-top">
+                    <!-- Centered Hero -->
+                    <section class="hero">
+                        <img src="https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/Figure%203.png?download=true" alt="Doktura Avatars" class="hero-fig2">
+
+                        <h1>Hello, I'm <strong>Dok</strong>tura!</h1>
+
+                        <div class="hero-description">
+                            <p>I’m your private and personal AI doctor. As an AI doctor, my service is <span class="text-blue font-bold typing-cursor" id="typewriter-text">fast and free.</span></p>
+                            <p>Describe your symptoms and get a diagnosis and treatment plan in minutes.</p>
+                            <p>Powered by peer-reviewed medical research, with recommendations that align with board-certified clinicians over <span class="font-bold">99% of the time.</span></p>
+                            <p>Need a prescription, lab test, or doctor’s note?<br>Connect with a licensed doctor online <span class="font-bold">in under 30 minutes</span> for just <span class="font-bold">RM38 only</span> if treatment is required.</p>
+                            <p>Completely free to use and fully anonymous. No email or credit card needed.</p>
+                        </div>
+                    </section>
+                </div>
+
+                <div class="chat-content-bottom">
+                    <!-- Chat Interface Area -->
+                    <section class="chat-section">
+                        <div class="chat-container relative z-20">
+                            <div class="chat-tabs-wrapper">
+                                <div class="chat-tabs">
+                                    <button class="tab-btn active">
+                                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tab-icon">
+                                            <path d="M12 2l2.4 7.6L22 12l-7.6 2.4L12 22l-2.4-7.6L2 12l7.6-2.4L12 2z"></path>
+                                        </svg>
+                                        AI Assistant
+                                    </button>
+                                    <a href="https://doktura.ai/dashboard.html?tab=book" class="tab-btn" style="text-decoration: none;">
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tab-icon"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+                                        Book Doctor
+                                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-left: 4px;"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                                    </a>
+                                </div>
+                            </div>
+
+                            <div id="chat-history">
+                                <!-- Terms of Service Blocker overlay (Moves to the very top since greeting is removed) -->
+                                <div id="tos-blocker" style="margin-top: 16px; padding: 20px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; text-align: left;">
+                                    <p style="font-size: 14px; color: #475569; margin-bottom: 12px;">Before I can reply, I need your permission to unlock your private AI doctor. <strong>It's fast, safe and free.</strong></p>
+                                    <label style="display: flex; align-items: flex-start; gap: 8px; font-size: 12px; color: #64748b; cursor: pointer;">
+                                        <input type="checkbox" id="tos-checkbox" style="margin-top: 2px;" onchange="handleTosChange(this)">
+                                        <span>I agree to the <a href="https://doktura.ai/terms.html" class="text-blue">Electronic Terms of Service</a> and will discuss all Electronic output with a doctor. Doktura is an AI doctor, not a licensed physician, and does not provide medical advice.</span>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div class="chat-input-area">
+                                <!-- Initially Hidden until ToS Checked -->
+                                <div id="chat-input-wrapper" class="input-wrapper shadow-sm" style="display: none;">
+                                    <div class="input-top-area">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="#0066cc" xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M12 2L14.5 9.5L22 12L14.5 14.5L12 22L9.5 14.5L2 12L9.5 9.5L12 2Z"/>
+                                        </svg>
+                                        <textarea id="chat-input" class="input-field" placeholder="Get health advice.." onkeydown="if(event.key === 'Enter' && !event.shiftKey) { event.preventDefault(); sendGuestChat(); }"></textarea>
+                                    </div>
+                                    <div class="input-actions">
+                                        <button class="btn-get-started shadow-md" onclick="sendGuestChat()" aria-label="Send message">
+                                            Start Here
+                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <div id="suggestion-chips" class="suggestion-chips" style="display: none;">
+                                    <button class="chip" onclick="document.getElementById('chat-input').value='Fever & flu'; sendGuestChat();">Fever & flu</button>
+                                    <button class="chip" onclick="document.getElementById('chat-input').value='Sore throat'; sendGuestChat();">Sore throat</button>
+                                    <button class="chip" onclick="document.getElementById('chat-input').value='Skin issues'; sendGuestChat();">Skin issues</button>
+                                    <button class="chip" onclick="document.getElementById('chat-input').value='Stomach pain'; sendGuestChat();">Stomach pain</button>
+                                    <button class="chip" onclick="document.getElementById('chat-input').value='Tell me more'; sendGuestChat();">
+                                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:middle; margin-right:4px;"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                                        See More
+                                    </button>
+                                </div>
+
+                                <!-- Lock Icon Included in PDPA Text -->
+                                <div class="pdpa-text">
+                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                                    Data protected under PDPA
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+
+            </div>
+
+            <div class="container relative z-10">
+                <section class="bottom-info">
+                    <div class="plus-icon-wrap">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#111" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="12" y1="5" x2="12" y2="19"></line>
+                            <line x1="5" y1="12" x2="19" y2="12"></line>
+                        </svg>
+                    </div>
+                    <h2>#1st AI-Powered Healthcare Consult</h2>
+                    <p>Get instant health guidance, understand your symptoms, and explore next steps anytime, anywhere.</p>
+                    <img src="https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/Figure%202.png?download=true" alt="Ratings and usage statistics" class="hero-fig3">
+                </section>
+            </div>
+        </div>
+
+        <!-- Website Visit Counter Section -->
+        <div class="section-grayish">
+            <div class="container">
+                <section class="stats-counter-section">
+                    <div class="counter-boxes">
+                        <div class="digit-box">2</div>
+                        <div class="digit-box">3</div>
+                        <div class="digit-box">8</div>
+                        <div class="digit-box">1</div>
+                        <div class="digit-box">9</div>
+                        <div class="digit-box">8</div>
+                        <div class="digit-box">9</div>
+                        <div class="digit-box">2</div>
+                    </div>
+                    <div class="stats-pill">Website visit</div>
+                </section>
+            </div>
+        </div>
+
+        <!-- How It Works Section -->
+        <div class="section-white">
+            <div class="container">
+                <section class="how-it-works-section">
+                    <div class="how-pill">How <span>to use</span></div>
+                    <h2>How It Works</h2>
+                    <div class="steps-container">
+                        <div class="step step-1">
+                            <div class="step-circle">1</div>
+                            <h4>Tell Us What You're Feeling</h4>
+                            <p>Our AI analyzes your input instantly to understand your condition and concerns.</p>
+                        </div>
+                        <div class="step step-2">
+                            <div class="step-circle">2</div>
+                            <h4>Get Instant Guidance & Next Steps</h4>
+                            <p>Receive personalized health insights, possible causes, and recommended next steps within seconds.</p>
+                        </div>
+                        <div class="step step-3">
+                            <div class="step-circle">3</div>
+                            <h4>Continue with a Real Doctor</h4>
+                            <p>Choose between online consultation or booking a visit to a nearby clinic.</p>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+
+        <!-- Differences Section -->
+        <div class="section-grayish">
+            <div class="container">
+                <section class="differences-section">
+                    <div class="diff-header">
+                        <div class="diff-pill">Differences</div>
+                        <h2>When to Use AI vs When to See a Doctor?</h2>
+                        <p>Understand when AI is enough and when it's best to consult a real doctor.</p>
+                    </div>
+
+                    <div class="diff-cards-container">
+                        <div class="diff-card">
+                            <div class="diff-icon-wrapper">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M12 12c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm0 2c-3.33 0-10 1.67-10 5v2h20v-2c0-3.33-6.67-5-10-5z"></path>
+                                </svg>
+                            </div>
+                            <h3>Use AI for quick guidance</h3>
+                            <p>Get instant answers to everyday health questions, understand possible causes of your symptoms, and learn what steps to take next—all in seconds. It's ideal for non-urgent concerns and general health advice.</p>
+                        </div>
+                        <div class="diff-card">
+                            <div class="diff-icon-wrapper">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M22 12h-4l-3 9L9 3l-3 9H2"></path>
+                                </svg>
+                            </div>
+                            <h3>a doctor for medical care</h3>
+                            <p>Consult a doctor registered with the Malaysian Medical Council (MMC) for accurate diagnoses, medication prescriptions, and treatment.</p>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+
+        <!-- Link to Doctor Section -->
+        <div class="section-white">
+            <div class="container">
+                <section class="link-doctor-section">
+                    <img src="https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/Figure%203.png?download=true" alt="Doctors" class="link-doctor-fig">
+
+                    <h2>When we finish chatting, I can link you to a <br>licensed doctor for just <span class="text-blue">RM38 Only</span></h2>
+
+                    <div class="avail-badge">
+                        <span class="avail-dot"></span> Available anytime, 24/7
+                    </div>
+
+                    <div class="benefits-card">
+                        <div class="benefit-row">
+                            <div class="benefit-icon">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+									<path d="M5 4a2 2 0 0 0 2 2v3a4 4 0 0 0 8 0V6a2 2 0 0 0 2-2"></path>
+									<path d="M11 13v4a3.5 3.5 0 0 0 7 0v-1"></path>
+									<circle cx="18" cy="14" r="2"></circle>
+								</svg>
+                            </div>
+                            <div class="benefit-text">
+                                <h4>Qualified doctors you can trust in Malaysia</h4>
+                                <p>Available in all 13 states</p>
+                            </div>
+                        </div>
+                        <div class="benefit-row">
+                            <div class="benefit-icon">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
+                                    <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
+                                    <line x1="12" y1="11" x2="12" y2="17"></line>
+                                    <line x1="9" y1="14" x2="15" y2="14"></line>
+                                </svg>
+                            </div>
+                            <div class="benefit-text">
+                                <h4>Complete care support</h4>
+                                <p>Consultation, prescriptions & referrals</p>
+                            </div>
+                        </div>
+                        <div class="benefit-row">
+                            <div class="benefit-icon">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <polyline points="20 6 9 17 4 12"></polyline>
+                                </svg>
+                            </div>
+                            <div class="benefit-text">
+                                <h4>No insurance required</h4>
+                                <p>All records securely in-app</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+
+        <!-- Features Stacked Section -->
+        <div class="section-white">
+            <div class="container">
+                <section class="features-section">
+                    <div class="feature-card">
+                        <div class="feature-content">
+                            <div class="feature-icon-box">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#111" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M4.8 2.3A.3.3 0 1 0 5 2H4a2 2 0 0 0-2 2v5a6 6 0 0 0 6 6v0a6 6 0 0 0 6-6V4a2 2 0 0 0-2-2h-1"></path>
+                                    <path d="M8 15v3.5a4.5 4.5 0 0 0 4.5 4.5h0a4.5 4.5 0 0 0 4.5-4.5V16"></path>
+                                    <circle cx="15" cy="16" r="2"></circle>
+                                </svg>
+                            </div>
+                            <h3>As an AI doctor, I provide <span class="text-blue">fast and free service</span></h3>
+                            <p>Your privacy is our top priority. All conversations are completely confidential and PDPA compliant. Doktura Ai successfully guided countless people to get the health advice they need, whenever they need it. No appointments, no waiting rooms just instant, reliable medical assistance at your fingertips.</p>
+                        </div>
+
+                        <div class="feature-image-wrapper">
+                            <div class="anim-outer-frame">
+                                <div class="anim-chat-widget">
+                                    <div class="anim-header">
+                                        <div class="anim-avatar-large">
+                                            <img src="https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/Fig%204.png" alt="AI">
+                                        </div>
+                                        <div class="anim-header-info">
+                                            <h4 class="anim-header-title">Doktura Ai</h4>
+                                            <span class="anim-header-status" id="anim-header-status">Typing...</span>
+                                        </div>
+                                    </div>
+                                    <div class="anim-messages" id="anim-chatbox">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="feature-card reverse">
+                        <div class="feature-content">
+                            <div class="feature-icon-box">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#111" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                    <circle cx="9" cy="7" r="4"></circle>
+                                    <path d="M14 15a6 6 0 0 0-10 0"></path>
+                                    <circle cx="17" cy="11" r="3"></circle>
+                                    <path d="M21 18a5 5 0 0 0-7.2-4.5"></path>
+                                </svg>
+                            </div>
+                            <h3>You can talk to <span class="text-blue">Doktura.Ai</span> just like<br>your regular doctor</h3>
+                            <p>Share your symptoms, ask questions, and get personalized health insights in a natural conversation. I'm here to provide guidance, suggest next steps, and help you understand your health better all in a friendly, accessible way.</p>
+                        </div>
+                        <div class="feature-image-wrapper">
+                            <img src="https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/Rectangle.png" alt="Doctor Consultation" style="border-radius: 32px; box-shadow: 0 10px 40px rgba(0,0,0,0.04);">
+                        </div>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="feature-content">
+                            <div class="feature-icon-box">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#111" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path>
+                                    <line x1="9" y1="12" x2="15" y2="12"></line>
+                                </svg>
+                            </div>
+                            <h3>When we're done chatting, I can connect you to a Real Qualified doctor from just <span class="text-blue">RM38.00</span></h3>
+                            <p>Ask questions anytime, 24/7 personalised health insights on general health, antenatal care, knee & joints, minor surgery, and weight management.</p>
+                            <ul class="feature-list">
+                                <li>
+                                    <div class="list-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="#0066cc" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="12" fill="#0066cc"/><path d="M7 12.5L10.5 16L17 8" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                                    <div class="list-text"><h4>Top licensed doctors</h4><p>Board-certified physicians ready to help</p></div>
+                                </li>
+                                <li>
+                                    <div class="list-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="#0066cc" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="12" fill="#0066cc"/><path d="M7 12.5L10.5 16L17 8" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                                    <div class="list-text"><h4>Full service care</h4><p>Consultations, prescriptions, and follow-ups</p></div>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="feature-image-wrapper">
+                            <img src="https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/Frame%202147225387.png?download=true" alt="Online Consultation App">
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+
+        <!-- Testimonials Section -->
+        <div class="section-white">
+            <div class="container">
+                <section class="testimonials-section">
+                    <div class="text-center">
+                        <div class="pill-label feedback-pill">Feedback</div>
+                        <h2>What Our Users Say</h2>
+                    </div>
+                    <div class="testimonials-grid">
+                        <div class="testimonial-card">
+                            <div class="stars"><svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg><svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg><svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg><svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg><svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg></div>
+                            <p>I was feeling unwell late at night and didn't know what to do. The AI gave me clear guidance instantly, and I booked a doctor...</p>
+                            <div class="user-profile"><img src="https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/Priya-Menon.webp" alt="Priya Menon"><span>Priya Menon</span></div>
+                        </div>
+                        <div class="testimonial-card">
+                            <div class="stars"><svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg><svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg><svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg><svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg><svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg></div>
+                            <p>I was feeling unwell late at night and didn't know what to do. The AI gave me clear guidance instantly, and I booked a doctor right after. Everything was smooth and reassuring....</p>
+                            <div class="user-profile"><img src="https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/1e37881e785c2acf3a1882b6dad6518d55813fa4.png" alt="Faisal Ahmed"><span>Faisal Ahmed</span></div>
+                        </div>
+                        <div class="testimonial-card">
+                            <div class="stars"><svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg><svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg><svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg><svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg><svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg></div>
+                            <p>I was feeling unwell late at night and didn't know what to do. The AI gave me clear guidance instantly, and I booked a doctor right after. Everything was smooth and reassuring....</p>
+                            <div class="user-profile"><img src="https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/Haris%20Lim.webp" alt="Haris Lim"><span>Haris Lim</span></div>
+                        </div>
+                        <div class="testimonial-card">
+                            <div class="stars"><svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg><svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg><svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg><svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg><svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg></div>
+                            <p>I was feeling unwell late at night and didn't know what to do. The AI gave me clear guidance instantly, and I booked a doctor right after. Everything was smooth and reassuring....</p>
+                            <div class="user-profile"><img src="https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/Mei%20Ling%20Chan(1).webp" alt="Mei Ling Chan"><span>Mei Ling Chan</span></div>
+                        </div>
+                        <div class="testimonial-card">
+                            <div class="stars"><svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg><svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg><svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg><svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg><svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg></div>
+                            <p>I was feeling unwell late at night and didn't know what to do. The AI gave me clear guidance instantly, and I booked a doctor...</p>
+                            <div class="user-profile"><img src="https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/Diego%20Martinez.webp" alt="Diego Martinez"><span>Diego Martinez</span></div>
+                        </div>
+                        <div class="testimonial-card">
+                            <div class="stars"><svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg><svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg><svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg><svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg><svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg></div>
+                            <p>I was feeling unwell late at night and didn't know what to do. The AI gave me clear guidance instantly, and I booked a doctor...</p>
+                            <div class="user-profile"><img src="https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/Zara%20Lee.webp" alt="Zara Lee"><span>Zara Lee</span></div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+
+        <!-- Join as Doctor Section -->
+        <div class="section-white">
+            <div class="container">
+                <section class="join-doctor-section">
+                    <div class="join-doctor-left">
+                        <img src="https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/Frame%202131330284.png" alt="Doctor connecting with patients">
+                    </div>
+                    <div class="join-doctor-right">
+                        <div class="pill-label ready-pill">Ready When you are</div>
+                        <h2>Join AI-Powered Healthcare<br>with <span class="text-blue">Doktura.Ai</span></h2>
+                        <p>Connect with patients anytime, anywhere.<br>Grow your practice with secure, AI-powered consultations.</p>
+                        <ul class="check-list">
+                            <li>
+                                <div class="check-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="12" fill="#0066cc"/><path d="M7 12.5L10.5 16L17 8" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                                <span>Reach more patients online</span>
+                            </li>
+                            <li>
+                                <div class="check-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="12" fill="#0066cc"/><path d="M7 12.5L10.5 16L17 8" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                                <span>Flexible schedule, work on your terms</span>
+                            </li>
+                            <li>
+                                <div class="check-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="12" fill="#0066cc"/><path d="M7 12.5L10.5 16L17 8" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                                <span>Secure & seamless consultation system</span>
+                            </li>
+                        </ul>
+                        <a href="https://doktura.ai/doctor-registration.html" class="btn-primary btn-large btn-glow">Join as Doctor</a>
+                    </div>
+                </section>
+            </div>
+        </div>
+
+        <!-- UPDATED FAQ Section -->
+        <div class="section-faq-bg">
+            <div class="container">
+                <section class="faq-section">
+                    <div class="faq-header-center">
+                        <div class="faq-pill-center">FAQ's</div>
+                        <h2>Your question answered</h2>
+                        <p>Here are answers to some of the most common questions we receive.</p>
+                    </div>
+
+                    <div class="faq-accordion-container">
+                        <div class="faq-item">
+                            <div class="faq-header">
+                                <h4>Can the AI replace a real doctor?</h4>
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                            </div>
+                            <div class="faq-body"><p>No, our AI is designed to provide quick guidance and health insights, but it cannot replace a licensed professional for accurate medical diagnosis and treatment. Always consult a real doctor for serious concerns.</p></div>
+                        </div>
+
+                        <div class="faq-item active">
+                            <div class="faq-header">
+                                <h4>Is my personal health information safe?</h4>
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                            </div>
+                            <div class="faq-body"><p>Yes. We offer emergency dental care for urgent issues such as tooth pain, swelling, or broken teeth. Same-day appointments may be available.</p></div>
+                        </div>
+
+                        <div class="faq-item">
+                            <div class="faq-header">
+                                <h4>When should I see a real doctor?</h4>
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                            </div>
+                            <div class="faq-body"><p>You should see a real doctor if you experience severe symptoms, need a medical prescription, require an official diagnosis, or have an ongoing condition that needs professional management.</p></div>
+                        </div>
+
+                        <div class="faq-item">
+                            <div class="faq-header">
+                                <h4>How much does it cost?</h4>
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                            </div>
+                            <div class="faq-body"><p>Chatting with our AI assistant is completely free! If you decide you need professional care, consultations with a real qualified doctor start from just RM 38.00.</p></div>
+                        </div>
+
+                        <div class="faq-item">
+                            <div class="faq-header">
+                                <h4>Can I book both online and in-clinic consultations?</h4>
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                            </div>
+                            <div class="faq-body"><p>Absolutely. Our platform gives you the flexibility to easily book secure video consultations or schedule in-person visits to verified nearby clinics, whichever works best for you.</p></div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+
+        <!-- FULL WIDTH Edge-to-Edge Footer Section -->
+        <footer class="footer-section">
+            <div class="footer-content">
+                <div class="footer-top">
+                    <div class="footer-brand">
+                        <img src="https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/Group%202085665233.png?download=true" alt="Doktura.ai Logo">
+                        <p>Providing AI-powered medical insights and<br>seamless doctor bookings 24/7.</p>
+                    </div>
+
+                    <div class="footer-links-group">
+                        <div class="footer-col">
+                            <h4>Company</h4>
+                            <a href="https://doktura.ai/Aboutus.html">About</a>
+                            <a href="#">Careers</a>
+                            <a href="https://doktura.ai/Contact-Us.html">Contact Us</a>
+                        </div>
+                        <div class="footer-col">
+                            <h4>Legal</h4>
+                            <a href="https://doktura.ai/privacy.html">Privacy Policy</a>
+                            <a href="https://doktura.ai/terms.html">Terms of Service</a>
+                            <a href="#">PDPA</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="footer-bottom">
+                    <p>Copyright 2026 © Doktura Plt Registration No. 202604000898 (LLP0046127-LGN)</p>
+                    <div class="social-area">
+                        <span>Connect with us</span>
+                        <div class="social-icons">
+                            <a href="https://www.instagram.com/doktura.ai/" target="_blank" aria-label="Instagram">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
+                            </a>
+                            <a href="https://www.linkedin.com/company/doktura-ai" target="_blank" aria-label="LinkedIn">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle></svg>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </footer>
+
+    </div> <!-- End Main Content Wrap -->
+
+    <!-- Global Javascript for Sidebar Navigation Links -->
+    <script>
+        window.toggleSidebar = () => {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebar-overlay');
+            if (sidebar.classList.contains('-translate-x-full')) {
+                sidebar.classList.remove('-translate-x-full');
+                overlay.classList.remove('hidden');
+                overlay.classList.add('block');
+            } else {
+                sidebar.classList.add('-translate-x-full');
+                overlay.classList.add('hidden');
+                overlay.classList.remove('block');
             }
         };
 
-        window.logoutDoctor = async function() { 
-            await signOut(auth); 
-            window.location.reload(); 
-        }
+        window.startNewSession = () => {
+            window.location.href = "https://doktura.ai/dashboard.html?tab=chat";
+        };
 
-        // ================= NOTIFICATIONS LOGIC =================
-        window.toggleNotifications = function() {
-            document.getElementById('notifDropdown').classList.toggle('show');
-        }
-        
-        window.addEventListener('click', function(e) {
-            if (!document.querySelector('.notification-wrapper').contains(e.target)) {
-                document.getElementById('notifDropdown').classList.remove('show');
-            }
-        });
+        window.switchTab = (tab) => {
+            window.location.href = `https://doktura.ai/dashboard.html?tab=${tab}`;
+        };
+    </script>
 
-        function setupRealTimeNotifications(uid) {
-            const notifRef = collection(db, "doctors", uid, "notifications");
-            const q = query(notifRef, orderBy("created_at", "desc"));
-
-            onSnapshot(q, (snapshot) => {
-                const listEl = document.getElementById('notifList');
-                const badge = document.getElementById('notifBadge');
-                
-                let unreadCount = 0;
-                listEl.innerHTML = '';
-
-                if(snapshot.empty) {
-                    listEl.innerHTML = '<div style="padding: 16px; text-align: center; color: #9ca3af; font-size: 13px;">No new notifications</div>';
-                    badge.style.display = 'none';
-                    return;
-                }
-
-                snapshot.forEach((doc) => {
-                    const data = doc.data();
-                    if(!data.is_read) unreadCount++;
-                    
-                    const timeStr = data.created_at ? new Date(data.created_at.toDate()).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : "Just now";
-                    
-                    listEl.innerHTML += `
-                        <div class="notif-item ${!data.is_read ? 'unread' : ''}">
-                            <div style="font-weight: 600; color: #111827;">${data.title}</div>
-                            <div>${data.message}</div>
-                            <div class="notif-time">${timeStr}</div>
-                        </div>
-                    `;
+    <!-- FAQ Accordion Script -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const faqHeaders = document.querySelectorAll('.faq-header');
+            faqHeaders.forEach(header => {
+                header.addEventListener('click', () => {
+                    const currentItem = header.parentElement;
+                    const isActive = currentItem.classList.contains('active');
+                    document.querySelectorAll('.faq-item').forEach(item => {
+                        item.classList.remove('active');
+                    });
+                    if (!isActive) {
+                        currentItem.classList.add('active');
+                    }
                 });
+            });
+        });
+    </script>
 
-                if(unreadCount > 0) {
-                    badge.innerText = unreadCount;
-                    badge.style.display = 'flex';
+    <!-- Typewriter Backspace Animation Script -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const typeTarget = document.getElementById('typewriter-text');
+            if (!typeTarget) return;
+
+            const originalText = typeTarget.textContent;
+            let index = originalText.length; 
+            let isDeleting = true;
+
+            function typeLoop() {
+                let speed = isDeleting ? 40 : 80; 
+
+                if (isDeleting) {
+                    index--;
+                    if (index === 0) {
+                        isDeleting = false;
+                        speed = 400;
+                    }
                 } else {
-                    badge.style.display = 'none';
+                    index++;
+                    if (index === originalText.length) {
+                        isDeleting = true;
+                        speed = 2500;
+                    }
                 }
-            });
+
+                typeTarget.textContent = originalText.substring(0, index);
+                setTimeout(typeLoop, speed);
+            }
+
+            setTimeout(typeLoop, 2500);
+        });
+    </script>
+
+    <!-- Main Chat Implementation & UI Logic -->
+    <script>
+        // 1. Logic for Terms of Service Blocker
+        document.addEventListener("DOMContentLoaded", () => {
+            const tosAccepted = localStorage.getItem("tos_accepted");
+            if (tosAccepted === "true") {
+                document.getElementById('tos-blocker').style.display = 'none';
+                document.getElementById('chat-input-wrapper').style.display = 'flex';
+                document.getElementById('suggestion-chips').style.display = 'flex';
+                loadGuestHistory(); // Load existing chat history from Redis if any
+            }
+        });
+
+        window.handleTosChange = function(checkbox) {
+            if (checkbox.checked) {
+                localStorage.setItem("tos_accepted", "true");
+                document.getElementById('tos-blocker').style.display = 'none';
+                document.getElementById('chat-input-wrapper').style.display = 'flex';
+                document.getElementById('suggestion-chips').style.display = 'flex';
+                document.getElementById('chat-input').focus();
+                
+                // Initialize unique guest session ID
+                let sessionId = localStorage.getItem("anon_session_id");
+                if (!sessionId) {
+                    sessionId = "anon_" + Math.random().toString(36).substring(2, 15);
+                    localStorage.setItem("anon_session_id", sessionId);
+                }
+            }
+        };
+
+        // 2. Chat Bubble Helpers
+        function createUserBubble(text) {
+            return `
+                <div style="display: flex; justify-content: flex-end; margin-top: 16px;">
+                    <div style="background: var(--primary-blue); color: white; padding: 12px 16px; border-radius: 16px 16px 4px 16px; max-width: 80%; text-align: left; font-size: 14px; box-shadow: 0 4px 12px rgba(0,102,204,0.15);">
+                        ${text}
+                    </div>
+                </div>`;
         }
 
-        // ================= SMART REMINDER LOOP =================
-        setInterval(() => {
-            if(currentAppointments.length === 0) return;
-            const now = Date.now();
-            currentAppointments.forEach(appt => {
-                const apptTime = new Date(appt.datetime).getTime();
-                const diffMs = apptTime - now;
-                const diffHours = diffMs / (1000 * 60 * 60);
+        function createAiBubble(text) {
+            let extraHtml = '';
+            const lowerText = text.toLowerCase();
 
-                if(diffHours > 0 && diffHours <= 2) {
-                    const bucket = Math.floor(diffHours * 2); 
-                    const reminderKey = `reminder_${appt.appointment_id}_${bucket}`;
-                    
-                    if(!localStorage.getItem(reminderKey)) {
-                        alert(`Reminder: You have an appointment with ${appt.patient_name} starting in approx ${Math.round(diffHours * 60)} minutes!`);
-                        localStorage.setItem(reminderKey, "true");
-                    }
-                }
-            });
-        }, 60000); 
+            // Detect Login Trigger (Step 4 of Prompt)
+            const showLogin = lowerText.includes("log in") || 
+                              lowerText.includes("login") || 
+                              lowerText.includes("logging into") ||
+                              lowerText.includes("consult a professional licensed doctor") || 
+                              lowerText.includes("consult a real doctor");
 
-        // ================= RATINGS UI LOGIC =================
-        window.loadReviews = async function() {
-            const listEl = document.getElementById('reviewsListContainer');
-            listEl.innerHTML = '<div style="color:#6b7280; text-align:center; padding: 40px;">Loading reviews...</div>';
+            if (showLogin) {
+                extraHtml += `
+                <div style="margin-top: 16px; text-align: left;">
+                    <a href="https://doktura.ai/login.html" class="btn-primary" style="text-decoration: none; display: inline-flex; align-items: center; gap: 8px;">
+                        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"></path></svg>
+                        Login to Consult a Doctor
+                    </a>
+                </div>`;
+            }
 
+            // Detect Gender Question Trigger
+            const showGender = (lowerText.includes("biological sex") || lowerText.includes("male or female") || lowerText.includes("gender")) && !showLogin;
+            
+            if (showGender) {
+                extraHtml += `
+                <div class="quick-reply-chips" style="display: flex; gap: 12px; margin-top: 16px; flex-wrap: wrap;">
+                    <button class="chip" style="background: #fff; border: 1px solid var(--primary-blue); color: var(--primary-blue); font-weight: 600;" onclick="submitQuickReply('Male')">Male</button>
+                    <button class="chip" style="background: #fff; border: 1px solid var(--primary-blue); color: var(--primary-blue); font-weight: 600;" onclick="submitQuickReply('Female')">Female</button>
+                </div>`;
+            }
+
+            return `
+                <div style="display: flex; gap: 12px; margin-top: 16px;">
+                    <img src="https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/Fig%204.png" style="width: 32px; height: 32px; border-radius: 50%; border: 1px solid var(--border-gray); background: white; flex-shrink: 0;">
+                    <div style="display: flex; flex-direction: column; max-width: 85%;">
+                        <div style="background: #f0f7ff; border: 1px solid rgba(0, 102, 204, 0.1); color: var(--text-dark); padding: 12px 16px; border-radius: 16px 16px 16px 4px; font-size: 14px; text-align: left; line-height: 1.6;">
+                            ${text.replace(/\n/g, '<br>')}
+                        </div>
+                        ${extraHtml}
+                    </div>
+                </div>`;
+        }
+
+        window.submitQuickReply = function(reply) {
+            const input = document.getElementById('chat-input');
+            input.value = reply;
+            sendGuestChat();
+        };
+
+        // 3. Load Short-Term History
+        async function loadGuestHistory() {
+            let sessionId = localStorage.getItem("anon_session_id");
+            if (!sessionId) return;
+            
             try {
-                const token = await auth.currentUser.getIdToken();
-                const res = await fetch(`${API_BASE}/api/doctor/reviews`, { headers: { 'Authorization': `Bearer ${token}` } });
-                if(!res.ok) throw new Error("Fetch failed");
+                const res = await fetch(API_BASE + '/api/history', {
+                    method: 'POST', headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ user_id: "anonymous_web", session_id: sessionId })
+                });
                 const data = await res.json();
-
-                const total = data.total_reviews || 0;
-                const avg = parseFloat(data.overall_rating).toFixed(1);
                 
-                document.getElementById('totalReviewsCount').innerText = total;
-                document.getElementById('avgScore').innerText = avg;
-                document.getElementById('ratingsMetaText').innerText = `${total} ratings • ${total} reviews`;
-                
-                let satText = total > 0 ? (avg >= 4.0 ? "100% of patients are satisfied" : "Most patients are satisfied") : "No reviews yet";
-                document.getElementById('satisfactionText').innerText = satText;
-
-                let counts = {5:0, 4:0, 3:0, 2:0, 1:0};
-                data.reviews.forEach(r => { counts[r.stars] = (counts[r.stars] || 0) + 1; });
-                
-                let barsHTML = '';[5,4,3,2,1].forEach(star => {
-                    let pct = total > 0 ? (counts[star] / total) * 100 : 0;
-                    barsHTML += `
-                        <div class="star-row">
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="#eab308" stroke="#eab308" stroke-width="2" style="margin-right:4px;"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
-                            <span style="width:12px;">${star}</span>
-                            <div class="star-bar-bg">
-                                <div class="star-bar-fill ${star < 4 ? 'grey' : ''}" style="width: ${pct}%;"></div>
-                            </div>
-                            <span class="star-count">(${counts[star]})</span>
-                        </div>
-                    `;
-                });
-                document.getElementById('starBarsContainer').innerHTML = barsHTML;
-
-                if(data.reviews.length === 0) {
-                    listEl.innerHTML = '<div style="color:#6b7280; padding: 20px;">No patient reviews yet.</div>';
-                    return;
+                if (data.history && data.history.length > 0) {
+                    const historyDiv = document.getElementById('chat-history');
+                    historyDiv.innerHTML = ''; 
+                    
+                    data.history.forEach(msg => {
+                        if (msg.role === 'user') {
+                            historyDiv.innerHTML += createUserBubble(msg.content);
+                        } else if (msg.role === 'assistant') {
+                            historyDiv.innerHTML += createAiBubble(msg.content);
+                        }
+                    });
+                    historyDiv.scrollTop = historyDiv.scrollHeight;
                 }
-
-                listEl.innerHTML = '';
-                data.reviews.forEach(r => {
-                    const d = new Date(r.date);
-                    const dateStr = isNaN(d) ? r.date : d.toLocaleDateString('en-US', {month:'short', day:'numeric', year:'numeric'});
-                    
-                    let starsHTML = '';
-                    for(let i=1; i<=5; i++) {
-                        starsHTML += `<svg width="16" height="16" viewBox="0 0 24 24" fill="${i<=r.stars?'#eab308':'#e5e7eb'}" stroke="${i<=r.stars?'#eab308':'#e5e7eb'}" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>`;
-                    }
-
-                    let summary = r.comment.split('.')[0] + (r.comment.includes('.') ? '.' : '');
-                    
-                    listEl.innerHTML += `
-                        <div class="review-item">
-                            <div class="review-user-row">
-                                <div class="review-user-info">
-                                    <div class="review-avatar">
-                                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2" style="margin: 8px;"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
-                                    </div>
-                                    <span class="review-name">${r.patient_name || 'Patient'}</span>
-                                </div>
-                                <div class="review-date">Consultation on ${dateStr}</div>
-                            </div>
-                            <div class="review-stars">${starsHTML}</div>
-                            <div class="review-title">${summary}</div>
-                            <div class="review-text">${r.comment}</div>
-                        </div>
-                    `;
-                });
-
             } catch (e) {
-                listEl.innerHTML = '<div style="color:#ef4444; padding: 20px;">Failed to load reviews.</div>';
+                console.error("Error loading short term history:", e);
             }
         }
 
-        // ================= APPOINTMENTS LOGIC =================
-        window.loadAppointments = async function() {
-            const tbody = document.getElementById('appointmentsTableBody');
-            tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; color: #6b7280; padding: 32px;">Loading appointments...</td></tr>';
-            
+        // 4. Send Message Logic
+        window.sendGuestChat = async function() {
+            const input = document.getElementById('chat-input');
+            const history = document.getElementById('chat-history');
+            const message = input.value.trim();
+            if (!message) return;
+
+            // Remove any quick-reply buttons before sending new text
+            const existingChips = history.querySelectorAll('.quick-reply-chips');
+            existingChips.forEach(chip => chip.remove());
+
+            history.innerHTML += createUserBubble(message);
+            input.value = ''; 
+            history.scrollTop = history.scrollHeight;
+
+            const loadId = 'load-' + Date.now();
+            history.innerHTML += `
+                <div id="${loadId}" style="display: flex; gap: 12px; margin-top: 16px; opacity: 0.6;">
+                    <img src="https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/Fig%204.png" style="width: 32px; height: 32px; border-radius: 50%; border: 1px solid var(--border-gray); background: white; flex-shrink: 0;">
+                    <div style="background: var(--card-grayish); color: var(--text-dark); padding: 12px 16px; border-radius: 16px 16px 16px 4px; font-size: 14px;">Thinking...</div>
+                </div>`;
+            history.scrollTop = history.scrollHeight;
+
             try {
-                const token = await auth.currentUser.getIdToken();
-                const res = await fetch(`${API_BASE}/api/doctor/dashboard/appointments`, { headers: { 'Authorization': `Bearer ${token}` } });
-                if(!res.ok) throw new Error("Failed to fetch");
-                
+                let sessionId = localStorage.getItem("anon_session_id");
+                if (!sessionId) {
+                    sessionId = "anon_" + Math.random().toString(36).substring(2, 15);
+                    localStorage.setItem("anon_session_id", sessionId);
+                }
+
+                const res = await fetch(API_BASE + '/api/chat', {
+                    method: 'POST', headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ message: message, session_id: sessionId, user_id: "anonymous_web", user_name: "Guest" })
+                });
+
+                if (!res.ok) throw new Error("Backend Error");
                 const data = await res.json();
-                currentAppointments = data.appointments;
 
-                if(data.appointments.length === 0) {
-                    tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; color: #6b7280; padding: 32px;">No upcoming appointments.</td></tr>';
-                    return;
-                }
+                document.getElementById(loadId).remove();
+                history.innerHTML += createAiBubble(data.reply);
+                history.scrollTop = history.scrollHeight;
+            } catch (e) {
+                console.error(e);
+                const loader = document.getElementById(loadId);
+                if (loader) loader.remove();
+                history.innerHTML += `<div style="text-align: center; color: var(--text-dark); font-size: 12px; margin-top: 12px; font-weight: 600;">⚠️ Backend Server Offline.</div>`;
+            }
+        }
+    </script>
 
-                tbody.innerHTML = '';
-                data.appointments.forEach(appt => {
-                    const d = new Date(appt.datetime);
-                    const dateStr = d.toLocaleDateString('en-US', {month:'short', day:'numeric', year:'numeric'});
-                    const timeStr = d.toLocaleTimeString('en-US', {hour:'2-digit', minute:'2-digit'});
-                    
-                    const typeTag = appt.visit_type.toLowerCase().includes('online') ? `<span class="tag online">💻 Online</span>` : `<span class="tag clinic">🏥 In-Clinic Visit</span>`;
-                    const callBtn = appt.action_url ? `<button class="btn-call" onclick="window.open('${API_BASE}${appt.action_url}', '_blank')">Start Video Call</button>` : `<span style="color:#9ca3af; font-size:13px;">In Clinic</span>`;
-                    
-                    const recordBtn = appt.consultation_completed 
-                        ? `<span style="color:#16a34a; font-size:12px; font-weight:600;">✓ Completed</span>` 
-                        : `<button class="btn-record" onclick="openPrescriptionModal('${appt.appointment_id}')" title="Add Prescription & Notes">
-                             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
-                           </button>`;
+    <!-- Animated Feature Chat Widget Script -->
+    <script>
+        function startFeatureAnimation() {
+            const chatbox = document.getElementById('anim-chatbox');
+            const headerStatus = document.getElementById('anim-header-status');
 
-                    tbody.innerHTML += `
-                        <tr>
-                            <td>
-                                <div style="font-weight: 600; color:#111827;">${appt.patient_name || 'Patient'}</div>
-                                <div style="font-size: 12px; color:#6b7280;">${appt.patient_email || ''}</div>
-                            </td>
-                            <td style="color:#6b7280;">${appt.patient_id}</td>
-                            <td>${typeTag}</td>
-                            <td style="font-weight:500;">${dateStr}</td>
-                            <td>${timeStr}</td>
-                            <td>${callBtn}</td>
-                            <td style="text-align:center;">${recordBtn}</td>
-                        </tr>
+            chatbox.innerHTML = '';
+
+            const wait = ms => new Promise(r => setTimeout(r, ms));
+
+            const addMsg = async (type, text) => {
+                const row = document.createElement('div');
+                row.className = `anim-row ${type}`;
+                if (type === 'ai') {
+                    row.innerHTML = `
+                        <div class="anim-avatar-small"><img src="https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/Fig%204.png" alt="AI"></div>
+                        <div class="anim-bubble">${text}</div>
                     `;
-                });
-            } catch(e) {
-                tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; color: #ef4444; padding: 32px;">Error loading appointments.</td></tr>';
-            }
-        }
-
-        // ================= PRESCRIPTION MODAL LOGIC =================
-        let medCount = 0;
-        let searchTimeout = null;
-
-        window.openPrescriptionModal = function(appointmentId) {
-            activeAppointmentIdForPrescription = appointmentId;
-            document.getElementById('prescriptionModal').style.display = 'flex';
-            document.body.classList.add('modal-open');
-            document.getElementById('medicationsContainer').innerHTML = '';
-            document.getElementById('prescNotes').value = '';
-            document.getElementById('mcCheckbox').checked = false;
-            document.getElementById('mcDaysContainer').style.display = 'none';
-            document.getElementById('mcDays').value = '';
-            medCount = 0;
-            addMedicationBlock(); 
-        }
-
-        window.closePrescriptionModal = function() {
-            document.getElementById('prescriptionModal').style.display = 'none';
-            document.body.classList.remove('modal-open');
-            activeAppointmentIdForPrescription = null;
-        }
-
-        window.toggleMCDays = function() {
-            const isChecked = document.getElementById('mcCheckbox').checked;
-            document.getElementById('mcDaysContainer').style.display = isChecked ? 'block' : 'none';
-        }
-
-        window.addMedicationBlock = function() {
-            medCount++;
-            const id = medCount;
-            const html = `
-                <div class="med-block" id="medBlock_${id}">
-                    <div class="med-block-title">
-                        Medication #${id}
-                        ${id > 1 ? `<span onclick="document.getElementById('medBlock_${id}').remove()">🗑 Delete</span>` : ''}
-                    </div>
-                    
-                    <div class="form-row">
-                        <div class="form-group autocomplete-wrapper">
-                            <label>Medication Name (Auto-search)</label>
-                            <input type="text" id="medName_${id}" class="form-control med-name-input" placeholder="e.g. Panadol" autocomplete="off" onkeyup="handleMedSearch(this, ${id})">
-                            <div id="medDropdown_${id}" class="autocomplete-list"></div>
-                        </div>
-                        <div class="form-group">
-                            <label>Timing</label>
-                            <div class="radio-group">
-                                <label><input type="radio" name="timing_${id}" value="Before meal"> Before meal</label>
-                                <label><input type="radio" name="timing_${id}" value="After meal" checked> After meal</label>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>Dose</label>
-                            <input type="text" id="medDose_${id}" class="form-control med-dose-input" placeholder="e.g. 2.5 mg">
-                        </div>
-                        <div class="form-group">
-                            <label>Pills per Day</label>
-                            <input type="number" id="medPills_${id}" class="form-control med-pills-input" placeholder="e.g. 2">
-                        </div>
-                    </div>
-                </div>
-            `;
-            document.getElementById('medicationsContainer').insertAdjacentHTML('beforeend', html);
-        }
-
-        window.handleMedSearch = function(inputEl, id) {
-            clearTimeout(searchTimeout);
-            const dropdown = document.getElementById(`medDropdown_${id}`);
-            const query = inputEl.value.trim();
-
-            if(query.length < 2) {
-                dropdown.style.display = 'none';
-                return;
-            }
-
-            searchTimeout = setTimeout(async () => {
-                try {
-                    const token = await auth.currentUser.getIdToken();
-                    const res = await fetch(`${API_BASE}/api/medications/search?q=${encodeURIComponent(query)}`, {
-                        headers: { 'Authorization': `Bearer ${token}` }
-                    });
-                    const data = await res.json();
-                    
-                    if(data.results && data.results.length > 0) {
-                        dropdown.innerHTML = '';
-                        data.results.forEach(item => {
-                            const isOut = item.out_of_stock;
-                            const stockText = isOut ? `(Out of Stock)` : `(Stock: ${item.stock})`;
-                            dropdown.innerHTML += `
-                                <div class="ac-item ${isOut ? 'out-stock' : ''}" onclick="selectMedication(${id}, '${item.product.replace(/'/g, "\\'")}')">
-                                    <strong>${item.product}</strong> <br>
-                                    <span style="font-size:11px;">${item.category} ${stockText}</span>
-                                </div>
-                            `;
-                        });
-                        dropdown.style.display = 'block';
-                    } else {
-                        dropdown.innerHTML = `<div class="ac-item" style="color:#6b7280;">No exact match found.</div>`;
-                        dropdown.style.display = 'block';
-                    }
-                } catch(e) {
-                    console.error("Search error", e);
+                } else {
+                    row.innerHTML = `
+                        <div class="anim-bubble user-bubble">${text}</div>
+                        <div class="anim-avatar-user"></div>
+                    `;
                 }
-            }, 300); 
-        }
+                chatbox.appendChild(row);
+                await wait(50); 
+                row.classList.add('show');
+                chatbox.scrollTop = chatbox.scrollHeight;
+            };
 
-        window.selectMedication = function(id, name) {
-            document.getElementById(`medName_${id}`).value = name;
-            document.getElementById(`medDropdown_${id}`).style.display = 'none';
-        }
-
-        document.addEventListener('click', function(e) {
-            if(!e.target.classList.contains('med-name-input')) {
-                document.querySelectorAll('.autocomplete-list').forEach(el => el.style.display = 'none');
-            }
-        });
-
-        window.submitPrescription = async function() {
-            const btn = document.getElementById('submitPrescriptionBtn');
-            const notes = document.getElementById('prescNotes').value.trim();
-            const mcNeeded = document.getElementById('mcCheckbox').checked;
-            const mcDays = document.getElementById('mcDays').value.trim();
-
-            if(!notes) return alert("Doctor's Note is required.");
-
-            const medBlocks = document.querySelectorAll('.med-block');
-            const medications =[];
-            
-            medBlocks.forEach(block => {
-                const id = block.id.split('_')[1];
-                const name = document.getElementById(`medName_${id}`).value.trim();
-                const timing = document.querySelector(`input[name="timing_${id}"]:checked`)?.value || "After meal";
-                const dose = document.getElementById(`medDose_${id}`).value.trim();
-                const pills = document.getElementById(`medPills_${id}`).value.trim();
-
-                if(name) {
-                    medications.push({
-                        name: `${name} (${timing})`,
-                        dose: dose,
-                        pills_per_day: pills
-                    });
-                }
-            });
-
-            let finalNotes = notes;
-            if(mcNeeded && mcDays) finalNotes += `\n\nMC Issued: ${mcDays}`;
-
-            btn.innerText = "Saving & Sending..."; btn.disabled = true;
-
-            try {
-                const token = await auth.currentUser.getIdToken();
-                const res = await fetch(`${API_BASE}/api/doctor/consultation/complete`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-                    body: JSON.stringify({
-                        appointment_id: activeAppointmentIdForPrescription,
-                        medications: medications,
-                        mc_needed: mcNeeded,
-                        doctor_notes: finalNotes
-                    })
-                });
-
-                if(!res.ok) throw new Error("Failed to save");
-                alert("Consultation completed! Prescription sent to patient.");
-                closePrescriptionModal();
-                loadAppointments(); 
-            } catch(e) {
-                alert("Error saving prescription.");
-            }
-            btn.innerText = "Add Record & Send to Patient"; btn.disabled = false;
-        }
-
-        // ================= AUTH HANDLERS & AUTO-FILL ================= //
-        
-        document.getElementById("loginForm").addEventListener("submit", async (e) => {
-            e.preventDefault();
-            const btn = document.getElementById("doLoginBtn"); 
-            btn.innerText = "Authenticating..."; btn.disabled = true;
-            try { 
-                await signInWithEmailAndPassword(auth, document.getElementById("loginEmail").value.trim(), document.getElementById("loginPass").value.trim()); 
-            } catch(e) { 
-                showAlert("Invalid Credentials."); 
-                btn.innerText = "Sign In"; btn.disabled = false;
-            }
-        });
-
-        document.getElementById("signupForm").addEventListener("submit", async (e) => {
-            e.preventDefault();
-            const email = document.getElementById("regEmail").value.trim();
-            const pass = document.getElementById("regPass").value.trim();
-            const btn = document.getElementById("doRegisterBtn");
-            
-            btn.innerText = "Creating Account..."; btn.disabled = true;
-            try {
-                await createUserWithEmailAndPassword(auth, email, pass);
-            } catch(e) {
-                showAlert(e.message);
-                btn.innerText = "Sign Up"; btn.disabled = false;
-            }
-        });
-
-        document.getElementById("forgotForm").addEventListener("submit", async (e) => {
-            e.preventDefault();
-            const email = document.getElementById("forgotEmail").value.trim();
-            const btn = document.getElementById("doForgotBtn");
-            btn.innerText = "Sending..."; btn.disabled = true;
-            try {
-                await sendPasswordResetEmail(auth, email);
-                showAlert("Password reset link sent! Check your email.", false);
-                window.showView('view-login');
-            } catch(e) {
-                showAlert(e.message);
-            }
-            btn.innerText = "Reset password"; btn.disabled = false;
-        });
-
-        // --- GOOGLE SIGN-IN FIX: ADDED PROMPT ---
-        document.getElementById("doGoogleLoginBtn").addEventListener("click", async () => { 
-            try { 
-                const provider = new GoogleAuthProvider();
-                provider.setCustomParameters({ prompt: 'select_account' });
-                await signInWithPopup(auth, provider); 
-            } catch(e) {} 
-        });
-
-        document.getElementById("doGoogleRegBtn").addEventListener("click", async () => { 
-            try { 
-                const provider = new GoogleAuthProvider();
-                provider.setCustomParameters({ prompt: 'select_account' });
-                await signInWithPopup(auth, provider); 
-            } catch(e) {} 
-        });
-        // ----------------------------------------
-
-        // ================= SYNC LOGIC (ROBUST VERSION) ================= //
-        onAuthStateChanged(auth, async (user) => {
-            if (user) {
-                try {
-                    const token = await user.getIdToken();
-                    
-                    const res = await fetch(`${API_BASE}/api/doctor/sync`, { 
-                        method: 'POST', 
-                        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }, 
-                        body: JSON.stringify({ email: user.email }) 
-                    });
-                    
-                    if (!res.ok) {
-                        let errMsg = "Backend sync failed.";
-                        try { const errData = await res.json(); errMsg = errData.detail || errMsg; } catch(_) {}
-                        throw new Error(errMsg);
-                    }
-                    
-                    const data = await res.json();
-                    
-                    let phoneClean = data.phone || "";
-                    if(phoneClean.startsWith("+60")) phoneClean = phoneClean.substring(3).trim();
-                    
-                    if(data.is_complete || data.status === 'approved') { 
-                        window.showView('view-dashboard', null, false); 
-                        setDashboardStatus(data.status);
-
-                        document.getElementById('sidebarName').innerText = data.name || user.displayName || "Doctor";
-                        document.getElementById('sidebarEmail').innerText = user.email;
-                        if(user.photoURL) {
-                            document.getElementById('sidebarAvatar').src = user.photoURL;
-                            document.getElementById('topAvatar').src = user.photoURL;
-                        }
-
-                        document.getElementById('dashName').value = data.name || user.displayName || "";
-                        document.getElementById('dashSpecialty').value = data.specialty || "";
-                        document.getElementById('dashEmail').value = user.email || "";
-                        document.getElementById('dashPhone').value = phoneClean;
-                        document.getElementById('dashLocation').value = data.location || "";
-
-                        setupRealTimeNotifications(data.id);
-                        
-                        if(data.status === 'approved' && !localStorage.getItem('approved_notified')) {
-                            alert("Congratulations! Your Doctor profile has been verified and approved by admins.");
-                            localStorage.setItem('approved_notified', 'true');
-                        }
-
-                    } else { 
-                        window.showView('view-complete-data', null, false); 
-                        document.getElementById('docName').value = data.name || user.displayName || "";
-                        document.getElementById('docSpecialty').value = data.specialty || "";
-                        document.getElementById('docPhone').value = phoneClean;
-                        document.getElementById('docLocation').value = data.location || "";
-                    }
-                } catch(e) { 
-                    console.error("Sync Error:", e);
-                    // Prevent looping by removing automatic signOut
-                    window.showView('view-login', null, false);
-                    showAlert("Sync Error: " + e.message, true);
-                }
-            } else {
-                window.showView('view-login', null, false);
-            }
-        });
-
-        // ================= PROFILE UPDATES (DASHBOARD) ================= //
-        document.getElementById("dashUpdateForm").addEventListener("submit", async (e) => {
-            e.preventDefault();
-            const btn = document.getElementById("dashSaveProfileBtn");
-            btn.innerText = "Saving Changes..."; btn.disabled = true;
-
-            try {
-                const token = await auth.currentUser.getIdToken();
-                const formData = new FormData();
-                formData.append("name", document.getElementById("dashName").value.trim());
-                formData.append("phone", "+60" + document.getElementById("dashPhone").value.trim());
-                formData.append("specialty", document.getElementById("dashSpecialty").value.trim());
-                formData.append("location", document.getElementById("dashLocation").value.trim());
-                
-                const photo = document.getElementById("dashPhoto").files[0];
-                const resume = document.getElementById("dashResume").files[0];
-                const apc = document.getElementById("dashAPC").files[0];
-                const mmc = document.getElementById("dashMMC").files[0];
-                const ic = document.getElementById("dashIC").files[0];
-
-                if(photo) formData.append("photo", photo);
-                if(resume) formData.append("resume", resume);
-                if(apc) formData.append("apc", apc);
-                if(mmc) formData.append("mmc", mmc);
-                if(ic) formData.append("ic", ic);
-
-                const response = await fetch(`${API_BASE}/api/doctor/complete_profile`, {
-                    method: "POST",
-                    headers: { 'Authorization': `Bearer ${token}` },
-                    body: formData
-                });
-
-                if(!response.ok) throw new Error("Update failed");
-
-                alert("Profile and documents updated successfully!");
-                btn.innerText = "Update Profile"; btn.disabled = false;
-
-            } catch (error) {
-                alert("Error updating profile."); 
-                btn.innerText = "Update Profile"; btn.disabled = false;
-            }
-        });
-
-        document.getElementById("saveScheduleBtn").addEventListener("click", () => {
-            alert("Schedule saved successfully!");
-        });
-
-        // ================= INITIAL PROFILE UPLOAD ================= //
-        document.getElementById("profileForm").addEventListener("submit", async (e) => {
-            e.preventDefault();
-            const btn = document.getElementById("saveProfileBtn");
-            btn.innerText = "Uploading... Please wait"; btn.disabled = true;
-            try {
-                const token = await auth.currentUser.getIdToken();
-                const formData = new FormData();
-                formData.append("name", document.getElementById("docName").value.trim());
-                formData.append("phone", "+60" + document.getElementById("docPhone").value.trim());
-                formData.append("specialty", document.getElementById("docSpecialty").value.trim());
-                formData.append("location", document.getElementById("docLocation").value.trim());
-                
-                formData.append("photo", document.getElementById("docPhoto").files[0]);
-                formData.append("resume", document.getElementById("docResume").files[0]);
-                formData.append("apc", document.getElementById("docAPC").files[0]);
-                formData.append("mmc", document.getElementById("docMMC").files[0]);
-                formData.append("ic", document.getElementById("docIC").files[0]);
-
-                const response = await fetch(`${API_BASE}/api/doctor/complete_profile`, {
-                    method: "POST", headers: { 'Authorization': `Bearer ${token}` }, body: formData
-                });
-
-                if(!response.ok) throw new Error("Upload failed");
-                alert("Submitted successfully! Your account is pending admin review.");
-                window.location.reload(); 
-            } catch (error) {
-                alert("Error saving profile."); btn.innerText = "Submit for Verification"; btn.disabled = false;
-            }
-        });
-
-        // ================= SCHEDULE UI BUILDER ================= //
-        function renderScheduleUI() {
-            const days =['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
-            const container = document.getElementById('scheduleDaysContainer');
-            
-            // Build the top Global Time Inputs
-            container.innerHTML = `
-                <div style="display:flex; gap:16px; margin-bottom: 24px;">
-                    <div style="flex:1;">
-                        <label style="font-size:13px; font-weight:500; color:#111827; margin-bottom:8px; display:block;">Time Availability (Online)</label>
-                        <input type="text" class="form-control" value="09:00 AM - 11:00 AM" disabled style="background:#f3f4f6;">
-                    </div>
-                    <div style="flex:1;">
-                        <label style="font-size:13px; font-weight:500; color:#111827; margin-bottom:8px; display:block;">Time Availability (In Clinic)</label>
-                        <input type="text" class="form-control" value="10:00 AM - 04:00 PM" disabled style="background:#f3f4f6;">
-                    </div>
-                </div>
-                <h3 style="font-size:14px; font-weight:600; margin-bottom:16px;">Weekly Availability</h3>
-            `;
-            
-            // Build the individual day blocks
-            days.forEach(day => {
-                const isWeekend = day === 'Saturday' || day === 'Sunday';
-                container.innerHTML += `
-                    <div style="border:1px solid #e5e7eb; border-radius:12px; padding:20px; margin-bottom:16px; background:#fff;">
-                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
-                            <div style="font-weight:600; font-size:14px;">${day}</div>
-                            <div style="display:flex; align-items:center; gap:8px;">
-                                ${isWeekend ? '<span style="color:#ef4444; font-size:12px; font-style:italic;">Mark as off day</span>' : ''}
-                                <input type="checkbox" class="dash-input" ${!isWeekend ? 'checked' : ''} style="width:18px; height:18px; accent-color:#111827;">
-                            </div>
-                        </div>
-                        <div style="display:flex; gap:16px;">
-                            <div style="flex:1;">
-                                <label style="font-size:12px; color:#4b5563; margin-bottom:8px; display:block;">Online Hours</label>
-                                <input type="text" class="dash-input form-control" value="09:00 AM - 03:00 PM" style="text-align:center;">
-                            </div>
-                            <div style="flex:1;">
-                                <label style="font-size:12px; color:#4b5563; margin-bottom:8px; display:block;">Clinic Hours</label>
-                                <input type="text" class="dash-input form-control" value="09:00 AM - 04:00 PM" style="text-align:center;">
-                            </div>
-                        </div>
+            const addTyping = async () => {
+                headerStatus.classList.add('show');
+                const row = document.createElement('div');
+                row.className = `anim-row ai`;
+                row.innerHTML = `
+                    <div class="anim-avatar-small"><img src="https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/Fig%204.png" alt="AI"></div>
+                    <div class="anim-bubble anim-typing-bubble">
+                        <div class="anim-dot"></div><div class="anim-dot"></div><div class="anim-dot"></div>
                     </div>
                 `;
-            });
+                chatbox.appendChild(row);
+                await wait(50);
+                row.classList.add('show');
+                chatbox.scrollTop = chatbox.scrollHeight;
+                return row;
+            };
+
+            const runAnimationSequence = async () => {
+                headerStatus.classList.add('show');
+                await wait(800);
+                headerStatus.classList.remove('show');
+
+                await addMsg('ai', "Hello! Type your symptoms below and i'll help you right away.");
+                await wait(1800);
+
+                await addMsg('user', 'I have Flu and my body is warm');
+                await wait(1000);
+
+                let typingNode = await addTyping();
+                await wait(2500); 
+
+                typingNode.remove();
+                await addMsg('ai', "It might be Influenza.<br>Take rest, stay hydrated, and you can use Paracetamol if needed.<br><br>If your fever gets high or symptoms become serious, you should consult a real doctor by logging in Doktura.");
+                headerStatus.classList.remove('show');
+
+                await wait(6000);
+                chatbox.innerHTML = '';
+                runAnimationSequence();
+            };
+
+            runAnimationSequence();
         }
-        renderScheduleUI();
 
-        // Lock/Unlock Fields Based on Status
-        function setDashboardStatus(status) {
-            const isPending = status === 'pending';
-            const badge = document.getElementById('dashStatusBadge');
-            badge.className = isPending ? 'status-badge pending' : 'status-badge available';
-            badge.innerText = isPending ? 'Pending Approval' : 'Available';
-
-            document.querySelectorAll('.dash-input').forEach(i => i.disabled = isPending);
-            document.querySelectorAll('.dash-file-box').forEach(b => isPending ? b.classList.add('disabled') : b.classList.remove('disabled'));
-
-            document.getElementById('dashSaveProfileBtn').style.display = isPending ? 'none' : 'block';
-            document.getElementById('saveScheduleBtn').style.display = isPending ? 'none' : 'block';
-            document.getElementById('pendingWarning').style.display = isPending ? 'block' : 'none';
-            document.getElementById('schedulePendingWarning').style.display = isPending ? 'block' : 'none';
-        }
-
+        document.addEventListener("DOMContentLoaded", () => {
+            const animBox = document.getElementById('anim-chatbox');
+            if(window.IntersectionObserver) {
+                const observer = new IntersectionObserver((entries) => {
+                    if(entries[0].isIntersecting) {
+                        startFeatureAnimation();
+                        observer.disconnect();
+                    }
+                }, { threshold: 0.5 });
+                observer.observe(animBox);
+            } else {
+                startFeatureAnimation();
+            }
+        });
     </script>
 </body>
 </html>
