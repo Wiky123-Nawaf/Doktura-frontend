@@ -129,6 +129,15 @@
         .tab-btn { border: none; padding: 8px 24px; border-radius: 999px; font-size: 14px; font-weight: 600; color: #64748b; background: transparent; display: flex; align-items: center; gap: 8px; cursor: pointer; transition: all 0.2s; white-space: nowrap; }
         .tab-btn.active { background: #eff6ff; color: var(--primary-blue); }
 
+        #chat-history {
+            min-height: 220px;
+            max-height: 450px;
+            overflow-y: auto;
+            padding-right: 8px;
+            scroll-behavior: smooth;
+            margin-bottom: 16px;
+        }
+
         .input-wrapper { background-color: #f4f6fa; border: 1px solid transparent; border-radius: 16px; padding: 16px; min-height: 140px; display: flex; flex-direction: column; justify-content: space-between; margin-bottom: 24px; text-align: left; }
         .input-top-area { display: flex; align-items: flex-start; gap: 12px; flex: 1; }
         .input-top-area svg { flex-shrink: 0; margin-top: 2px; }
@@ -350,8 +359,6 @@
                 align-items: center;
                 justify-content: center;
                 color: #64748b;
-                margin-left: 0;
-                /* SHIFTED EXACTLY TO THE LEFT: -8px removes the inner padding offset so the strokes line up perfectly with the text below */
                 margin-left: -8px; 
             }
             header button[onclick="toggleSidebar()"] svg { width: 24px; height: 24px; }
@@ -361,36 +368,18 @@
                 background-color: var(--primary-blue) !important;
                 color: #ffffff !important;
                 font-weight: 600 !important;
-                padding: 6px 14px !important; /* Smaller, compact padding like image */
-                border-radius: 10px !important; /* Rounded rectangle instead of full pill */
-                font-size: 13px !important; /* Smaller text size */
-                height: 32px !important; /* Fixed compact height */
-                
-                /* ========================================================= */
-                /* TO CHANGE LOGIN BUTTON SIZE, EXPERIMENT WITH THESE VALUES */
-                /* ========================================================= */
-                padding: 4px 12px !important;    /* Left/Right and Top/Bottom padding inside button */
-                height: 30px !important;         /* Overall height of the button */
-                font-size: 12.5px !important;    /* Size of the text inside */
-                border-radius: 8px !important;   /* How round the corners are */
-                /* ========================================================= */
-
+                padding: 4px 12px !important; 
+                height: 30px !important; 
+                font-size: 12.5px !important; 
+                border-radius: 8px !important;
                 display: inline-flex !important;
                 align-items: center !important;
                 justify-content: center !important;
                 white-space: nowrap !important;
             }
 
-            .hero-chat-wrapper {
-                display: block; 
-                min-height: auto;
-            }
-
-            .hero-content-top {
-                display: block;
-                padding-bottom: 0px; 
-            }
-
+            .hero-chat-wrapper { display: block; min-height: auto; }
+            .hero-content-top { display: block; padding-bottom: 0px; }
             .chat-content-bottom {
                 position: relative; 
                 bottom: auto;
@@ -404,112 +393,34 @@
                 box-shadow: none;
             }
 
-            /* --- CRITICAL FIX FOR MOBILE: COMPRESSING VERTICAL SPACE --- */
-            /* This pulls the chat box up, so it stays entirely visible above the Android nav bar */
             .hero { padding: 8px 0; align-items: flex-start; text-align: left; }
-
-            .hero-fig2 { 
-                height: 36px; /* Slightly smaller to save space */
-                margin: 0 auto 12px auto; 
-                display: block; 
-            }
-
-            .hero h1 { 
-                font-size: 28px; 
-                margin-bottom: 12px; /* Tighter margin */
-                text-align: center; 
-                width: 100%; 
-                letter-spacing: -0.5px; 
-                font-weight: 500; 
-                line-height: 1.1;
-            }
-
+            .hero-fig2 { height: 36px; margin: 0 auto 12px auto; display: block; }
+            .hero h1 { font-size: 28px; margin-bottom: 12px; text-align: center; width: 100%; letter-spacing: -0.5px; font-weight: 500; line-height: 1.1; }
             .hero-description { padding: 0; width: 100%; }
-            .hero-description p { 
-                font-size: 14px; /* Scaled slightly down to naturally shorten the block */
-                margin-bottom: 8px; /* Tighter margins between paragraphs */
-                line-height: 1.4; 
-                color: #1a1a1a; 
-            }
+            .hero-description p { font-size: 14px; margin-bottom: 8px; line-height: 1.4; color: #1a1a1a; }
 
-            /* Compact Chat Interface */
             .chat-section { padding-top: 12px; padding-bottom: 0; }
-            .chat-container {
-                padding: 16px; /* Reduced from 24px/32px to save space */
-                border-radius: 16px;
-                margin: 0 auto; 
-                width: 100%;
-                background-color: #ffffff;
-                border: 1px solid #e2e8f0;
-                box-shadow: 0 8px 24px rgba(0, 0, 0, 0.04);
-            }
-            .chat-tabs-wrapper { margin-bottom: 16px; } /* Reduced space */
-            .chat-tabs {
-                width: 100%;
-                justify-content: space-between;
-                background: #ffffff;
-                border: 1px solid #f1f5f9;
-                box-shadow: 0 2px 10px rgba(0,0,0,0.02);
-                padding: 4px;
-                border-radius: 999px;
-            }
-            .tab-btn {
-                flex: 1;
-                justify-content: center;
-                padding: 8px 4px !important; /* Tighter padding */
-                background: transparent !important;
-                font-size: clamp(11px, 3.5vw, 13px) !important; /* Scaled for very narrow phones */
-                color: #94a3b8;
-                font-weight: 500;
-                white-space: nowrap !important; 
-            }
+            .chat-container { padding: 16px; border-radius: 16px; margin: 0 auto; width: 100%; background-color: #ffffff; border: 1px solid #e2e8f0; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.04); }
+            .chat-tabs-wrapper { margin-bottom: 16px; } 
+            .chat-tabs { width: 100%; justify-content: space-between; background: #ffffff; border: 1px solid #f1f5f9; box-shadow: 0 2px 10px rgba(0,0,0,0.02); padding: 4px; border-radius: 999px; }
+            .tab-btn { flex: 1; justify-content: center; padding: 8px 4px !important; background: transparent !important; font-size: clamp(11px, 3.5vw, 13px) !important; color: #94a3b8; font-weight: 500; white-space: nowrap !important; }
             .tab-btn.active { color: var(--primary-blue); font-weight: 600; background: #eff6ff !important; }
             .tab-icon { margin-right: 6px; width: 14px; height: 14px; }
 
-            .input-wrapper {
-                min-height: 110px; /* Reduced to save screen space */
-                padding: 12px; 
-                margin-bottom: 0;
-                background-color: #f8fafc;
-                border: 1px solid #f1f5f9;
-                border-radius: 16px;
-            }
+            .input-wrapper { min-height: 110px; padding: 12px; margin-bottom: 0; background-color: #f8fafc; border: 1px solid #f1f5f9; border-radius: 16px; }
             .input-top-area { gap: 8px; }
             .input-top-area svg { width: 16px; height: 16px; margin-top: 2px; }
             .input-field { font-size: 14px; min-height: 40px; height: auto; }
             .input-actions { margin-top: 12px; }
-
-            .btn-get-started { 
-                padding: 8px 16px; 
-                font-size: 13px; 
-                border-radius: 8px; 
-            }
-
+            .btn-get-started { padding: 8px 16px; font-size: 13px; border-radius: 8px; }
             .suggestion-chips { display: none !important; }
+            .pdpa-text { justify-content: center; font-size: 11px; color: #64748b; margin-top: 12px; padding-bottom: max(12px, env(safe-area-inset-bottom)); }
 
-            .pdpa-text { 
-                justify-content: center; 
-                font-size: 11px; 
-                color: #64748b; 
-                margin-top: 12px; 
-                /* Adds padding at the very bottom to ensure OS Navigation bars don't overlap it */
-                padding-bottom: max(12px, env(safe-area-inset-bottom));
-            }
-
-            /* Below-the-fold content mobile optimizations */
             .bottom-info { padding: 40px 0 32px 0; text-align: center; } 
             .plus-icon-wrap { margin: 0 auto 20px auto; } 
             .bottom-info h2 { font-size: 28px; text-align: center; margin-bottom: 16px; } 
             .bottom-info p { text-align: center; margin-bottom: 28px; font-size: 15px; } 
-
-            .hero-fig3 { 
-                margin: 0 auto; 
-                height: auto; 
-                max-height: 44px; 
-                max-width: 100%; 
-                object-fit: contain; 
-                object-position: center; 
-            }
+            .hero-fig3 { margin: 0 auto; height: auto; max-height: 44px; max-width: 100%; object-fit: contain; object-position: center; }
 
             .stats-counter-section { padding: 32px 0; }
             .counter-boxes { gap: 4px; margin-bottom: 24px; flex-wrap: nowrap; justify-content: center; }
@@ -517,7 +428,6 @@
             .stats-pill { font-size: 14px; padding: 10px 24px; }
 
             .how-it-works-section, .differences-section, .link-doctor-section, .features-section, .testimonials-section, .join-doctor-section, .faq-section { padding: 50px 0; }
-
             .how-it-works-section { text-align: left; }
             .how-it-works-section .how-pill { margin-bottom: 16px; }
             .how-it-works-section h2 { text-align: left; font-size: 32px; margin-bottom: 32px; }
@@ -542,7 +452,6 @@
             .feature-card, .feature-card.reverse { flex-direction: column; padding: 32px 20px; gap: 32px; border-radius: 20px; }
             .feature-content h3 { font-size: 24px; }
             .feature-icon-box { margin-bottom: 24px; }
-
             .feature-image-wrapper { width: 100%; } 
             .anim-outer-frame { width: 100%; padding: 16px; }
             .anim-chat-widget { height: 440px !important; min-height: 440px !important; max-height: 440px !important; flex-shrink: 0; width: 100%; }
@@ -732,10 +641,28 @@
                                 </div>
                             </div>
 
-                            <div id="chat-history"></div>
+                            <div id="chat-history">
+                                <!-- Hardcoded Initial Greeting -->
+                                <div style="display: flex; gap: 12px; margin-top: 16px;">
+                                    <img src="https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/Fig%204.png" style="width: 32px; height: 32px; border-radius: 50%; border: 1px solid var(--border-gray); background: white; flex-shrink: 0;">
+                                    <div style="background: #f0f7ff; border: 1px solid rgba(0, 102, 204, 0.1); color: var(--text-dark); padding: 12px 16px; border-radius: 16px 16px 16px 4px; font-size: 14px; text-align: left; line-height: 1.6; max-width: 85%;">
+                                        Hello! How can I assist you with your health today?
+                                    </div>
+                                </div>
+
+                                <!-- Terms of Service Blocker overlay -->
+                                <div id="tos-blocker" style="margin-top: 24px; padding: 20px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; text-align: left;">
+                                    <p style="font-size: 14px; color: #475569; margin-bottom: 12px;">Before I can reply, I need your permission to unlock your private AI doctor. <strong>It's fast, safe and free.</strong></p>
+                                    <label style="display: flex; align-items: flex-start; gap: 8px; font-size: 12px; color: #64748b; cursor: pointer;">
+                                        <input type="checkbox" id="tos-checkbox" style="margin-top: 2px;" onchange="handleTosChange(this)">
+                                        <span>I agree to the <a href="https://doktura.ai/terms.html" class="text-blue">Electronic Terms of Service</a> and will discuss all Electronic output with a doctor. Doktura is an AI doctor, not a licensed physician, and does not provide medical advice.</span>
+                                    </label>
+                                </div>
+                            </div>
 
                             <div class="chat-input-area">
-                                <div class="input-wrapper shadow-sm">
+                                <!-- Initially Hidden until ToS Checked -->
+                                <div id="chat-input-wrapper" class="input-wrapper shadow-sm" style="display: none;">
                                     <div class="input-top-area">
                                         <svg width="16" height="16" viewBox="0 0 24 24" fill="#0066cc" xmlns="http://www.w3.org/2000/svg">
                                             <path d="M12 2L14.5 9.5L22 12L14.5 14.5L12 22L9.5 14.5L2 12L9.5 9.5L12 2Z"/>
@@ -750,7 +677,7 @@
                                     </div>
                                 </div>
 
-                                <div class="suggestion-chips">
+                                <div id="suggestion-chips" class="suggestion-chips" style="display: none;">
                                     <button class="chip" onclick="document.getElementById('chat-input').value='Fever & flu'; sendGuestChat();">Fever & flu</button>
                                     <button class="chip" onclick="document.getElementById('chat-input').value='Sore throat'; sendGuestChat();">Sore throat</button>
                                     <button class="chip" onclick="document.getElementById('chat-input').value='Skin issues'; sendGuestChat();">Skin issues</button>
@@ -1260,55 +1187,171 @@
         });
     </script>
 
-    <!-- Main Chat Implementation -->
+    <!-- Main Chat Implementation & UI Logic -->
     <script>
+        // 1. Logic for Terms of Service Blocker
+        document.addEventListener("DOMContentLoaded", () => {
+            const tosAccepted = localStorage.getItem("tos_accepted");
+            if (tosAccepted === "true") {
+                document.getElementById('tos-blocker').style.display = 'none';
+                document.getElementById('chat-input-wrapper').style.display = 'flex';
+                document.getElementById('suggestion-chips').style.display = 'flex';
+                loadGuestHistory(); // Load existing chat history from Redis if any
+            }
+        });
+
+        window.handleTosChange = function(checkbox) {
+            if (checkbox.checked) {
+                localStorage.setItem("tos_accepted", "true");
+                document.getElementById('tos-blocker').style.display = 'none';
+                document.getElementById('chat-input-wrapper').style.display = 'flex';
+                document.getElementById('suggestion-chips').style.display = 'flex';
+                document.getElementById('chat-input').focus();
+                
+                // Initialize unique guest session ID
+                let sessionId = localStorage.getItem("anon_session_id");
+                if (!sessionId) {
+                    sessionId = "anon_" + Math.random().toString(36).substring(2, 15);
+                    localStorage.setItem("anon_session_id", sessionId);
+                }
+            }
+        };
+
+        // 2. Chat Bubble Helpers
+        function createUserBubble(text) {
+            return `
+                <div style="display: flex; justify-content: flex-end; margin-top: 16px;">
+                    <div style="background: var(--primary-blue); color: white; padding: 12px 16px; border-radius: 16px 16px 4px 16px; max-width: 80%; text-align: left; font-size: 14px; box-shadow: 0 4px 12px rgba(0,102,204,0.15);">
+                        ${text}
+                    </div>
+                </div>`;
+        }
+
+        function createAiBubble(text) {
+            let extraHtml = '';
+            const lowerText = text.toLowerCase();
+
+            // Detect Login Trigger (Step 4 of Prompt)
+            const showLogin = lowerText.includes("log in") || 
+                              lowerText.includes("login") || 
+                              lowerText.includes("logging into") ||
+                              lowerText.includes("consult a professional licensed doctor") || 
+                              lowerText.includes("consult a real doctor");
+
+            if (showLogin) {
+                extraHtml += `
+                <div style="margin-top: 16px; text-align: left;">
+                    <a href="https://doktura.ai/login.html" class="btn-primary" style="text-decoration: none; display: inline-flex; align-items: center; gap: 8px;">
+                        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"></path></svg>
+                        Login to Consult a Doctor
+                    </a>
+                </div>`;
+            }
+
+            // Detect Gender Question Trigger (Optional UI Polish)
+            const showGender = (lowerText.includes("biological sex") || lowerText.includes("male or female")) && !showLogin;
+            
+            if (showGender) {
+                extraHtml += `
+                <div class="quick-reply-chips" style="display: flex; gap: 12px; margin-top: 16px; flex-wrap: wrap;">
+                    <button class="chip" style="background: #fff; border: 1px solid var(--primary-blue); color: var(--primary-blue); font-weight: 600;" onclick="submitQuickReply('Male')">Male</button>
+                    <button class="chip" style="background: #fff; border: 1px solid var(--primary-blue); color: var(--primary-blue); font-weight: 600;" onclick="submitQuickReply('Female')">Female</button>
+                </div>`;
+            }
+
+            return `
+                <div style="display: flex; gap: 12px; margin-top: 16px;">
+                    <img src="https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/Fig%204.png" style="width: 32px; height: 32px; border-radius: 50%; border: 1px solid var(--border-gray); background: white; flex-shrink: 0;">
+                    <div style="display: flex; flex-direction: column; max-width: 85%;">
+                        <div style="background: #f0f7ff; border: 1px solid rgba(0, 102, 204, 0.1); color: var(--text-dark); padding: 12px 16px; border-radius: 16px 16px 16px 4px; font-size: 14px; text-align: left; line-height: 1.6;">
+                            ${text.replace(/\n/g, '<br>')}
+                        </div>
+                        ${extraHtml}
+                    </div>
+                </div>`;
+        }
+
+        window.submitQuickReply = function(reply) {
+            const input = document.getElementById('chat-input');
+            input.value = reply;
+            sendGuestChat();
+        };
+
+        // 3. Load Short-Term History
+        async function loadGuestHistory() {
+            let sessionId = localStorage.getItem("anon_session_id");
+            if (!sessionId) return;
+            
+            try {
+                const res = await fetch(API_BASE + '/api/history', {
+                    method: 'POST', headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ user_id: "anonymous_web", session_id: sessionId })
+                });
+                const data = await res.json();
+                
+                if (data.history && data.history.length > 0) {
+                    const historyDiv = document.getElementById('chat-history');
+                    historyDiv.innerHTML = ''; // Clear default greeting to show history
+                    
+                    data.history.forEach(msg => {
+                        if (msg.role === 'user') {
+                            historyDiv.innerHTML += createUserBubble(msg.content);
+                        } else if (msg.role === 'assistant') {
+                            historyDiv.innerHTML += createAiBubble(msg.content);
+                        }
+                    });
+                    historyDiv.scrollTop = historyDiv.scrollHeight;
+                }
+            } catch (e) {
+                console.error("Error loading short term history:", e);
+            }
+        }
+
+        // 4. Send Message Logic
         window.sendGuestChat = async function() {
             const input = document.getElementById('chat-input');
             const history = document.getElementById('chat-history');
             const message = input.value.trim();
-            if(!message) return;
+            if (!message) return;
 
-            history.innerHTML += `
-                <div style="display: flex; justify-content: flex-end; margin-top: 16px;">
-                    <div style="background: var(--primary-blue); color: white; padding: 12px 16px; border-radius: 16px 16px 4px 16px; max-width: 80%; text-align: left; font-size: 14px; box-shadow: 0 4px 12px rgba(0,102,204,0.15);">
-                        ${message}
-                    </div>
-                </div>`;
+            // Remove any quick-reply buttons before sending new text
+            const existingChips = history.querySelectorAll('.quick-reply-chips');
+            existingChips.forEach(chip => chip.remove());
+
+            history.innerHTML += createUserBubble(message);
             input.value = ''; 
             history.scrollTop = history.scrollHeight;
 
             const loadId = 'load-' + Date.now();
             history.innerHTML += `
                 <div id="${loadId}" style="display: flex; gap: 12px; margin-top: 16px; opacity: 0.6;">
-                    <img src="https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/Fig%204.png" style="width: 32px; height: 32px; border-radius: 50%; border: 1px solid var(--border-gray); background: white;">
+                    <img src="https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/Fig%204.png" style="width: 32px; height: 32px; border-radius: 50%; border: 1px solid var(--border-gray); background: white; flex-shrink: 0;">
                     <div style="background: var(--card-grayish); color: var(--text-dark); padding: 12px 16px; border-radius: 16px 16px 16px 4px; font-size: 14px;">Thinking...</div>
                 </div>`;
             history.scrollTop = history.scrollHeight;
 
             try {
-                let uid = localStorage.getItem("anon_user_id") || ("anon_" + Math.random().toString(36).substring(7));
-                localStorage.setItem("anon_user_id", uid);
+                let sessionId = localStorage.getItem("anon_session_id");
+                if (!sessionId) {
+                    sessionId = "anon_" + Math.random().toString(36).substring(2, 15);
+                    localStorage.setItem("anon_session_id", sessionId);
+                }
 
                 const res = await fetch(API_BASE + '/api/chat', {
                     method: 'POST', headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({ message: message, session_id: "guest", user_id: uid, user_name: "Guest" })
+                    body: JSON.stringify({ message: message, session_id: sessionId, user_id: "anonymous_web", user_name: "Guest" })
                 });
 
-                if(!res.ok) throw new Error("Backend Error");
+                if (!res.ok) throw new Error("Backend Error");
                 const data = await res.json();
 
                 document.getElementById(loadId).remove();
-                history.innerHTML += `
-                <div style="display: flex; gap: 12px; margin-top: 16px;">
-                    <img src="https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/Fig%204.png" style="width: 32px; height: 32px; border-radius: 50%; border: 1px solid var(--border-gray); background: white;">
-                    <div style="background: #f0f7ff; border: 1px solid rgba(0, 102, 204, 0.1); color: var(--text-dark); padding: 12px 16px; border-radius: 16px 16px 16px 4px; font-size: 14px; text-align: left; line-height: 1.6; max-width: 85%;">
-                        ${data.reply.replace(/\n/g, '<br>')}
-                    </div>
-                </div>`;
+                history.innerHTML += createAiBubble(data.reply);
                 history.scrollTop = history.scrollHeight;
-            } catch(e) {
+            } catch (e) {
                 console.error(e);
-                document.getElementById(loadId).remove();
+                const loader = document.getElementById(loadId);
+                if (loader) loader.remove();
                 history.innerHTML += `<div style="text-align: center; color: var(--text-dark); font-size: 12px; margin-top: 12px; font-weight: 600;">⚠️ Backend Server Offline.</div>`;
             }
         }
