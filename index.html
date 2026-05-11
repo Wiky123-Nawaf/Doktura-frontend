@@ -5,12 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="color-scheme" content="light">
     <title>Doktura.ai - AI Medical Assistant</title>
-    
+
     <link rel="icon" type="image/jpeg" href="https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/Vector%20(4).png?download=true">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    
+
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
 
@@ -108,10 +108,10 @@
         /* --- Hero Section --- */
         .hero { display: flex; flex-direction: column; align-items: center; padding: 4px 0 32px 0; text-align: center; position: relative; gap: 0; }
         .hero-fig2 { height: 60px; width: auto; margin-bottom: 24px; object-fit: contain; } 
-        
+
         .hero h1 { font-size: 56px; line-height: 1.1; margin-bottom: 32px; letter-spacing: -1px; color: var(--text-dark); font-weight: 500; }
         .hero h1 strong { font-weight: 800; }
-        
+
         .hero-description { max-width: 760px; width: 100%; margin: 0 auto; text-align: left; }
         .hero-description p { font-size: 16px; color: #1a1a1a; line-height: 1.6; margin-bottom: 20px; }
         .hero-description p:last-child { margin-bottom: 0; }
@@ -123,7 +123,7 @@
 
         .chat-section { padding-bottom: 0; padding-top: 24px; }
         .chat-container { background: #ffffff; border-radius: 24px; border: 1px solid #e2e8f0; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.03); max-width: 800px; margin: 0 auto; padding: 32px; text-align: center; }
-        
+
         .chat-tabs-wrapper { display: flex; justify-content: center; margin-bottom: 24px; }
         .chat-tabs { display: inline-flex; align-items: center; background: #ffffff; border: 1px solid #f1f5f9; border-radius: 999px; padding: 4px; gap: 4px; box-shadow: 0 2px 10px rgba(0,0,0,0.02); }
         .tab-btn { border: none; padding: 8px 24px; border-radius: 999px; font-size: 14px; font-weight: 600; color: #64748b; background: transparent; display: flex; align-items: center; gap: 8px; cursor: pointer; transition: all 0.2s; white-space: nowrap; }
@@ -161,7 +161,7 @@
         .how-pill { background-color: #ffffff; color: #111; padding: 8px 24px; border-radius: 999px; font-size: 14px; font-weight: 500; display: inline-flex; align-items: center; justify-content: center; margin-bottom: 20px; border: 1px solid #eef2f6; }
         .how-pill span { color: var(--primary-blue); margin-left: 4px;}
         .how-it-works-section h2 { font-size: 40px; font-weight: 800; margin-bottom: 60px; }
-        
+
         .steps-container { display: flex; justify-content: space-between; align-items: flex-start; position: relative; max-width: 1000px; margin: 0 auto; }
         .steps-container::before { 
             content: ''; 
@@ -175,11 +175,11 @@
         }
         .step { flex: 1; padding: 0 20px; position: relative; z-index: 1; }
         .step-circle { width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 24px auto; font-size: 20px; font-weight: 700; background-color: #ffffff; }
-        
+
         .step-1 .step-circle { color: #ef4444; border: 1px solid #ef4444; box-shadow: 0 0 0 6px #fff0f0; }
         .step-2 .step-circle { color: var(--primary-blue); border: 1px solid var(--primary-blue); box-shadow: 0 0 0 6px var(--light-blue-bg); }
         .step-3 .step-circle { color: var(--text-dark); border: none; background-color: #f8fafc; }
-        
+
         .step h4 { font-size: 20px; font-weight: 600; margin-bottom: 12px; color: var(--text-dark); }
         .step p { font-size: 14px; color: var(--text-gray); line-height: 1.6; }
 
@@ -350,16 +350,21 @@
                 align-items: center;
                 justify-content: center;
                 color: #64748b;
+                margin-left: 0;
                 /* SHIFTED EXACTLY TO THE LEFT: -8px removes the inner padding offset so the strokes line up perfectly with the text below */
                 margin-left: -8px; 
             }
             header button[onclick="toggleSidebar()"] svg { width: 24px; height: 24px; }
-            
+
             /* --- UPDATED MOBILE LOGIN BUTTON --- */
             #navLoginBtn {
                 background-color: var(--primary-blue) !important;
                 color: #ffffff !important;
                 font-weight: 600 !important;
+                padding: 6px 14px !important; /* Smaller, compact padding like image */
+                border-radius: 10px !important; /* Rounded rectangle instead of full pill */
+                font-size: 13px !important; /* Smaller text size */
+                height: 32px !important; /* Fixed compact height */
                 
                 /* ========================================================= */
                 /* TO CHANGE LOGIN BUTTON SIZE, EXPERIMENT WITH THESE VALUES */
@@ -380,7 +385,7 @@
                 display: block; 
                 min-height: auto;
             }
-            
+
             .hero-content-top {
                 display: block;
                 padding-bottom: 0px; 
@@ -402,13 +407,13 @@
             /* --- CRITICAL FIX FOR MOBILE: COMPRESSING VERTICAL SPACE --- */
             /* This pulls the chat box up, so it stays entirely visible above the Android nav bar */
             .hero { padding: 8px 0; align-items: flex-start; text-align: left; }
-            
+
             .hero-fig2 { 
                 height: 36px; /* Slightly smaller to save space */
                 margin: 0 auto 12px auto; 
                 display: block; 
             }
-            
+
             .hero h1 { 
                 font-size: 28px; 
                 margin-bottom: 12px; /* Tighter margin */
@@ -418,7 +423,7 @@
                 font-weight: 500; 
                 line-height: 1.1;
             }
-            
+
             .hero-description { padding: 0; width: 100%; }
             .hero-description p { 
                 font-size: 14px; /* Scaled slightly down to naturally shorten the block */
@@ -426,7 +431,7 @@
                 line-height: 1.4; 
                 color: #1a1a1a; 
             }
-            
+
             /* Compact Chat Interface */
             .chat-section { padding-top: 12px; padding-bottom: 0; }
             .chat-container {
@@ -473,7 +478,7 @@
             .input-top-area svg { width: 16px; height: 16px; margin-top: 2px; }
             .input-field { font-size: 14px; min-height: 40px; height: auto; }
             .input-actions { margin-top: 12px; }
-            
+
             .btn-get-started { 
                 padding: 8px 16px; 
                 font-size: 13px; 
@@ -481,7 +486,7 @@
             }
 
             .suggestion-chips { display: none !important; }
-            
+
             .pdpa-text { 
                 justify-content: center; 
                 font-size: 11px; 
@@ -496,7 +501,7 @@
             .plus-icon-wrap { margin: 0 auto 20px auto; } 
             .bottom-info h2 { font-size: 28px; text-align: center; margin-bottom: 16px; } 
             .bottom-info p { text-align: center; margin-bottom: 28px; font-size: 15px; } 
-            
+
             .hero-fig3 { 
                 margin: 0 auto; 
                 height: auto; 
@@ -505,14 +510,14 @@
                 object-fit: contain; 
                 object-position: center; 
             }
-            
+
             .stats-counter-section { padding: 32px 0; }
             .counter-boxes { gap: 4px; margin-bottom: 24px; flex-wrap: nowrap; justify-content: center; }
             .digit-box { font-size: 18px; padding: 10px 8px; min-width: 24px; border-radius: 6px; border: 1px solid #f1f5f9;}
             .stats-pill { font-size: 14px; padding: 10px 24px; }
 
             .how-it-works-section, .differences-section, .link-doctor-section, .features-section, .testimonials-section, .join-doctor-section, .faq-section { padding: 50px 0; }
-            
+
             .how-it-works-section { text-align: left; }
             .how-it-works-section .how-pill { margin-bottom: 16px; }
             .how-it-works-section h2 { text-align: left; font-size: 32px; margin-bottom: 32px; }
@@ -520,7 +525,7 @@
             .steps-container::before { display: none; } 
             .step { padding: 0; width: 100%; max-width: 100%; text-align: left; }
             .step-circle { margin-left: 0; margin-right: auto; margin-bottom: 16px; }
-            
+
             .diff-header h2 { font-size: 28px; }
             .diff-cards-container { flex-direction: column; gap: 16px; }
             .diff-card { padding: 24px; }
@@ -533,31 +538,31 @@
             .benefits-card { padding: 16px; border-radius: 12px;}
             .benefit-row { flex-direction: row; text-align: left; gap: 16px; align-items: flex-start; padding: 16px 0; }
             .benefit-icon { width: 36px; height: 36px; }
-            
+
             .feature-card, .feature-card.reverse { flex-direction: column; padding: 32px 20px; gap: 32px; border-radius: 20px; }
             .feature-content h3 { font-size: 24px; }
             .feature-icon-box { margin-bottom: 24px; }
-            
+
             .feature-image-wrapper { width: 100%; } 
             .anim-outer-frame { width: 100%; padding: 16px; }
             .anim-chat-widget { height: 440px !important; min-height: 440px !important; max-height: 440px !important; flex-shrink: 0; width: 100%; }
-            
+
             .testimonials-section > .text-center { text-align: left; }
             .testimonials-section h2 { font-size: 32px; margin-bottom: 40px; }
             .testimonials-grid { column-count: 1; gap: 16px; }
             .testimonial-card { padding: 24px; margin-bottom: 16px; }
-            
+
             .join-doctor-section { flex-direction: column-reverse; gap: 40px; }
             .join-doctor-right { text-align: left; }
             .join-doctor-right h2 { font-size: 30px; }
-            
+
             .faq-header-center { text-align: left; margin-bottom: 32px; }
             .faq-pill-center { margin-bottom: 12px; }
             .faq-header-center h2 { font-size: 32px; margin-bottom: 16px; }
             .faq-header-center p { font-size: 16px; }
             .faq-header { padding: 20px 24px; text-align: left; }
             .faq-body { padding: 0 24px 20px 24px; }
-            
+
             .footer-section { padding: 50px 0 24px 0; }
             .footer-content { padding: 0 16px; }
             .footer-top { flex-direction: column; gap: 40px; padding-bottom: 32px; }
@@ -570,13 +575,14 @@
 
 <body class="flex h-[100dvh] h-screen bg-white overflow-hidden relative">
 
+    <!-- Firebase Auth & Dynamic Login state -->
     <script>const API_BASE = 'https://api.doktura.ai';</script>
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-app.js";
         import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-auth.js";
         const app = initializeApp({ apiKey: "AIzaSyCrx9BPS8ficDzgVZMbJIb4b3PQ9IqEHLw", authDomain: "doktura-ai-907d8.firebaseapp.com", projectId: "doktura-ai-907d8" });
         const auth = getAuth(app);
-        
+
         onAuthStateChanged(auth, (user) => {
             if (user) {
                 const navBtn = document.getElementById("navLoginBtn");
@@ -584,10 +590,10 @@
                 navBtn.className = "btn-primary";
                 navBtn.style = "padding: 8px 16px; font-size: 13px;";
                 navBtn.innerHTML = `Log in`;
-                
+
                 document.getElementById("userNameSidebar").innerText = user.displayName || user.email.split('@')[0];
                 document.getElementById("userAvatarSidebar").src = user.photoURL || 'https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/Vector%20(4).png?download=true';
-                
+
                 const logoutBtn = document.getElementById("logoutBtn");
                 logoutBtn.innerHTML = `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>`;
                 logoutBtn.removeAttribute("href");
@@ -610,7 +616,7 @@
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
             </button>
         </div>
-        
+
         <div class="flex-1 overflow-y-auto sidebar-scroll">
             <div class="px-5 py-2 mb-2">
                 <button onclick="startNewSession()" class="w-full bg-[#0066cc] text-white font-bold py-2.5 rounded-lg shadow-sm flex items-center justify-center transition hover:bg-blue-700 text-sm">
@@ -671,8 +677,9 @@
         </div>
     </div>
 
+    <!-- MAIN SCROLLABLE CONTENT AREA -->
     <div class="flex-1 flex flex-col relative h-full overflow-y-auto overflow-x-hidden w-full scroll-smooth" id="main-scroll-area">
-        
+
         <header class="w-full flex justify-between items-center bg-white px-6 md:px-8 py-2 sticky top-0 z-[100]">
             <div class="flex items-center gap-4">
                 <button onclick="toggleSidebar()" class="text-gray-500 hover:text-[#0066cc] transition focus:outline-none p-1 -ml-2 rounded-md">
@@ -684,15 +691,17 @@
             </nav>
         </header>
 
+        <!-- Top Section -->
         <div class="section-white flex-1">
             <div class="container relative z-10 hero-chat-wrapper">
-                
+
                 <div class="hero-content-top">
+                    <!-- Centered Hero -->
                     <section class="hero">
                         <img src="https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/Figure%203.png?download=true" alt="Doktura Avatars" class="hero-fig2">
-                        
+
                         <h1>Hello, I'm <strong>Dok</strong>tura!</h1>
-                        
+
                         <div class="hero-description">
                             <p>I’m your private and personal AI doctor. As an AI doctor, my service is <span class="text-blue font-bold typing-cursor" id="typewriter-text">fast and free.</span></p>
                             <p>Describe your symptoms and get a diagnosis and treatment plan in minutes.</p>
@@ -704,6 +713,7 @@
                 </div>
 
                 <div class="chat-content-bottom">
+                    <!-- Chat Interface Area -->
                     <section class="chat-section">
                         <div class="chat-container relative z-20">
                             <div class="chat-tabs-wrapper">
@@ -722,35 +732,18 @@
                                 </div>
                             </div>
 
-                            <div id="chat-history" style="margin-bottom: 24px; max-height: 400px; overflow-y: auto; padding-right: 8px; display: flex; flex-direction: column; gap: 16px;">
-                                <div style="display: flex; gap: 12px;">
-                                    <img src="https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/Fig%204.png" style="width: 32px; height: 32px; border-radius: 50%; border: 1px solid var(--border-gray); background: white;">
-                                    <div style="background: #f0f7ff; border: 1px solid rgba(0, 102, 204, 0.1); color: var(--text-dark); padding: 12px 16px; border-radius: 16px 16px 16px 4px; font-size: 14px; text-align: left; line-height: 1.6; max-width: 85%;">
-                                        Hello! I'm here to help you. What seems to be bothering you today?
-                                    </div>
-                                </div>
-                            </div>
+                            <div id="chat-history"></div>
 
-                            <!-- Chat Input Area with Relative Positioning for the Overlay -->
-                            <div class="chat-input-area" style="position: relative;">
-                                
-                                <!-- Terms of Service Blocker Overlay -->
-                                <div id="tos-overlay" style="position: absolute; inset: 0; background: rgba(255, 255, 255, 0.9); z-index: 50; display: flex; flex-direction: column; align-items: center; justify-content: center; border-radius: 16px; border: 1px solid #e2e8f0; margin: -10px;">
-                                    <p style="font-size: 15px; font-weight: 600; color: var(--text-dark); margin-bottom: 16px;">Please accept our Terms of Service to start chatting.</p>
-                                    <button onclick="acceptToS()" class="btn-primary shadow-md" style="padding: 10px 28px; font-size: 15px;">I Agree</button>
-                                </div>
-
+                            <div class="chat-input-area">
                                 <div class="input-wrapper shadow-sm">
                                     <div class="input-top-area">
                                         <svg width="16" height="16" viewBox="0 0 24 24" fill="#0066cc" xmlns="http://www.w3.org/2000/svg">
                                             <path d="M12 2L14.5 9.5L22 12L14.5 14.5L12 22L9.5 14.5L2 12L9.5 9.5L12 2Z"/>
                                         </svg>
-                                        <!-- Added 'disabled' property initially -->
-                                        <textarea id="chat-input" disabled class="input-field" placeholder="Get health advice.." onkeydown="if(event.key === 'Enter' && !event.shiftKey) { event.preventDefault(); sendGuestChat(); }"></textarea>
+                                        <textarea id="chat-input" class="input-field" placeholder="Get health advice.." onkeydown="if(event.key === 'Enter' && !event.shiftKey) { event.preventDefault(); sendGuestChat(); }"></textarea>
                                     </div>
                                     <div class="input-actions">
-                                        <!-- Added 'disabled' property initially and an ID -->
-                                        <button id="start-btn" disabled class="btn-get-started shadow-md" onclick="sendGuestChat()" aria-label="Send message">
+                                        <button class="btn-get-started shadow-md" onclick="sendGuestChat()" aria-label="Send message">
                                             Start Here
                                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
                                         </button>
@@ -767,7 +760,8 @@
                                         See More
                                     </button>
                                 </div>
-                                
+
+                                <!-- Lock Icon Included in PDPA Text -->
                                 <div class="pdpa-text">
                                     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
                                     Data protected under PDPA
@@ -794,6 +788,7 @@
             </div>
         </div>
 
+        <!-- Website Visit Counter Section -->
         <div class="section-grayish">
             <div class="container">
                 <section class="stats-counter-section">
@@ -812,6 +807,7 @@
             </div>
         </div>
 
+        <!-- How It Works Section -->
         <div class="section-white">
             <div class="container">
                 <section class="how-it-works-section">
@@ -838,6 +834,7 @@
             </div>
         </div>
 
+        <!-- Differences Section -->
         <div class="section-grayish">
             <div class="container">
                 <section class="differences-section">
@@ -846,7 +843,7 @@
                         <h2>When to Use AI vs When to See a Doctor?</h2>
                         <p>Understand when AI is enough and when it's best to consult a real doctor.</p>
                     </div>
-                    
+
                     <div class="diff-cards-container">
                         <div class="diff-card">
                             <div class="diff-icon-wrapper">
@@ -871,17 +868,18 @@
             </div>
         </div>
 
+        <!-- Link to Doctor Section -->
         <div class="section-white">
             <div class="container">
                 <section class="link-doctor-section">
                     <img src="https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/Figure%203.png?download=true" alt="Doctors" class="link-doctor-fig">
-                    
+
                     <h2>When we finish chatting, I can link you to a <br>licensed doctor for just <span class="text-blue">RM38 Only</span></h2>
-                    
+
                     <div class="avail-badge">
                         <span class="avail-dot"></span> Available anytime, 24/7
                     </div>
-                    
+
                     <div class="benefits-card">
                         <div class="benefit-row">
                             <div class="benefit-icon">
@@ -926,6 +924,7 @@
             </div>
         </div>
 
+        <!-- Features Stacked Section -->
         <div class="section-white">
             <div class="container">
                 <section class="features-section">
@@ -941,7 +940,7 @@
                             <h3>As an AI doctor, I provide <span class="text-blue">fast and free service</span></h3>
                             <p>Your privacy is our top priority. All conversations are completely confidential and PDPA compliant. Doktura Ai successfully guided countless people to get the health advice they need, whenever they need it. No appointments, no waiting rooms just instant, reliable medical assistance at your fingertips.</p>
                         </div>
-                        
+
                         <div class="feature-image-wrapper">
                             <div class="anim-outer-frame">
                                 <div class="anim-chat-widget">
@@ -1008,6 +1007,7 @@
             </div>
         </div>
 
+        <!-- Testimonials Section -->
         <div class="section-white">
             <div class="container">
                 <section class="testimonials-section">
@@ -1051,6 +1051,7 @@
             </div>
         </div>
 
+        <!-- Join as Doctor Section -->
         <div class="section-white">
             <div class="container">
                 <section class="join-doctor-section">
@@ -1081,6 +1082,7 @@
             </div>
         </div>
 
+        <!-- UPDATED FAQ Section -->
         <div class="section-faq-bg">
             <div class="container">
                 <section class="faq-section">
@@ -1098,7 +1100,7 @@
                             </div>
                             <div class="faq-body"><p>No, our AI is designed to provide quick guidance and health insights, but it cannot replace a licensed professional for accurate medical diagnosis and treatment. Always consult a real doctor for serious concerns.</p></div>
                         </div>
-                        
+
                         <div class="faq-item active">
                             <div class="faq-header">
                                 <h4>Is my personal health information safe?</h4>
@@ -1106,7 +1108,7 @@
                             </div>
                             <div class="faq-body"><p>Yes. We offer emergency dental care for urgent issues such as tooth pain, swelling, or broken teeth. Same-day appointments may be available.</p></div>
                         </div>
-                        
+
                         <div class="faq-item">
                             <div class="faq-header">
                                 <h4>When should I see a real doctor?</h4>
@@ -1114,7 +1116,7 @@
                             </div>
                             <div class="faq-body"><p>You should see a real doctor if you experience severe symptoms, need a medical prescription, require an official diagnosis, or have an ongoing condition that needs professional management.</p></div>
                         </div>
-                        
+
                         <div class="faq-item">
                             <div class="faq-header">
                                 <h4>How much does it cost?</h4>
@@ -1122,7 +1124,7 @@
                             </div>
                             <div class="faq-body"><p>Chatting with our AI assistant is completely free! If you decide you need professional care, consultations with a real qualified doctor start from just RM 38.00.</p></div>
                         </div>
-                        
+
                         <div class="faq-item">
                             <div class="faq-header">
                                 <h4>Can I book both online and in-clinic consultations?</h4>
@@ -1135,6 +1137,7 @@
             </div>
         </div>
 
+        <!-- FULL WIDTH Edge-to-Edge Footer Section -->
         <footer class="footer-section">
             <div class="footer-content">
                 <div class="footer-top">
@@ -1158,7 +1161,7 @@
                         </div>
                     </div>
                 </div>
-                
+
                 <div class="footer-bottom">
                     <p>Copyright 2026 © Doktura Plt Registration No. 202604000898 (LLP0046127-LGN)</p>
                     <div class="social-area">
@@ -1176,18 +1179,9 @@
             </div>
         </footer>
 
-    </div> 
+    </div> <!-- End Main Content Wrap -->
 
-    <!-- Script to accept Terms of Service -->
-    <script>
-        function acceptToS() {
-            document.getElementById('tos-overlay').style.display = 'none';
-            document.getElementById('chat-input').disabled = false;
-            document.getElementById('start-btn').disabled = false;
-            document.getElementById('chat-input').focus();
-        }
-    </script>
-
+    <!-- Global Javascript for Sidebar Navigation Links -->
     <script>
         window.toggleSidebar = () => {
             const sidebar = document.getElementById('sidebar');
@@ -1212,6 +1206,7 @@
         };
     </script>
 
+    <!-- FAQ Accordion Script -->
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const faqHeaders = document.querySelectorAll('.faq-header');
@@ -1229,7 +1224,8 @@
             });
         });
     </script>
-    
+
+    <!-- Typewriter Backspace Animation Script -->
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const typeTarget = document.getElementById('typewriter-text');
@@ -1255,7 +1251,7 @@
                         speed = 2500;
                     }
                 }
-                
+
                 typeTarget.textContent = originalText.substring(0, index);
                 setTimeout(typeLoop, speed);
             }
@@ -1264,6 +1260,7 @@
         });
     </script>
 
+    <!-- Main Chat Implementation -->
     <script>
         window.sendGuestChat = async function() {
             const input = document.getElementById('chat-input');
@@ -1271,15 +1268,8 @@
             const message = input.value.trim();
             if(!message) return;
 
-            const sendBtn = document.getElementById('start-btn');
-            if (sendBtn && sendBtn.innerText.includes('Start Here')) {
-                sendBtn.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>`;
-                sendBtn.style.padding = '12px 14px'; 
-                sendBtn.style.borderRadius = '50px'; 
-            }
-
             history.innerHTML += `
-                <div style="display: flex; justify-content: flex-end;">
+                <div style="display: flex; justify-content: flex-end; margin-top: 16px;">
                     <div style="background: var(--primary-blue); color: white; padding: 12px 16px; border-radius: 16px 16px 4px 16px; max-width: 80%; text-align: left; font-size: 14px; box-shadow: 0 4px 12px rgba(0,102,204,0.15);">
                         ${message}
                     </div>
@@ -1289,7 +1279,7 @@
 
             const loadId = 'load-' + Date.now();
             history.innerHTML += `
-                <div id="${loadId}" style="display: flex; gap: 12px; opacity: 0.6;">
+                <div id="${loadId}" style="display: flex; gap: 12px; margin-top: 16px; opacity: 0.6;">
                     <img src="https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/Fig%204.png" style="width: 32px; height: 32px; border-radius: 50%; border: 1px solid var(--border-gray); background: white;">
                     <div style="background: var(--card-grayish); color: var(--text-dark); padding: 12px 16px; border-radius: 16px 16px 16px 4px; font-size: 14px;">Thinking...</div>
                 </div>`;
@@ -1303,58 +1293,37 @@
                     method: 'POST', headers: {'Content-Type': 'application/json'},
                     body: JSON.stringify({ message: message, session_id: "guest", user_id: uid, user_name: "Guest" })
                 });
-                
+
                 if(!res.ok) throw new Error("Backend Error");
                 const data = await res.json();
-                
+
                 document.getElementById(loadId).remove();
-                
-                let bot_reply = data.reply.replace(/\n/g, '<br>');
-                let extraHTML = '';
-
-                // --- ADDED: Age/Gender Buttons Interception ---
-                if (bot_reply.toLowerCase().includes("biological sex")) {
-                    extraHTML += `
-                        <div style="margin-top: 12px; display: flex; gap: 8px; flex-wrap: wrap;">
-                            <button class="chip" style="background: white; border: 1px solid var(--primary-blue); color: var(--primary-blue);" onclick="document.getElementById('chat-input').value = 'Male, age '; document.getElementById('chat-input').focus();">Male</button>
-                            <button class="chip" style="background: white; border: 1px solid var(--primary-blue); color: var(--primary-blue);" onclick="document.getElementById('chat-input').value = 'Female, age '; document.getElementById('chat-input').focus();">Female</button>
-                        </div>`;
-                }
-
-                // --- ADDED: Login CTA Detection & Injection ---
-                if (bot_reply.includes("Please log in to your Doktura account")) {
-                    extraHTML += `
-                        <div style="margin-top: 16px;">
-                            <a href="https://doktura.ai/login.html" class="btn-primary" style="text-decoration: none; padding: 10px 20px; font-size: 14px; box-shadow: 0 4px 12px rgba(0,102,204,0.2);">Login to Consult a Doctor</a>
-                        </div>`;
-                }
-
                 history.innerHTML += `
-                <div style="display: flex; gap: 12px;">
+                <div style="display: flex; gap: 12px; margin-top: 16px;">
                     <img src="https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/Fig%204.png" style="width: 32px; height: 32px; border-radius: 50%; border: 1px solid var(--border-gray); background: white;">
                     <div style="background: #f0f7ff; border: 1px solid rgba(0, 102, 204, 0.1); color: var(--text-dark); padding: 12px 16px; border-radius: 16px 16px 16px 4px; font-size: 14px; text-align: left; line-height: 1.6; max-width: 85%;">
-                        ${bot_reply}
-                        ${extraHTML}
+                        ${data.reply.replace(/\n/g, '<br>')}
                     </div>
                 </div>`;
                 history.scrollTop = history.scrollHeight;
             } catch(e) {
                 console.error(e);
                 document.getElementById(loadId).remove();
-                history.innerHTML += `<div style="text-align: center; color: var(--text-dark); font-size: 12px; font-weight: 600;">⚠️ Backend Server Offline.</div>`;
+                history.innerHTML += `<div style="text-align: center; color: var(--text-dark); font-size: 12px; margin-top: 12px; font-weight: 600;">⚠️ Backend Server Offline.</div>`;
             }
         }
     </script>
 
+    <!-- Animated Feature Chat Widget Script -->
     <script>
         function startFeatureAnimation() {
             const chatbox = document.getElementById('anim-chatbox');
             const headerStatus = document.getElementById('anim-header-status');
-            
+
             chatbox.innerHTML = '';
-            
+
             const wait = ms => new Promise(r => setTimeout(r, ms));
-            
+
             const addMsg = async (type, text) => {
                 const row = document.createElement('div');
                 row.className = `anim-row ${type}`;
@@ -1396,25 +1365,25 @@
                 headerStatus.classList.add('show');
                 await wait(800);
                 headerStatus.classList.remove('show');
-                
+
                 await addMsg('ai', "Hello! Type your symptoms below and i'll help you right away.");
                 await wait(1800);
-                
+
                 await addMsg('user', 'I have Flu and my body is warm');
                 await wait(1000);
-                
+
                 let typingNode = await addTyping();
                 await wait(2500); 
-                
+
                 typingNode.remove();
                 await addMsg('ai', "It might be Influenza.<br>Take rest, stay hydrated, and you can use Paracetamol if needed.<br><br>If your fever gets high or symptoms become serious, you should consult a real doctor by logging in Doktura.");
                 headerStatus.classList.remove('show');
-                
+
                 await wait(6000);
                 chatbox.innerHTML = '';
                 runAnimationSequence();
             };
-            
+
             runAnimationSequence();
         }
 
