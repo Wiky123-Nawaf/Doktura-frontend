@@ -339,6 +339,12 @@
                 </form>
             </div>
         </main>
+        
+        <!-- ================= ADDED FOOTER FOR AUTH PAGES ================= -->
+        <footer style="text-align: center; padding: 24px; font-size: 13px; color: #6b7280; width: 100%;">
+            Copyright 2026 © Doktura Plt Registration No. 202604000898 (LLP0046127-LGN)
+        </footer>
+        
     </div>
 
     <!-- ================= DASHBOARD UI ================= -->
@@ -1220,12 +1226,23 @@
             btn.innerText = "Reset password"; btn.disabled = false;
         });
 
+        // --- GOOGLE SIGN-IN FIX: ADDED PROMPT ---
         document.getElementById("doGoogleLoginBtn").addEventListener("click", async () => { 
-            try { await signInWithPopup(auth, new GoogleAuthProvider()); } catch(e) {} 
+            try { 
+                const provider = new GoogleAuthProvider();
+                provider.setCustomParameters({ prompt: 'select_account' });
+                await signInWithPopup(auth, provider); 
+            } catch(e) {} 
         });
+
         document.getElementById("doGoogleRegBtn").addEventListener("click", async () => { 
-            try { await signInWithPopup(auth, new GoogleAuthProvider()); } catch(e) {} 
+            try { 
+                const provider = new GoogleAuthProvider();
+                provider.setCustomParameters({ prompt: 'select_account' });
+                await signInWithPopup(auth, provider); 
+            } catch(e) {} 
         });
+        // ----------------------------------------
 
         // ================= SYNC LOGIC (ROBUST VERSION) ================= //
         onAuthStateChanged(auth, async (user) => {
