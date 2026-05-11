@@ -130,12 +130,11 @@
         .tab-btn.active { background: #eff6ff; color: var(--primary-blue); }
 
         #chat-history {
-            min-height: 220px;
             max-height: 450px;
             overflow-y: auto;
             padding-right: 8px;
             scroll-behavior: smooth;
-            margin-bottom: 16px;
+            margin-bottom: 8px; /* Reduced to pull content closer */
         }
 
         .input-wrapper { background-color: #f4f6fa; border: 1px solid transparent; border-radius: 16px; padding: 16px; min-height: 140px; display: flex; flex-direction: column; justify-content: space-between; margin-bottom: 24px; text-align: left; }
@@ -643,7 +642,7 @@
 
                             <div id="chat-history">
                                 <!-- Terms of Service Blocker overlay -->
-                                <div id="tos-blocker" style="margin-top: 24px; padding: 20px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; text-align: left;">
+                                <div id="tos-blocker" style="margin-top: 8px; padding: 20px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; text-align: left;">
                                     <p style="font-size: 14px; color: #475569; margin-bottom: 12px;">Before I can reply, I need your permission to unlock your private AI doctor. <strong>It's fast, safe and free.</strong></p>
                                     <label style="display: flex; align-items: flex-start; gap: 8px; font-size: 12px; color: #64748b; cursor: pointer;">
                                         <input type="checkbox" id="tos-checkbox" style="margin-top: 2px;" onchange="handleTosChange(this)">
