@@ -570,7 +570,6 @@
 
 <body class="flex h-[100dvh] h-screen bg-white overflow-hidden relative">
 
-    <!-- Firebase Auth & Dynamic Login state -->
     <script>const API_BASE = 'https://api.doktura.ai';</script>
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-app.js";
@@ -672,7 +671,6 @@
         </div>
     </div>
 
-    <!-- MAIN SCROLLABLE CONTENT AREA -->
     <div class="flex-1 flex flex-col relative h-full overflow-y-auto overflow-x-hidden w-full scroll-smooth" id="main-scroll-area">
         
         <header class="w-full flex justify-between items-center bg-white px-6 md:px-8 py-2 sticky top-0 z-[100]">
@@ -686,12 +684,10 @@
             </nav>
         </header>
 
-        <!-- Top Section -->
         <div class="section-white flex-1">
             <div class="container relative z-10 hero-chat-wrapper">
                 
                 <div class="hero-content-top">
-                    <!-- Centered Hero -->
                     <section class="hero">
                         <img src="https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/Figure%203.png?download=true" alt="Doktura Avatars" class="hero-fig2">
                         
@@ -708,7 +704,6 @@
                 </div>
 
                 <div class="chat-content-bottom">
-                    <!-- Chat Interface Area -->
                     <section class="chat-section">
                         <div class="chat-container relative z-20">
                             <div class="chat-tabs-wrapper">
@@ -727,9 +722,8 @@
                                 </div>
                             </div>
 
-                            <!-- CHANGED: Initial Greeting message added & margin bottom applied for gap styling -->
-                            <div id="chat-history" style="margin-bottom: 24px; max-height: 400px; overflow-y: auto; padding-right: 8px;">
-                                <div style="display: flex; gap: 12px; margin-top: 16px;">
+                            <div id="chat-history" style="margin-bottom: 24px; max-height: 400px; overflow-y: auto; padding-right: 8px; display: flex; flex-direction: column; gap: 16px;">
+                                <div style="display: flex; gap: 12px;">
                                     <img src="https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/Fig%204.png" style="width: 32px; height: 32px; border-radius: 50%; border: 1px solid var(--border-gray); background: white;">
                                     <div style="background: #f0f7ff; border: 1px solid rgba(0, 102, 204, 0.1); color: var(--text-dark); padding: 12px 16px; border-radius: 16px 16px 16px 4px; font-size: 14px; text-align: left; line-height: 1.6; max-width: 85%;">
                                         Hello! I'm here to help you. What seems to be bothering you today?
@@ -737,16 +731,26 @@
                                 </div>
                             </div>
 
-                            <div class="chat-input-area">
+                            <!-- Chat Input Area with Relative Positioning for the Overlay -->
+                            <div class="chat-input-area" style="position: relative;">
+                                
+                                <!-- Terms of Service Blocker Overlay -->
+                                <div id="tos-overlay" style="position: absolute; inset: 0; background: rgba(255, 255, 255, 0.9); z-index: 50; display: flex; flex-direction: column; align-items: center; justify-content: center; border-radius: 16px; border: 1px solid #e2e8f0; margin: -10px;">
+                                    <p style="font-size: 15px; font-weight: 600; color: var(--text-dark); margin-bottom: 16px;">Please accept our Terms of Service to start chatting.</p>
+                                    <button onclick="acceptToS()" class="btn-primary shadow-md" style="padding: 10px 28px; font-size: 15px;">I Agree</button>
+                                </div>
+
                                 <div class="input-wrapper shadow-sm">
                                     <div class="input-top-area">
                                         <svg width="16" height="16" viewBox="0 0 24 24" fill="#0066cc" xmlns="http://www.w3.org/2000/svg">
                                             <path d="M12 2L14.5 9.5L22 12L14.5 14.5L12 22L9.5 14.5L2 12L9.5 9.5L12 2Z"/>
                                         </svg>
-                                        <textarea id="chat-input" class="input-field" placeholder="Get health advice.." onkeydown="if(event.key === 'Enter' && !event.shiftKey) { event.preventDefault(); sendGuestChat(); }"></textarea>
+                                        <!-- Added 'disabled' property initially -->
+                                        <textarea id="chat-input" disabled class="input-field" placeholder="Get health advice.." onkeydown="if(event.key === 'Enter' && !event.shiftKey) { event.preventDefault(); sendGuestChat(); }"></textarea>
                                     </div>
                                     <div class="input-actions">
-                                        <button class="btn-get-started shadow-md" onclick="sendGuestChat()" aria-label="Send message">
+                                        <!-- Added 'disabled' property initially and an ID -->
+                                        <button id="start-btn" disabled class="btn-get-started shadow-md" onclick="sendGuestChat()" aria-label="Send message">
                                             Start Here
                                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
                                         </button>
@@ -764,7 +768,6 @@
                                     </button>
                                 </div>
                                 
-                                <!-- Lock Icon Included in PDPA Text -->
                                 <div class="pdpa-text">
                                     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
                                     Data protected under PDPA
@@ -791,7 +794,6 @@
             </div>
         </div>
 
-        <!-- Website Visit Counter Section -->
         <div class="section-grayish">
             <div class="container">
                 <section class="stats-counter-section">
@@ -810,7 +812,6 @@
             </div>
         </div>
 
-        <!-- How It Works Section -->
         <div class="section-white">
             <div class="container">
                 <section class="how-it-works-section">
@@ -837,7 +838,6 @@
             </div>
         </div>
 
-        <!-- Differences Section -->
         <div class="section-grayish">
             <div class="container">
                 <section class="differences-section">
@@ -871,7 +871,6 @@
             </div>
         </div>
 
-        <!-- Link to Doctor Section -->
         <div class="section-white">
             <div class="container">
                 <section class="link-doctor-section">
@@ -927,7 +926,6 @@
             </div>
         </div>
 
-        <!-- Features Stacked Section -->
         <div class="section-white">
             <div class="container">
                 <section class="features-section">
@@ -1010,7 +1008,6 @@
             </div>
         </div>
 
-        <!-- Testimonials Section -->
         <div class="section-white">
             <div class="container">
                 <section class="testimonials-section">
@@ -1054,7 +1051,6 @@
             </div>
         </div>
 
-        <!-- Join as Doctor Section -->
         <div class="section-white">
             <div class="container">
                 <section class="join-doctor-section">
@@ -1085,7 +1081,6 @@
             </div>
         </div>
 
-        <!-- UPDATED FAQ Section -->
         <div class="section-faq-bg">
             <div class="container">
                 <section class="faq-section">
@@ -1140,7 +1135,6 @@
             </div>
         </div>
 
-        <!-- FULL WIDTH Edge-to-Edge Footer Section -->
         <footer class="footer-section">
             <div class="footer-content">
                 <div class="footer-top">
@@ -1182,9 +1176,18 @@
             </div>
         </footer>
 
-    </div> <!-- End Main Content Wrap -->
+    </div> 
 
-    <!-- Global Javascript for Sidebar Navigation Links -->
+    <!-- Script to accept Terms of Service -->
+    <script>
+        function acceptToS() {
+            document.getElementById('tos-overlay').style.display = 'none';
+            document.getElementById('chat-input').disabled = false;
+            document.getElementById('start-btn').disabled = false;
+            document.getElementById('chat-input').focus();
+        }
+    </script>
+
     <script>
         window.toggleSidebar = () => {
             const sidebar = document.getElementById('sidebar');
@@ -1209,7 +1212,6 @@
         };
     </script>
 
-    <!-- FAQ Accordion Script -->
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const faqHeaders = document.querySelectorAll('.faq-header');
@@ -1228,7 +1230,6 @@
         });
     </script>
     
-    <!-- Typewriter Backspace Animation Script -->
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const typeTarget = document.getElementById('typewriter-text');
@@ -1263,7 +1264,6 @@
         });
     </script>
 
-    <!-- Main Chat Implementation -->
     <script>
         window.sendGuestChat = async function() {
             const input = document.getElementById('chat-input');
@@ -1271,17 +1271,15 @@
             const message = input.value.trim();
             if(!message) return;
 
-            // --- CHANGED: Update "Start Here" button to just a send icon after first message ---
-            const sendBtn = document.querySelector('.btn-get-started');
+            const sendBtn = document.getElementById('start-btn');
             if (sendBtn && sendBtn.innerText.includes('Start Here')) {
                 sendBtn.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>`;
                 sendBtn.style.padding = '12px 14px'; 
                 sendBtn.style.borderRadius = '50px'; 
             }
-            // -----------------------------------------------------------------------------------
 
             history.innerHTML += `
-                <div style="display: flex; justify-content: flex-end; margin-top: 16px;">
+                <div style="display: flex; justify-content: flex-end;">
                     <div style="background: var(--primary-blue); color: white; padding: 12px 16px; border-radius: 16px 16px 4px 16px; max-width: 80%; text-align: left; font-size: 14px; box-shadow: 0 4px 12px rgba(0,102,204,0.15);">
                         ${message}
                     </div>
@@ -1291,7 +1289,7 @@
 
             const loadId = 'load-' + Date.now();
             history.innerHTML += `
-                <div id="${loadId}" style="display: flex; gap: 12px; margin-top: 16px; opacity: 0.6;">
+                <div id="${loadId}" style="display: flex; gap: 12px; opacity: 0.6;">
                     <img src="https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/Fig%204.png" style="width: 32px; height: 32px; border-radius: 50%; border: 1px solid var(--border-gray); background: white;">
                     <div style="background: var(--card-grayish); color: var(--text-dark); padding: 12px 16px; border-radius: 16px 16px 16px 4px; font-size: 14px;">Thinking...</div>
                 </div>`;
@@ -1310,23 +1308,44 @@
                 const data = await res.json();
                 
                 document.getElementById(loadId).remove();
+                
+                let bot_reply = data.reply.replace(/\n/g, '<br>');
+                let extraHTML = '';
+
+                // --- ADDED: Age/Gender Buttons Interception ---
+                if (bot_reply.toLowerCase().includes("biological sex")) {
+                    extraHTML += `
+                        <div style="margin-top: 12px; display: flex; gap: 8px; flex-wrap: wrap;">
+                            <button class="chip" style="background: white; border: 1px solid var(--primary-blue); color: var(--primary-blue);" onclick="document.getElementById('chat-input').value = 'Male, age '; document.getElementById('chat-input').focus();">Male</button>
+                            <button class="chip" style="background: white; border: 1px solid var(--primary-blue); color: var(--primary-blue);" onclick="document.getElementById('chat-input').value = 'Female, age '; document.getElementById('chat-input').focus();">Female</button>
+                        </div>`;
+                }
+
+                // --- ADDED: Login CTA Detection & Injection ---
+                if (bot_reply.includes("Please log in to your Doktura account")) {
+                    extraHTML += `
+                        <div style="margin-top: 16px;">
+                            <a href="https://doktura.ai/login.html" class="btn-primary" style="text-decoration: none; padding: 10px 20px; font-size: 14px; box-shadow: 0 4px 12px rgba(0,102,204,0.2);">Login to Consult a Doctor</a>
+                        </div>`;
+                }
+
                 history.innerHTML += `
-                <div style="display: flex; gap: 12px; margin-top: 16px;">
+                <div style="display: flex; gap: 12px;">
                     <img src="https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/Fig%204.png" style="width: 32px; height: 32px; border-radius: 50%; border: 1px solid var(--border-gray); background: white;">
                     <div style="background: #f0f7ff; border: 1px solid rgba(0, 102, 204, 0.1); color: var(--text-dark); padding: 12px 16px; border-radius: 16px 16px 16px 4px; font-size: 14px; text-align: left; line-height: 1.6; max-width: 85%;">
-                        ${data.reply.replace(/\n/g, '<br>')}
+                        ${bot_reply}
+                        ${extraHTML}
                     </div>
                 </div>`;
                 history.scrollTop = history.scrollHeight;
             } catch(e) {
                 console.error(e);
                 document.getElementById(loadId).remove();
-                history.innerHTML += `<div style="text-align: center; color: var(--text-dark); font-size: 12px; margin-top: 12px; font-weight: 600;">⚠️ Backend Server Offline.</div>`;
+                history.innerHTML += `<div style="text-align: center; color: var(--text-dark); font-size: 12px; font-weight: 600;">⚠️ Backend Server Offline.</div>`;
             }
         }
     </script>
 
-    <!-- Animated Feature Chat Widget Script -->
     <script>
         function startFeatureAnimation() {
             const chatbox = document.getElementById('anim-chatbox');
