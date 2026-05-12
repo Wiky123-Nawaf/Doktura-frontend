@@ -1197,6 +1197,28 @@
                 });
                 
                 checkUpcomingReminders(data.appointments);
+
+                // --- NEW POST-CALL REDIRECT LOGIC ---
+                const params = new URLSearchParams(window.location.search);
+                const reviewApptId = params.get('review_appt');
+                
+                if (reviewApptId) {
+                    // Find the completed appointment in the user's records
+                    const appt = window.cachedAppointments.find(a => a.id.replace('ID', '') === reviewApptId);
+                    
+                    // Only pop up if it hasn't been reviewed yet
+                    if (appt && !appt.review_submitted) {
+                        // Remove the parameter from the URL so it doesn't pop up again if they refresh the page
+                        window.history.replaceState({}, document.title, window.location.pathname + "?tab=schedule");
+                        
+                        // Wait a fraction of a second for UI to load, then show the modal
+                        setTimeout(() => {
+                            openReviewModal(reviewApptId, appt.doctor_name);
+                        }, 400);
+                    }
+                }
+                // ------------------------------------
+
             } catch (e) { console.error(e); }
         }
 
