@@ -376,6 +376,7 @@
                             <tbody id="schedule-table-body" class="text-sm text-gray-800 divide-y divide-gray-100"></tbody>
                         </table>
                     </div>
+                    <div id="appt-pagination"></div>
                 </div>
             </div>
         </div>
@@ -422,6 +423,7 @@
                             <tbody id="reports-table-body" class="text-sm text-gray-800 divide-y divide-gray-100"></tbody>
                         </table>
                     </div>
+                    <div id="report-pagination"></div>
                 </div>
             </div>
 
@@ -559,8 +561,77 @@
         let isRecording = false; 
         window.pendingDeleteId = null;
         window.notifiedAppointments = new Set();
-        window.cachedAppointments =[];
         const chatLogoUrl = "https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/Vector%20(4).png?download=true";
+
+        // ---- PAGINATION STATE ----
+        window.cachedAppointments =[];
+        window.currentApptPage = 1;
+        window.apptsPerPage = 6;
+
+        window.cachedReports =[];
+        window.currentReportPage = 1;
+        window.reportsPerPage = 6;
+
+        window.renderPaginationControls = (totalItems, itemsPerPage, currentPage, containerId, changePageFunc) => {
+            const container = document.getElementById(containerId);
+            if (!container) return;
+            container.innerHTML = '';
+            
+            const totalPages = Math.ceil(totalItems / itemsPerPage);
+            if (totalPages <= 1) return; 
+            
+            let html = `<div class="flex items-center justify-between border-t border-gray-100 bg-white px-6 py-4">
+                <div class="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
+                    <div>
+                        <p class="text-xs text-gray-500 font-medium">
+                            Showing <span class="font-bold text-gray-900">${(currentPage - 1) * itemsPerPage + 1}</span> to <span class="font-bold text-gray-900">${Math.min(currentPage * itemsPerPage, totalItems)}</span> of <span class="font-bold text-gray-900">${totalItems}</span> results
+                        </p>
+                    </div>
+                    <div>
+                        <nav class="isolate inline-flex -space-x-px rounded-md shadow-sm" aria-label="Pagination">
+                            <button onclick="${changePageFunc}(${currentPage - 1})" ${currentPage === 1 ? 'disabled' : ''} class="relative inline-flex items-center rounded-l-md px-2 py-1.5 text-gray-400 ring-1 ring-inset ring-gray-200 hover:bg-gray-50 focus:z-20 focus:outline-offset-0 disabled:opacity-50 disabled:cursor-not-allowed transition">
+                                <span class="sr-only">Previous</span>
+                                <svg class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                    <path fill-rule="evenodd" d="M12.79 5.23a.75.75 0 01-.02 1.06L8.832 10l3.938 3.71a.75.75 0 11-1.04 1.08l-4.5-4.25a.75.75 0 010-1.08l4.5-4.25a.75.75 0 011.06.02z" clip-rule="evenodd" />
+                                </svg>
+                            </button>`;
+                            
+            for (let i = 1; i <= totalPages; i++) {
+                if (i === currentPage) {
+                    html += `<button aria-current="page" class="relative z-10 inline-flex items-center bg-[#0066FF] px-3.5 py-1.5 text-xs font-bold text-white focus:z-20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0066FF] transition">${i}</button>`;
+                } else {
+                    html += `<button onclick="${changePageFunc}(${i})" class="relative inline-flex items-center px-3.5 py-1.5 text-xs font-semibold text-gray-900 ring-1 ring-inset ring-gray-200 hover:bg-gray-50 focus:z-20 focus:outline-offset-0 transition">${i}</button>`;
+                }
+            }
+                            
+            html += `       <button onclick="${changePageFunc}(${currentPage + 1})" ${currentPage === totalPages ? 'disabled' : ''} class="relative inline-flex items-center rounded-r-md px-2 py-1.5 text-gray-400 ring-1 ring-inset ring-gray-200 hover:bg-gray-50 focus:z-20 focus:outline-offset-0 disabled:opacity-50 disabled:cursor-not-allowed transition">
+                                <span class="sr-only">Next</span>
+                                <svg class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                    <path fill-rule="evenodd" d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z" clip-rule="evenodd" />
+                                </svg>
+                            </button>
+                        </nav>
+                    </div>
+                </div>
+                <!-- Mobile View -->
+                <div class="flex flex-1 justify-between sm:hidden">
+                    <button onclick="${changePageFunc}(${currentPage - 1})" ${currentPage === 1 ? 'disabled' : ''} class="relative inline-flex items-center rounded-md border border-gray-200 bg-white px-4 py-2 text-xs font-bold text-gray-700 hover:bg-gray-50 disabled:opacity-50 shadow-sm transition">Previous</button>
+                    <button onclick="${changePageFunc}(${currentPage + 1})" ${currentPage === totalPages ? 'disabled' : ''} class="relative ml-3 inline-flex items-center rounded-md border border-gray-200 bg-white px-4 py-2 text-xs font-bold text-gray-700 hover:bg-gray-50 disabled:opacity-50 shadow-sm transition">Next</button>
+                </div>
+            </div>`;
+            
+            container.innerHTML = html;
+        };
+
+        window.changeApptPage = (page) => {
+            window.currentApptPage = page;
+            window.renderAppointments();
+        };
+
+        window.changeReportPage = (page) => {
+            window.currentReportPage = page;
+            window.renderReports();
+        };
 
         // ---- REVIEW LOGIC ----
         window.activeReviewApptId = null;
@@ -1168,53 +1239,20 @@
         };
 
         async function fetchAppointments() {
-            const tbody = document.getElementById('schedule-table-body');
             try {
                 const r = await fetch(API_BASE + '/api/appointments', { method: 'GET', headers: await getAuthHeaders() });
                 const data = await r.json(); 
-                tbody.innerHTML = '';
                 
                 if(!data.appointments || data.appointments.length === 0) { 
+                    const tbody = document.getElementById('schedule-table-body');
                     tbody.innerHTML = `<tr><td colspan="8" class="py-12 text-center text-gray-400 font-medium">No appointments scheduled.</td></tr>`; 
+                    document.getElementById('appt-pagination').innerHTML = '';
                     return; 
                 }
                 
                 window.cachedAppointments = data.appointments;
-                
-                data.appointments.forEach(a => {
-                    let sColor = a.status === 'Done' ? 'text-green-600 bg-green-50' : 'text-blue-600 bg-blue-50';
-                    let btn = a.action_url ? `<a href="${API_BASE}${a.action_url}" target="_blank" class="bg-[#1e1b4b] hover:bg-gray-800 transition text-white text-[10px] font-bold px-3 py-1.5 rounded uppercase whitespace-nowrap">Start Call</a>` : `<span class="text-gray-300">--</span>`;
-                    
-                    let reviewCell = `<span class="text-gray-300">--</span>`;
-                    
-                    let numericId = a.id.replace('ID', '');
-                    
-                    // New E-Rx Button
-                    let erxCell = a.consultation_completed 
-                        ? `<a href="prescription.html?id=${numericId}" class="text-[#0066FF] hover:text-blue-800 font-bold text-[11px] underline transition flex items-center justify-center whitespace-nowrap">
-                             <svg class="w-3.5 h-3.5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-                             View E-Rx
-                           </a>` 
-                        : `<span class="text-gray-300">--</span>`;
-
-                    if (a.review_submitted) {
-                        reviewCell = `<span class="text-green-500 font-bold text-[10px] flex items-center justify-center"><svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>Reviewed</span>`;
-                    } else if (a.consultation_completed) {
-                        reviewCell = `<button onclick="openReviewModal('${numericId}', '${a.doctor_name}')" class="text-[#0066FF] hover:text-blue-800 font-bold text-[11px] underline transition flex items-center justify-center w-full"><svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>Review</button>`;
-                    }
-
-                    tbody.innerHTML += `
-                        <tr class="border-b border-gray-100 hover:bg-gray-50 transition">
-                            <td class="py-4 px-6 font-bold text-gray-900">${a.id}</td>
-                            <td class="py-4 px-6">${a.type}</td>
-                            <td class="py-4 px-6">${a.doctor_name || '--'}</td>
-                            <td class="py-4 px-6 whitespace-nowrap">${a.date}<br><span class="text-xs text-gray-400">${a.time}</span></td>
-                            <td class="py-4 px-6 font-bold"><span class="${sColor} px-2.5 py-1 rounded text-[10px]">${a.status}</span></td>
-                            <td class="py-4 px-6 text-center">${btn}</td>
-                            <td class="py-4 px-6 text-center">${erxCell}</td>
-                            <td class="py-4 px-6 text-center">${reviewCell}</td>
-                        </tr>`;
-                });
+                window.currentApptPage = 1;
+                window.renderAppointments();
                 
                 checkUpcomingReminders(data.appointments);
 
@@ -1234,6 +1272,52 @@
             } catch (e) { console.error(e); }
         }
 
+        window.renderAppointments = () => {
+            const tbody = document.getElementById('schedule-table-body');
+            tbody.innerHTML = '';
+            
+            const start = (window.currentApptPage - 1) * window.apptsPerPage;
+            const end = start + window.apptsPerPage;
+            const pageData = window.cachedAppointments.slice(start, end);
+            
+            pageData.forEach(a => {
+                let sColor = a.status === 'Done' ? 'text-green-600 bg-green-50' : 'text-blue-600 bg-blue-50';
+                let btn = a.action_url ? `<a href="${API_BASE}${a.action_url}" target="_blank" class="bg-[#1e1b4b] hover:bg-gray-800 transition text-white text-[10px] font-bold px-3 py-1.5 rounded uppercase whitespace-nowrap inline-block shadow-sm">Start Call</a>` : `<span class="text-gray-300">--</span>`;
+                
+                let numericId = a.id.replace('ID', '');
+                
+                // Updated E-Rx Button
+                let erxCell = a.consultation_completed 
+                    ? `<a href="prescription.html?id=${numericId}" class="bg-[#0066FF] hover:bg-blue-700 transition text-white text-[10px] font-bold px-3 py-1.5 rounded uppercase whitespace-nowrap inline-flex items-center justify-center shadow-sm">
+                         <svg class="w-3.5 h-3.5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                         View E-Rx
+                       </a>` 
+                    : `<span class="text-gray-300">--</span>`;
+
+                let reviewCell = `<span class="text-gray-300">--</span>`;
+
+                if (a.review_submitted) {
+                    reviewCell = `<span class="text-green-500 font-bold text-[10px] inline-flex items-center justify-center uppercase"><svg class="w-3.5 h-3.5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>Reviewed</span>`;
+                } else if (a.consultation_completed) {
+                    reviewCell = `<button onclick="openReviewModal('${numericId}', '${a.doctor_name}')" class="bg-[#0066FF] hover:bg-blue-700 transition text-white text-[10px] font-bold px-3 py-1.5 rounded uppercase whitespace-nowrap inline-flex items-center justify-center shadow-sm"><svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>Review</button>`;
+                }
+
+                tbody.innerHTML += `
+                    <tr class="border-b border-gray-100 hover:bg-gray-50 transition">
+                        <td class="py-5 px-6 font-bold text-gray-900">${a.id}</td>
+                        <td class="py-5 px-6">${a.type}</td>
+                        <td class="py-5 px-6">${a.doctor_name || '--'}</td>
+                        <td class="py-5 px-6 whitespace-nowrap">${a.date}<br><span class="text-xs text-gray-400">${a.time}</span></td>
+                        <td class="py-5 px-6 font-bold"><span class="${sColor} px-2.5 py-1 rounded text-[10px] uppercase tracking-wider">${a.status}</span></td>
+                        <td class="py-5 px-6 text-center">${btn}</td>
+                        <td class="py-5 px-6 text-center">${erxCell}</td>
+                        <td class="py-5 px-6 text-center">${reviewCell}</td>
+                    </tr>`;
+            });
+            
+            window.renderPaginationControls(window.cachedAppointments.length, window.apptsPerPage, window.currentApptPage, 'appt-pagination', 'changeApptPage');
+        };
+
         async function fetchReports() {
             try {
                 const r = await fetch(API_BASE+'/api/reports', { headers: await getAuthHeaders() });
@@ -1244,29 +1328,43 @@
                     document.getElementById('reports-empty').classList.remove('flex');
                     document.getElementById('reports-container').classList.remove('hidden');
                     
-                    const tbody = document.getElementById('reports-table-body');
-                    tbody.innerHTML = '';
-                    data.reports.forEach(rep => {
-                        let statColor = rep.status === 'Processing' ? 'bg-yellow-50 text-yellow-600' : (rep.status === 'Failed' ? 'bg-red-50 text-red-600' : 'bg-green-50 text-green-600');
-                        let safeId = rep.id ? `'${rep.id}'` : `null`;
-
-                        let driveBtn = rep.drive_url 
-                            ? `<a href="${rep.drive_url}" target="_blank" class="text-blue-500 hover:text-blue-700 mr-4 transition" title="View Document">
-                                 <svg class="w-5 h-5 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
-                               </a>` 
-                            : `<span class="text-gray-300 mr-4 cursor-not-allowed" title="Document view unavailable">
-                                 <svg class="w-5 h-5 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"></path></svg>
-                               </span>`;
-                        
-                        tbody.innerHTML += `<tr class="border-b border-gray-100 hover:bg-gray-50 transition"><td class="py-4 px-6 font-bold text-gray-900 whitespace-nowrap">${rep.name}</td><td class="py-4 px-6 text-gray-600 whitespace-nowrap">${rep.type}</td><td class="py-4 px-6 text-gray-600 whitespace-nowrap">${rep.date}</td><td class="py-4 px-6"><span class="${statColor} px-2.5 py-1 rounded text-[10px] font-bold">${rep.status}</span></td><td class="py-4 px-6 flex justify-center items-center">${driveBtn}<button onclick="deleteReport(${safeId})" class="text-gray-400 hover:text-red-500 font-bold transition" title="Delete"><svg class="w-5 h-5 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg></button></td></tr>`;
-                    });
+                    window.cachedReports = data.reports;
+                    window.currentReportPage = 1;
+                    window.renderReports();
                 } else {
                     document.getElementById('reports-empty').classList.remove('hidden');
                     document.getElementById('reports-empty').classList.add('flex');
                     document.getElementById('reports-container').classList.add('hidden');
+                    document.getElementById('report-pagination').innerHTML = '';
                 }
             } catch(e) { console.error("Error loading reports", e); }
         }
+
+        window.renderReports = () => {
+            const tbody = document.getElementById('reports-table-body');
+            tbody.innerHTML = '';
+            
+            const start = (window.currentReportPage - 1) * window.reportsPerPage;
+            const end = start + window.reportsPerPage;
+            const pageData = window.cachedReports.slice(start, end);
+            
+            pageData.forEach(rep => {
+                let statColor = rep.status === 'Processing' ? 'bg-yellow-50 text-yellow-600' : (rep.status === 'Failed' ? 'bg-red-50 text-red-600' : 'bg-green-50 text-green-600');
+                let safeId = rep.id ? `'${rep.id}'` : `null`;
+
+                let driveBtn = rep.drive_url 
+                    ? `<a href="${rep.drive_url}" target="_blank" class="text-blue-500 hover:text-blue-700 mr-4 transition" title="View Document">
+                         <svg class="w-5 h-5 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
+                       </a>` 
+                    : `<span class="text-gray-300 mr-4 cursor-not-allowed" title="Document view unavailable">
+                         <svg class="w-5 h-5 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"></path></svg>
+                       </span>`;
+                
+                tbody.innerHTML += `<tr class="border-b border-gray-100 hover:bg-gray-50 transition"><td class="py-5 px-6 font-bold text-gray-900 whitespace-nowrap">${rep.name}</td><td class="py-5 px-6 text-gray-600 whitespace-nowrap">${rep.type}</td><td class="py-5 px-6 text-gray-600 whitespace-nowrap">${rep.date}</td><td class="py-5 px-6"><span class="${statColor} px-2.5 py-1 rounded text-[10px] font-bold uppercase tracking-wider">${rep.status}</span></td><td class="py-5 px-6 flex justify-center items-center">${driveBtn}<button onclick="deleteReport(${safeId})" class="text-gray-400 hover:text-red-500 font-bold transition" title="Delete"><svg class="w-5 h-5 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg></button></td></tr>`;
+            });
+            
+            window.renderPaginationControls(window.cachedReports.length, window.reportsPerPage, window.currentReportPage, 'report-pagination', 'changeReportPage');
+        };
 
         window.deleteReport = (id) => {
             if (!id) return;
