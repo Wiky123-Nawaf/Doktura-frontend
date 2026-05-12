@@ -369,7 +369,7 @@
                                     <th class="py-4 px-6">Date</th>
                                     <th class="py-4 px-6">Status</th>
                                     <th class="py-4 px-6 text-center">Action</th>
-                                    <th class="py-4 px-6 text-center">E-Rx</th>
+                                    <th class="py-4 px-6 text-center">DOCTOR PRESCRIPTION</th>
                                     <th class="py-4 px-6 text-center">Review</th>
                                 </tr>
                             </thead>
@@ -1282,7 +1282,7 @@
             
             pageData.forEach(a => {
                 let sColor = a.status === 'Done' ? 'text-green-600 bg-green-50' : 'text-blue-600 bg-blue-50';
-                let btn = a.action_url ? `<a href="${API_BASE}${a.action_url}" target="_blank" class="bg-[#1e1b4b] hover:bg-gray-800 transition text-white text-[10px] font-bold px-3 py-1.5 rounded uppercase whitespace-nowrap inline-block shadow-sm">Start Call</a>` : `<span class="text-gray-300">--</span>`;
+                let btn = a.action_url ? `<a href="${API_BASE}${a.action_url}" target="_blank" class="bg-[#0066FF] hover:bg-blue-700 transition text-white text-[10px] font-bold px-3 py-1.5 rounded uppercase whitespace-nowrap inline-flex items-center justify-center shadow-sm">Start Call</a>` : `<span class="text-gray-300">--</span>`;
                 
                 let numericId = a.id.replace('ID', '');
                 
