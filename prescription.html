@@ -64,7 +64,7 @@
     </div>
 
     <!-- Main Container -->
-    <div id="main-content" class="hidden max-w-7xl mx-auto px-4 py-8 lg:py-10 grid grid-cols-1 lg:grid-cols-12 gap-8 items-start relative">
+    <div id="main-content" class="hidden max-w-7xl mx-auto px-4 py-8 lg:py-10 grid-cols-1 lg:grid-cols-12 gap-8 items-start relative">
 
         <!-- ================== LEFT SIDE: E-PRESCRIPTION PAPER ================== -->
         <div class="lg:col-span-7 xl:col-span-8 flex flex-col items-center">
@@ -167,7 +167,7 @@
         </div>
 
         <!-- ================== RIGHT SIDE: DELIVERY SIDEBAR ================== -->
-        <div id="delivery-sidebar" class="no-print lg:col-span-5 xl:col-span-4 hidden lg:block sticky top-24 w-full max-w-md mx-auto lg:max-w-none mb-10">
+        <div id="delivery-sidebar" class="no-print lg:col-span-5 xl:col-span-4 hidden sticky top-24 w-full max-w-md mx-auto lg:max-w-none mb-10">
             
             <div class="bg-white shadow-xl shadow-gray-200/50 border border-gray-200 rounded-2xl overflow-hidden pb-1 transition-all">
                 
@@ -246,7 +246,7 @@
     </div>
 
     <!-- Notification Toaster container -->
-    <div id="global-message-container" class="fixed top-20 left-0 right-0 hidden w-full px-4 sm:px-8 z-[200] relative bg-transparent flex justify-center no-print">
+    <div id="global-message-container" class="fixed top-20 left-0 right-0 hidden w-full px-4 sm:px-8 z-[200] flex justify-center no-print">
         <div id="global-message-box" class="p-4 rounded-xl text-sm font-bold border flex items-center justify-between shadow-lg">
             <div class="flex items-center">
                 <svg id="global-message-icon" class="w-5 h-5 mr-3 shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path></svg>
@@ -271,9 +271,9 @@
 
         // Check if an ID exists
         if(!apptIdStr) {
-            document.getElementById('loader').classList.add('hidden');
-            document.getElementById('error-state').classList.remove('hidden');
-            document.getElementById('error-state').classList.add('flex');
+            document.getElementById('loader')?.classList.add('hidden');
+            document.getElementById('error-state')?.classList.remove('hidden');
+            document.getElementById('error-state')?.classList.add('flex');
             document.getElementById('error-message').innerText = "No Prescription ID was provided in the link.";
         } else {
             // Setup Auth Hook
@@ -300,39 +300,42 @@
                 }
 
                 // --------- Populate E-RX UI Paper (Left Side) --------- //
-                document.getElementById('ui-appt-id').innerText = data.appointment_id.toString().padStart(6, '0');
+                if (document.getElementById('ui-appt-id')) document.getElementById('ui-appt-id').innerText = data.appointment_id.toString().padStart(6, '0');
                 
                 try {
                     let d = new Date(data.date.replace('T', ' '));
-                    document.getElementById('ui-date').innerText = isNaN(d) ? data.date : d.toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' });
-                } catch(e) { document.getElementById('ui-date').innerText = data.date; }
+                    if (document.getElementById('ui-date')) document.getElementById('ui-date').innerText = isNaN(d) ? data.date : d.toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' });
+                } catch(e) {}
 
-                document.getElementById('ui-doctor-name').innerText = data.doctor_name;
-                document.getElementById('ui-doctor-spec').innerText = data.doctor_specialty;
-                document.getElementById('ui-sig-doc').innerText = data.doctor_name;
+                if (document.getElementById('ui-doctor-name')) document.getElementById('ui-doctor-name').innerText = data.doctor_name;
+                if (document.getElementById('ui-doctor-spec')) document.getElementById('ui-doctor-spec').innerText = data.doctor_specialty;
+                if (document.getElementById('ui-sig-doc')) document.getElementById('ui-sig-doc').innerText = data.doctor_name;
                 
-                document.getElementById('ui-patient-name').innerText = data.patient_name;
+                if (document.getElementById('ui-patient-name')) document.getElementById('ui-patient-name').innerText = data.patient_name;
 
                 // Render Medicine Items in Rx Paper
                 const rxList = document.getElementById('ui-med-list');
-                rxList.innerHTML = '';
-                
-                if (!data.medications || data.medications.length === 0) {
-                    rxList.innerHTML = `<p class="text-sm font-bold text-gray-400">No active medications prescribed for this session.</p>`;
-                } else {
-                    data.medications.forEach(m => {
-                        rxList.innerHTML += `
-                        <li class="mb-4">
-                            <p class="font-extrabold text-base text-gray-900 tracking-tight leading-snug">${m.name} ${m.dose ? `— <span class="font-medium text-[#0066FF] bg-blue-50 px-2 py-0.5 rounded text-xs">${m.dose}</span>` : ''}</p>
-                            <p class="text-xs font-semibold text-gray-500 mt-1 uppercase tracking-wide bg-gray-50 py-1.5 px-3 rounded inline-block border border-gray-100 shadow-sm">${m.pills_per_day} Daily</p>
-                        </li>`;
-                    });
+                if (rxList) {
+                    rxList.innerHTML = '';
+                    if (!data.medications || data.medications.length === 0) {
+                        rxList.innerHTML = `<p class="text-sm font-bold text-gray-400">No active medications prescribed for this session.</p>`;
+                    } else {
+                        data.medications.forEach(m => {
+                            rxList.innerHTML += `
+                            <li class="mb-4">
+                                <p class="font-extrabold text-base text-gray-900 tracking-tight leading-snug">${m.name} ${m.dose ? `— <span class="font-medium text-[#0066FF] bg-blue-50 px-2 py-0.5 rounded text-xs">${m.dose}</span>` : ''}</p>
+                                <p class="text-xs font-semibold text-gray-500 mt-1 uppercase tracking-wide bg-gray-50 py-1.5 px-3 rounded inline-block border border-gray-100 shadow-sm">${m.pills_per_day} Daily</p>
+                            </li>`;
+                        });
+                    }
                 }
 
-                document.getElementById('ui-doctor-notes').innerText = data.doctor_notes || "Use all prescribed medicine exactly as directed. In case of unexpected allergic reaction or worsening side-effects, contact your medical center immediately.";
+                if (document.getElementById('ui-doctor-notes')) {
+                    document.getElementById('ui-doctor-notes').innerText = data.doctor_notes || "Use all prescribed medicine exactly as directed. In case of unexpected allergic reaction or worsening side-effects, contact your medical center immediately.";
+                }
                 
                 const mcBadge = document.getElementById('ui-mc-badge');
-                if (data.mc_needed) {
+                if (data.mc_needed && mcBadge) {
                     mcBadge.innerText = "✓ Required / Approved";
                     mcBadge.classList.replace('bg-gray-100', 'bg-blue-100');
                     mcBadge.classList.replace('text-gray-600', 'text-[#0066FF]');
@@ -344,75 +347,78 @@
                 const formWrapper = document.getElementById('delivery-form-wrapper');
                 const paidWrapper = document.getElementById('delivery-paid-wrapper');
                 const emptyWrapper = document.getElementById('delivery-empty-wrapper');
-
-                let subTotal = 0.0;
-                breakdownUI.innerHTML = '';
+                const deliverySidebar = document.getElementById('delivery-sidebar');
                 
+                let subTotal = 0.0;
                 let isBillable = false;
 
-                if (data.medications && data.medications.length > 0) {
-                    data.medications.forEach(m => {
-                        let itemPrice = parseFloat(m.price || 0.0);
-                        if(itemPrice > 0) isBillable = true;
-                        
-                        subTotal += itemPrice;
+                if (breakdownUI && formWrapper && paidWrapper && emptyWrapper && deliverySidebar) {
+                    breakdownUI.innerHTML = '';
+
+                    if (data.medications && data.medications.length > 0) {
+                        data.medications.forEach(m => {
+                            let itemPrice = parseFloat(m.price || 0.0);
+                            if(itemPrice > 0) isBillable = true;
+                            
+                            subTotal += itemPrice;
+                            breakdownUI.innerHTML += `
+                                <div class="flex justify-between text-xs text-gray-600">
+                                    <span class="font-medium">${m.name}</span>
+                                    <span class="font-bold whitespace-nowrap ml-4 text-gray-900">RM ${itemPrice.toFixed(2)}</span>
+                                </div>`;
+                        });
+                    }
+
+                    deliverySidebar.classList.remove('hidden');
+                    deliverySidebar.classList.add('block', 'lg:block');
+
+                    if (!isBillable) {
+                        breakdownUI.innerHTML = `<div class="text-[11px] font-bold text-yellow-600 bg-yellow-50 p-2 rounded">Selected items lack active pricing right now. E-Rx download is still available.</div>`;
+                        if (document.getElementById('total-cost')) document.getElementById('total-cost').innerText = `RM 0.00`;
+                        emptyWrapper.classList.remove('hidden');
+                    } 
+                    else if (data.delivery_status === 'paid' || data.delivery_status === 'shipped') {
+                        // Item cost Breakdown + fixed RM 10 row
                         breakdownUI.innerHTML += `
-                            <div class="flex justify-between text-xs text-gray-600">
-                                <span class="font-medium">${m.name}</span>
-                                <span class="font-bold whitespace-nowrap ml-4 text-gray-900">RM ${itemPrice.toFixed(2)}</span>
-                            </div>`;
-                    });
+                        <div class="flex justify-between text-[11px] text-[#0066FF] font-bold uppercase tracking-wider pt-2 mt-2 border-t border-gray-100">
+                            <span>Delivery</span><span>RM ${data.delivery_fee.toFixed(2)}</span>
+                        </div>`;
+                        
+                        let gTotal = subTotal + parseFloat(data.delivery_fee);
+                        if (document.getElementById('total-cost')) document.getElementById('total-cost').innerText = `RM ${gTotal.toFixed(2)}`;
+                        
+                        // UI STATE: ALREADY PAID!
+                        paidWrapper.classList.remove('hidden');
+                    } 
+                    else {
+                        // Default State: Pending payment and billable.
+                        breakdownUI.innerHTML += `
+                        <div class="flex justify-between text-[11px] text-[#0066FF] font-bold uppercase tracking-wider pt-2 mt-2 border-t border-gray-100">
+                            <span>Delivery Rate</span><span>RM ${data.delivery_fee.toFixed(2)}</span>
+                        </div>`;
+
+                        let gTotal = subTotal + parseFloat(data.delivery_fee);
+                        if (document.getElementById('total-cost')) document.getElementById('total-cost').innerText = `RM ${gTotal.toFixed(2)}`;
+
+                        // UI STATE: Fill Form
+                        formWrapper.classList.remove('hidden');
+                        
+                        // Pre-fill Name inputs for convenience
+                        try { if(document.getElementById('del-name')) document.getElementById('del-name').value = data.patient_name; } catch(e){}
+                    }
                 }
 
-                // Always reveal sidebar initially via hidden block transition classes
-                document.getElementById('delivery-sidebar').classList.remove('hidden');
-
-                if (!isBillable) {
-                    breakdownUI.innerHTML = `<div class="text-[11px] font-bold text-yellow-600 bg-yellow-50 p-2 rounded">Selected items lack active pricing right now. E-Rx download is still available.</div>`;
-                    document.getElementById('total-cost').innerText = `RM 0.00`;
-                    emptyWrapper.classList.remove('hidden');
-                } 
-                else if (data.delivery_status === 'paid' || data.delivery_status === 'shipped') {
-                    // Item cost Breakdown + fixed RM 10 row
-                    breakdownUI.innerHTML += `
-                    <div class="flex justify-between text-[11px] text-[#0066FF] font-bold uppercase tracking-wider pt-2 mt-2 border-t border-gray-100">
-                        <span>Delivery</span><span>RM ${data.delivery_fee.toFixed(2)}</span>
-                    </div>`;
-                    
-                    let gTotal = subTotal + parseFloat(data.delivery_fee);
-                    document.getElementById('total-cost').innerText = `RM ${gTotal.toFixed(2)}`;
-                    
-                    // UI STATE: ALREADY PAID!
-                    paidWrapper.classList.remove('hidden');
-                } 
-                else {
-                    // Default State: Pending payment and billable.
-                    breakdownUI.innerHTML += `
-                    <div class="flex justify-between text-[11px] text-[#0066FF] font-bold uppercase tracking-wider pt-2 mt-2 border-t border-gray-100">
-                        <span>Delivery Rate</span><span>RM ${data.delivery_fee.toFixed(2)}</span>
-                    </div>`;
-
-                    let gTotal = subTotal + parseFloat(data.delivery_fee);
-                    document.getElementById('total-cost').innerText = `RM ${gTotal.toFixed(2)}`;
-
-                    // UI STATE: Fill Form
-                    formWrapper.classList.remove('hidden');
-                    
-                    // Pre-fill Name inputs for convenience if mapped in userdata memory 
-                    try { document.getElementById('del-name').value = data.patient_name; } catch(e){}
-                }
-
-                // Finished loading, transition screens
-                document.getElementById('loader').classList.add('hidden');
-                document.getElementById('main-content').classList.remove('hidden');
-                document.getElementById('main-content').classList.add('grid');
+                // Finished loading, transition screens safely
+                document.getElementById('loader')?.classList.add('hidden');
+                document.getElementById('main-content')?.classList.remove('hidden');
+                document.getElementById('main-content')?.classList.add('grid');
 
             } catch (error) {
-                console.error("Prescription Error:", error);
-                document.getElementById('loader').classList.add('hidden');
-                document.getElementById('error-state').classList.remove('hidden');
-                document.getElementById('error-state').classList.add('flex');
-                if (error.message) {
+                console.error("Prescription Error Trace:", error);
+                document.getElementById('loader')?.classList.add('hidden');
+                document.getElementById('error-state')?.classList.remove('hidden');
+                document.getElementById('error-state')?.classList.add('flex');
+                if (error.message && document.getElementById('error-message')) {
                     document.getElementById('error-message').innerText = error.message;
                 }
             }
@@ -428,6 +434,8 @@
             const text = document.getElementById('global-message-text');
             const icon = document.getElementById('global-message-icon');
             
+            if(!container) return; // Fail safe
+            
             text.innerText = msg;
             if(type === 'error') {
                 box.className = 'max-w-md w-full mx-auto p-4 rounded-xl text-sm font-bold border flex items-center justify-between bg-red-50 border-red-200 text-red-600 shadow-xl';
@@ -442,9 +450,9 @@
 
         window.submitDelivery = async () => {
             const apptIdStr = new URLSearchParams(window.location.search).get('id');
-            const dName = document.getElementById('del-name').value.trim();
-            const dPhone = document.getElementById('del-phone').value.trim();
-            const dAddress = document.getElementById('del-address').value.trim();
+            const dName = document.getElementById('del-name')?.value.trim();
+            const dPhone = document.getElementById('del-phone')?.value.trim();
+            const dAddress = document.getElementById('del-address')?.value.trim();
 
             if (!dName || !dPhone || !dAddress) {
                 return window.showInlineMessage("Please provide your full delivery address and contact info.", "error");
