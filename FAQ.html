@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="color-scheme" content="light">
+    <title>FAQ - Doktura.ai</title>
+
+    <link rel="icon" type="image/jpeg" href="https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/Vector%20(4).png?download=true">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <style>
+        /* --- Reset & Base Styles from Index --- */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', sans-serif;
+            color: #1a1a1a;
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+            background-color: #ffffff;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        a { text-decoration: none; color: inherit; }
+        button { font-family: inherit; cursor: pointer; }
+
+        /* --- Color Variables --- */
+        :root {
+            --primary-blue: #0066cc;
+            --text-dark: #111111;
+            --text-gray: #4b5563;
+            --border-gray: #e2e8f0;
+        }
+
+        /* --- Custom Navigation Styles --- */
+        .site-header {
+            position: sticky;
+            top: 0;
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(8px);
+            border-bottom: 1px solid var(--border-gray);
+            z-index: 100;
+        }
+        
+        .nav-link {
+            color: #6b7280;
+            font-size: 14px;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+        .nav-link:hover { color: var(--text-dark); }
+        .nav-link.active {
+            color: var(--text-dark);
+            font-weight: 700;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-blue);
+            color: white;
+            border: none;
+            border-radius: 999px;
+            padding: 10px 24px;
+            font-size: 14px;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 0.2s;
+            white-space: nowrap;
+        }
+        .btn-primary:hover { opacity: 0.9; }
+
+        /* --- Typography & FAQ Content Styles --- */
+        .content-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 80px 24px 100px 24px;
+            flex: 1;
+            width: 100%;
+        }
+
+        .page-title {
+            font-size: 44px;
+            font-weight: 800;
+            color: var(--text-dark);
+            margin-bottom: 48px;
+            letter-spacing: -1px;
+        }
+
+        .faq-item {
+            margin-bottom: 32px;
+        }
+
+        .faq-item h3 {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 8px;
+            line-height: 1.4;
+        }
+
+        .faq-item p {
+            font-size: 15px;
+            color: var(--text-gray);
+            line-height: 1.7;
+        }
+
+        /* --- CTA Box Styles --- */
+        .cta-box {
+            background-color: #f4f9ff;
+            border: 1px solid #dbeafe;
+            border-radius: 16px;
+            padding: 32px 40px;
+            margin-top: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 24px;
+        }
+
+        .cta-text h4 {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 4px;
+        }
+
+        .cta-text p {
+            font-size: 15px;
+            color: var(--text-gray);
+            margin: 0;
+        }
+
+        /* --- Footer Styles (Exact match) --- */
+        .footer-section { background-color: #111111; color: #ffffff; padding: 80px 0 40px 0; width: 100%; margin-top: auto; }
+        .footer-content { max-width: 1200px; margin: 0 auto; padding: 0 24px; display: flex; flex-direction: column; }
+        .footer-top { display: flex; justify-content: space-between; gap: 60px; padding-bottom: 60px; }
+        .footer-brand { max-width: 380px; }
+        .footer-brand img { height: 50px; width: auto; margin-bottom: 24px; display: block; margin-left: -12px;}
+        .footer-brand p { color: #a0aab5; font-size: 16px; line-height: 1.6; }
+        .footer-links-group { display: flex; gap: 120px; }
+        .footer-col h4 { font-size: 16px; font-weight: 600; margin-bottom: 24px; color: #ffffff; }
+        .footer-col a { display: block; color: #a0aab5; font-size: 15px; margin-bottom: 16px; text-decoration: none; transition: color 0.2s; }
+        .footer-col a:hover { color: #ffffff; }
+        .footer-bottom { display: flex; justify-content: space-between; align-items: center; padding-top: 40px; border-top: 1px solid rgba(255, 255, 255, 0.1); }
+        .footer-bottom p { color: #a0aab5; font-size: 14px; }
+        .social-area { display: flex; align-items: center; gap: 20px; }
+        .social-area span { color: #ffffff; font-weight: 500; font-size: 15px; }
+        .social-icons { display: flex; align-items: center; gap: 16px; }
+        .social-icons a { color: #ffffff; transition: opacity 0.2s; display: flex; align-items: center; justify-content: center; }
+        .social-icons a:hover { opacity: 0.7; }
+
+        /* Responsive overrides */
+        @media (max-width: 1024px) {
+            .footer-top { flex-direction: column; gap: 40px; }
+            .footer-links-group { gap: 60px; justify-content: flex-start; }
+        }
+        @media (max-width: 768px) {
+            .page-title { font-size: 36px; margin-bottom: 32px; }
+            .content-container { padding: 40px 20px 60px 20px; }
+            
+            .cta-box {
+                flex-direction: column;
+                align-items: flex-start;
+                padding: 24px;
+            }
+            .cta-box .btn-primary { width: 100%; }
+
+            .footer-section { padding: 50px 0 24px 0; }
+            .footer-content { padding: 0 16px; }
+            .footer-top { padding-bottom: 32px; }
+            .footer-links-group { flex-direction: column; gap: 32px; }
+            .footer-bottom { flex-direction: column; align-items: flex-start; gap: 24px; padding-top: 24px; }
+            .social-area { flex-direction: column; align-items: flex-start; gap: 16px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header / Navigation -->
+    <header class="site-header">
+        <div class="max-w-[1200px] mx-auto px-6 h-20 flex items-center justify-between">
+            <!-- Logo -->
+            <a href="index.html" class="flex-shrink-0">
+                <img src="https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/Group%202085665235.png?download=true" class="h-8 object-contain" alt="Doktura Logo">
+            </a>
+
+            <!-- Desktop Nav Links -->
+            <nav class="hidden md:flex items-center gap-8 ml-auto mr-8">
+                <a href="aboutus.html" class="nav-link">About Us</a>
+                <a href="faq.html" class="nav-link active">FAQ</a>
+                <a href="#" class="nav-link">Feedback</a>
+                <a href="Contact-Us.html" class="nav-link">Contact Us</a>
+                <a href="terms.html" class="nav-link">Terms of Service</a>
+            </nav>
+
+            <!-- Login Button & Divider -->
+            <div class="hidden md:flex items-center gap-6 border-l border-gray-200 pl-6">
+                <a href="login.html" class="btn-primary">Login Now</a>
+            </div>
+
+            <!-- Mobile Menu Button -->
+            <button class="md:hidden text-gray-500 hover:text-gray-900 focus:outline-none" onclick="document.getElementById('mobile-menu').classList.toggle('hidden')">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+            </button>
+        </div>
+
+        <!-- Mobile Menu Dropdown -->
+        <div id="mobile-menu" class="hidden md:hidden bg-white border-t border-gray-100 px-6 py-4 absolute w-full shadow-lg">
+            <nav class="flex flex-col gap-4">
+                <a href="aboutus.html" class="nav-link">About Us</a>
+                <a href="faq.html" class="nav-link active">FAQ</a>
+                <a href="#" class="nav-link">Feedback</a>
+                <a href="Contact-Us.html" class="nav-link">Contact Us</a>
+                <a href="terms.html" class="nav-link">Terms of Service</a>
+                <a href="login.html" class="btn-primary mt-2 w-full text-center">Login Now</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="content-container">
+        
+        <h1 class="page-title">Frequently Asked Questions</h1>
+
+        <div class="faq-list">
+            <div class="faq-item">
+                <h3>1. What is Doktura.Ai?</h3>
+                <p>Doktura.Ai is an AI-powered healthcare support platform that helps users ask health-related questions, understand symptoms, and get general health guidance. When needed, users may also connect with licensed doctors for professional medical care.</p>
+            </div>
+
+            <div class="faq-item">
+                <h3>2. Is Doktura.Ai a doctor?</h3>
+                <p>No. Doktura.Ai AI assistant is not a doctor and does not replace professional medical advice, diagnosis, or treatment. It provides general health guidance only. For proper medical care, you should consult a qualified doctor.</p>
+            </div>
+
+            <div class="faq-item">
+                <h3>3. Can Doktura.Ai diagnose my illness?</h3>
+                <p>No. Doktura.Ai can help you understand possible causes of your symptoms and suggest next steps, but only a licensed doctor can provide a medical diagnosis.</p>
+            </div>
+
+            <div class="faq-item">
+                <h3>4. When should I consult a doctor?</h3>
+                <p>You should consult a doctor if your symptoms are serious, getting worse, lasting for a long time, or if you are unsure about your condition. For urgent or emergency situations, please contact emergency services or visit the nearest hospital immediately.</p>
+            </div>
+
+            <div class="faq-item">
+                <h3>5. Can I talk to a real doctor through Doktura.Ai?</h3>
+                <p>Yes. Doktura.Ai may allow users to connect with licensed doctors for online consultations, depending on availability and service location.</p>
+            </div>
+
+            <div class="faq-item">
+                <h3>6. Can I get medicine or a prescription?</h3>
+                <p>Prescriptions can only be provided by a licensed doctor after a proper consultation. The AI assistant cannot prescribe medicine.</p>
+            </div>
+
+            <div class="faq-item">
+                <h3>7. Is my information private?</h3>
+                <p>Yes. Doktura.Ai is designed with privacy and data protection in mind. Your health conversations and personal information are handled securely according to applicable privacy standards.</p>
+            </div>
+
+            <div class="faq-item">
+                <h3>8. Do I need to create an account?</h3>
+                <p>Some features may be available without an account, while others may require registration, especially if you want to book a doctor consultation or save consultation records.</p>
+            </div>
+
+            <div class="faq-item">
+                <h3>9. Is Doktura.Ai free to use?</h3>
+                <p>Some AI guidance features may be free. Doctor consultations or additional healthcare services may require payment. Any fees will be shown before you confirm the service.</p>
+            </div>
+
+            <div class="faq-item">
+                <h3>10. Can children use Doktura.Ai?</h3>
+                <p>Users under 18 should use Doktura.Ai with the involvement and consent of a parent or legal guardian.</p>
+            </div>
+
+            <div class="faq-item">
+                <h3>11. Can I use Doktura.Ai in an emergency?</h3>
+                <p>No. Doktura.Ai is not an emergency service. If you are facing a medical emergency, please call emergency services or go to the nearest hospital immediately.</p>
+            </div>
+
+            <div class="faq-item">
+                <h3>12. How accurate is the AI guidance?</h3>
+                <p>Doktura.Ai aims to provide helpful and easy-to-understand health guidance, but AI responses may not always be complete or suitable for your specific condition. Always consult a qualified doctor for serious or uncertain health concerns.</p>
+            </div>
+
+            <div class="faq-item">
+                <h3>13. What kind of questions can I ask?</h3>
+                <p>You can ask general health questions, describe symptoms, ask about possible next steps, or learn when you should speak to a doctor.</p>
+            </div>
+
+            <div class="faq-item">
+                <h3>14. Can Doktura.Ai help me book a consultation?</h3>
+                <p>Yes, where available, Doktura.Ai can help you connect with doctors for online or clinic-based consultations.</p>
+            </div>
+
+            <div class="faq-item">
+                <h3>15. How do I get started?</h3>
+                <p>Simply start a chat with Doktura.Ai, describe your concern, and follow the guidance provided. If needed, you can choose to connect with a qualified doctor for further care.</p>
+            </div>
+        </div>
+
+        <!-- CTA Box -->
+        <div class="cta-box">
+            <div class="cta-text">
+                <h4>Still have questions?</h4>
+                <p>Start a chat with Doktura.Ai and get instant AI-powered health guidance anytime.</p>
+            </div>
+            <a href="login.html" class="btn-primary">Login Now</a>
+        </div>
+
+    </main>
+
+    <!-- Footer Section (Exact Match from index.html) -->
+    <footer class="footer-section">
+        <div class="footer-content">
+            <div class="footer-top">
+                <div class="footer-brand">
+                    <img src="https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/Group%202085665233.png?download=true" alt="Doktura.ai Logo">
+                    <p>Providing AI-powered medical insights and<br>seamless doctor bookings 24/7.</p>
+                </div>
+
+                <div class="footer-links-group">
+                    <div class="footer-col">
+                        <h4>Company</h4>
+                        <a href="aboutus.html">About</a>
+                        <a href="#">Careers</a>
+                        <a href="Contact-Us.html">Contact Us</a>
+                    </div>
+                    <div class="footer-col">
+                        <h4>Legal</h4>
+                        <a href="privacy.html">Privacy Policy</a>
+                        <a href="terms.html">Terms of Service</a>
+                        <a href="pdpa.html">PDPA</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                <p>Copyright 2026 © Doktura Plt Registration No. 202604000898 (LLP0046127-LGN)</p>
+                <div class="social-area">
+                    <span>Connect with us</span>
+                    <div class="social-icons">
+                        <a href="https://www.instagram.com/doktura.ai/" target="_blank" aria-label="Instagram">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
+                        </a>
+                        <a href="https://www.linkedin.com/company/doktura-ai" target="_blank" aria-label="LinkedIn">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle></svg>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+</body>
+</html>
