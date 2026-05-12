@@ -273,15 +273,15 @@
         if(!apptIdStr) {
             document.getElementById('loader').classList.add('hidden');
             document.getElementById('error-state').classList.remove('hidden');
+            document.getElementById('error-state').classList.add('flex');
             document.getElementById('error-message').innerText = "No Prescription ID was provided in the link.";
-            document.getElementById('appBody').classList.remove('hidden');
         } else {
             // Setup Auth Hook
             onAuthStateChanged(auth, async (user) => {
                 if (!user) { window.location.href = "login.html"; return; }
                 window.currentUser = user;
-                document.getElementById('appBody').classList.remove('hidden');
                 
+                // Fetch the data once user is authenticated!
                 await fetchPrescriptionData();
             });
         }
@@ -364,8 +364,7 @@
                     });
                 }
 
-                // Always reveal sidebar initially via hidden block transition classes on the outer wrapper,
-                // but handle what actually displays based on status & stock/price 
+                // Always reveal sidebar initially via hidden block transition classes
                 document.getElementById('delivery-sidebar').classList.remove('hidden');
 
                 if (!isBillable) {
@@ -399,7 +398,7 @@
                     // UI STATE: Fill Form
                     formWrapper.classList.remove('hidden');
                     
-                    // Pre-fill Name & Email inputs for convenience if mapped in userdata memory 
+                    // Pre-fill Name inputs for convenience if mapped in userdata memory 
                     try { document.getElementById('del-name').value = data.patient_name; } catch(e){}
                 }
 
@@ -409,7 +408,7 @@
                 document.getElementById('main-content').classList.add('grid');
 
             } catch (error) {
-                console.error(error);
+                console.error("Prescription Error:", error);
                 document.getElementById('loader').classList.add('hidden');
                 document.getElementById('error-state').classList.remove('hidden');
                 document.getElementById('error-state').classList.add('flex');
