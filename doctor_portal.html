@@ -206,18 +206,16 @@
         .radio-group label { display: flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 500; cursor: pointer; color: #4b5563;}
         .radio-group input { accent-color: #0ea5e9; width: 16px; height: 16px;}
 
-        /* Email Notification UI Modal */
-        .email-modal-box { background: #ffffff; border-radius: 16px; width: 100%; max-width: 420px; padding: 32px 24px; text-align: center; position: relative; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1), 0 8px 10px -6px rgba(0,0,0,0.1); }
-        .email-modal-close { position: absolute; top: 16px; right: 16px; width: 28px; height: 28px; background: #f3f4f6; border-radius: 50%; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; color: #4b5563; font-size: 16px; font-weight: bold; transition: background 0.2s; }
-        .email-modal-close:hover { background: #e5e7eb; }
+        /* Email Notification UI Modal (Exact Match) */
+        .email-modal-box { background: #ffffff; border-radius: 16px; width: 100%; max-width: 400px; padding: 32px 24px; text-align: center; position: relative; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1), 0 8px 10px -6px rgba(0,0,0,0.1); }
         .email-modal-icon-wrap { width: 56px; height: 56px; background: #ffffff; border-radius: 50%; border: 1.5px solid #bfdbfe; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px auto; color: #0066cc; }
         .email-modal-title { font-size: 20px; font-weight: 700; color: #111827; margin-bottom: 12px; }
         .email-modal-text { font-size: 14px; color: #6b7280; line-height: 1.5; margin-bottom: 28px; padding: 0 16px; }
-        .email-modal-btn { width: 100%; padding: 12px; background: white; border: 1.5px solid #0066cc; color: #0066cc; font-size: 15px; font-weight: 600; border-radius: 8px; cursor: pointer; transition: 0.2s; font-family: inherit; }
+        .email-modal-btn { width: 100%; padding: 12px; background: white; border: 1.5px solid #0066cc; color: #0066cc; font-size: 14px; font-weight: 600; border-radius: 8px; cursor: pointer; transition: 0.2s; font-family: inherit; }
         .email-modal-btn:hover { background: #f8fafc; }
 
         /* ================= RESPONSIVE MOBILE UPGRADES ================= */
-        .btn:active, .icon-btn:active, .dash-tab:active, .menu-item:active, .file-upload-box:active, .presc-close:active, .page-btn:active, .email-modal-btn:active, .email-modal-close:active { transform: scale(0.97); }
+        .btn:active, .icon-btn:active, .dash-tab:active, .menu-item:active, .file-upload-box:active, .presc-close:active, .page-btn:active, .email-modal-btn:active { transform: scale(0.97); }
 
         .schedule-times-row { display: flex; gap: 16px; }
         .global-times-row { display: flex; gap: 16px; margin-bottom: 24px; }
@@ -340,6 +338,7 @@
                         <input type="email" id="regEmail" class="form-control" placeholder="Enter your email" required>
                     </div>
                     
+                    <!-- Exact Terms Link formatting requested by User Image 2 -->
                     <div class="auth-terms-inline">
                         By signing up, you agree to our <a href="https://doktura.ai/terms.html" target="_blank">Terms of Service</a> and <a href="https://doktura.ai/privacy.html" target="_blank">Privacy Policy</a>
                     </div>
@@ -356,21 +355,6 @@
                     <button type="submit" id="doRegisterBtn" class="btn btn-primary" style="margin-top: 16px; padding: 14px;">Continue</button>
                 </form>
                 <div class="card-footer"><p>Already have an account? <a href="javascript:void(0)" onclick="showView('view-login', event)">Sign-in</a></p></div>
-            </div>
-
-            <!-- CROSS-DEVICE PROMPT -->
-            <div id="view-verify-email-prompt" class="card" style="display: none;">
-                <div class="card-header">
-                    <h1>Security Check</h1>
-                    <p>You opened this link on a different device or browser. Please confirm your email to continue.</p>
-                </div>
-                <form id="verifyPromptForm">
-                    <div class="form-group">
-                        <label>Confirm your Email</label>
-                        <input type="email" id="verifyEmailInput" class="form-control" placeholder="doctor@clinic.com" required>
-                    </div>
-                    <button type="submit" id="verifyPromptBtn" class="btn btn-primary" style="margin-top: 8px;">Complete Sign-in</button>
-                </form>
             </div>
 
             <!-- FORGOT PASSWORD VIEW -->
@@ -838,8 +822,7 @@
         </div>
     </div>
 
-    <!-- ================= MODAL: FORGOT PASSWORD / EMAIL LINK SENT ================= -->
-    <!-- Matches Image 3 specific layout requested -->
+    <!-- ================= MODAL: CUSTOM EMAIL STATUS (IMAGE 3 UI) ================= -->
     <div id="actionStatusModal" class="modal-overlay" style="display:none;">
         <div class="email-modal-box">
             <button class="email-modal-close" onclick="closeActionStatusModal()">✕</button>
@@ -1021,8 +1004,8 @@
             btn.innerText = "Sending..."; btn.disabled = true;
             
             try {
-                // Ensure hardcoded proper domain reference
-                let safeUrl = window.location.origin + window.location.pathname; 
+                // Guarantee the routing fallback forces the proper domain target
+                let safeUrl = "https://doktura.ai/doctor_portal.html"; 
                 const actionCodeSettings = { url: safeUrl, handleCodeInApp: true };
 
                 if (lastActionType === 'signup') {
@@ -1037,7 +1020,6 @@
                 btn.disabled = false;
             }
         }
-
 
         // ================= NOTIFICATIONS LOGIC =================
         window.toggleNotifications = function() {
@@ -1473,7 +1455,6 @@
 
         // ================= AUTH HANDLERS & LOGIC ================= //
         
-        // Ensure robust link resolution logic that FORCES Firebase back to the correct path
         if (isSignInWithEmailLink(auth, window.location.href)) {
             let email = window.localStorage.getItem('emailForSignIn');
             if(email) {
@@ -1524,10 +1505,10 @@
             btn.innerText = "Sending Link..."; btn.disabled = true;
             
             try {
-                // HARDCODE THIS PRECISE PATH SO IT NEVER MISS-DYNAMICS TO THE PATIENT ROOT!
-                const safePathUrl = window.location.origin + window.location.pathname; 
+                // VERY IMPORTANT FIX: Ensure routing goes exactly to doctor_portal.html
+                let safeUrl = "https://doktura.ai/doctor_portal.html"; 
                 const actionCodeSettings = {
-                  url: safePathUrl, 
+                  url: safeUrl, 
                   handleCodeInApp: true
                 };
                 await sendSignInLinkToEmail(auth, email, actionCodeSettings);
@@ -1549,8 +1530,8 @@
             const btn = document.getElementById("doForgotBtn");
             btn.innerText = "Sending..."; btn.disabled = true;
             try {
-                const safePathUrl = window.location.origin + window.location.pathname; 
-                const actionCodeSettings = { url: safePathUrl, handleCodeInApp: true };
+                let safeUrl = "https://doktura.ai/doctor_portal.html"; 
+                const actionCodeSettings = { url: safeUrl, handleCodeInApp: true };
 
                 await sendPasswordResetEmail(auth, email, actionCodeSettings);
                 
@@ -1634,7 +1615,7 @@
 
                     } else { 
                         // Do NOT call view switch if actionStatusModal is already showing logic checks!
-                        // Force layout
+                        // Force layout to complete data securely
                         document.getElementById('authWrapper').style.display = 'flex';
                         document.getElementById('view-dashboard').style.display = 'none';
                         const views =['view-login', 'view-signup', 'view-forgot-password', 'view-complete-data', 'view-verify-email-prompt'];
@@ -1835,7 +1816,6 @@
             const days =['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
             const container = document.getElementById('scheduleDaysContainer');
             
-            // Build the top Global Time Inputs
             container.innerHTML = `
                 <div class="global-times-row">
                     <div style="flex:1;">
@@ -1850,7 +1830,6 @@
                 <h3 style="font-size:14px; font-weight:600; margin-bottom:16px;">Weekly Availability</h3>
             `;
             
-            // Build the individual day blocks
             days.forEach(day => {
                 const isWeekend = day === 'Saturday' || day === 'Sunday';
                 container.innerHTML += `
@@ -1878,7 +1857,6 @@
         }
         renderScheduleUI();
 
-        // Lock/Unlock Fields Based on Status
         function setDashboardStatus(status) {
             const isPending = status === 'pending';
             const badge = document.getElementById('dashStatusBadge');
