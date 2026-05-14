@@ -358,7 +358,6 @@
                         </ul>
                     </div>
                     
-                    <!-- Exact Terms Link formatting requested by User Image 2 -->
                     <div class="auth-terms-inline">
                         By signing up, you agree to our <a href="https://doktura.ai/terms.html" target="_blank">Terms of Service</a> and <a href="https://doktura.ai/privacy.html" target="_blank">Privacy Policy</a>
                     </div>
@@ -393,6 +392,26 @@
                 <div class="card-footer">
                     <p><a href="javascript:void(0)" onclick="showView('view-login', event)">← Back to Login</a></p>
                 </div>
+            </div>
+
+            <!-- RESET PASSWORD VIEW -->
+            <div id="view-reset-password" class="card" style="display: none;">
+                <div class="card-header">
+                    <h1>Reset Password</h1>
+                    <p>Enter your new password below to regain access.</p>
+                </div>
+                <form id="resetPasswordActionForm">
+                    <div class="form-group">
+                        <label>New Password</label>
+                        <div class="input-wrapper">
+                            <input type="password" id="newResetPass" class="form-control" placeholder="At least 8 characters" required>
+                            <button type="button" class="icon-btn" onclick="togglePasswordVisibility(this)">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                            </button>
+                        </div>
+                    </div>
+                    <button type="submit" id="doResetFinalBtn" class="btn btn-primary" style="margin-top: 16px;">Save Password</button>
+                </form>
             </div>
 
             <!-- 3. DOCTOR INITIAL COMPLETE DATA -->
@@ -841,7 +860,7 @@
     <!-- ================= SCRIPTS ================= -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-app.js";
-        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, sendEmailVerification, sendPasswordResetEmail, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut, updatePassword, deleteUser } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-auth.js";
+        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, sendEmailVerification, sendPasswordResetEmail, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut, updatePassword, deleteUser, applyActionCode, verifyPasswordResetCode, confirmPasswordReset } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-auth.js";
         import { getFirestore, collection, query, onSnapshot, orderBy } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore.js";
 
         const API_BASE = 'https://api.doktura.ai'; 
@@ -868,6 +887,12 @@
         let lastActionEmail = "";
         let lastActionType = ""; 
 
+        // Check if currently processing an email link
+        const urlParams = new URLSearchParams(window.location.search);
+        const mode = urlParams.get('mode');
+        const oobCode = urlParams.get('oobCode');
+        const isProcessingLink = (mode === 'verifyEmail' || mode === 'resetPassword') && oobCode;
+
         // ================= UI CORE =================
         const alertBox = document.getElementById("authAlertBox");
 
@@ -887,7 +912,7 @@
             // Hidden modals specific reset
             document.getElementById('actionStatusModal').style.display = 'none';
 
-            const views =['view-login', 'view-signup', 'view-forgot-password', 'view-complete-data', 'view-verify-email-prompt'];
+            const views =['view-login', 'view-signup', 'view-forgot-password', 'view-complete-data', 'view-verify-email-prompt', 'view-reset-password'];
             views.forEach(id => {
                 const el = document.getElementById(id);
                 if(el) el.style.display = (id === targetId) ? 'block' : 'none';
@@ -895,7 +920,7 @@
             
             if(alertBox) alertBox.style.display = 'none';
             
-            if (pushHistory && targetId !== 'view-complete-data' && targetId !== 'view-verify-email-prompt') {
+            if (pushHistory && targetId !== 'view-complete-data' && targetId !== 'view-verify-email-prompt' && targetId !== 'view-reset-password') {
                 history.pushState({view: targetId}, "", "#" + targetId.replace('view-', ''));
             }
         }
@@ -904,7 +929,7 @@
             if (e.state && e.state.view) {
                 showView(e.state.view, null, false);
             } else {
-                showView('view-login', null, false);
+                if(!isProcessingLink) showView('view-login', null, false);
             }
         });
 
@@ -1004,9 +1029,9 @@
             btn.innerText = "Sending..."; btn.disabled = true;
             
             try {
-                // Determine absolute link
-                let safeUrl = window.location.origin + "/doctor_portal.html";
-                const actionCodeSettings = { url: safeUrl, handleCodeInApp: false };
+                // Determine absolute link for doctor portal
+                let safeUrl = window.location.origin + window.location.pathname;
+                const actionCodeSettings = { url: safeUrl, handleCodeInApp: true };
 
                 if (lastActionType === 'signup') {
                     await sendEmailVerification(auth.currentUser, actionCodeSettings);
@@ -1488,8 +1513,8 @@
                 const userCredential = await createUserWithEmailAndPassword(auth, email, pass);
                 
                 const actionCodeSettings = {
-                    url: "https://doktura.ai/doctor_portal.html",
-                    handleCodeInApp: false
+                    url: window.location.origin + window.location.pathname,
+                    handleCodeInApp: true
                 };
                 await sendEmailVerification(userCredential.user, actionCodeSettings);
                 
@@ -1512,7 +1537,7 @@
             const btn = document.getElementById("doForgotBtn");
             btn.innerText = "Sending..."; btn.disabled = true;
             try {
-                const actionCodeSettings = { url: "https://doktura.ai/doctor_portal.html", handleCodeInApp: false };
+                const actionCodeSettings = { url: window.location.origin + window.location.pathname, handleCodeInApp: true };
                 await sendPasswordResetEmail(auth, email, actionCodeSettings);
                 
                 lastActionEmail = email;
@@ -1548,6 +1573,8 @@
 
         // ================= SYNC LOGIC ================= //
         onAuthStateChanged(auth, async (user) => {
+            if (isProcessingLink) return; // Wait for processing the URL intercept logic
+            
             if (user) {
                 const isGoogleUser = user.providerData.some(p => p.providerId === 'google.com');
                 if (!isGoogleUser && !user.emailVerified) {
@@ -1821,6 +1848,50 @@
             document.getElementById('saveScheduleBtn').style.display = isPending ? 'none' : 'block';
             document.getElementById('pendingWarning').style.display = isPending ? 'block' : 'none';
             document.getElementById('schedulePendingWarning').style.display = isPending ? 'block' : 'none';
+        }
+
+        // ================= INTERCEPT FIREBASE ACTION URLS ================= //
+        
+        // Handle Email Verification Click
+        if (mode === 'verifyEmail' && oobCode) {
+            applyActionCode(auth, oobCode).then(() => {
+                showAlert("Email verified successfully! You can now log in.", false);
+                window.history.replaceState({}, document.title, window.location.pathname);
+                showView('view-login', null, false);
+            }).catch(e => {
+                showAlert("Verification link has expired or is invalid.", true);
+                window.history.replaceState({}, document.title, window.location.pathname);
+                showView('view-login', null, false);
+            });
+        }
+
+        // Handle Reset Password Click
+        if (mode === 'resetPassword' && oobCode) {
+            verifyPasswordResetCode(auth, oobCode).then((email) => {
+                showView('view-reset-password', null, false);
+                
+                document.getElementById('resetPasswordActionForm').addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    const newPass = document.getElementById('newResetPass').value;
+                    if (newPass.length < 8) return showAlert("Password must be at least 8 characters.", true);
+                    
+                    const btn = document.getElementById('doResetFinalBtn');
+                    btn.innerText = "Saving..."; btn.disabled = true;
+
+                    confirmPasswordReset(auth, oobCode, newPass).then(() => {
+                        showAlert("Password updated successfully! Please login.", false);
+                        window.history.replaceState({}, document.title, window.location.pathname);
+                        showView('view-login', null, false);
+                    }).catch(err => {
+                        showAlert("Failed to reset password: " + err.message, true);
+                        btn.innerText = "Save Password"; btn.disabled = false;
+                    });
+                });
+            }).catch(e => {
+                showAlert("Reset link has expired or is invalid.", true);
+                window.history.replaceState({}, document.title, window.location.pathname);
+                showView('view-login', null, false);
+            });
         }
 
     </script>
