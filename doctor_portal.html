@@ -1020,6 +1020,18 @@
             document.getElementById('tab-' + tab).classList.add('active');
         }
 
+        window.showModal = function(targetId) {
+            document.getElementById(targetId).style.display = 'flex';
+            document.body.classList.add('modal-open');
+        }
+
+        window.closeAllModals = function() {
+            document.getElementById('modal-verification-sent').style.display = 'none';
+            document.getElementById('modal-reset-sent').style.display = 'none';
+            document.getElementById('prescriptionModal').style.display = 'none';
+            document.body.classList.remove('modal-open');
+        }
+
         function showAlert(msg, isError=true) {
             alertBox.innerText = msg;
             alertBox.style.display = 'block';
@@ -1063,13 +1075,6 @@
                 showAlert("Failed to start over.", true);
             }
         };
-
-        window.closeAllModals = function() {
-            document.getElementById('modal-verification-sent').style.display = 'none';
-            document.getElementById('modal-reset-sent').style.display = 'none';
-            document.getElementById('prescriptionModal').style.display = 'none';
-            document.body.classList.remove('modal-open');
-        }
 
         // ================= PASSWORD STRENGTH UI LOGIC ================= //
         function updateReqUI(id, isValid) {
