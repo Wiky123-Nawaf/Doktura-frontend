@@ -1,160 +1,141 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Doktura AI - Doctor Portal</title>
-    <link rel="icon" type="image/jpeg" href="https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/Vector%20(4).png?download=true">
-    <style>
-        /* ================= BASE STYLES ================= */
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background-color: #f4f5f7; color: #111827; display: flex; flex-direction: column; min-height: 100vh; overflow-x: hidden; }
-        body.modal-open { overflow: hidden; }
-        a { text-decoration: none; cursor: pointer; }
-        
-        #authWrapper { display: flex; flex-direction: column; flex: 1; width: 100%; }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Doktura AI - Doctor Portal</title>
+<link rel="icon" type="image/jpeg" href="https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/Vector%20(4).png?download=true">
+<style>
+/* ================= BASE STYLES ================= */
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background-color: #f4f5f7; color: #111827; display: flex; flex-direction: column; min-height: 100vh; overflow-x: hidden; }
+body.modal-open { overflow: hidden; }
+a { text-decoration: none; cursor: pointer; }
 
-        .header { padding: 20px 24px; border-bottom: 1px solid #e5e7eb; display: flex; justify-content: space-between; align-items: center; background-color: #fff; }
-        @media (min-width: 768px) { .header { padding: 24px 48px; } }
-        .logo-container { display: inline-flex; align-items: center; cursor: pointer; }
-        .logo-container img { height: 32px; width: auto; }
-        
-        .main-content { flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 24px 16px; }
-        .card { background: #ffffff; border-radius: 16px; padding: 32px 20px; width: 100%; max-width: 480px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); border: 1px solid #f3f4f6; animation: fadeIn 0.3s ease-in-out; margin: auto; }
-        @media (min-width: 768px) { .card { padding: 48px 40px; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05); } }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
-        
-        .card-header { margin-bottom: 32px; text-align: left; }
-        .card-header h1 { font-size: 26px; font-weight: 700; margin-bottom: 12px; letter-spacing: -0.5px; }
-        .card-header p { font-size: 14px; color: #4b5563; line-height: 1.5; }
-        
-        .form-group { margin-bottom: 20px; text-align: left; }
-        .form-group label { display: block; font-size: 14px; font-weight: 500; margin-bottom: 8px; color: #111827; }
-        .input-wrapper { position: relative; }
-        .form-control { width: 100%; padding: 12px 16px; border: 1px solid #e5e7eb; border-radius: 8px; font-size: 14px; background-color: #f9fafb; transition: border-color 0.2s; font-family: inherit; }
-        .form-control:focus { outline: none; border-color: #0ea5e9; background-color: #ffffff; box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.1); }
-        .form-control:disabled, .form-control[readonly] { background-color: #f3f4f6; color: #6b7280; cursor: not-allowed; }
-        .icon-btn { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; color: #6b7280; display: flex; padding: 4px; }
-        
-        .form-row { display: flex; flex-direction: column; gap: 0; }
-        @media (min-width: 768px) { .form-row { flex-direction: row; gap: 16px; } .form-row .form-group { flex: 1; margin-bottom: 20px; } }
-        .phone-input-wrapper { position: relative; display: flex; align-items: center; }
-        .phone-prefix { position: absolute; left: 16px; font-size: 14px; z-index: 1; }
-        .phone-input-wrapper .form-control { padding-left: 54px; }
-        
-        .btn-container { display: flex; flex-direction: column; gap: 12px; margin-bottom: 20px; }
-        .btn { width: 100%; display: flex; justify-content: center; align-items: center; gap: 10px; padding: 10px 24px; border-radius: 8px; font-size: 14px; font-weight: 500; cursor: pointer; transition: all 0.2s; font-family: inherit; }
-        .btn:disabled { opacity: 0.7; cursor: not-allowed; }
-        .btn-social { background-color: #ffffff; border: 1px solid #e5e7eb; color: #111827; }
-        .btn-social:hover { background-color: #f9fafb; border-color: #d1d5db; }
-        .btn-primary { background-color: #0066cc; border: 1px solid #0066cc; color: #ffffff; font-weight: 600; }
-        .btn-primary:hover:not(:disabled) { background-color: #005bb5; }
-        
-        .divider { display: flex; align-items: center; text-align: center; margin: 24px 0; color: #6b7280; font-size: 13px; }
-        .divider::before, .divider::after { content: ''; flex: 1; border-bottom: 1px solid #e5e7eb; }
-        .divider span { padding: 0 16px; }
-        
-        .card-footer { text-align: center; font-size: 14px; color: #4b5563; margin-top: 24px; }
-        .card-footer a { color: #0066cc; font-weight: 500; }
-        .forgot-link { font-size: 13px; font-weight: 500; color: #0066cc; float: right; margin-bottom: 12px; margin-top: -10px;}
+#authWrapper { display: flex; flex-direction: column; flex: 1; width: 100%; }
 
-        /* Auth Footer */
-        .auth-footer { padding: 20px 24px; text-align: left; font-size: 13px; color: #6b7280; width: 100%; border-top: 1px solid #e5e7eb; }
-        @media (min-width: 768px) { .auth-footer { padding: 24px 48px; } }
+.header { padding: 20px 24px; border-bottom: 1px solid #e5e7eb; display: flex; justify-content: space-between; align-items: center; background-color: #fff; }
+@media (min-width: 768px) { .header { padding: 24px 48px; } }
+.logo-container { display: inline-flex; align-items: center; cursor: pointer; }
+.logo-container img { height: 32px; width: auto; }
 
-        /* Highlight emails in blue */
-        .highlight-email { color: #0066cc; font-weight: 500; }
+.main-content { flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 24px 16px; }
+.card { background: #ffffff; border-radius: 16px; padding: 32px 20px; width: 100%; max-width: 480px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); border: 1px solid #f3f4f6; animation: fadeIn 0.3s ease-in-out; margin: auto; }
+@media (min-width: 768px) { .card { padding: 48px 40px; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05); } }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* Terms text */
-        .terms-text { font-size: 13px; color: #6b7280; margin-bottom: 24px; text-align: left; line-height: 1.5; }
-        .terms-text a { color: #0066cc; font-weight: 500; }
-        .terms-text a:hover { text-decoration: underline; }
+.card-header { margin-bottom: 32px; text-align: left; }
+.card-header h1 { font-size: 26px; font-weight: 700; margin-bottom: 12px; letter-spacing: -0.5px; }
+.card-header p { font-size: 14px; color: #4b5563; line-height: 1.5; }
 
-        /* Password Strength UI */
-        .strength-bars { display: flex; gap: 8px; margin-top: 12px; margin-bottom: 12px; }
-        .strength-bar { height: 4px; border-radius: 2px; flex: 1; background-color: #e5e7eb; transition: background-color 0.3s; }
-        .strength-bar.red { background-color: #ea4335; }
-        .strength-bar.yellow { background-color: #fbbc05; }
-        .strength-bar.green { background-color: #34a853; }
-        .strength-text { font-size: 14px; color: #4b5563; margin-bottom: 12px; text-align: left; }
-        .strength-list { list-style: none; padding: 0; margin: 0 0 20px 0; text-align: left; }
-        .strength-list li { font-size: 13px; color: #6b7280; display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
-        .strength-list li.valid { color: #111827; }
-        .icon-circle { width: 16px; height: 16px; border-radius: 50%; display: flex; justify-content: center; align-items: center; color: white; }
-        .icon-circle.green { background-color: #34a853; }
-        .icon-circle.grey { background-color: #9ca3af; }
+.form-group { margin-bottom: 20px; text-align: left; }
+.form-group label { display: block; font-size: 14px; font-weight: 500; margin-bottom: 8px; color: #111827; }
+.input-wrapper { position: relative; }
+.form-control { width: 100%; padding: 12px 16px; border: 1px solid #e5e7eb; border-radius: 8px; font-size: 14px; background-color: #f9fafb; transition: border-color 0.2s; font-family: inherit; }
+.form-control:focus { outline: none; border-color: #0ea5e9; background-color: #ffffff; box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.1); }
+.form-control:disabled, .form-control[readonly] { background-color: #f3f4f6; color: #6b7280; cursor: not-allowed; }
+.icon-btn { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; color: #6b7280; display: flex; padding: 4px; }
 
-        /* ================= DOCTOR SPECIFIC UPLOAD STYLES ================= */
-        #view-complete-data.card { max-width: 650px; } 
-        .file-upload-box { border: 1px dashed #d1d5db; border-radius: 8px; padding: 16px; text-align: center; background-color: #f9fafb; cursor: pointer; transition: 0.2s; position: relative; font-size: 13px; color: #4b5563; }
-        .file-upload-box:hover:not(.disabled) { border-color: #0066cc; background-color: #f0f7ff; }
-        .file-upload-box.disabled { opacity: 0.6; cursor: not-allowed; }
-        .file-upload-box input[type="file"] { opacity: 0; position: absolute; top: 0; left: 0; width: 100%; height: 100%; cursor: pointer; }
-        .file-upload-box input[type="file"]:disabled { cursor: not-allowed; }
-        .file-name-display { font-size: 12px; color: #0066cc; margin-top: 8px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.form-row { display: flex; flex-direction: column; gap: 0; }
+@media (min-width: 768px) { .form-row { flex-direction: row; gap: 16px; } .form-row .form-group { flex: 1; margin-bottom: 20px; } }
+.phone-input-wrapper { position: relative; display: flex; align-items: center; }
+.phone-prefix { position: absolute; left: 16px; font-size: 14px; z-index: 1; }
+.phone-input-wrapper .form-control { padding-left: 54px; }
 
-        /* ================= DOCTOR DASHBOARD UI ================= */
-        .dashboard-layout { display: flex; height: 100vh; width: 100%; background-color: #f4f5f7; overflow: hidden; }
-        
-        /* Sidebar */
+.btn-container { display: flex; flex-direction: column; gap: 12px; margin-bottom: 20px; }
+.btn { width: 100%; display: flex; justify-content: center; align-items: center; gap: 10px; padding: 10px 24px; border-radius: 8px; font-size: 14px; font-weight: 500; cursor: pointer; transition: all 0.2s; font-family: inherit; }
+.btn:disabled { opacity: 0.7; cursor: not-allowed; }
+.btn-social { background-color: #ffffff; border: 1px solid #e5e7eb; color: #111827; }
+.btn-social:hover { background-color: #f9fafb; border-color: #d1d5db; }
+.btn-primary { background-color: #0066cc; border: 1px solid #0066cc; color: #ffffff; font-weight: 600; }
+.btn-primary:hover:not(:disabled) { background-color: #005bb5; }
+
+.divider { display: flex; align-items: center; text-align: center; margin: 24px 0; color: #6b7280; font-size: 13px; }
+.divider::before, .divider::after { content: ''; flex: 1; border-bottom: 1px solid #e5e7eb; }
+.divider span { padding: 0 16px; }
+
+.card-footer { text-align: center; font-size: 14px; color: #4b5563; margin-top: 24px; }
+.card-footer a { color: #0066cc; font-weight: 500; }
+.forgot-link { font-size: 13px; font-weight: 500; color: #0066cc; float: right; margin-bottom: 12px; margin-top: -10px;}
+
+/* Auth Footer */
+.auth-footer { padding: 20px 24px; text-align: left; font-size: 13px; color: #6b7280; width: 100%; border-top: 1px solid #e5e7eb; }
+@media (min-width: 768px) { .auth-footer { padding: 24px 48px; } }
+
+/* ================= DOCTOR SPECIFIC UPLOAD STYLES ================= */
+#view-complete-data.card { max-width: 650px; } 
+.file-upload-box { border: 1px dashed #d1d5db; border-radius: 8px; padding: 16px; text-align: center; background-color: #f9fafb; cursor: pointer; transition: 0.2s; position: relative; font-size: 13px; color: #4b5563; }
+.file-upload-box:hover:not(.disabled) { border-color: #0066cc; background-color: #f0f7ff; }
+.file-upload-box.disabled { opacity: 0.6; cursor: not-allowed; }
+.file-upload-box input[type="file"] { opacity: 0; position: absolute; top: 0; left: 0; width: 100%; height: 100%; cursor: pointer; }
+.file-upload-box input[type="file"]:disabled { cursor: not-allowed; }
+.file-name-display { font-size: 12px; color: #0066cc; margin-top: 8px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+/* ================= DOCTOR DASHBOARD UI ================= */
+.dashboard-layout { display: flex; height: 100vh; width: 100%; background-color: #f4f5f7; overflow: hidden; }
+
+/* Sidebar */
+        .sidebar { width: 260px; background: #ffffff; border-right: 1px solid #e5e7eb; display: flex; flex-direction: column; }
         .sidebar { width: 260px; background: #ffffff; border-right: 1px solid #e5e7eb; display: flex; flex-direction: column; flex-shrink: 0; }
-        .sidebar-header { height: 72px; padding: 0 24px; border-bottom: 1px solid #e5e7eb; display: flex; align-items: center; } 
-        .sidebar-menu { flex: 1; padding: 24px 16px; overflow-y: auto; }
-        .menu-title { font-size: 11px; font-weight: 600; color: #9ca3af; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 12px; padding-left: 8px; }
-        .menu-item { display: flex; align-items: center; gap: 12px; padding: 12px 16px; color: #4b5563; border-radius: 8px; font-size: 14px; font-weight: 500; transition: background 0.2s; cursor: pointer; margin-bottom: 4px; }
-        .menu-item:hover { background-color: #f9fafb; color: #111827; }
-        .menu-item.active { background-color: #eff6ff; color: #0066cc; }
-        
-        .sidebar-footer { padding: 20px; border-top: 1px solid #f3f4f6; display: flex; justify-content: space-between; align-items: center; }
-        .doc-mini-profile { display: flex; align-items: center; gap: 12px; }
-        .doc-avatar { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; background-color: #f3f4f6; padding: 2px;}
-        .doc-mini-info h4 { font-size: 14px; font-weight: 600; color: #111827; margin: 0; }
-        .doc-mini-info p { font-size: 12px; color: #6b7280; margin: 0; max-width: 120px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-        
-        /* Main Dashboard Content */
-        .dash-content { flex: 1; display: flex; flex-direction: column; overflow-y: auto; position: relative;}
-        .dash-header { height: 72px; min-height: 72px; padding: 0 40px; display: flex; justify-content: space-between; align-items: center; background: #ffffff; border-bottom: 1px solid #e5e7eb; position: sticky; top:0; z-index: 10;}
-        
-        /* Notification Bell */
-        .notification-wrapper { position: relative; cursor: pointer; display: flex; align-items: center; }
-        .bell-badge { position: absolute; top: -4px; right: -4px; background: #ef4444; color: white; font-size: 10px; font-weight: bold; width: 16px; height: 16px; border-radius: 50%; display: flex; justify-content: center; align-items: center; border: 2px solid #fff; }
-        .notif-dropdown { display: none; position: absolute; top: 35px; right: 0; width: 320px; background: white; border: 1px solid #e5e7eb; border-radius: 8px; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); z-index: 100; overflow: hidden; }
-        .notif-dropdown.show { display: block; animation: fadeIn 0.2s; }
-        .notif-header { padding: 12px 16px; font-weight: 600; border-bottom: 1px solid #e5e7eb; background: #f9fafb; font-size: 14px;}
-        .notif-list { max-height: 300px; overflow-y: auto; }
-        .notif-item { padding: 12px 16px; border-bottom: 1px solid #f3f4f6; font-size: 13px; color: #4b5563; }
-        .notif-item.unread { background: #eff6ff; color: #111827; }
+.sidebar-header { height: 72px; padding: 0 24px; border-bottom: 1px solid #e5e7eb; display: flex; align-items: center; } 
+.sidebar-menu { flex: 1; padding: 24px 16px; overflow-y: auto; }
+.menu-title { font-size: 11px; font-weight: 600; color: #9ca3af; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 12px; padding-left: 8px; }
+.menu-item { display: flex; align-items: center; gap: 12px; padding: 12px 16px; color: #4b5563; border-radius: 8px; font-size: 14px; font-weight: 500; transition: background 0.2s; cursor: pointer; margin-bottom: 4px; }
+.menu-item:hover { background-color: #f9fafb; color: #111827; }
+.menu-item.active { background-color: #eff6ff; color: #0066cc; }
 
-        .dash-body { padding: 40px; max-width: 1100px; margin: 0 auto; width: 100%; }
-        .dash-title { font-size: 28px; font-weight: 700; color: #111827; margin-bottom: 8px; }
-        .dash-subtitle { font-size: 14px; color: #6b7280; margin-bottom: 32px; }
-        
-        .dash-card { background: #ffffff; border-radius: 16px; padding: 32px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); }
-        .dash-tabs { display: inline-flex; background: #f3f4f6; border-radius: 8px; padding: 4px; margin-bottom: 32px; }
-        .dash-tab { padding: 8px 24px; font-size: 14px; font-weight: 600; color: #6b7280; border-radius: 6px; cursor: pointer; transition: all 0.2s; }
-        .dash-tab.active { background: #ffffff; color: #111827; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
-        
-        .tab-content { display: none; animation: fadeIn 0.3s ease-in-out; }
-        .tab-content.active { display: block; }
-        
-        .profile-header-row { display: flex; align-items: center; gap: 16px; margin-bottom: 24px; }
-        .status-badge { padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; }
-        .status-badge.available { background: #dcfce7; color: #16a34a; }
-        .status-badge.pending { background: #fef9c3; color: #d97706; }
-        
-        /* Appointments Table Styles */
-        .table-container { width: 100%; overflow-x: auto; background: #fff; border-radius: 12px; border: 1px solid #e5e7eb; }
-        .dash-table { width: 100%; border-collapse: collapse; font-size: 14px; text-align: left; }
-        .dash-table th { background: #f9fafb; color: #6b7280; font-weight: 600; padding: 16px; border-bottom: 1px solid #e5e7eb; }
-        .dash-table td { padding: 16px; border-bottom: 1px solid #e5e7eb; color: #111827; vertical-align: middle; }
-        .tag { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: 500; }
-        .tag.online { background: #e0f2fe; color: #1d4ed8; }
-        .tag.clinic { background: #f1f5f9; color: #475569; }
+.sidebar-footer { padding: 20px; border-top: 1px solid #f3f4f6; display: flex; justify-content: space-between; align-items: center; }
+.doc-mini-profile { display: flex; align-items: center; gap: 12px; }
+.doc-avatar { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; background-color: #f3f4f6; padding: 2px;}
+.doc-mini-info h4 { font-size: 14px; font-weight: 600; color: #111827; margin: 0; }
+.doc-mini-info p { font-size: 12px; color: #6b7280; margin: 0; max-width: 120px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
-        .btn-call { background: #0ea5e9; color: white; padding: 6px 16px; border-radius: 6px; font-size: 13px; font-weight: 600; border: none; cursor: pointer; transition: 0.2s;}
-        .btn-call:hover { background: #0284c7; }
-        .btn-record { background: transparent; border: none; cursor: pointer; color: #6b7280; display: flex; align-items: center; justify-content: center; padding: 6px;}
-        .btn-record:hover { color: #0ea5e9; }
+/* Main Dashboard Content */
+.dash-content { flex: 1; display: flex; flex-direction: column; overflow-y: auto; position: relative;}
+.dash-header { height: 72px; min-height: 72px; padding: 0 40px; display: flex; justify-content: space-between; align-items: center; background: #ffffff; border-bottom: 1px solid #e5e7eb; position: sticky; top:0; z-index: 10;}
+        .search-bar { display: flex; align-items: center; background: #f3f4f6; padding: 8px 16px; border-radius: 8px; width: 300px; }
+        .search-bar input { border: none; background: transparent; outline: none; margin-left: 8px; width: 100%; font-size: 14px; }
+
+/* Notification Bell */
+.notification-wrapper { position: relative; cursor: pointer; display: flex; align-items: center; }
+.bell-badge { position: absolute; top: -4px; right: -4px; background: #ef4444; color: white; font-size: 10px; font-weight: bold; width: 16px; height: 16px; border-radius: 50%; display: flex; justify-content: center; align-items: center; border: 2px solid #fff; }
+.notif-dropdown { display: none; position: absolute; top: 35px; right: 0; width: 320px; background: white; border: 1px solid #e5e7eb; border-radius: 8px; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); z-index: 100; overflow: hidden; }
+.notif-dropdown.show { display: block; animation: fadeIn 0.2s; }
+.notif-header { padding: 12px 16px; font-weight: 600; border-bottom: 1px solid #e5e7eb; background: #f9fafb; font-size: 14px;}
+.notif-list { max-height: 300px; overflow-y: auto; }
+.notif-item { padding: 12px 16px; border-bottom: 1px solid #f3f4f6; font-size: 13px; color: #4b5563; }
+.notif-item.unread { background: #eff6ff; color: #111827; }
+
+.dash-body { padding: 40px; max-width: 1100px; margin: 0 auto; width: 100%; }
+.dash-title { font-size: 28px; font-weight: 700; color: #111827; margin-bottom: 8px; }
+.dash-subtitle { font-size: 14px; color: #6b7280; margin-bottom: 32px; }
+
+.dash-card { background: #ffffff; border-radius: 16px; padding: 32px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); }
+.dash-tabs { display: inline-flex; background: #f3f4f6; border-radius: 8px; padding: 4px; margin-bottom: 32px; }
+.dash-tab { padding: 8px 24px; font-size: 14px; font-weight: 600; color: #6b7280; border-radius: 6px; cursor: pointer; transition: all 0.2s; }
+.dash-tab.active { background: #ffffff; color: #111827; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+
+.tab-content { display: none; animation: fadeIn 0.3s ease-in-out; }
+.tab-content.active { display: block; }
+
+.profile-header-row { display: flex; align-items: center; gap: 16px; margin-bottom: 24px; }
+.status-badge { padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; }
+.status-badge.available { background: #dcfce7; color: #16a34a; }
+.status-badge.pending { background: #fef9c3; color: #d97706; }
+
+/* Appointments Table Styles */
+.table-container { width: 100%; overflow-x: auto; background: #fff; border-radius: 12px; border: 1px solid #e5e7eb; }
+.dash-table { width: 100%; border-collapse: collapse; font-size: 14px; text-align: left; }
+.dash-table th { background: #f9fafb; color: #6b7280; font-weight: 600; padding: 16px; border-bottom: 1px solid #e5e7eb; }
+.dash-table td { padding: 16px; border-bottom: 1px solid #e5e7eb; color: #111827; vertical-align: middle; }
+.tag { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: 500; }
+.tag.online { background: #e0f2fe; color: #1d4ed8; }
+.tag.clinic { background: #f1f5f9; color: #475569; }
+
+.btn-call { background: #0ea5e9; color: white; padding: 6px 16px; border-radius: 6px; font-size: 13px; font-weight: 600; border: none; cursor: pointer; transition: 0.2s;}
+.btn-call:hover { background: #0284c7; }
+.btn-record { background: transparent; border: none; cursor: pointer; color: #6b7280; display: flex; align-items: center; justify-content: center; padding: 6px;}
+.btn-record:hover { color: #0ea5e9; }
 
         /* Pagination Styles */
         .pagination { display: flex; justify-content: flex-end; align-items: center; gap: 8px; margin-top: 16px; padding-top: 16px; border-top: 1px solid #e5e7eb; flex-wrap: wrap;}
@@ -168,581 +149,547 @@
         .search-bar { display: flex; align-items: center; background: #fff; border: 1px solid #e5e7eb; padding: 6px 12px; border-radius: 8px; width: 220px; }
         .search-bar input { border: none; background: transparent; outline: none; margin-left: 8px; width: 100%; font-size: 14px; }
 
-        /* ================= RATINGS UI ================= */
-        .ratings-grid { display: grid; grid-template-columns: 1fr 1.5fr; gap: 32px; align-items: start;}
-        .ratings-summary-card { background: #fff; border: 1px solid #e5e7eb; border-radius: 16px; padding: 24px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
-        .ratings-header-flex { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
-        .ratings-score { font-size: 32px; font-weight: 700; color: #111827; }
-        .ratings-score-total { font-size: 20px; color: #9ca3af; font-weight: 500; }
-        .ratings-sub { font-size: 14px; font-weight: 600; color: #111827; margin-bottom: 4px; }
-        .ratings-meta { font-size: 12px; color: #6b7280; margin-bottom: 24px; }
-        
-        .star-row { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; font-size: 13px; color: #4b5563; font-weight: 500; }
-        .star-bar-bg { flex: 1; height: 6px; background: #f3f4f6; border-radius: 3px; overflow: hidden; position: relative; }
-        .star-bar-fill { position: absolute; top: 0; left: 0; height: 100%; background: #22c55e; border-radius: 3px; }
-        .star-bar-fill.grey { background: #d1d5db; }
-        .star-count { width: 24px; text-align: right; color: #9ca3af; }
+/* ================= RATINGS UI ================= */
+.ratings-grid { display: grid; grid-template-columns: 1fr 1.5fr; gap: 32px; align-items: start;}
+.ratings-summary-card { background: #fff; border: 1px solid #e5e7eb; border-radius: 16px; padding: 24px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
+.ratings-header-flex { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+.ratings-score { font-size: 32px; font-weight: 700; color: #111827; }
+.ratings-score-total { font-size: 20px; color: #9ca3af; font-weight: 500; }
+.ratings-sub { font-size: 14px; font-weight: 600; color: #111827; margin-bottom: 4px; }
+.ratings-meta { font-size: 12px; color: #6b7280; margin-bottom: 24px; }
 
-        .review-item { border-bottom: 1px solid #f3f4f6; padding: 24px 0; }
-        .review-item:last-child { border-bottom: none; padding-bottom: 0;}
-        .review-user-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
-        .review-user-info { display: flex; align-items: center; gap: 12px; }
-        .review-avatar { width: 40px; height: 40px; border-radius: 50%; background: #e5e7eb; object-fit: cover; }
-        .review-name { font-size: 15px; font-weight: 600; color: #111827; }
-        .review-date { font-size: 12px; color: #9ca3af; }
-        .review-stars { color: #eab308; margin-bottom: 8px; display: flex; gap: 4px;}
-        .review-text { font-size: 14px; color: #4b5563; line-height: 1.6; }
-        .review-title { font-weight: 600; color: #111827; margin-bottom: 4px; }
+.star-row { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; font-size: 13px; color: #4b5563; font-weight: 500; }
+.star-bar-bg { flex: 1; height: 6px; background: #f3f4f6; border-radius: 3px; overflow: hidden; position: relative; }
+.star-bar-fill { position: absolute; top: 0; left: 0; height: 100%; background: #22c55e; border-radius: 3px; }
+.star-bar-fill.grey { background: #d1d5db; }
+.star-count { width: 24px; text-align: right; color: #9ca3af; }
 
-        /* ================= MODAL & PRESCRIPTION FORM ================= */
-        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(17, 24, 39, 0.7); display: flex; justify-content: center; align-items: center; z-index: 999; padding: 20px; }
-        .presc-modal, .modal-card { background: #fff; border-radius: 16px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); }
-        .presc-modal { width: 100%; max-width: 600px; max-height: 90vh; display: flex; flex-direction: column; }
-        .modal-card { padding: 40px 24px; width: 100%; max-width: 420px; position: relative; text-align: center; animation: modalPopIn 0.3s cubic-bezier(0.16, 1, 0.3, 1); }
-        @media (min-width: 768px) { .modal-card { padding: 48px; } }
-        @keyframes modalPopIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+.review-item { border-bottom: 1px solid #f3f4f6; padding: 24px 0; }
+.review-item:last-child { border-bottom: none; padding-bottom: 0;}
+.review-user-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+.review-user-info { display: flex; align-items: center; gap: 12px; }
+.review-avatar { width: 40px; height: 40px; border-radius: 50%; background: #e5e7eb; object-fit: cover; }
+.review-name { font-size: 15px; font-weight: 600; color: #111827; }
+.review-date { font-size: 12px; color: #9ca3af; }
+.review-stars { color: #eab308; margin-bottom: 8px; display: flex; gap: 4px;}
+.review-text { font-size: 14px; color: #4b5563; line-height: 1.6; }
+.review-title { font-weight: 600; color: #111827; margin-bottom: 4px; }
 
-        .presc-header { padding: 24px; border-bottom: 1px solid #e5e7eb; display: flex; justify-content: space-between; align-items: center; }
-        .presc-header h2 { font-size: 18px; font-weight: 700; margin: 0; }
-        .presc-close { background: none; border: none; font-size: 24px; cursor: pointer; color: #6b7280; }
-        .presc-body { padding: 24px; overflow-y: auto; flex: 1; }
-        .presc-footer { padding: 24px; border-top: 1px solid #e5e7eb; }
-        
-        .med-block { background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 12px; padding: 20px; margin-bottom: 16px; position: relative;}
-        .med-block-title { font-size: 14px; font-weight: 700; margin-bottom: 16px; display: flex; justify-content: space-between;}
-        .med-block-title span { color: #ef4444; font-size: 12px; font-weight: 500; cursor: pointer; }
-        
-        .autocomplete-wrapper { position: relative; }
-        .autocomplete-list { position: absolute; top: 100%; left: 0; width: 100%; background: white; border: 1px solid #e5e7eb; border-radius: 8px; max-height: 200px; overflow-y: auto; z-index: 50; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); display: none; }
-        .ac-item { padding: 10px 16px; font-size: 13px; cursor: pointer; border-bottom: 1px solid #f3f4f6; }
-        .ac-item:hover { background: #f9fafb; }
-        .ac-item.out-stock { color: #ef4444; }
+/* ================= MODAL & PRESCRIPTION FORM ================= */
+.modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(17, 24, 39, 0.7); display: flex; justify-content: center; align-items: center; z-index: 999; padding: 20px; }
+.presc-modal { background: #fff; border-radius: 16px; width: 100%; max-width: 600px; max-height: 90vh; display: flex; flex-direction: column; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); }
+.presc-header { padding: 24px; border-bottom: 1px solid #e5e7eb; display: flex; justify-content: space-between; align-items: center; }
+.presc-header h2 { font-size: 18px; font-weight: 700; margin: 0; }
+.presc-close { background: none; border: none; font-size: 24px; cursor: pointer; color: #6b7280; }
+.presc-body { padding: 24px; overflow-y: auto; flex: 1; }
+.presc-footer { padding: 24px; border-top: 1px solid #e5e7eb; }
 
-        .radio-group { display: flex; gap: 16px; margin-top: 8px; }
-        .radio-group label { display: flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 500; cursor: pointer; color: #4b5563;}
-        .radio-group input { accent-color: #0ea5e9; width: 16px; height: 16px;}
+.med-block { background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 12px; padding: 20px; margin-bottom: 16px; position: relative;}
+.med-block-title { font-size: 14px; font-weight: 700; margin-bottom: 16px; display: flex; justify-content: space-between;}
+.med-block-title span { color: #ef4444; font-size: 12px; font-weight: 500; cursor: pointer; }
 
-        /* Alert Modals specific classes */
-        .modal-close-btn { position: absolute; top: 16px; right: 16px; background-color: #f3f4f6; border: none; border-radius: 50%; width: 32px; height: 32px; display: flex; justify-content: center; align-items: center; cursor: pointer; color: #4b5563; transition: background-color 0.2s; }
-        .modal-close-btn:hover { background-color: #e5e7eb; color: #111827; }
-        .modal-icon-wrapper { background-color: #eaf3ff; width: 88px; height: 88px; border-radius: 50%; display: flex; justify-content: center; align-items: center; margin: 0 auto 24px auto; }
-        .modal-card h2 { font-size: 20px; font-weight: 700; color: #111827; margin-bottom: 12px; }
-        @media (min-width: 768px) { .modal-card h2 { font-size: 22px; } }
-        .modal-card p { font-size: 14px; color: #4b5563; line-height: 1.5; margin-bottom: 32px; padding: 0 10px; }
-        .modal-card .btn-outline-primary { width: 100%; }
+.autocomplete-wrapper { position: relative; }
+.autocomplete-list { position: absolute; top: 100%; left: 0; width: 100%; background: white; border: 1px solid #e5e7eb; border-radius: 8px; max-height: 200px; overflow-y: auto; z-index: 50; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); display: none; }
+.ac-item { padding: 10px 16px; font-size: 13px; cursor: pointer; border-bottom: 1px solid #f3f4f6; }
+.ac-item:hover { background: #f9fafb; }
+.ac-item.out-stock { color: #ef4444; }
 
-        /* ================= RESPONSIVE MOBILE UPGRADES ================= */
+.radio-group { display: flex; gap: 16px; margin-top: 8px; }
+.radio-group label { display: flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 500; cursor: pointer; color: #4b5563;}
+.radio-group input { accent-color: #0ea5e9; width: 16px; height: 16px;}
+
+/* ================= RESPONSIVE MOBILE UPGRADES ================= */
+
+/* Mobile Active Press Animation */
+        .btn:active, .icon-btn:active, .dash-tab:active, .menu-item:active, .file-upload-box:active, .presc-close:active { transform: scale(0.97); }
         .btn:active, .icon-btn:active, .dash-tab:active, .menu-item:active, .file-upload-box:active, .presc-close:active, .page-btn:active { transform: scale(0.97); }
 
-        .schedule-times-row { display: flex; gap: 16px; }
-        .global-times-row { display: flex; gap: 16px; margin-bottom: 24px; }
-        .ratings-top-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
+/* Structural Utility Classes for easy responsive switching */
+.schedule-times-row { display: flex; gap: 16px; }
+.global-times-row { display: flex; gap: 16px; margin-bottom: 24px; }
+.ratings-top-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
         .appointments-top-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
-        .patient-details-col { text-align: left; }
-        .desktop-action-center { text-align: center; }
+.patient-details-col { text-align: left; }
+.desktop-action-center { text-align: center; }
 
-        .sidebar-overlay { display: none; }
-        .mobile-menu-btn { display: none; background: none; border: none; cursor: pointer; color: #4b5563; padding: 4px; }
+/* Sidebar Elements specifically for mobile */
+.sidebar-overlay { display: none; }
+.mobile-menu-btn { display: none; background: none; border: none; cursor: pointer; color: #4b5563; padding: 4px; }
 
-        @media (max-width: 767px) {
-            .mobile-menu-btn { display: flex; align-items: center; justify-content: center; }
-            .sidebar { position: fixed; top: 0; left: 0; height: 100%; z-index: 200; transform: translateX(-100%); transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: 4px 0 20px rgba(0,0,0,0.08); }
-            .sidebar.open { transform: translateX(0); }
-            .sidebar-overlay { display: none; position: fixed; inset: 0; background: rgba(17,24,39,0.5); z-index: 150; backdrop-filter: blur(2px); transition: opacity 0.3s; }
-            .sidebar-overlay.open { display: block; }
+@media (max-width: 767px) {
+.mobile-menu-btn { display: flex; align-items: center; justify-content: center; }
+
+/* Sidebar Slide-out Drawer */
+.sidebar { position: fixed; top: 0; left: 0; height: 100%; z-index: 200; transform: translateX(-100%); transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: 4px 0 20px rgba(0,0,0,0.08); }
+.sidebar.open { transform: translateX(0); }
+
+/* Backdrop Overlay */
+.sidebar-overlay { display: none; position: fixed; inset: 0; background: rgba(17,24,39,0.5); z-index: 150; backdrop-filter: blur(2px); transition: opacity 0.3s; }
+.sidebar-overlay.open { display: block; }
+
+/* Dash Header Adjustments */
+            .dash-header { padding: 0 16px; height: 64px; min-height: 64px; }
+            .dash-header .search-bar { display: none; } /* Hide main search bar to free space */
             .dash-header { padding: 0 16px; height: 64px; min-height: 64px; justify-content: space-between;}
-            .dash-body { padding: 24px 16px; }
-            .dash-title { font-size: 22px; }
-            .dash-card { padding: 20px 16px !important; }
-            .dash-tabs { display: flex; overflow-x: auto; flex-wrap: nowrap; padding-bottom: 4px; -webkit-overflow-scrolling: touch; width: 100%; }
-            .dash-tab { white-space: nowrap; padding: 8px 16px; font-size: 13px; flex: 0 0 auto; }
-            .table-container { border: none; background: transparent; }
-            .dash-table thead { display: none; }
-            .dash-table tbody, .dash-table tr, .dash-table td { display: block; width: 100%; }
-            .dash-table tr { margin-bottom: 16px; background: #fff; border: 1px solid #e5e7eb; border-radius: 12px; padding: 12px 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
-            .dash-table td { padding: 12px 0 !important; border-bottom: 1px dashed #f3f4f6 !important; display: flex; justify-content: space-between; align-items: center; text-align: right; }
-            .dash-table td:last-child { border-bottom: none !important; padding-bottom: 0 !important; justify-content: flex-end; }
-            .dash-table td::before { content: attr(data-label); font-weight: 600; font-size: 11px; color: #9ca3af; text-transform: uppercase; text-align: left; margin-right: 16px; }
-            .patient-details-col { text-align: right !important; }
-            .desktop-action-center { text-align: right !important; }
-            .profile-header-row { flex-direction: column; align-items: flex-start; gap: 12px; }
-            .schedule-times-row { flex-direction: column; gap: 12px; }
-            .global-times-row { flex-direction: column; gap: 12px; margin-bottom: 16px; }
+
+/* Body Adjustments */
+.dash-body { padding: 24px 16px; }
+.dash-title { font-size: 22px; }
+.dash-card { padding: 20px 16px !important; }
+
+/* Horizontal Scrollable Tabs */
+.dash-tabs { display: flex; overflow-x: auto; flex-wrap: nowrap; padding-bottom: 4px; -webkit-overflow-scrolling: touch; width: 100%; }
+.dash-tab { white-space: nowrap; padding: 8px 16px; font-size: 13px; flex: 0 0 auto; }
+
+/* Table to Stacked Cards Conversion */
+.table-container { border: none; background: transparent; }
+.dash-table thead { display: none; }
+.dash-table tbody, .dash-table tr, .dash-table td { display: block; width: 100%; }
+.dash-table tr { margin-bottom: 16px; background: #fff; border: 1px solid #e5e7eb; border-radius: 12px; padding: 12px 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
+.dash-table td { padding: 12px 0 !important; border-bottom: 1px dashed #f3f4f6 !important; display: flex; justify-content: space-between; align-items: center; text-align: right; }
+.dash-table td:last-child { border-bottom: none !important; padding-bottom: 0 !important; justify-content: flex-end; }
+.dash-table td::before { content: attr(data-label); font-weight: 600; font-size: 11px; color: #9ca3af; text-transform: uppercase; text-align: left; margin-right: 16px; }
+
+/* Fix alignments for card view */
+.patient-details-col { text-align: right !important; }
+.desktop-action-center { text-align: right !important; }
+
+/* Layout Reflows */
+.profile-header-row { flex-direction: column; align-items: flex-start; gap: 12px; }
+.schedule-times-row { flex-direction: column; gap: 12px; }
+.global-times-row { flex-direction: column; gap: 12px; margin-bottom: 16px; }
+
+            /* Ratings Reflows */
+            .ratings-top-bar { flex-direction: column; align-items: flex-start; gap: 16px; }
+            .ratings-top-bar > div:last-child { width: 100%; display: flex; flex-direction: column; gap: 12px; }
+            .ratings-top-bar .search-bar { width: 100% !important; }
+            /* Ratings & Appointments Control Bar Reflows */
             .ratings-top-bar, .appointments-top-bar { flex-direction: column; align-items: flex-start; gap: 16px; }
             .ratings-top-bar > div:last-child, .appointments-top-bar > div:last-child { width: 100%; display: flex; flex-direction: column; gap: 12px; }
             .search-bar { width: 100% !important; }
-            .ratings-grid { grid-template-columns: 1fr; gap: 24px; }
-            .ratings-summary-card { padding: 20px; }
-            .presc-modal { margin: 16px; width: auto; max-height: 90vh; border-radius: 12px; }
-            .presc-header, .presc-body, .presc-footer { padding: 16px; }
-            .radio-group { flex-wrap: wrap; gap: 12px; }
-        }
-    </style>
+            
+.ratings-grid { grid-template-columns: 1fr; gap: 24px; }
+.ratings-summary-card { padding: 20px; }
+
+/* Modal Adjustments */
+.presc-modal { margin: 16px; width: auto; max-height: 90vh; border-radius: 12px; }
+.presc-header, .presc-body, .presc-footer { padding: 16px; }
+.radio-group { flex-wrap: wrap; gap: 12px; }
+}
+</style>
 </head>
 <body>
 
-    <!-- AUTHENTICATION WRAPPER -->
-    <div id="authWrapper">
-        <header class="header">
-            <div class="logo-container" onclick="showView('view-login')">
-                <img src="https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/Group%202085665235.png?download=true" alt="doktura.ai logo">
-            </div>
-            <div id="authCloseBtnContainer" style="display: none;">
-                <a href="index.html">← Back Home</a>
-            </div>
-        </header>
+<!-- AUTHENTICATION WRAPPER -->
+<div id="authWrapper">
+<header class="header">
+<div class="logo-container" onclick="showView('view-login')">
+<img src="https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/Group%202085665235.png?download=true" alt="doktura.ai logo">
+</div>
+</header>
 
-        <main class="main-content">
-            <!-- Reusable Dynamic Alert Box -->
-            <div id="authAlertContainer" style="width: 100%; max-width: 480px;">
-                <div id="authAlertBox" style="display: none; margin-bottom: 20px; padding: 14px; border-radius: 8px; font-size: 14px; text-align: center; font-weight: 500;"></div>
-            </div>
+<main class="main-content">
+<div id="authAlertContainer" style="width: 100%; max-width: 480px;">
+<div id="authAlertBox" style="display: none; margin-bottom: 20px; padding: 14px; border-radius: 8px; font-size: 14px; text-align: center; font-weight: 500;"></div>
+</div>
 
-            <!-- 1. LOGIN VIEW -->
-            <div id="view-login" class="card" style="display: none;">
-                <div class="card-header">
-                    <h1>Welcome back</h1>
-                    <p>Login with your account and Password<br>or create new account</p>
-                </div>
-                <form id="loginForm">
-                    <div class="form-group">
-                        <label>Email</label>
-                        <input type="email" id="loginEmail" class="form-control" placeholder="Enter your email" required>
-                    </div>
-                    <div class="form-group">
-                        <label>Password</label>
-                        <div class="input-wrapper">
-                            <input type="password" id="loginPass" class="form-control" placeholder="Enter your password" required>
-                            <button type="button" class="icon-btn" onclick="togglePasswordVisibility(this)">
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
-                            </button>
-                        </div>
-                    </div>
-                    
-                    <div class="options-row">
-                        <a href="javascript:void(0)" class="forgot-link" onclick="showView('view-forgot-password', event)">Forgot password?</a>
-                        <label class="checkbox-label">
-                            <input type="checkbox"> Keep me logged in
-                        </label>
-                    </div>
-                    
-                    <div class="divider"><span>Or continue with</span></div>
-                    
-                    <div class="btn-container">
-                        <button type="button" id="doGoogleLoginBtn" class="btn btn-social">
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
-                            Sign-in with Google
-                        </button>
-                    </div>
+<!-- 1. LOGIN VIEW -->
+<div id="view-login" class="card" style="display: none;">
+<div class="card-header">
+<h1>Welcome back</h1>
+<p>Login with your account and Password<br>or create new account</p>
+</div>
+<form id="loginForm">
+<div class="form-group">
+<label>Email</label>
+<input type="email" id="loginEmail" class="form-control" placeholder="Enter your email" required>
+</div>
+<div class="form-group">
+<label>Password</label>
+<div class="input-wrapper">
+<input type="password" id="loginPass" class="form-control" placeholder="Enter your password" required>
+<button type="button" class="icon-btn" onclick="togglePasswordVisibility(this)">
+<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+</button>
+</div>
+</div>
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+<label style="display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 400; cursor: pointer; color: #4b5563;">
+<input type="checkbox" style="width: 16px; height: 16px; accent-color: #0066cc;"> Keep me logged in
+</label>
+<a href="javascript:void(0)" class="forgot-link" style="margin-bottom: 0;" onclick="showView('view-forgot-password', event)">Forgot password?</a>
+</div>
 
-                    <button type="submit" id="doLoginBtn" class="btn btn-primary" style="margin-top: 12px;">Continue</button>
-                </form>
-                <div class="card-footer"><p>Didn't have an account? <a href="javascript:void(0)" onclick="showView('view-signup', event)">Sign-up</a></p></div>
-            </div>
+<div class="divider"><span>Or continue with</span></div>
 
-            <!-- 2. SIGN-UP VIEW -->
-            <div id="view-signup" class="card" style="display: none;">
-                <div class="card-header">
-                    <h1>Apply as a Doctor</h1>
-                    <p>Start your application process to join Doktura.ai</p>
-                </div>
-                <form id="signupForm">
-                    <div class="form-group" style="margin-bottom: 12px;">
-                        <label>Email</label>
-                        <input type="email" id="regEmail" class="form-control" placeholder="Enter your email" required>
-                    </div>
+<div class="btn-container">
+<button type="button" id="doGoogleLoginBtn" class="btn btn-social">
+<svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
+Sign-in with Google
+</button>
+</div>
 
-                    <div class="terms-text">By signing up, you agree to our <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a></div>
-                    
-                    <div class="divider"><span>Or continue with</span></div>
-                    
-                    <div class="btn-container">
-                        <button type="button" id="doGoogleRegBtn" class="btn btn-social">
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
-                            Sign-up with Google
-                        </button>
-                    </div>
+<button type="submit" id="doLoginBtn" class="btn btn-primary" style="margin-top: 12px; padding: 14px;">Continue</button>
+</form>
+<div class="card-footer"><p>Didn't have an account? <a href="javascript:void(0)" onclick="showView('view-signup', event)">Sign-up</a></p></div>
+</div>
 
-                    <button type="submit" id="doRegisterBtn" class="btn btn-primary" style="margin-top: 16px;">Continue</button>
-                </form>
-                <div class="card-footer"><p>Already approved? <a href="javascript:void(0)" onclick="showView('view-login', event)">Sign-in</a></p></div>
-            </div>
+<!-- 2. SIGN-UP VIEW -->
+<div id="view-signup" class="card" style="display: none;">
+<div class="card-header">
+<h1>Apply as a Doctor</h1>
+<p>Start your application process to join Doktura.ai</p>
+</div>
+<form id="signupForm">
+<div class="form-group">
+<label>Email</label>
+<input type="email" id="regEmail" class="form-control" placeholder="Enter your email" required>
+</div>
+<div class="form-group">
+<label>Create Password</label>
+<div class="input-wrapper">
+<input type="password" id="regPass" class="form-control" placeholder="At least 8 characters" required>
+<button type="button" class="icon-btn" onclick="togglePasswordVisibility(this)">
+<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+</button>
+</div>
+</div>
 
-            <!-- 2.5 VERIFY EMAIL PROMPT (For Cross-Device Links) -->
-            <div id="view-verify-email-prompt" class="card" style="display: none;">
-                <div class="card-header">
-                    <h1>Confirm your email</h1>
-                    <p>You opened this link on a different device or browser. To continue signing in securely, please confirm the email address you used.</p>
-                </div>
-                <form id="confirmEmailForm">
-                    <div class="form-group">
-                        <label>Email</label>
-                        <input type="email" id="confirmEmailInput" class="form-control" placeholder="Enter your email" required>
-                    </div>
-                    <button type="submit" id="doConfirmEmailBtn" class="btn btn-primary" style="margin-top: 8px;">Complete Sign In</button>
-                </form>
-            </div>
+<div class="divider"><span>Or continue with</span></div>
 
-            <!-- FORGOT PASSWORD VIEW -->
-            <div id="view-forgot-password" class="card" style="display: none;">
-                <div class="card-header">
-                    <h1>Forgot password?</h1>
-                    <p>Enter your doctor email. We'll send you a link to reset your password.</p>
-                </div>
-                <form id="forgotForm">
-                    <div class="form-group">
-                        <label>Email</label>
-                        <input type="email" id="forgotEmail" class="form-control" placeholder="doctor@clinic.com" required>
-                    </div>
-                    <button type="submit" id="doForgotBtn" class="btn btn-primary" style="margin-top: 16px;">Reset password</button>
-                </form>
-                <div class="card-footer">
-                    <p><a href="javascript:void(0)" onclick="showView('view-login', event)">← Back to Login</a></p>
-                </div>
-            </div>
+<div class="btn-container">
+<button type="button" id="doGoogleRegBtn" class="btn btn-social">
+<svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
+Sign-up with Google
+</button>
+</div>
 
-            <!-- 5. RESET PASSWORD (ACTION URL) VIEW -->
-            <div id="view-reset-password" class="card" style="display: none;">
-                <div class="card-header">
-                    <h1 style="font-size: 26px;">Reset your password</h1>
-                    <p>Changing password for <span id="reset-email-display" class="highlight-email"></span></p>
-                </div>
-                <form id="resetPasswordActionForm">
-                    <div class="form-group">
-                        <label>Password</label>
-                        <div class="input-wrapper">
-                            <input type="password" id="resetPass1" class="form-control" placeholder="Enter your password" required>
-                            <button type="button" class="icon-btn" onclick="togglePasswordVisibility(this)">
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
-                            </button>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label>Confirm password</label>
-                        <div class="input-wrapper">
-                            <input type="password" id="resetPass2" class="form-control" placeholder="Re enter password" required>
-                            <button type="button" class="icon-btn" onclick="togglePasswordVisibility(this)">
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
-                            </button>
-                        </div>
-                    </div>
-                    <button type="submit" id="doResetFinalBtn" class="btn btn-primary" style="margin-top: 16px;">Reset password</button>
-                </form>
-            </div>
+<button type="submit" id="doRegisterBtn" class="btn btn-primary" style="margin-top: 16px; padding: 14px;">Sign Up</button>
+</form>
+<div class="card-footer"><p>Already approved? <a href="javascript:void(0)" onclick="showView('view-login', event)">Sign-in</a></p></div>
+</div>
 
-            <!-- 3. DOCTOR INITIAL COMPLETE DATA -->
-            <div id="view-complete-data" class="card" style="display: none;">
-                <div class="card-header" style="margin-bottom: 24px;">
-                    <h1>Complete your Profile</h1>
-                    <p>Upload your professional documents. Our admin team will verify your credentials before your account becomes active.</p>
-                </div>
-                
-                <form id="profileForm">
-                    <div class="form-row">
-                        <div class="form-group"><label>Full Name (with Title)</label><input type="text" id="docName" class="form-control" placeholder="e.g. Dr. John Doe" required></div>
-                        <div class="form-group"><label>Speciality</label><input type="text" id="docSpecialty" class="form-control" placeholder="e.g. Cardiologist" required></div>
-                    </div>
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>Contact Number</label>
-                            <div class="phone-input-wrapper">
-                                <span class="phone-prefix">+60</span>
-                                <input type="tel" id="docPhone" class="form-control" placeholder="12345678" required>
-                            </div>
-                        </div>
-                        <div class="form-group"><label>Clinic Location</label><input type="text" id="docLocation" class="form-control" placeholder="e.g. Kuala Lumpur" required></div>
-                    </div>
+<!-- FORGOT PASSWORD VIEW -->
+<div id="view-forgot-password" class="card" style="display: none;">
+<div class="card-header">
+<h1>Forgot password?</h1>
+<p>Enter your doctor email. We'll send you a link to reset your password.</p>
+</div>
+<form id="forgotForm">
+<div class="form-group">
+<label>Email</label>
+<input type="email" id="forgotEmail" class="form-control" placeholder="doctor@clinic.com" required>
+</div>
+<button type="submit" id="doForgotBtn" class="btn btn-primary" style="margin-top: 16px;">Reset password</button>
+</form>
+<div class="card-footer">
+<p><a href="javascript:void(0)" onclick="showView('view-login', event)">← Back to Login</a></p>
+</div>
+</div>
 
-                    <!-- Password Requirement Block added directly here -->
-                    <div class="form-group" id="profilePassContainer">
-                        <label>Password</label>
-                        <div class="input-wrapper">
-                            <input type="password" id="profilePass" class="form-control" placeholder="Enter your password">
-                            <button type="button" class="icon-btn" onclick="togglePasswordVisibility(this)" aria-label="Toggle password visibility">
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
-                            </button>
-                        </div>
-                        
-                        <div class="strength-bars" id="strengthBars">
-                            <div class="strength-bar"></div>
-                            <div class="strength-bar"></div>
-                            <div class="strength-bar"></div>
-                        </div>
-    
-                        <div class="strength-text" id="strengthText">Weak password. Must contain :</div>
-                        
-                        <ul class="strength-list">
-                            <li id="reqUpper"><span class="icon-circle grey"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></span> At least 1 uppercase</li>
-                            <li id="reqNum"><span class="icon-circle grey"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></span> At least 1 number</li>
-                            <li id="reqLen"><span class="icon-circle grey"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></span> At least 8 characters</li>
-                        </ul>
-                    </div>
+<!-- 3. DOCTOR INITIAL COMPLETE DATA -->
+<div id="view-complete-data" class="card" style="display: none;">
+<div style="display: flex; justify-content: space-between; align-items: flex-start;">
+<div class="card-header" style="margin-bottom: 24px;">
+<h1>Complete your Profile</h1>
+<p>Upload your professional documents. Our admin team will verify your credentials before your account becomes active.</p>
+</div>
+                    <button onclick="logoutDoctor()" class="btn btn-social" style="width:auto; padding:6px 12px; font-size:12px; border-color:#ef4444; color:#ef4444;">Sign out & Switch Account</button>
+                    <button onclick="logoutDoctor()" class="btn btn-social" style="width:auto; padding:6px 12px; font-size:12px; border-color:#ef4444; color:#ef4444;">Sign out</button>
+</div>
 
-                    <hr style="border: 0; border-top: 1px solid #e5e7eb; margin: 24px 0;">
-                    <h3 style="font-size: 15px; margin-bottom: 16px;">Required Documents</h3>
-                    
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>Profile Photo</label>
-                            <div class="file-upload-box"><input type="file" id="docPhoto" required onchange="updateFileName(this, 'photoName')"><div id="photoName" class="file-name-display">Upload Photo</div></div>
-                        </div>
-                        <div class="form-group">
-                            <label>Resume / CV</label>
-                            <div class="file-upload-box"><input type="file" id="docResume" required onchange="updateFileName(this, 'resumeName')"><div id="resumeName" class="file-name-display">Upload PDF</div></div>
-                        </div>
-                    </div>
-                    
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>Borang 11 (APC)</label>
-                            <div class="file-upload-box"><input type="file" id="docAPC" required onchange="updateFileName(this, 'apcName')"><div id="apcName" class="file-name-display">Upload PDF</div></div>
-                        </div>
-                        <div class="form-group">
-                            <label>Borang 15 (MMC)</label>
-                            <div class="file-upload-box"><input type="file" id="docMMC" required onchange="updateFileName(this, 'mmcName')"><div id="mmcName" class="file-name-display">Upload PDF</div></div>
-                        </div>
-                    </div>
-                    
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>Identification Card (IC)</label>
-                            <div class="file-upload-box"><input type="file" id="docIC" required onchange="updateFileName(this, 'icName')"><div id="icName" class="file-name-display">Upload Front/Back</div></div>
-                        </div>
-                        <div class="form-group"></div>
-                    </div>
-                    <button type="submit" id="saveProfileBtn" class="btn btn-primary" style="margin-top: 16px;">Submit for Verification</button>
-                </form>
+<form id="profileForm">
+<div class="form-row">
+<div class="form-group"><label>Full Name (with Title)</label><input type="text" id="docName" class="form-control" required></div>
+<div class="form-group"><label>Speciality</label><input type="text" id="docSpecialty" class="form-control" required></div>
+</div>
+<div class="form-row">
+<div class="form-group">
+<label>Contact Number</label>
+<div class="phone-input-wrapper">
+<span class="phone-prefix">+60</span>
+<input type="tel" id="docPhone" class="form-control" required>
+</div>
+</div>
+<div class="form-group"><label>Clinic Location</label><input type="text" id="docLocation" class="form-control" required></div>
+</div>
+<hr style="border: 0; border-top: 1px solid #e5e7eb; margin: 24px 0;">
+<h3 style="font-size: 15px; margin-bottom: 16px;">Required Documents</h3>
 
-                <div class="card-footer" style="margin-top: 24px; border-top: 1px solid #e5e7eb; padding-top: 20px; text-align: center;">
-                    <p style="color: #6b7280; font-size: 13px;">Need to start over? <a href="#" onclick="handleSignOut(event)" style="color: #4b5563; font-weight: 600; text-decoration: underline;">Sign out</a></p>
-                </div>
-            </div>
-        </main>
-        
-        <footer class="auth-footer">
-            Copyright 2026 © Doktura Plt Registration No. 202604000898 (LLP0046127-LGN)
-        </footer>
-    </div>
+<div class="form-row">
+<div class="form-group">
+<label>Profile Photo</label>
+<div class="file-upload-box"><input type="file" id="docPhoto" required onchange="updateFileName(this, 'photoName')"><div id="photoName" class="file-name-display">Upload Photo</div></div>
+</div>
+<div class="form-group">
+<label>Resume / CV</label>
+<div class="file-upload-box"><input type="file" id="docResume" required onchange="updateFileName(this, 'resumeName')"><div id="resumeName" class="file-name-display">Upload PDF</div></div>
+</div>
+</div>
 
-    <!-- ================= DASHBOARD UI ================= -->
-    <div id="view-dashboard" class="dashboard-layout" style="display: none;">
-        
-        <!-- Mobile Sidebar Overlay -->
-        <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleMobileSidebar()"></div>
+<div class="form-row">
+<div class="form-group">
+<label>Borang 11 (APC)</label>
+<div class="file-upload-box"><input type="file" id="docAPC" required onchange="updateFileName(this, 'apcName')"><div id="apcName" class="file-name-display">Upload PDF</div></div>
+</div>
+<div class="form-group">
+<label>Borang 15 (MMC)</label>
+<div class="file-upload-box"><input type="file" id="docMMC" required onchange="updateFileName(this, 'mmcName')"><div id="mmcName" class="file-name-display">Upload PDF</div></div>
+</div>
+</div>
 
-        <!-- Sidebar -->
-        <aside class="sidebar">
-            <div class="sidebar-header">
-                <img src="https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/Group%202085665235.png?download=true" alt="doktura.ai logo" style="height: 28px;">
-            </div>
-            
-            <div class="sidebar-menu">
-                <div class="menu-title">MAIN MENU</div>
-                <div class="menu-item active" onclick="switchDashboardMainView('profile', this)">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
-                    Profile & Availability
-                </div>
-                <div class="menu-item" onclick="switchDashboardMainView('appointments', this)">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
-                    My Appointments
-                </div>
-                <div class="menu-item" onclick="switchDashboardMainView('rating', this)">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
-                    Rating
-                </div>
-            </div>
+<div class="form-row">
+<div class="form-group">
+<label>Identification Card (IC)</label>
+<div class="file-upload-box"><input type="file" id="docIC" required onchange="updateFileName(this, 'icName')"><div id="icName" class="file-name-display">Upload Front/Back</div></div>
+</div>
+<div class="form-group"></div>
+</div>
+<button type="submit" id="saveProfileBtn" class="btn btn-primary" style="margin-top: 16px;">Submit for Verification</button>
+</form>
+</div>
+</main>
 
-            <div class="sidebar-footer">
-                <div class="doc-mini-profile">
-                    <img src="data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40' viewBox='0 0 24 24' fill='none' stroke='%239ca3af' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2'/%3E%3Ccircle cx='12' cy='7' r='4'/%3E%3C/svg%3E" id="sidebarAvatar" class="doc-avatar">
-                    <div class="doc-mini-info">
-                        <h4 id="sidebarName">Doctor</h4>
-                        <p id="sidebarEmail">doctor@clinic.com</p>
+<footer class="auth-footer">
+Copyright 2026 © Doktura Plt Registration No. 202604000898 (LLP0046127-LGN)
+</footer>
+</div>
+
+<!-- ================= DASHBOARD UI ================= -->
+<div id="view-dashboard" class="dashboard-layout" style="display: none;">
+
+<!-- Mobile Sidebar Overlay -->
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleMobileSidebar()"></div>
+
+<!-- Sidebar -->
+<aside class="sidebar">
+<div class="sidebar-header">
+<img src="https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/Group%202085665235.png?download=true" alt="doktura.ai logo" style="height: 28px;">
+</div>
+
+<div class="sidebar-menu">
+<div class="menu-title">MAIN MENU</div>
+<div class="menu-item active" onclick="switchDashboardMainView('profile', this)">
+<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+Profile & Availability
+</div>
+<div class="menu-item" onclick="switchDashboardMainView('appointments', this)">
+<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+My Appointments
+</div>
+<div class="menu-item" onclick="switchDashboardMainView('rating', this)">
+<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+Rating
+</div>
+</div>
+
+<div class="sidebar-footer">
+<div class="doc-mini-profile">
+<img src="data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40' viewBox='0 0 24 24' fill='none' stroke='%239ca3af' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2'/%3E%3Ccircle cx='12' cy='7' r='4'/%3E%3C/svg%3E" id="sidebarAvatar" class="doc-avatar">
+<div class="doc-mini-info">
+<h4 id="sidebarName">Doctor</h4>
+<p id="sidebarEmail">doctor@clinic.com</p>
+</div>
+</div>
+<a href="javascript:void(0)" onclick="logoutDoctor()" style="color: #6b7280;" title="Logout">
+<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+</a>
+</div>
+</aside>
+
+<!-- Main Panel -->
+<div class="dash-content">
+<header class="dash-header">
+                <div style="display:flex; align-items:center; gap:12px;">
+                    <button class="mobile-menu-btn" onclick="toggleMobileSidebar()">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+                    </button>
+                    <div class="search-bar">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                        <input type="text" placeholder="Search">
                     </div>
                 </div>
-                <a href="javascript:void(0)" onclick="logoutDoctor()" style="color: #6b7280;" title="Logout">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
-                </a>
-            </div>
-        </aside>
-
-        <!-- Main Panel -->
-        <div class="dash-content">
-            <header class="dash-header">
                 <!-- Removed Global Search Bar Here -->
                 <button class="mobile-menu-btn" onclick="toggleMobileSidebar()">
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
                 </button>
-                
+
+                <div style="display:flex; align-items:center; gap:24px;" class="header-controls">
                 <div style="display:flex; align-items:center; gap:24px; margin-left: auto;" class="header-controls">
-                    <!-- Notification Bell -->
-                    <div class="notification-wrapper" onclick="toggleNotifications()">
-                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#4b5563" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
-                        <div id="notifBadge" class="bell-badge" style="display: none;">0</div>
-                        
-                        <div id="notifDropdown" class="notif-dropdown">
-                            <div class="notif-header">Notifications</div>
-                            <div class="notif-list" id="notifList">
-                                <div style="padding: 16px; text-align: center; color: #9ca3af; font-size: 13px;">No new notifications</div>
-                            </div>
-                        </div>
-                    </div>
-                    <img src="data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40' viewBox='0 0 24 24' fill='none' stroke='%239ca3af' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2'/%3E%3Ccircle cx='12' cy='7' r='4'/%3E%3C/svg%3E" id="topAvatar" class="doc-avatar">
-                </div>
-            </header>
+<!-- Notification Bell -->
+<div class="notification-wrapper" onclick="toggleNotifications()">
+<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#4b5563" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
+<div id="notifBadge" class="bell-badge" style="display: none;">0</div>
 
-            <!-- ================= VIEW: PROFILE & SCHEDULE ================= -->
-            <div id="dashViewProfile" class="dash-body" style="display: block;">
-                <h1 class="dash-title">Profile and Weekly Schedule</h1>
-                <p class="dash-subtitle">Set your specific working hours and update your credentials.</p>
+<div id="notifDropdown" class="notif-dropdown">
+<div class="notif-header">Notifications</div>
+<div class="notif-list" id="notifList">
+<div style="padding: 16px; text-align: center; color: #9ca3af; font-size: 13px;">No new notifications</div>
+</div>
+</div>
+</div>
+<img src="data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40' viewBox='0 0 24 24' fill='none' stroke='%239ca3af' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2'/%3E%3Ccircle cx='12' cy='7' r='4'/%3E%3C/svg%3E" id="topAvatar" class="doc-avatar">
+</div>
+</header>
 
-                <div class="dash-card">
-                    <div class="dash-tabs">
-                        <div class="dash-tab active" onclick="switchDashboardTab('profile', this)">Profile Doctor</div>
-                        <div class="dash-tab" onclick="switchDashboardTab('schedule', this)">Weekly Schedule</div>
-                    </div>
+<!-- ================= VIEW: PROFILE & SCHEDULE ================= -->
+<div id="dashViewProfile" class="dash-body" style="display: block;">
+<h1 class="dash-title">Profile and Weekly Schedule</h1>
+<p class="dash-subtitle">Set your specific working hours and update your credentials.</p>
 
-                    <!-- PROFILE TAB -->
-                    <div id="tab-profile" class="tab-content active">
-                        <div class="profile-header-row">
-                            <div style="display:flex; align-items:center; gap:8px;">
-                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#0066cc" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
-                                <span style="font-weight:600; color:#111827;">Detail Doctor</span>
-                            </div>
-                            <span id="dashStatusBadge" class="status-badge pending">Pending Approval</span>
-                        </div>
+<div class="dash-card">
+<div class="dash-tabs">
+<div class="dash-tab active" onclick="switchDashboardTab('profile', this)">Profile Doctor</div>
+<div class="dash-tab" onclick="switchDashboardTab('schedule', this)">Weekly Schedule</div>
+</div>
 
-                        <div id="pendingWarning" style="background:#fffbeb; color:#92400e; padding:12px 16px; border-radius:8px; font-size:13px; margin-bottom:24px; display:none;">
-                            Your documents are currently being reviewed. Profile updates and schedule changes are disabled until approved.
-                        </div>
+<!-- PROFILE TAB -->
+<div id="tab-profile" class="tab-content active">
+<div class="profile-header-row">
+<div style="display:flex; align-items:center; gap:8px;">
+<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#0066cc" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+<span style="font-weight:600; color:#111827;">Detail Doctor</span>
+</div>
+<span id="dashStatusBadge" class="status-badge pending">Pending Approval</span>
+</div>
 
-                        <form id="dashUpdateForm">
-                            <h3 style="font-size: 14px; font-weight: 600; margin-bottom: 16px;">General Information</h3>
-                            <div class="form-row">
-                                <div class="form-group"><label>Name</label><input type="text" id="dashName" class="form-control dash-input"></div>
-                                <div class="form-group"><label>Speciality</label><input type="text" id="dashSpecialty" class="form-control dash-input"></div>
-                            </div>
-                            <div class="form-row">
-                                <div class="form-group"><label>Email</label><input type="email" id="dashEmail" class="form-control" disabled></div>
-                                <div class="form-group">
-                                    <label>Contact</label>
-                                    <div class="phone-input-wrapper">
-                                        <span class="phone-prefix">+60</span>
-                                        <input type="tel" id="dashPhone" class="form-control dash-input">
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label>Location</label><input type="text" id="dashLocation" class="form-control dash-input">
-                            </div>
+<div id="pendingWarning" style="background:#fffbeb; color:#92400e; padding:12px 16px; border-radius:8px; font-size:13px; margin-bottom:24px; display:none;">
+Your documents are currently being reviewed. Profile updates and schedule changes are disabled until approved.
+</div>
 
-                            <hr style="border: 0; border-top: 1px solid #f3f4f6; margin: 32px 0;">
-                            <h3 style="font-size: 14px; font-weight: 600; margin-bottom: 16px;">Update Documents (Optional)</h3>
+<form id="dashUpdateForm">
+<h3 style="font-size: 14px; font-weight: 600; margin-bottom: 16px;">General Information</h3>
+<div class="form-row">
+<div class="form-group"><label>Name</label><input type="text" id="dashName" class="form-control dash-input"></div>
+<div class="form-group"><label>Speciality</label><input type="text" id="dashSpecialty" class="form-control dash-input"></div>
+</div>
+<div class="form-row">
+<div class="form-group"><label>Email</label><input type="email" id="dashEmail" class="form-control" disabled></div>
+<div class="form-group">
+<label>Contact</label>
+<div class="phone-input-wrapper">
+<span class="phone-prefix">+60</span>
+<input type="tel" id="dashPhone" class="form-control dash-input">
+</div>
+</div>
+</div>
+<div class="form-group">
+<label>Location</label><input type="text" id="dashLocation" class="form-control dash-input">
+</div>
 
-                            <div class="form-row">
-                                <div class="form-group">
-                                    <label>Profile Photo</label>
-                                    <div class="file-upload-box dash-file-box">
-                                        <input type="file" id="dashPhoto" class="dash-input" accept="image/*" onchange="updateFileName(this, 'dashPhotoName')">
-                                        <div style="display:flex; align-items:center; gap:12px; justify-content:center;">
-                                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
-                                            <div style="text-align:left;">
-                                                <div style="font-weight:500; color:#111827;">Photo.jpg</div>
-                                                <div id="dashPhotoName" style="font-size:11px; color:#6b7280;">Click to update</div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="form-group">
-                                    <label>Resume / CV</label>
-                                    <div class="file-upload-box dash-file-box">
-                                        <input type="file" id="dashResume" class="dash-input" accept=".pdf" onchange="updateFileName(this, 'dashResumeName')">
-                                        <div style="display:flex; align-items:center; gap:12px; justify-content:center;">
-                                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
-                                            <div style="text-align:left;">
-                                                <div style="font-weight:500; color:#111827;">Resume.pdf</div>
-                                                <div id="dashResumeName" style="font-size:11px; color:#6b7280;">Click to update</div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <div class="form-row">
-                                <div class="form-group">
-                                    <label>Borang 11 (APC)</label>
-                                    <div class="file-upload-box dash-file-box">
-                                        <input type="file" id="dashAPC" class="dash-input" accept=".pdf" onchange="updateFileName(this, 'dashApcName')">
-                                        <div style="display:flex; align-items:center; gap:12px; justify-content:center;">
-                                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
-                                            <div style="text-align:left;">
-                                                <div style="font-weight:500; color:#111827;">Borang.pdf</div>
-                                                <div id="dashApcName" style="font-size:11px; color:#6b7280;">Click to update</div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="form-group">
-                                    <label>Borang 15 (MMC)</label>
-                                    <div class="file-upload-box dash-file-box">
-                                        <input type="file" id="dashMMC" class="dash-input" accept=".pdf" onchange="updateFileName(this, 'dashMmcName')">
-                                        <div style="display:flex; align-items:center; gap:12px; justify-content:center;">
-                                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
-                                            <div style="text-align:left;">
-                                                <div style="font-weight:500; color:#111827;">Borang.pdf</div>
-                                                <div id="dashMmcName" style="font-size:11px; color:#6b7280;">Click to update</div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
+<hr style="border: 0; border-top: 1px solid #f3f4f6; margin: 32px 0;">
+<h3 style="font-size: 14px; font-weight: 600; margin-bottom: 16px;">Update Documents (Optional)</h3>
 
-                            <div class="form-row">
-                                <div class="form-group">
-                                    <label>Identification Card (IC)</label>
-                                    <div class="file-upload-box dash-file-box">
-                                        <input type="file" id="dashIC" class="dash-input" accept=".pdf,image/*" onchange="updateFileName(this, 'dashIcName')">
-                                        <div style="display:flex; align-items:center; gap:12px; justify-content:center;">
-                                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
-                                            <div style="text-align:left;">
-                                                <div style="font-weight:500; color:#111827;">ID_Verification.pdf</div>
-                                                <div id="dashIcName" style="font-size:11px; color:#6b7280;">Click to update</div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="form-group"></div>
-                            </div>
+<div class="form-row">
+<div class="form-group">
+<label>Profile Photo</label>
+<div class="file-upload-box dash-file-box">
+<input type="file" id="dashPhoto" class="dash-input" accept="image/*" onchange="updateFileName(this, 'dashPhotoName')">
+<div style="display:flex; align-items:center; gap:12px; justify-content:center;">
+<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
+<div style="text-align:left;">
+<div style="font-weight:500; color:#111827;">Photo.jpg</div>
+<div id="dashPhotoName" style="font-size:11px; color:#6b7280;">Click to update</div>
+</div>
+</div>
+</div>
+</div>
+<div class="form-group">
+<label>Resume / CV</label>
+<div class="file-upload-box dash-file-box">
+<input type="file" id="dashResume" class="dash-input" accept=".pdf" onchange="updateFileName(this, 'dashResumeName')">
+<div style="display:flex; align-items:center; gap:12px; justify-content:center;">
+<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
+<div style="text-align:left;">
+<div style="font-weight:500; color:#111827;">Resume.pdf</div>
+<div id="dashResumeName" style="font-size:11px; color:#6b7280;">Click to update</div>
+</div>
+</div>
+</div>
+</div>
+</div>
 
-                            <button type="submit" id="dashSaveProfileBtn" class="btn btn-primary" style="margin-top: 16px; width: auto; padding: 12px 32px;">Update Profile</button>
-                        </form>
-                    </div>
+<div class="form-row">
+<div class="form-group">
+<label>Borang 11 (APC)</label>
+<div class="file-upload-box dash-file-box">
+<input type="file" id="dashAPC" class="dash-input" accept=".pdf" onchange="updateFileName(this, 'dashApcName')">
+<div style="display:flex; align-items:center; gap:12px; justify-content:center;">
+<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
+<div style="text-align:left;">
+<div style="font-weight:500; color:#111827;">Borang.pdf</div>
+<div id="dashApcName" style="font-size:11px; color:#6b7280;">Click to update</div>
+</div>
+</div>
+</div>
+</div>
+<div class="form-group">
+<label>Borang 15 (MMC)</label>
+<div class="file-upload-box dash-file-box">
+<input type="file" id="dashMMC" class="dash-input" accept=".pdf" onchange="updateFileName(this, 'dashMmcName')">
+<div style="display:flex; align-items:center; gap:12px; justify-content:center;">
+<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
+<div style="text-align:left;">
+<div style="font-weight:500; color:#111827;">Borang.pdf</div>
+<div id="dashMmcName" style="font-size:11px; color:#6b7280;">Click to update</div>
+</div>
+</div>
+</div>
+</div>
+</div>
 
-                    <!-- SCHEDULE TAB -->
-                    <div id="tab-schedule" class="tab-content">
-                        <div id="schedulePendingWarning" style="background:#fffbeb; color:#92400e; padding:12px 16px; border-radius:8px; font-size:13px; margin-bottom:24px; display:none;">
-                            Schedule management is disabled while your account is pending approval.
-                        </div>
+<div class="form-row">
+<div class="form-group">
+<label>Identification Card (IC)</label>
+<div class="file-upload-box dash-file-box">
+<input type="file" id="dashIC" class="dash-input" accept=".pdf,image/*" onchange="updateFileName(this, 'dashIcName')">
+<div style="display:flex; align-items:center; gap:12px; justify-content:center;">
+<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
+<div style="text-align:left;">
+<div style="font-weight:500; color:#111827;">ID_Verification.pdf</div>
+<div id="dashIcName" style="font-size:11px; color:#6b7280;">Click to update</div>
+</div>
+</div>
+</div>
+</div>
+<div class="form-group"></div>
+</div>
 
-                        <div id="scheduleDaysContainer"></div>
+<button type="submit" id="dashSaveProfileBtn" class="btn btn-primary" style="margin-top: 16px; width: auto; padding: 12px 32px;">Update Profile</button>
+</form>
+</div>
 
-                        <button id="saveScheduleBtn" class="btn btn-primary" style="margin-top: 24px; width: auto; padding: 12px 32px;">Save Schedule</button>
-                    </div>
+<!-- SCHEDULE TAB -->
+<div id="tab-schedule" class="tab-content">
+<div id="schedulePendingWarning" style="background:#fffbeb; color:#92400e; padding:12px 16px; border-radius:8px; font-size:13px; margin-bottom:24px; display:none;">
+Schedule management is disabled while your account is pending approval.
+</div>
 
-                </div>
-            </div>
+<div id="scheduleDaysContainer"></div>
 
-            <!-- ================= VIEW: MY APPOINTMENTS ================= -->
-            <div id="dashViewAppointments" class="dash-body" style="display: none; max-width: 1200px;">
-                <h1 class="dash-title">Appointment Timeline</h1>
-                <p class="dash-subtitle">Manage your online and physical visits below.</p>
+<button id="saveScheduleBtn" class="btn btn-primary" style="margin-top: 24px; width: auto; padding: 12px 32px;">Save Schedule</button>
+</div>
 
-                <div class="dash-card">
+</div>
+</div>
+
+<!-- ================= VIEW: MY APPOINTMENTS ================= -->
+<div id="dashViewAppointments" class="dash-body" style="display: none; max-width: 1200px;">
+<h1 class="dash-title">Appointment Timeline</h1>
+<p class="dash-subtitle">Manage your online and physical visits below.</p>
+
+<div class="dash-card">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+                        <div style="font-weight: 600; display: flex; align-items: center; gap: 8px;">
                     <div class="appointments-top-bar">
                         <div style="font-weight: 600; display: flex; align-items: center; gap: 8px; color: #111827;">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#4b5563" stroke-width="2"><circle cx="12" cy="7" r="4"></circle><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path></svg>
-                            Patients Details
-                        </div>
+<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#4b5563" stroke-width="2"><circle cx="12" cy="7" r="4"></circle><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path></svg>
+Patients Details
+</div>
+                        <button class="btn btn-social" style="width: auto; padding: 8px 16px;" onclick="loadAppointments()">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"></polyline><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path></svg>
+                            Refresh
+                        </button>
                         <div style="display:flex; gap:12px;">
                             <!-- New Search Bar for Appointments -->
                             <div class="search-bar">
@@ -754,845 +701,408 @@
                                 Refresh
                             </button>
                         </div>
-                    </div>
+</div>
 
-                    <div class="table-container">
-                        <table class="dash-table">
-                            <thead>
-                                <tr>
-                                    <th>Patient Details</th>
-                                    <th>Patient ID</th>
-                                    <th>Visit Type</th>
-                                    <th>Appointment Date</th>
-                                    <th>Appointment Time</th>
-                                    <th>Action</th>
-                                    <th style="text-align:center;">Add Record</th>
-                                </tr>
-                            </thead>
-                            <tbody id="appointmentsTableBody">
-                                <tr><td colspan="7" style="text-align: center; color: #6b7280; padding: 32px;">Loading appointments...</td></tr>
-                            </tbody>
-                        </table>
-                    </div>
+<div class="table-container">
+<table class="dash-table">
+<thead>
+<tr>
+<th>Patient Details</th>
+<th>Patient ID</th>
+<th>Visit Type</th>
+<th>Appointment Date</th>
+<th>Appointment Time</th>
+<th>Action</th>
+<th style="text-align:center;">Add Record</th>
+</tr>
+</thead>
+<tbody id="appointmentsTableBody">
+<tr><td colspan="7" style="text-align: center; color: #6b7280; padding: 32px;">Loading appointments...</td></tr>
+</tbody>
+</table>
+</div>
                     <!-- Pagination container -->
                     <div id="appointmentsPagination"></div>
-                </div>
-            </div>
+</div>
+</div>
 
-            <!-- ================= VIEW: RATINGS ================= -->
-            <div id="dashViewRating" class="dash-body" style="display: none; max-width: 1100px;">
-                <h1 class="dash-title">Doctor Ratings</h1>
-                <p class="dash-subtitle">See what patients are saying</p>
+<!-- ================= VIEW: RATINGS ================= -->
+<div id="dashViewRating" class="dash-body" style="display: none; max-width: 1100px;">
+<h1 class="dash-title">Doctor Ratings</h1>
+<p class="dash-subtitle">See what patients are saying</p>
 
-                <div class="ratings-top-bar">
-                    <div style="font-weight: 500; color:#111827;">Based on patient reviews and ratings</div>
+<div class="ratings-top-bar">
+<div style="font-weight: 500; color:#111827;">Based on patient reviews and ratings</div>
+                    <div>
+                        <div class="search-bar" style="background: #fff; border: 1px solid #e5e7eb; width: 200px; padding:6px 12px;">
                     <div style="display:flex; gap:12px;">
                         <!-- Search Bar for Ratings -->
                         <div class="search-bar">
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                            <input type="text" placeholder="Search" style="width:100%; border:none; outline:none; margin-left:8px; font-size:14px; background:transparent;">
                             <input type="text" id="ratingSearchInput" placeholder="Search Reviews" onkeyup="filterReviews()">
-                        </div>
-                        <button class="btn btn-social" style="width: auto; padding: 6px 12px;" onclick="loadReviews()">
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"></polyline><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path></svg> Refresh
-                        </button>
-                    </div>
-                </div>
+</div>
+<button class="btn btn-social" style="width: auto; padding: 6px 12px;" onclick="loadReviews()">
+<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"></polyline><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path></svg> Refresh
+</button>
+</div>
+</div>
 
-                <div style="border-bottom: 1px solid #e5e7eb; margin-bottom: 32px;">
-                    <div style="display:inline-block; border-bottom: 2px solid #111827; padding-bottom: 12px; font-weight: 600; color: #111827;">Reviews (<span id="totalReviewsCount">0</span>)</div>
-                </div>
+<div style="border-bottom: 1px solid #e5e7eb; margin-bottom: 32px;">
+<div style="display:inline-block; border-bottom: 2px solid #111827; padding-bottom: 12px; font-weight: 600; color: #111827;">Reviews (<span id="totalReviewsCount">0</span>)</div>
+</div>
 
-                <div class="ratings-grid">
-                    <!-- Left Summary -->
-                    <div class="ratings-summary-card">
-                        <div class="ratings-header-flex">
-                            <svg width="28" height="28" viewBox="0 0 24 24" fill="#eab308" stroke="#eab308" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
-                            <span class="ratings-score" id="avgScore">5.0</span><span class="ratings-score-total">/5.0</span>
-                        </div>
-                        <div class="ratings-sub" id="satisfactionText">100% of patients are satisfied</div>
-                        <div class="ratings-meta" id="ratingsMetaText">0 ratings • 0 reviews</div>
+<div class="ratings-grid">
+<!-- Left Summary -->
+<div class="ratings-summary-card">
+<div class="ratings-header-flex">
+<svg width="28" height="28" viewBox="0 0 24 24" fill="#eab308" stroke="#eab308" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+<span class="ratings-score" id="avgScore">5.0</span><span class="ratings-score-total">/5.0</span>
+</div>
+<div class="ratings-sub" id="satisfactionText">100% of patients are satisfied</div>
+<div class="ratings-meta" id="ratingsMetaText">0 ratings • 0 reviews</div>
 
-                        <div id="starBarsContainer">
-                            <!-- Star Bars Injected -->
-                        </div>
-                    </div> 
+<div id="starBarsContainer">
+<!-- Star Bars Injected -->
+</div>
+</div> 
 
-                    <!-- Right Reviews List -->
-                    <div>
-                        <h2 style="font-size: 20px; font-weight: 600; color:#111827; margin-bottom: 24px;">Patient Reviews</h2>
-                        <div id="reviewsListContainer">
-                            <div style="color:#6b7280; text-align:center; padding: 40px;">Loading reviews...</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-        </div>
-    </div>
+<!-- Right Reviews List -->
+<div>
+<h2 style="font-size: 20px; font-weight: 600; color:#111827; margin-bottom: 24px;">Patient Reviews</h2>
+<div id="reviewsListContainer">
+<div style="color:#6b7280; text-align:center; padding: 40px;">Loading reviews...</div>
+</div>
+</div>
+</div>
+</div>
 
-    <!-- ================= MODALS ================= -->
-    
-    <!-- Email Verification Sent Modal -->
-    <div id="modal-verification-sent" class="modal-overlay" style="display: none;">
-        <div class="modal-card">
-            <button class="modal-close-btn" onclick="closeAllModals();" aria-label="Close modal">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
-            </button>
-            <div class="modal-icon-wrapper">
-                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#0066cc" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
-            </div>
-            <h2>Verification Email has been sent</h2>
-            <p>Please check your email inbox or spam for Email verification.</p>
-            <button id="resendLinkBtn" class="btn btn-outline-primary" onclick="resendVerificationLink()">Resend Link</button>
-        </div>
-    </div>
+</div>
+</div>
 
-    <!-- Forgot Password Reset Modal -->
-    <div id="modal-reset-sent" class="modal-overlay" style="display: none;">
-        <div class="modal-card">
-            <button class="modal-close-btn" onclick="closeAllModals(); showView('view-login');" aria-label="Close modal">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
-            </button>
-            <div class="modal-icon-wrapper">
-                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#0066cc" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
-            </div>
-            <h2>Reset Link Sent</h2>
-            <p>Please check your email inbox or spam folder to reset your password.</p>
-            <button class="btn btn-outline-primary" onclick="closeAllModals(); showView('view-login');">Back to Login</button>
-        </div>
-    </div>
+<!-- ================= MODAL: ADD NEW PRESCRIPTION ================= -->
+<div id="prescriptionModal" class="modal-overlay" style="display: none;">
+<div class="presc-modal">
+<div class="presc-header">
+<h2>Add New Prescription</h2>
+<button class="presc-close" onclick="closePrescriptionModal()">&times;</button>
+</div>
+<div class="presc-body">
+<div style="display: flex; gap: 12px; margin-bottom: 24px;">
+<div style="width: 40px; height: 40px; background: #f3f4f6; border-radius: 50%; display: flex; justify-content: center; align-items: center; flex-shrink: 0;">
+<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#4b5563" stroke-width="2"><path d="M10 2v7.31"></path><path d="M14 9.3V1.99"></path><path d="M8.5 2h7"></path><path d="M14 9.3a6.5 6.5 0 1 1-4 0"></path><path d="M5.52 16h12.96"></path></svg>
+</div>
+<div>
+<div style="font-weight: 600;">Medication Form</div>
+<div style="font-size: 12px; color: #6b7280;">Fill out components for patient treatment</div>
+</div>
+</div>
 
-    <!-- Prescription Form Modal -->
-    <div id="prescriptionModal" class="modal-overlay" style="display: none;">
-        <div class="presc-modal">
-            <div class="presc-header">
-                <h2>Add New Prescription</h2>
-                <button class="presc-close" onclick="closePrescriptionModal()">&times;</button>
-            </div>
-            <div class="presc-body">
-                <div style="display: flex; gap: 12px; margin-bottom: 24px;">
-                    <div style="width: 40px; height: 40px; background: #f3f4f6; border-radius: 50%; display: flex; justify-content: center; align-items: center; flex-shrink: 0;">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#4b5563" stroke-width="2"><path d="M10 2v7.31"></path><path d="M14 9.3V1.99"></path><path d="M8.5 2h7"></path><path d="M14 9.3a6.5 6.5 0 1 1-4 0"></path><path d="M5.52 16h12.96"></path></svg>
-                    </div>
-                    <div>
-                        <div style="font-weight: 600;">Medication Form</div>
-                        <div style="font-size: 12px; color: #6b7280;">Fill out components for patient treatment</div>
-                    </div>
-                </div>
+<div id="medicationsContainer">
+<!-- Med blocks will be injected here -->
+</div>
 
-                <div id="medicationsContainer">
-                    <!-- Med blocks will be injected here -->
-                </div>
+<div style="margin-top: 16px; margin-bottom: 24px;">
+<button class="btn btn-social" style="color: #0ea5e9; font-size: 13px; font-weight: 600; border: none; padding: 0; background: transparent; justify-content: flex-start;" onclick="addMedicationBlock()">
++ Add New Medication
+</button>
+</div>
 
-                <div style="margin-top: 16px; margin-bottom: 24px;">
-                    <button class="btn btn-social" style="color: #0ea5e9; font-size: 13px; font-weight: 600; border: none; padding: 0; background: transparent; justify-content: flex-start;" onclick="addMedicationBlock()">
-                        + Add New Medication
-                    </button>
-                </div>
+<div style="border-top: 1px dashed #e5e7eb; padding-top: 24px; margin-bottom: 16px;">
+<div class="form-group">
+<label>Doctor's Note <span style="color:#0ea5e9;">*</span></label>
+<textarea id="prescNotes" class="form-control" rows="3" placeholder="Additional instructions..." required></textarea>
+</div>
+</div>
 
-                <div style="border-top: 1px dashed #e5e7eb; padding-top: 24px; margin-bottom: 16px;">
-                    <div class="form-group">
-                        <label>Doctor's Note <span style="color:#0ea5e9;">*</span></label>
-                        <textarea id="prescNotes" class="form-control" rows="3" placeholder="Additional instructions..." required></textarea>
-                    </div>
-                </div>
+<!-- MC Section -->
+<div style="margin-bottom: 8px;">
+<label style="display:flex; align-items:center; gap:8px; font-size:14px; font-weight:500; cursor:pointer;">
+<input type="checkbox" id="mcCheckbox" style="accent-color:#0ea5e9; width:16px; height:16px;" onchange="toggleMCDays()">
+MC Needed (Medical Certificate)
+</label>
+</div>
+<div class="form-group" id="mcDaysContainer" style="display:none; margin-left: 24px;">
+<label>Number of Days</label>
+<input type="text" id="mcDays" class="form-control" placeholder="e.g., 2 Days" style="width: 100%; max-width: 200px;">
+</div>
 
-                <!-- MC Section -->
-                <div style="margin-bottom: 8px;">
-                    <label style="display:flex; align-items:center; gap:8px; font-size:14px; font-weight:500; cursor:pointer;">
-                        <input type="checkbox" id="mcCheckbox" style="accent-color:#0ea5e9; width:16px; height:16px;" onchange="toggleMCDays()">
-                        MC Needed (Medical Certificate)
-                    </label>
-                </div>
-                <div class="form-group" id="mcDaysContainer" style="display:none; margin-left: 24px;">
-                    <label>Number of Days</label>
-                    <input type="text" id="mcDays" class="form-control" placeholder="e.g., 2 Days" style="width: 100%; max-width: 200px;">
-                </div>
-
-            </div>
-            <div class="presc-footer">
-                <button id="submitPrescriptionBtn" class="btn btn-primary" onclick="submitPrescription()">Add Record & Send to Patient</button>
-            </div>
-        </div>
-    </div>
+</div>
+<div class="presc-footer">
+<button id="submitPrescriptionBtn" class="btn btn-primary" onclick="submitPrescription()">Add Record & Send to Patient</button>
+</div>
+</div>
+</div>
 
 
-    <!-- ================= SCRIPTS ================= -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-app.js";
-        import { 
-            getAuth, signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, 
-            onAuthStateChanged, signOut, sendPasswordResetEmail, verifyPasswordResetCode, 
-            confirmPasswordReset, isSignInWithEmailLink, signInWithEmailLink, 
-            sendSignInLinkToEmail, updatePassword, deleteUser 
-        } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-auth.js";
-        import { getFirestore, collection, query, onSnapshot, orderBy } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore.js";
+<!-- ================= SCRIPTS ================= -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-app.js";
+import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, sendPasswordResetEmail, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-auth.js";
+import { getFirestore, collection, query, onSnapshot, orderBy } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore.js";
 
-        const API_BASE = 'https://api.doktura.ai'; 
-        
-        const app = initializeApp({ 
-            apiKey: "AIzaSyCrx9BPS8ficDzgVZMbJIb4b3PQ9IqEHLw", 
-            authDomain: "doktura-ai-907d8.firebaseapp.com", 
-            projectId: "doktura-ai-907d8" 
-        });
-        const auth = getAuth(app);
-        const db = getFirestore(app);
+const API_BASE = 'https://api.doktura.ai'; 
 
+const app = initializeApp({ 
+apiKey: "AIzaSyCrx9BPS8ficDzgVZMbJIb4b3PQ9IqEHLw", 
+authDomain: "doktura-ai-907d8.firebaseapp.com", 
+projectId: "doktura-ai-907d8" 
+});
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+        let currentAppointments =[];
         // State variables
         let currentAppointments = [];
-        let filteredAppointments = [];
+        let filteredAppointments =[];
         let apptCurrentPage = 1;
         const apptItemsPerPage = 5;
-        let activeAppointmentIdForPrescription = null;
+let activeAppointmentIdForPrescription = null;
 
         let currentReviews = [];
-        let filteredReviews = [];
+        let filteredReviews =[];
 
-        // ================= UI CORE =================
-        const alertBox = document.getElementById("authAlertBox");
+// ================= UI CORE =================
+const alertBox = document.getElementById("authAlertBox");
 
-        window.showView = function(targetId, event, pushHistory = true) {
-            if (event) event.preventDefault();
-            window.closeAllModals();
-            
-            if(targetId === 'view-dashboard') {
-                document.getElementById('authWrapper').style.display = 'none';
-                document.getElementById('view-dashboard').style.display = 'flex';
-                if (pushHistory) history.pushState({view: targetId}, "", "#dashboard");
-                return;
-            }
+window.showView = function(targetId, event, pushHistory = true) {
+if (event) event.preventDefault();
 
-            document.getElementById('authWrapper').style.display = 'flex';
-            document.getElementById('view-dashboard').style.display = 'none';
+if(targetId === 'view-dashboard') {
+document.getElementById('authWrapper').style.display = 'none';
+document.getElementById('view-dashboard').style.display = 'flex';
+if (pushHistory) history.pushState({view: targetId}, "", "#dashboard");
+return;
+}
 
-            const views = ['view-login', 'view-signup', 'view-forgot-password', 'view-complete-data', 'view-reset-password', 'view-verify-email-prompt'];
-            views.forEach(id => {
-                const el = document.getElementById(id);
-                if(el) el.style.display = (id === targetId) ? 'block' : 'none';
+document.getElementById('authWrapper').style.display = 'flex';
+document.getElementById('view-dashboard').style.display = 'none';
+
+const views =['view-login', 'view-signup', 'view-forgot-password', 'view-complete-data'];
+views.forEach(id => {
+const el = document.getElementById(id);
+if(el) el.style.display = (id === targetId) ? 'block' : 'none';
+});
+
+if(alertBox) alertBox.style.display = 'none';
+
+if (pushHistory && targetId !== 'view-complete-data') {
+history.pushState({view: targetId}, "", "#" + targetId.replace('view-', ''));
+}
+}
+
+window.addEventListener('popstate', (e) => {
+if (e.state && e.state.view) {
+showView(e.state.view, null, false);
+} else {
+showView('view-login', null, false);
+}
+});
+
+window.toggleMobileSidebar = function() {
+document.querySelector('.sidebar').classList.toggle('open');
+document.getElementById('sidebarOverlay').classList.toggle('open');
+}
+
+window.switchDashboardMainView = function(view, element) {
+document.querySelectorAll('.sidebar .menu-item').forEach(el => el.classList.remove('active'));
+element.classList.add('active');
+
+document.getElementById('dashViewProfile').style.display = 'none';
+document.getElementById('dashViewAppointments').style.display = 'none';
+document.getElementById('dashViewRating').style.display = 'none';
+
+if(view === 'profile') {
+document.getElementById('dashViewProfile').style.display = 'block';
+} else if (view === 'appointments') {
+document.getElementById('dashViewAppointments').style.display = 'block';
+loadAppointments();
+} else if (view === 'rating') {
+document.getElementById('dashViewRating').style.display = 'block';
+loadReviews();
+}
+
+            // Close sidebar automatically on mobile
+document.querySelector('.sidebar').classList.remove('open');
+document.getElementById('sidebarOverlay').classList.remove('open');
+}
+
+window.switchDashboardTab = function(tab, element) {
+document.querySelectorAll('.dash-tab').forEach(t => t.classList.remove('active'));
+document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+element.classList.add('active');
+document.getElementById('tab-' + tab).classList.add('active');
+}
+
+function showAlert(msg, isError=true) {
+alertBox.innerText = msg;
+alertBox.style.display = 'block';
+if(isError) { alertBox.style.backgroundColor = '#fef2f2'; alertBox.style.color = '#dc2626'; alertBox.style.border = '1px solid #fee2e2'; } 
+else { alertBox.style.backgroundColor = '#f0fdf4'; alertBox.style.color = '#16a34a'; alertBox.style.border = '1px solid #dcfce7'; }
+window.scrollTo(0,0);
+}
+
+window.togglePasswordVisibility = function(button) {
+const input = button.previousElementSibling;
+input.type = (input.type === "password") ? "text" : "password";
+}
+
+window.updateFileName = function(input, displayId) {
+if(input.files.length > 0) {
+document.getElementById(displayId).innerText = "Selected: " + input.files[0].name;
+document.getElementById(displayId).style.color = "#16a34a"; 
+}
+};
+
+window.logoutDoctor = async function() { 
+await signOut(auth); 
+window.location.reload(); 
+}
+
+// ================= NOTIFICATIONS LOGIC =================
+window.toggleNotifications = function() {
+document.getElementById('notifDropdown').classList.toggle('show');
+}
+
+window.addEventListener('click', function(e) {
+const notifWrapper = document.querySelector('.notification-wrapper');
+if (notifWrapper && !notifWrapper.contains(e.target)) {
+document.getElementById('notifDropdown').classList.remove('show');
+}
+});
+
+function setupRealTimeNotifications(uid) {
+const notifRef = collection(db, "doctors", uid, "notifications");
+const q = query(notifRef, orderBy("created_at", "desc"));
+
+onSnapshot(q, (snapshot) => {
+const listEl = document.getElementById('notifList');
+const badge = document.getElementById('notifBadge');
+
+let unreadCount = 0;
+listEl.innerHTML = '';
+
+if(snapshot.empty) {
+listEl.innerHTML = '<div style="padding: 16px; text-align: center; color: #9ca3af; font-size: 13px;">No new notifications</div>';
+badge.style.display = 'none';
+return;
+}
+
+snapshot.forEach((doc) => {
+const data = doc.data();
+if(!data.is_read) unreadCount++;
+
+const timeStr = data.created_at ? new Date(data.created_at.toDate()).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : "Just now";
+
+listEl.innerHTML += `
+                       <div class="notif-item ${!data.is_read ? 'unread' : ''}">
+                           <div style="font-weight: 600; color: #111827;">${data.title}</div>
+                           <div>${data.message}</div>
+                           <div class="notif-time">${timeStr}</div>
+                       </div>
+                   `;
+});
+
+if(unreadCount > 0) {
+badge.innerText = unreadCount;
+badge.style.display = 'flex';
+} else {
+badge.style.display = 'none';
+}
+});
+}
+
+        // ================= SMART REMINDER LOOP =================
+        setInterval(() => {
+            if(currentAppointments.length === 0) return;
+            const now = Date.now();
+            currentAppointments.forEach(appt => {
+                const apptTime = new Date(appt.datetime).getTime();
+                const diffMs = apptTime - now;
+                const diffHours = diffMs / (1000 * 60 * 60);
+
+                if(diffHours > 0 && diffHours <= 2) {
+                    const bucket = Math.floor(diffHours * 2); 
+                    const reminderKey = `reminder_${appt.appointment_id}_${bucket}`;
+                    
+                    if(!localStorage.getItem(reminderKey)) {
+                        alert(`Reminder: You have an appointment with ${appt.patient_name} starting in approx ${Math.round(diffHours * 60)} minutes!`);
+                        localStorage.setItem(reminderKey, "true");
+                    }
+                }
             });
-            
-            if(alertBox) alertBox.style.display = 'none';
-            
-            if (pushHistory && targetId !== 'view-complete-data' && targetId !== 'view-reset-password') {
-                history.pushState({view: targetId}, "", "#" + targetId.replace('view-', ''));
-            }
-        }
+        }, 60000); 
 
-        window.addEventListener('popstate', (e) => {
-            if (e.state && e.state.view) {
-                showView(e.state.view, null, false);
-            } else {
-                showView('view-login', null, false);
-            }
-        });
+// ================= RATINGS UI LOGIC =================
+window.loadReviews = async function() {
+const listEl = document.getElementById('reviewsListContainer');
+listEl.innerHTML = '<div style="color:#6b7280; text-align:center; padding: 40px;">Loading reviews...</div>';
 
-        window.toggleMobileSidebar = function() {
-            document.querySelector('.sidebar').classList.toggle('open');
-            document.getElementById('sidebarOverlay').classList.toggle('open');
-        }
+try {
+const token = await auth.currentUser.getIdToken();
+const res = await fetch(`${API_BASE}/api/doctor/reviews`, { headers: { 'Authorization': `Bearer ${token}` } });
+if(!res.ok) throw new Error("Fetch failed");
+const data = await res.json();
 
-        window.switchDashboardMainView = function(view, element) {
-            document.querySelectorAll('.sidebar .menu-item').forEach(el => el.classList.remove('active'));
-            element.classList.add('active');
-            
-            document.getElementById('dashViewProfile').style.display = 'none';
-            document.getElementById('dashViewAppointments').style.display = 'none';
-            document.getElementById('dashViewRating').style.display = 'none';
+const total = data.total_reviews || 0;
+const avg = parseFloat(data.overall_rating).toFixed(1);
 
-            if(view === 'profile') {
-                document.getElementById('dashViewProfile').style.display = 'block';
-            } else if (view === 'appointments') {
-                document.getElementById('dashViewAppointments').style.display = 'block';
-                loadAppointments();
-            } else if (view === 'rating') {
-                document.getElementById('dashViewRating').style.display = 'block';
-                loadReviews();
-            }
+document.getElementById('totalReviewsCount').innerText = total;
+document.getElementById('avgScore').innerText = avg;
+document.getElementById('ratingsMetaText').innerText = `${total} ratings • ${total} reviews`;
 
-            document.querySelector('.sidebar').classList.remove('open');
-            document.getElementById('sidebarOverlay').classList.remove('open');
-        }
+let satText = total > 0 ? (avg >= 4.0 ? "100% of patients are satisfied" : "Most patients are satisfied") : "No reviews yet";
+document.getElementById('satisfactionText').innerText = satText;
 
-        window.switchDashboardTab = function(tab, element) {
-            document.querySelectorAll('.dash-tab').forEach(t => t.classList.remove('active'));
-            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-            element.classList.add('active');
-            document.getElementById('tab-' + tab).classList.add('active');
-        }
+let counts = {5:0, 4:0, 3:0, 2:0, 1:0};
+data.reviews.forEach(r => { counts[r.stars] = (counts[r.stars] || 0) + 1; });
 
-        window.showModal = function(targetId) {
-            document.getElementById(targetId).style.display = 'flex';
-            document.body.classList.add('modal-open');
-        }
+let barsHTML = '';[5,4,3,2,1].forEach(star => {
+let pct = total > 0 ? (counts[star] / total) * 100 : 0;
+barsHTML += `
+                       <div class="star-row">
+                           <svg width="14" height="14" viewBox="0 0 24 24" fill="#eab308" stroke="#eab308" stroke-width="2" style="margin-right:4px;"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+                           <span style="width:12px;">${star}</span>
+                           <div class="star-bar-bg">
+                               <div class="star-bar-fill ${star < 4 ? 'grey' : ''}" style="width: ${pct}%;"></div>
+                           </div>
+                           <span class="star-count">(${counts[star]})</span>
+                       </div>
+                   `;
+});
+document.getElementById('starBarsContainer').innerHTML = barsHTML;
 
-        window.closeAllModals = function() {
-            document.getElementById('modal-verification-sent').style.display = 'none';
-            document.getElementById('modal-reset-sent').style.display = 'none';
-            document.getElementById('prescriptionModal').style.display = 'none';
-            document.body.classList.remove('modal-open');
-        }
-
-        function showAlert(msg, isError=true) {
-            alertBox.innerText = msg;
-            alertBox.style.display = 'block';
-            if(isError) { alertBox.style.backgroundColor = '#fef2f2'; alertBox.style.color = '#dc2626'; alertBox.style.border = '1px solid #fee2e2'; } 
-            else { alertBox.style.backgroundColor = '#f0fdf4'; alertBox.style.color = '#16a34a'; alertBox.style.border = '1px solid #dcfce7'; }
-            window.scrollTo(0,0);
-        }
-
-        window.togglePasswordVisibility = function(button) {
-            const input = button.previousElementSibling;
-            input.type = (input.type === "password") ? "text" : "password";
-        }
-
-        window.updateFileName = function(input, displayId) {
-            if(input.files.length > 0) {
-                document.getElementById(displayId).innerText = "Selected: " + input.files[0].name;
-                document.getElementById(displayId).style.color = "#16a34a"; 
-            }
-        };
-
-        window.logoutDoctor = async function() { 
-            await signOut(auth); 
-            window.location.href = window.location.pathname; 
-        }
-
-        window.handleSignOut = async function(e) {
-            if (e) e.preventDefault();
-            try {
-                const user = auth.currentUser;
-                if (user) {
-                    try {
-                        await deleteUser(user);
-                    } catch (delErr) {
-                        console.warn("Could not delete incomplete user, signing out instead:", delErr);
-                        await signOut(auth); 
-                    }
-                }
-                window.location.href = window.location.pathname; 
-            } catch(err) {
-                console.error(err);
-                showAlert("Failed to start over.", true);
-            }
-        };
-
-        // ================= PASSWORD STRENGTH UI LOGIC ================= //
-        function updateReqUI(id, isValid) {
-            const li = document.getElementById(id);
-            const icon = li.querySelector('.icon-circle');
-            if (isValid) {
-                li.classList.add('valid');
-                icon.className = 'icon-circle green';
-                icon.innerHTML = '<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>';
-            } else {
-                li.classList.remove('valid');
-                icon.className = 'icon-circle grey';
-                icon.innerHTML = '<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>';
-            }
-        }
-
-        document.getElementById('profilePass').addEventListener('input', function(e) {
-            const val = e.target.value;
-            const hasUpper = /[A-Z]/.test(val);
-            const hasNum = /[0-9]/.test(val);
-            const hasLen = val.length >= 8;
-
-            updateReqUI('reqUpper', hasUpper);
-            updateReqUI('reqNum', hasNum);
-            updateReqUI('reqLen', hasLen);
-
-            let score = hasUpper + hasNum + hasLen;
-            const bars = document.querySelectorAll('#strengthBars .strength-bar');
-            bars.forEach(b => b.className = 'strength-bar'); 
-
-            const textEl = document.getElementById('strengthText');
-            const isOptional = !e.target.hasAttribute('required');
-
-            if (score === 0 || val.length === 0) {
-                textEl.innerText = isOptional && val.length === 0 ? 'Optional password. Must contain :' : 'Weak password. Must contain :';
-            } else if (score === 1) {
-                bars[0].classList.add('red');
-                textEl.innerText = 'Weak password. Must contain :';
-            } else if (score === 2) {
-                bars[0].classList.add('yellow');
-                bars[1].classList.add('yellow');
-                textEl.innerText = 'Moderate password. Must contain :';
-            } else if (score === 3) {
-                bars[0].classList.add('green');
-                bars[1].classList.add('green');
-                bars[2].classList.add('green');
-                textEl.innerText = 'Strong password.';
-            }
-        });
-
-        // ================= INTERCEPT FIREBASE ACTION URLS ================= //
-        const urlParams = new URLSearchParams(window.location.search);
-        const mode = urlParams.get('mode');
-        const oobCode = urlParams.get('oobCode');
-
-        const isEmailLinkSignIn = isSignInWithEmailLink(auth, window.location.href);
-        const isResetPassword = (mode === 'resetPassword' && oobCode);
-        const isProcessingLink = isEmailLinkSignIn || isResetPassword;
-
-        async function executeEmailSignIn(email, buttonToReset = null) {
-            try {
-                if (auth.currentUser) {
-                    await signOut(auth);
-                }
-
-                const result = await signInWithEmailLink(auth, email, window.location.href);
-                window.localStorage.removeItem('emailForSignIn');
-                
-                window.history.replaceState({}, document.title, window.location.pathname);
-                setupCompleteDataForm(result.user);
-                window.showView('view-complete-data');
-            } catch (error) {
-                showAlert("Invalid or expired sign-in link. Please request a new one.", true);
-                window.showView('view-login');
-            } finally {
-                if (buttonToReset) {
-                    buttonToReset.innerText = 'Complete Sign In'; 
-                    buttonToReset.disabled = false;
-                }
-            }
-        }
-
-        if (isEmailLinkSignIn) {
-            let email = window.localStorage.getItem('emailForSignIn');
-            
-            if (email) {
-                executeEmailSignIn(email);
-            } else {
-                window.showView('view-verify-email-prompt');
-            }
-        } else if (isResetPassword) {
-            verifyPasswordResetCode(auth, oobCode).then((email) => {
-                document.getElementById('reset-email-display').innerText = email;
-                window.showView('view-reset-password');
-            }).catch((error) => {
-                showAlert("The reset link has expired or is invalid.", true);
-                window.showView('view-login');
-            });
-        }
-
-        document.getElementById('confirmEmailForm').addEventListener('submit', (e) => {
-            e.preventDefault();
-            const btn = document.getElementById('doConfirmEmailBtn');
-            const emailInput = document.getElementById('confirmEmailInput').value.trim();
-            btn.innerText = 'Verifying...'; 
-            btn.disabled = true;
-            executeEmailSignIn(emailInput, btn);
-        });
-
-        function setupCompleteDataForm(user, data = {}) {
-            if(data.name || user.displayName) {
-                document.getElementById("docName").value = data.name || user.displayName;
-            }
-
-            const passContainer = document.getElementById('profilePassContainer');
-            const passInput = document.getElementById('profilePass');
-            const strengthText = document.getElementById('strengthText');
-            
-            passContainer.style.display = 'block';
-
-            const isGoogle = user.providerData && user.providerData.some(p => p.providerId === 'google.com');
-            
-            if(isGoogle) {
-                passInput.removeAttribute('required');
-                passInput.placeholder = "Enter your password (Optional)";
-                if(strengthText && !passInput.value) strengthText.innerText = "Optional password. Must contain :";
-            } else {
-                passInput.setAttribute('required', 'true');
-                passInput.placeholder = "Enter your password";
-                if(strengthText && !passInput.value) strengthText.innerText = "Weak password. Must contain :";
-            }
-        }
-
-        // ================= AUTH HANDLERS ================= //
-        
-        document.getElementById("resetPasswordActionForm").addEventListener("submit", async (e) => {
-            e.preventDefault();
-            const pass1 = document.getElementById("resetPass1").value;
-            const pass2 = document.getElementById("resetPass2").value;
-            
-            if (pass1 !== pass2) return showAlert("Passwords do not match.", true);
-            if (pass1.length < 8) return showAlert("Password must be at least 8 characters.", true);
-
-            const btn = document.getElementById("doResetFinalBtn");
-            btn.innerText = "Resetting..."; btn.disabled = true;
-
-            try {
-                await confirmPasswordReset(auth, oobCode, pass1);
-                showAlert("Password updated successfully! Please login.", false);
-                window.history.replaceState({}, document.title, window.location.pathname);
-                window.showView('view-login');
-            } catch(e) {
-                showAlert("Failed to reset password. Link might be expired.", true);
-            }
-            btn.innerText = "Reset password"; btn.disabled = false;
-        });
-
-        document.getElementById("loginForm").addEventListener("submit", async (e) => {
-            e.preventDefault();
-            const btn = document.getElementById("doLoginBtn"); 
-            btn.innerText = "Logging in..."; btn.disabled = true;
-            try { 
-                await signInWithEmailAndPassword(auth, document.getElementById("loginEmail").value.trim(), document.getElementById("loginPass").value.trim()); 
-            } catch(e) { 
-                showAlert("Invalid Credentials or User Not Found."); 
-                btn.innerText = "Continue"; btn.disabled = false;
-            }
-        });
-
-        document.getElementById("signupForm").addEventListener("submit", async (e) => {
-            e.preventDefault();
-            const email = document.getElementById("regEmail").value.trim();
-            const btn = document.getElementById("doRegisterBtn");
-            
-            btn.innerText = "Sending..."; btn.disabled = true;
-            try {
-                const actionCodeSettings = {
-                    url: window.location.origin + window.location.pathname,
-                    handleCodeInApp: true
-                };
-                await sendSignInLinkToEmail(auth, email, actionCodeSettings);
-                window.localStorage.setItem('emailForSignIn', email);
-                window.showModal('modal-verification-sent');
-            } catch(e) {
-                showAlert("Registration failed: " + e.message);
-            }
-            btn.innerText = "Continue"; btn.disabled = false;
-        });
-
-        window.resendVerificationLink = async function() {
-            const email = window.localStorage.getItem('emailForSignIn') || document.getElementById("regEmail").value.trim();
-            if(!email) return showAlert("No email found to resend.", true);
-            
-            const btn = document.getElementById("resendLinkBtn");
-            const originalText = btn.innerText;
-            btn.innerText = "Resending..."; btn.disabled = true;
-            
-            try {
-                const actionCodeSettings = {
-                    url: window.location.origin + window.location.pathname,
-                    handleCodeInApp: true
-                };
-                await sendSignInLinkToEmail(auth, email, actionCodeSettings);
-                showAlert("Verification email resent successfully!", false);
-            } catch(e) {
-                showAlert("Failed to resend link.", true);
-            }
-            btn.innerText = originalText; btn.disabled = false;
-        };
-
-        document.getElementById("forgotForm").addEventListener("submit", async (e) => {
-            e.preventDefault();
-            const email = document.getElementById("forgotEmail").value.trim();
-            const btn = document.getElementById("doForgotBtn");
-            
-            btn.innerText = "Sending..."; btn.disabled = true;
-            try {
-                await sendPasswordResetEmail(auth, email);
-                window.showModal('modal-reset-sent');
-            } catch (e) {
-                showAlert("Failed to send reset link.");
-            }
-            btn.innerText = "Reset password"; btn.disabled = false;
-        });
-
-        const handleGoogleLogin = async () => { 
-            try { await signInWithPopup(auth, new GoogleAuthProvider()); } catch(e) { showAlert("Google Authentication Failed."); } 
-        };
-        document.getElementById("doGoogleLoginBtn").addEventListener("click", handleGoogleLogin);
-        document.getElementById("doGoogleRegBtn").addEventListener("click", handleGoogleLogin);
-
-
-        // ================= SYNC LOGIC ================= //
-        onAuthStateChanged(auth, async (user) => {
-            if (user) {
-                try {
-                    const token = await user.getIdToken(true); 
-                    
-                    const res = await fetch(`${API_BASE}/api/doctor/sync`, { 
-                        method: 'POST', 
-                        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }, 
-                        body: JSON.stringify({ email: user.email, name: user.displayName, photo_url: user.photoURL }) 
-                    });
-                    
-                    if (!res.ok) {
-                        let errMsg = "Backend sync failed.";
-                        try { const errData = await res.json(); errMsg = errData.detail || errMsg; } catch(_) {}
-                        throw new Error(errMsg);
-                    }
-                    
-                    const data = await res.json();
-                    
-                    let phoneClean = data.phone || "";
-                    if(phoneClean.startsWith("+60")) phoneClean = phoneClean.substring(3).trim();
-                    
-                    if(data.is_complete || data.status === 'approved') { 
-                        window.showView('view-dashboard', null, false); 
-                        setDashboardStatus(data.status);
-
-                        document.getElementById('sidebarName').innerText = data.name || user.displayName || "Doctor";
-                        document.getElementById('sidebarEmail').innerText = user.email;
-                        if(user.photoURL) {
-                            document.getElementById('sidebarAvatar').src = user.photoURL;
-                            document.getElementById('topAvatar').src = user.photoURL;
-                        }
-
-                        document.getElementById('dashName').value = data.name || user.displayName || "";
-                        document.getElementById('dashSpecialty').value = data.specialty || "";
-                        document.getElementById('dashEmail').value = user.email || "";
-                        document.getElementById('dashPhone').value = phoneClean;
-                        document.getElementById('dashLocation').value = data.location || "";
-
-                        setupRealTimeNotifications(data.id);
-                        
-                        if(data.status === 'approved' && !localStorage.getItem('approved_notified')) {
-                            alert("Congratulations! Your Doctor profile has been verified and approved by admins.");
-                            localStorage.setItem('approved_notified', 'true');
-                        }
-
-                    } else { 
-                        if(!isEmailLinkSignIn) {
-                            setupCompleteDataForm(user, data);
-                            window.showView('view-complete-data', null, false); 
-                            document.getElementById('docSpecialty').value = data.specialty || "";
-                            document.getElementById('docPhone').value = phoneClean;
-                            document.getElementById('docLocation').value = data.location || "";
-                        }
-                    }
-                } catch(e) { 
-                    console.error("Sync Error:", e);
-                    if(!isEmailLinkSignIn) {
-                        setupCompleteDataForm(user);
-                        window.showView('view-complete-data');
-                    }
-                }
-            } else {
-                if (!isProcessingLink) {
-                    window.showView('view-login');
-                }
-            }
-        });
-
-
-        // ================= INITIAL PROFILE UPLOAD ================= //
-        document.getElementById("profileForm").addEventListener("submit", async (e) => {
-            e.preventDefault();
-            const passContainer = document.getElementById('profilePassContainer');
-            const passInput = document.getElementById('profilePass');
-            const btn = document.getElementById("saveProfileBtn");
-            btn.innerText = "Uploading... Please wait"; btn.disabled = true;
-            
-            try {
-                // Determine whether a password was provided and process it if so
-                if (passContainer.style.display !== 'none' && passInput.value.length > 0) {
-                    const pass = passInput.value;
-                    const hasUpper = /[A-Z]/.test(pass);
-                    const hasNum = /[0-9]/.test(pass);
-                    const hasLen = pass.length >= 8;
-                    
-                    if (!hasUpper || !hasNum || !hasLen) {
-                        btn.innerText = "Submit for Verification"; btn.disabled = false;
-                        return showAlert("Please ensure your password meets all requirements.", true);
-                    }
-
-                    try {
-                        await updatePassword(auth.currentUser, pass);
-                    } catch (err) {
-                        if (err.code === 'auth/requires-recent-login') {
-                            throw new Error("Your session is too old to set a password. Please sign out, request a new link, and sign in again.");
-                        } else {
-                            throw err; 
-                        }
-                    }
-                } else if (passInput.hasAttribute('required') && passInput.value.length === 0) {
-                    btn.innerText = "Submit for Verification"; btn.disabled = false;
-                    return showAlert("Password is required.", true);
-                }
-
-                const freshToken = await auth.currentUser.getIdToken(true);
-                const formData = new FormData();
-                formData.append("name", document.getElementById("docName").value.trim());
-                formData.append("phone", "+60" + document.getElementById("docPhone").value.trim());
-                formData.append("specialty", document.getElementById("docSpecialty").value.trim());
-                formData.append("location", document.getElementById("docLocation").value.trim());
-                
-                formData.append("photo", document.getElementById("docPhoto").files[0]);
-                formData.append("resume", document.getElementById("docResume").files[0]);
-                formData.append("apc", document.getElementById("docAPC").files[0]);
-                formData.append("mmc", document.getElementById("docMMC").files[0]);
-                formData.append("ic", document.getElementById("docIC").files[0]);
-
-                const response = await fetch(`${API_BASE}/api/doctor/complete_profile`, {
-                    method: "POST", headers: { 'Authorization': `Bearer ${freshToken}` }, body: formData
-                });
-
-                if(!response.ok) {
-                    const errTxt = await response.text();
-                    throw new Error(errTxt || `Server error: ${response.status}`);
-                }
-
-                alert("Submitted successfully! Your account is pending admin review.");
-                window.location.reload(); 
-            } catch (error) {
-                console.error(error);
-                showAlert("Error saving profile: " + (error.message || "Unknown server error")); 
-                btn.innerText = "Submit for Verification"; btn.disabled = false;
-            }
-        });
-
-
-        // ================= PROFILE UPDATES (DASHBOARD) ================= //
-        document.getElementById("dashUpdateForm").addEventListener("submit", async (e) => {
-            e.preventDefault();
-            const btn = document.getElementById("dashSaveProfileBtn");
-            btn.innerText = "Saving Changes..."; btn.disabled = true;
-
-            try {
-                const token = await auth.currentUser.getIdToken(true);
-                const formData = new FormData();
-                formData.append("name", document.getElementById("dashName").value.trim());
-                formData.append("phone", "+60" + document.getElementById("dashPhone").value.trim());
-                formData.append("specialty", document.getElementById("dashSpecialty").value.trim());
-                formData.append("location", document.getElementById("dashLocation").value.trim());
-                
-                const photo = document.getElementById("dashPhoto").files[0];
-                const resume = document.getElementById("dashResume").files[0];
-                const apc = document.getElementById("dashAPC").files[0];
-                const mmc = document.getElementById("dashMMC").files[0];
-                const ic = document.getElementById("dashIC").files[0];
-
-                if(photo) formData.append("photo", photo);
-                if(resume) formData.append("resume", resume);
-                if(apc) formData.append("apc", apc);
-                if(mmc) formData.append("mmc", mmc);
-                if(ic) formData.append("ic", ic);
-
-                const response = await fetch(`${API_BASE}/api/doctor/complete_profile`, {
-                    method: "POST",
-                    headers: { 'Authorization': `Bearer ${token}` },
-                    body: formData
-                });
-
-                if(!response.ok) throw new Error("Update failed");
-
-                alert("Profile and documents updated successfully!");
-                btn.innerText = "Update Profile"; btn.disabled = false;
-
-            } catch (error) {
-                alert("Error updating profile."); 
-                btn.innerText = "Update Profile"; btn.disabled = false;
-            }
-        });
-
-        document.getElementById("saveScheduleBtn").addEventListener("click", () => {
-            alert("Schedule saved successfully!");
-        });
-
-
-        // ================= NOTIFICATIONS LOGIC =================
-        window.toggleNotifications = function() {
-            document.getElementById('notifDropdown').classList.toggle('show');
-        }
-        
-        window.addEventListener('click', function(e) {
-            const notifWrapper = document.querySelector('.notification-wrapper');
-            if (notifWrapper && !notifWrapper.contains(e.target)) {
-                document.getElementById('notifDropdown').classList.remove('show');
-            }
-        });
-
-        function setupRealTimeNotifications(uid) {
-            const notifRef = collection(db, "doctors", uid, "notifications");
-            const q = query(notifRef, orderBy("created_at", "desc"));
-
-            onSnapshot(q, (snapshot) => {
-                const listEl = document.getElementById('notifList');
-                const badge = document.getElementById('notifBadge');
-                
-                let unreadCount = 0;
-                listEl.innerHTML = '';
-
-                if(snapshot.empty) {
-                    listEl.innerHTML = '<div style="padding: 16px; text-align: center; color: #9ca3af; font-size: 13px;">No new notifications</div>';
-                    badge.style.display = 'none';
+                if(data.reviews.length === 0) {
+                    listEl.innerHTML = '<div style="color:#6b7280; padding: 20px;">No patient reviews yet.</div>';
                     return;
                 }
-
-                snapshot.forEach((doc) => {
-                    const data = doc.data();
-                    if(!data.is_read) unreadCount++;
-                    
-                    const timeStr = data.created_at ? new Date(data.created_at.toDate()).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : "Just now";
-                    
-                    listEl.innerHTML += `
-                        <div class="notif-item ${!data.is_read ? 'unread' : ''}">
-                            <div style="font-weight: 600; color: #111827;">${data.title}</div>
-                            <div>${data.message}</div>
-                            <div class="notif-time">${timeStr}</div>
-                        </div>
-                    `;
-                });
-
-                if(unreadCount > 0) {
-                    badge.innerText = unreadCount;
-                    badge.style.display = 'flex';
-                } else {
-                    badge.style.display = 'none';
-                }
-            });
-        }
-
-        // ================= RATINGS UI LOGIC =================
-        window.loadReviews = async function() {
-            const listEl = document.getElementById('reviewsListContainer');
-            listEl.innerHTML = '<div style="color:#6b7280; text-align:center; padding: 40px;">Loading reviews...</div>';
-
-            try {
-                const token = await auth.currentUser.getIdToken();
-                const res = await fetch(`${API_BASE}/api/doctor/reviews`, { headers: { 'Authorization': `Bearer ${token}` } });
-                if(!res.ok) throw new Error("Fetch failed");
-                const data = await res.json();
-
-                const total = data.total_reviews || 0;
-                const avg = parseFloat(data.overall_rating).toFixed(1);
-                
-                document.getElementById('totalReviewsCount').innerText = total;
-                document.getElementById('avgScore').innerText = avg;
-                document.getElementById('ratingsMetaText').innerText = `${total} ratings • ${total} reviews`;
-                
-                let satText = total > 0 ? (avg >= 4.0 ? "100% of patients are satisfied" : "Most patients are satisfied") : "No reviews yet";
-                document.getElementById('satisfactionText').innerText = satText;
-
-                let counts = {5:0, 4:0, 3:0, 2:0, 1:0};
-                data.reviews.forEach(r => { counts[r.stars] = (counts[r.stars] || 0) + 1; });
-                
-                let barsHTML = '';[5,4,3,2,1].forEach(star => {
-                    let pct = total > 0 ? (counts[star] / total) * 100 : 0;
-                    barsHTML += `
-                        <div class="star-row">
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="#eab308" stroke="#eab308" stroke-width="2" style="margin-right:4px;"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
-                            <span style="width:12px;">${star}</span>
-                            <div class="star-bar-bg">
-                                <div class="star-bar-fill ${star < 4 ? 'grey' : ''}" style="width: ${pct}%;"></div>
-                            </div>
-                            <span class="star-count">(${counts[star]})</span>
-                        </div>
-                    `;
-                });
-                document.getElementById('starBarsContainer').innerHTML = barsHTML;
-
-                currentReviews = data.reviews || [];
+                currentReviews = data.reviews ||[];
                 filterReviews();
 
+                listEl.innerHTML = '';
+                data.reviews.forEach(r => {
+                    const d = new Date(r.date);
+                    const dateStr = isNaN(d) ? r.date : d.toLocaleDateString('en-US', {month:'short', day:'numeric', year:'numeric'});
+                    
+                    let starsHTML = '';
+                    for(let i=1; i<=5; i++) {
+                        starsHTML += `<svg width="16" height="16" viewBox="0 0 24 24" fill="${i<=r.stars?'#eab308':'#e5e7eb'}" stroke="${i<=r.stars?'#eab308':'#e5e7eb'}" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>`;
+                    }
             } catch (e) {
                 listEl.innerHTML = '<div style="color:#ef4444; padding: 20px;">Failed to load reviews.</div>';
             }
         }
 
+                    let summary = r.comment.split('.')[0] + (r.comment.includes('.') ? '.' : '');
+                    
+                    listEl.innerHTML += `
+                        <div class="review-item">
+                            <div class="review-user-row">
+                                <div class="review-user-info">
+                                    <div class="review-avatar">
+                                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2" style="margin: 8px;"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                                    </div>
+                                    <span class="review-name">${r.patient_name || 'Patient'}</span>
         window.filterReviews = function() {
             const query = (document.getElementById('ratingSearchInput').value || '').toLowerCase();
             filteredReviews = currentReviews.filter(r => {
@@ -1628,37 +1138,83 @@
                             <div class="review-user-info">
                                 <div class="review-avatar">
                                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2" style="margin: 8px;"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
-                                </div>
+                               </div>
+                                <div class="review-date">Consultation on ${dateStr}</div>
                                 <span class="review-name">${r.patient_name || 'Patient'}</span>
-                            </div>
+                           </div>
+                            <div class="review-stars">${starsHTML}</div>
+                            <div class="review-title">${summary}</div>
+                            <div class="review-text">${r.comment}</div>
                             <div class="review-date">Consultation on ${dateStr}</div>
-                        </div>
+                       </div>
+                    `;
+                });
+
+            } catch (e) {
+                listEl.innerHTML = '<div style="color:#ef4444; padding: 20px;">Failed to load reviews.</div>';
+            }
                         <div class="review-stars">${starsHTML}</div>
                         <div class="review-title">${summary}</div>
                         <div class="review-text">${r.comment}</div>
                     </div>
                 `;
             });
-        }
+}
 
-        // ================= APPOINTMENTS LOGIC =================
-        window.loadAppointments = async function() {
-            const tbody = document.getElementById('appointmentsTableBody');
-            tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; color: #6b7280; padding: 32px;">Loading appointments...</td></tr>';
-            
-            try {
-                const token = await auth.currentUser.getIdToken();
-                const res = await fetch(`${API_BASE}/api/doctor/dashboard/appointments`, { headers: { 'Authorization': `Bearer ${token}` } });
-                if(!res.ok) throw new Error("Failed to fetch");
-                
-                const data = await res.json();
-                currentAppointments = data.appointments || [];
+// ================= APPOINTMENTS LOGIC =================
+window.loadAppointments = async function() {
+const tbody = document.getElementById('appointmentsTableBody');
+tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; color: #6b7280; padding: 32px;">Loading appointments...</td></tr>';
+
+try {
+const token = await auth.currentUser.getIdToken();
+const res = await fetch(`${API_BASE}/api/doctor/dashboard/appointments`, { headers: { 'Authorization': `Bearer ${token}` } });
+if(!res.ok) throw new Error("Failed to fetch");
+
+const data = await res.json();
+                currentAppointments = data.appointments;
+
+                if(data.appointments.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; color: #6b7280; padding: 32px;">No upcoming appointments.</td></tr>';
+                    return;
+                }
+                currentAppointments = data.appointments ||[];
                 filterAppointments();
 
-            } catch(e) {
-                tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; color: #ef4444; padding: 32px;">Error loading appointments.</td></tr>';
-            }
-        }
+                tbody.innerHTML = '';
+                data.appointments.forEach(appt => {
+                    const d = new Date(appt.datetime);
+                    const dateStr = d.toLocaleDateString('en-US', {month:'short', day:'numeric', year:'numeric'});
+                    const timeStr = d.toLocaleTimeString('en-US', {hour:'2-digit', minute:'2-digit'});
+                    
+                    const typeTag = appt.visit_type.toLowerCase().includes('online') ? `<span class="tag online">💻 Online</span>` : `<span class="tag clinic">🏥 In-Clinic Visit</span>`;
+                    const callBtn = appt.action_url ? `<button class="btn-call" onclick="window.open('${API_BASE}${appt.action_url}', '_blank')">Start Video Call</button>` : `<span style="color:#9ca3af; font-size:13px;">In Clinic</span>`;
+                    
+                    const recordBtn = appt.consultation_completed 
+                        ? `<span style="color:#16a34a; font-size:12px; font-weight:600;">✓ Completed</span>` 
+                        : `<button class="btn-record" onclick="openPrescriptionModal('${appt.appointment_id}')" title="Add Prescription & Notes">
+                             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                           </button>`;
+
+                    tbody.innerHTML += `
+                        <tr>
+                            <td data-label="Patient Details" class="patient-details-col">
+                                <div style="font-weight: 600; color:#111827;">${appt.patient_name || 'Patient'}</div>
+                                <div style="font-size: 12px; color:#6b7280;">${appt.patient_email || ''}</div>
+                            </td>
+                            <td data-label="Patient ID" style="color:#6b7280;">${appt.patient_id}</td>
+                            <td data-label="Visit Type">${typeTag}</td>
+                            <td data-label="Date" style="font-weight:500;">${dateStr}</td>
+                            <td data-label="Time">${timeStr}</td>
+                            <td data-label="Action">${callBtn}</td>
+                            <td data-label="Add Record" class="desktop-action-center">${recordBtn}</td>
+                        </tr>
+                    `;
+                });
+} catch(e) {
+tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; color: #ef4444; padding: 32px;">Error loading appointments.</td></tr>';
+}
+}
 
         window.filterAppointments = function() {
             const query = (document.getElementById('appointmentSearchInput').value || '').toLowerCase();
@@ -1750,243 +1306,447 @@
             renderAppointmentsTable();
         };
 
-        // ================= PRESCRIPTION MODAL LOGIC =================
-        let medCount = 0;
-        let searchTimeout = null;
+// ================= PRESCRIPTION MODAL LOGIC =================
+let medCount = 0;
+let searchTimeout = null;
 
-        window.openPrescriptionModal = function(appointmentId) {
-            activeAppointmentIdForPrescription = appointmentId;
-            document.getElementById('prescriptionModal').style.display = 'flex';
-            document.body.classList.add('modal-open');
-            document.getElementById('medicationsContainer').innerHTML = '';
-            document.getElementById('prescNotes').value = '';
-            document.getElementById('mcCheckbox').checked = false;
-            document.getElementById('mcDaysContainer').style.display = 'none';
-            document.getElementById('mcDays').value = '';
-            medCount = 0;
-            addMedicationBlock(); 
-        }
+window.openPrescriptionModal = function(appointmentId) {
+activeAppointmentIdForPrescription = appointmentId;
+document.getElementById('prescriptionModal').style.display = 'flex';
+document.body.classList.add('modal-open');
+document.getElementById('medicationsContainer').innerHTML = '';
+document.getElementById('prescNotes').value = '';
+document.getElementById('mcCheckbox').checked = false;
+document.getElementById('mcDaysContainer').style.display = 'none';
+document.getElementById('mcDays').value = '';
+medCount = 0;
+addMedicationBlock(); 
+}
 
-        window.closePrescriptionModal = function() {
-            document.getElementById('prescriptionModal').style.display = 'none';
-            document.body.classList.remove('modal-open');
-            activeAppointmentIdForPrescription = null;
-        }
+window.closePrescriptionModal = function() {
+document.getElementById('prescriptionModal').style.display = 'none';
+document.body.classList.remove('modal-open');
+activeAppointmentIdForPrescription = null;
+}
 
-        window.toggleMCDays = function() {
-            const isChecked = document.getElementById('mcCheckbox').checked;
-            document.getElementById('mcDaysContainer').style.display = isChecked ? 'block' : 'none';
-        }
+window.toggleMCDays = function() {
+const isChecked = document.getElementById('mcCheckbox').checked;
+document.getElementById('mcDaysContainer').style.display = isChecked ? 'block' : 'none';
+}
 
-        window.addMedicationBlock = function() {
-            medCount++;
-            const id = medCount;
-            const html = `
-                <div class="med-block" id="medBlock_${id}">
-                    <div class="med-block-title">
-                        Medication #${id}
-                        ${id > 1 ? `<span onclick="document.getElementById('medBlock_${id}').remove()">🗑 Delete</span>` : ''}
-                    </div>
-                    
-                    <div class="form-row">
-                        <div class="form-group autocomplete-wrapper">
-                            <label>Medication Name (Auto-search)</label>
-                            <input type="text" id="medName_${id}" class="form-control med-name-input" placeholder="e.g. Panadol" autocomplete="off" onkeyup="handleMedSearch(this, ${id})">
-                            <div id="medDropdown_${id}" class="autocomplete-list"></div>
-                        </div>
-                        <div class="form-group">
-                            <label>Timing</label>
-                            <div class="radio-group">
-                                <label><input type="radio" name="timing_${id}" value="Before meal"> Before meal</label>
-                                <label><input type="radio" name="timing_${id}" value="After meal" checked> After meal</label>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>Dose</label>
-                            <input type="text" id="medDose_${id}" class="form-control med-dose-input" placeholder="e.g. 2.5 mg">
-                        </div>
-                        <div class="form-group">
-                            <label>Pills per Day</label>
-                            <input type="number" id="medPills_${id}" class="form-control med-pills-input" placeholder="e.g. 2">
-                        </div>
-                    </div>
-                </div>
-            `;
-            document.getElementById('medicationsContainer').insertAdjacentHTML('beforeend', html);
-        }
+window.addMedicationBlock = function() {
+medCount++;
+const id = medCount;
+const html = `
+               <div class="med-block" id="medBlock_${id}">
+                   <div class="med-block-title">
+                       Medication #${id}
+                       ${id > 1 ? `<span onclick="document.getElementById('medBlock_${id}').remove()">🗑 Delete</span>` : ''}
+                   </div>
+                   
+                   <div class="form-row">
+                       <div class="form-group autocomplete-wrapper">
+                           <label>Medication Name (Auto-search)</label>
+                           <input type="text" id="medName_${id}" class="form-control med-name-input" placeholder="e.g. Panadol" autocomplete="off" onkeyup="handleMedSearch(this, ${id})">
+                           <div id="medDropdown_${id}" class="autocomplete-list"></div>
+                       </div>
+                       <div class="form-group">
+                           <label>Timing</label>
+                           <div class="radio-group">
+                               <label><input type="radio" name="timing_${id}" value="Before meal"> Before meal</label>
+                               <label><input type="radio" name="timing_${id}" value="After meal" checked> After meal</label>
+                           </div>
+                       </div>
+                   </div>
+                   
+                   <div class="form-row">
+                       <div class="form-group">
+                           <label>Dose</label>
+                           <input type="text" id="medDose_${id}" class="form-control med-dose-input" placeholder="e.g. 2.5 mg">
+                       </div>
+                       <div class="form-group">
+                           <label>Pills per Day</label>
+                           <input type="number" id="medPills_${id}" class="form-control med-pills-input" placeholder="e.g. 2">
+                       </div>
+                   </div>
+               </div>
+           `;
+document.getElementById('medicationsContainer').insertAdjacentHTML('beforeend', html);
+}
 
-        window.handleMedSearch = function(inputEl, id) {
-            clearTimeout(searchTimeout);
-            const dropdown = document.getElementById(`medDropdown_${id}`);
-            const query = inputEl.value.trim();
+window.handleMedSearch = function(inputEl, id) {
+clearTimeout(searchTimeout);
+const dropdown = document.getElementById(`medDropdown_${id}`);
+const query = inputEl.value.trim();
 
-            if(query.length < 2) {
-                dropdown.style.display = 'none';
-                return;
-            }
+if(query.length < 2) {
+dropdown.style.display = 'none';
+return;
+}
 
-            searchTimeout = setTimeout(async () => {
-                try {
-                    const token = await auth.currentUser.getIdToken();
-                    const res = await fetch(`${API_BASE}/api/medications/search?q=${encodeURIComponent(query)}`, {
-                        headers: { 'Authorization': `Bearer ${token}` }
-                    });
-                    const data = await res.json();
-                    
-                    if(data.results && data.results.length > 0) {
-                        dropdown.innerHTML = '';
-                        data.results.forEach(item => {
-                            const isOut = item.out_of_stock;
-                            const stockText = isOut ? `(Out of Stock)` : `(Stock: ${item.stock})`;
-                            dropdown.innerHTML += `
-                                <div class="ac-item ${isOut ? 'out-stock' : ''}" onclick="selectMedication(${id}, '${item.product.replace(/'/g, "\\'")}')">
-                                    <strong>${item.product}</strong> <br>
-                                    <span style="font-size:11px;">${item.category} ${stockText}</span>
-                                </div>
-                            `;
-                        });
-                        dropdown.style.display = 'block';
-                    } else {
-                        dropdown.innerHTML = `<div class="ac-item" style="color:#6b7280;">No exact match found.</div>`;
-                        dropdown.style.display = 'block';
-                    }
-                } catch(e) {
-                    console.error("Search error", e);
-                }
-            }, 300); 
-        }
+searchTimeout = setTimeout(async () => {
+try {
+const token = await auth.currentUser.getIdToken();
+const res = await fetch(`${API_BASE}/api/medications/search?q=${encodeURIComponent(query)}`, {
+headers: { 'Authorization': `Bearer ${token}` }
+});
+const data = await res.json();
 
-        window.selectMedication = function(id, name) {
-            document.getElementById(`medName_${id}`).value = name;
-            document.getElementById(`medDropdown_${id}`).style.display = 'none';
-        }
+if(data.results && data.results.length > 0) {
+dropdown.innerHTML = '';
+data.results.forEach(item => {
+const isOut = item.out_of_stock;
+const stockText = isOut ? `(Out of Stock)` : `(Stock: ${item.stock})`;
+dropdown.innerHTML += `
+                               <div class="ac-item ${isOut ? 'out-stock' : ''}" onclick="selectMedication(${id}, '${item.product.replace(/'/g, "\\'")}')">
+                                   <strong>${item.product}</strong> <br>
+                                   <span style="font-size:11px;">${item.category} ${stockText}</span>
+                               </div>
+                           `;
+});
+dropdown.style.display = 'block';
+} else {
+dropdown.innerHTML = `<div class="ac-item" style="color:#6b7280;">No exact match found.</div>`;
+dropdown.style.display = 'block';
+}
+} catch(e) {
+console.error("Search error", e);
+}
+}, 300); 
+}
 
-        document.addEventListener('click', function(e) {
-            if(!e.target.classList.contains('med-name-input')) {
-                document.querySelectorAll('.autocomplete-list').forEach(el => el.style.display = 'none');
-            }
-        });
+window.selectMedication = function(id, name) {
+document.getElementById(`medName_${id}`).value = name;
+document.getElementById(`medDropdown_${id}`).style.display = 'none';
+}
 
-        window.submitPrescription = async function() {
-            const btn = document.getElementById('submitPrescriptionBtn');
-            const notes = document.getElementById('prescNotes').value.trim();
-            const mcNeeded = document.getElementById('mcCheckbox').checked;
-            const mcDays = document.getElementById('mcDays').value.trim();
+document.addEventListener('click', function(e) {
+if(!e.target.classList.contains('med-name-input')) {
+document.querySelectorAll('.autocomplete-list').forEach(el => el.style.display = 'none');
+}
+});
 
-            if(!notes) return alert("Doctor's Note is required.");
+window.submitPrescription = async function() {
+const btn = document.getElementById('submitPrescriptionBtn');
+const notes = document.getElementById('prescNotes').value.trim();
+const mcNeeded = document.getElementById('mcCheckbox').checked;
+const mcDays = document.getElementById('mcDays').value.trim();
 
-            const medBlocks = document.querySelectorAll('.med-block');
-            const medications = [];
-            
-            medBlocks.forEach(block => {
-                const id = block.id.split('_')[1];
-                const name = document.getElementById(`medName_${id}`).value.trim();
-                const timing = document.querySelector(`input[name="timing_${id}"]:checked`)?.value || "After meal";
-                const dose = document.getElementById(`medDose_${id}`).value.trim();
-                const pills = document.getElementById(`medPills_${id}`).value.trim();
+if(!notes) return alert("Doctor's Note is required.");
 
-                if(name) {
-                    medications.push({
-                        name: `${name} (${timing})`,
-                        dose: dose,
-                        pills_per_day: pills
-                    });
-                }
-            });
+const medBlocks = document.querySelectorAll('.med-block');
+const medications =[];
 
-            let finalNotes = notes;
-            if(mcNeeded && mcDays) finalNotes += `\n\nMC Issued: ${mcDays}`;
+medBlocks.forEach(block => {
+const id = block.id.split('_')[1];
+const name = document.getElementById(`medName_${id}`).value.trim();
+const timing = document.querySelector(`input[name="timing_${id}"]:checked`)?.value || "After meal";
+const dose = document.getElementById(`medDose_${id}`).value.trim();
+const pills = document.getElementById(`medPills_${id}`).value.trim();
 
-            btn.innerText = "Saving & Sending..."; btn.disabled = true;
+if(name) {
+medications.push({
+name: `${name} (${timing})`,
+dose: dose,
+pills_per_day: pills
+});
+}
+});
 
-            try {
-                const token = await auth.currentUser.getIdToken();
-                const res = await fetch(`${API_BASE}/api/doctor/consultation/complete`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-                    body: JSON.stringify({
-                        appointment_id: activeAppointmentIdForPrescription,
-                        medications: medications,
-                        mc_needed: mcNeeded,
-                        doctor_notes: finalNotes
-                    })
-                });
+let finalNotes = notes;
+if(mcNeeded && mcDays) finalNotes += `\n\nMC Issued: ${mcDays}`;
 
-                if(!res.ok) throw new Error("Failed to save");
-                alert("Consultation completed! Prescription sent to patient.");
-                closePrescriptionModal();
-                loadAppointments(); 
-            } catch(e) {
-                alert("Error saving prescription.");
-            }
-            btn.innerText = "Add Record & Send to Patient"; btn.disabled = false;
-        }
+btn.innerText = "Saving & Sending..."; btn.disabled = true;
 
-        // ================= SCHEDULE UI BUILDER ================= //
-        function renderScheduleUI() {
-            const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
-            const container = document.getElementById('scheduleDaysContainer');
-            
-            container.innerHTML = `
-                <div class="global-times-row">
-                    <div style="flex:1;">
-                        <label style="font-size:13px; font-weight:500; color:#111827; margin-bottom:8px; display:block;">Time Availability (Online)</label>
-                        <input type="text" class="form-control" value="09:00 AM - 11:00 AM" disabled style="background:#f3f4f6;">
-                    </div>
-                    <div style="flex:1;">
-                        <label style="font-size:13px; font-weight:500; color:#111827; margin-bottom:8px; display:block;">Time Availability (In Clinic)</label>
-                        <input type="text" class="form-control" value="10:00 AM - 04:00 PM" disabled style="background:#f3f4f6;">
-                    </div>
-                </div>
-                <h3 style="font-size:14px; font-weight:600; margin-bottom:16px;">Weekly Availability</h3>
-            `;
-            
-            days.forEach(day => {
-                const isWeekend = day === 'Saturday' || day === 'Sunday';
-                container.innerHTML += `
-                    <div style="border:1px solid #e5e7eb; border-radius:12px; padding:20px; margin-bottom:16px; background:#fff;">
-                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
-                            <div style="font-weight:600; font-size:14px;">${day}</div>
-                            <div style="display:flex; align-items:center; gap:8px;">
-                                ${isWeekend ? '<span style="color:#ef4444; font-size:12px; font-style:italic;">Mark as off day</span>' : ''}
-                                <input type="checkbox" class="dash-input" ${!isWeekend ? 'checked' : ''} style="width:18px; height:18px; accent-color:#111827;">
-                            </div>
-                        </div>
-                        <div class="schedule-times-row">
-                            <div style="flex:1;">
-                                <label style="font-size:12px; color:#4b5563; margin-bottom:8px; display:block;">Online Hours</label>
-                                <input type="text" class="dash-input form-control" value="09:00 AM - 03:00 PM" style="text-align:center;">
-                            </div>
-                            <div style="flex:1;">
-                                <label style="font-size:12px; color:#4b5563; margin-bottom:8px; display:block;">Clinic Hours</label>
-                                <input type="text" class="dash-input form-control" value="09:00 AM - 04:00 PM" style="text-align:center;">
-                            </div>
-                        </div>
-                    </div>
-                `;
-            });
-        }
-        renderScheduleUI();
+try {
+const token = await auth.currentUser.getIdToken();
+const res = await fetch(`${API_BASE}/api/doctor/consultation/complete`, {
+method: 'POST',
+headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+body: JSON.stringify({
+appointment_id: activeAppointmentIdForPrescription,
+medications: medications,
+mc_needed: mcNeeded,
+doctor_notes: finalNotes
+})
+});
 
-        // Lock/Unlock Fields Based on Status
-        function setDashboardStatus(status) {
-            const isPending = status === 'pending';
-            const badge = document.getElementById('dashStatusBadge');
-            badge.className = isPending ? 'status-badge pending' : 'status-badge available';
-            badge.innerText = isPending ? 'Pending Approval' : 'Available';
+if(!res.ok) throw new Error("Failed to save");
+alert("Consultation completed! Prescription sent to patient.");
+closePrescriptionModal();
+loadAppointments(); 
+} catch(e) {
+alert("Error saving prescription.");
+}
+btn.innerText = "Add Record & Send to Patient"; btn.disabled = false;
+}
 
-            document.querySelectorAll('.dash-input').forEach(i => i.disabled = isPending);
-            document.querySelectorAll('.dash-file-box').forEach(b => isPending ? b.classList.add('disabled') : b.classList.remove('disabled'));
+// ================= AUTH HANDLERS & AUTO-FILL ================= //
 
-            document.getElementById('dashSaveProfileBtn').style.display = isPending ? 'none' : 'block';
-            document.getElementById('saveScheduleBtn').style.display = isPending ? 'none' : 'block';
-            document.getElementById('pendingWarning').style.display = isPending ? 'block' : 'none';
-            document.getElementById('schedulePendingWarning').style.display = isPending ? 'block' : 'none';
-        }
+document.getElementById("loginForm").addEventListener("submit", async (e) => {
+e.preventDefault();
+const btn = document.getElementById("doLoginBtn"); 
+btn.innerText = "Authenticating..."; btn.disabled = true;
+try { 
+await signInWithEmailAndPassword(auth, document.getElementById("loginEmail").value.trim(), document.getElementById("loginPass").value.trim()); 
+} catch(e) { 
+showAlert("Invalid Credentials."); 
+btn.innerText = "Sign In"; btn.disabled = false;
+}
+});
 
-    </script>
+document.getElementById("signupForm").addEventListener("submit", async (e) => {
+e.preventDefault();
+const email = document.getElementById("regEmail").value.trim();
+const pass = document.getElementById("regPass").value.trim();
+const btn = document.getElementById("doRegisterBtn");
+
+btn.innerText = "Creating Account..."; btn.disabled = true;
+try {
+await createUserWithEmailAndPassword(auth, email, pass);
+} catch(e) {
+showAlert(e.message);
+btn.innerText = "Sign Up"; btn.disabled = false;
+}
+});
+
+document.getElementById("forgotForm").addEventListener("submit", async (e) => {
+e.preventDefault();
+const email = document.getElementById("forgotEmail").value.trim();
+const btn = document.getElementById("doForgotBtn");
+btn.innerText = "Sending..."; btn.disabled = true;
+try {
+await sendPasswordResetEmail(auth, email);
+showAlert("Password reset link sent! Check your email.", false);
+window.showView('view-login');
+} catch(e) {
+showAlert(e.message);
+}
+btn.innerText = "Reset password"; btn.disabled = false;
+});
+
+document.getElementById("doGoogleLoginBtn").addEventListener("click", async () => { 
+try { 
+const provider = new GoogleAuthProvider();
+provider.setCustomParameters({ prompt: 'select_account' });
+await signInWithPopup(auth, provider); 
+} catch(e) {} 
+});
+
+document.getElementById("doGoogleRegBtn").addEventListener("click", async () => { 
+try { 
+const provider = new GoogleAuthProvider();
+provider.setCustomParameters({ prompt: 'select_account' });
+await signInWithPopup(auth, provider); 
+} catch(e) {} 
+});
+
+// ================= SYNC LOGIC ================= //
+onAuthStateChanged(auth, async (user) => {
+if (user) {
+try {
+const token = await user.getIdToken();
+
+const res = await fetch(`${API_BASE}/api/doctor/sync`, { 
+method: 'POST', 
+headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }, 
+body: JSON.stringify({ email: user.email }) 
+});
+
+if (!res.ok) {
+let errMsg = "Backend sync failed.";
+try { const errData = await res.json(); errMsg = errData.detail || errMsg; } catch(_) {}
+throw new Error(errMsg);
+}
+
+const data = await res.json();
+
+let phoneClean = data.phone || "";
+if(phoneClean.startsWith("+60")) phoneClean = phoneClean.substring(3).trim();
+
+if(data.is_complete || data.status === 'approved') { 
+window.showView('view-dashboard', null, false); 
+setDashboardStatus(data.status);
+
+document.getElementById('sidebarName').innerText = data.name || user.displayName || "Doctor";
+document.getElementById('sidebarEmail').innerText = user.email;
+if(user.photoURL) {
+document.getElementById('sidebarAvatar').src = user.photoURL;
+document.getElementById('topAvatar').src = user.photoURL;
+}
+
+document.getElementById('dashName').value = data.name || user.displayName || "";
+document.getElementById('dashSpecialty').value = data.specialty || "";
+document.getElementById('dashEmail').value = user.email || "";
+document.getElementById('dashPhone').value = phoneClean;
+document.getElementById('dashLocation').value = data.location || "";
+
+setupRealTimeNotifications(data.id);
+
+if(data.status === 'approved' && !localStorage.getItem('approved_notified')) {
+alert("Congratulations! Your Doctor profile has been verified and approved by admins.");
+localStorage.setItem('approved_notified', 'true');
+}
+
+} else { 
+window.showView('view-complete-data', null, false); 
+document.getElementById('docName').value = data.name || user.displayName || "";
+document.getElementById('docSpecialty').value = data.specialty || "";
+document.getElementById('docPhone').value = phoneClean;
+document.getElementById('docLocation').value = data.location || "";
+}
+} catch(e) { 
+console.error("Sync Error:", e);
+window.showView('view-login', null, false);
+showAlert("Sync Error: " + e.message, true);
+}
+} else {
+window.showView('view-login', null, false);
+}
+});
+
+// ================= PROFILE UPDATES (DASHBOARD) ================= //
+document.getElementById("dashUpdateForm").addEventListener("submit", async (e) => {
+e.preventDefault();
+const btn = document.getElementById("dashSaveProfileBtn");
+btn.innerText = "Saving Changes..."; btn.disabled = true;
+
+try {
+const token = await auth.currentUser.getIdToken();
+const formData = new FormData();
+formData.append("name", document.getElementById("dashName").value.trim());
+formData.append("phone", "+60" + document.getElementById("dashPhone").value.trim());
+formData.append("specialty", document.getElementById("dashSpecialty").value.trim());
+formData.append("location", document.getElementById("dashLocation").value.trim());
+
+const photo = document.getElementById("dashPhoto").files[0];
+const resume = document.getElementById("dashResume").files[0];
+const apc = document.getElementById("dashAPC").files[0];
+const mmc = document.getElementById("dashMMC").files[0];
+const ic = document.getElementById("dashIC").files[0];
+
+if(photo) formData.append("photo", photo);
+if(resume) formData.append("resume", resume);
+if(apc) formData.append("apc", apc);
+if(mmc) formData.append("mmc", mmc);
+if(ic) formData.append("ic", ic);
+
+const response = await fetch(`${API_BASE}/api/doctor/complete_profile`, {
+method: "POST",
+headers: { 'Authorization': `Bearer ${token}` },
+body: formData
+});
+
+if(!response.ok) throw new Error("Update failed");
+
+alert("Profile and documents updated successfully!");
+btn.innerText = "Update Profile"; btn.disabled = false;
+
+} catch (error) {
+alert("Error updating profile."); 
+btn.innerText = "Update Profile"; btn.disabled = false;
+}
+});
+
+document.getElementById("saveScheduleBtn").addEventListener("click", () => {
+alert("Schedule saved successfully!");
+});
+
+// ================= INITIAL PROFILE UPLOAD ================= //
+document.getElementById("profileForm").addEventListener("submit", async (e) => {
+e.preventDefault();
+const btn = document.getElementById("saveProfileBtn");
+btn.innerText = "Uploading... Please wait"; btn.disabled = true;
+try {
+const token = await auth.currentUser.getIdToken();
+const formData = new FormData();
+formData.append("name", document.getElementById("docName").value.trim());
+formData.append("phone", "+60" + document.getElementById("docPhone").value.trim());
+formData.append("specialty", document.getElementById("docSpecialty").value.trim());
+formData.append("location", document.getElementById("docLocation").value.trim());
+
+formData.append("photo", document.getElementById("docPhoto").files[0]);
+formData.append("resume", document.getElementById("docResume").files[0]);
+formData.append("apc", document.getElementById("docAPC").files[0]);
+formData.append("mmc", document.getElementById("docMMC").files[0]);
+formData.append("ic", document.getElementById("docIC").files[0]);
+
+const response = await fetch(`${API_BASE}/api/doctor/complete_profile`, {
+method: "POST", headers: { 'Authorization': `Bearer ${token}` }, body: formData
+});
+
+if(!response.ok) throw new Error("Upload failed");
+alert("Submitted successfully! Your account is pending admin review.");
+window.location.reload(); 
+} catch (error) {
+alert("Error saving profile."); btn.innerText = "Submit for Verification"; btn.disabled = false;
+}
+});
+
+// ================= SCHEDULE UI BUILDER ================= //
+function renderScheduleUI() {
+const days =['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+const container = document.getElementById('scheduleDaysContainer');
+
+// Build the top Global Time Inputs
+container.innerHTML = `
+               <div class="global-times-row">
+                   <div style="flex:1;">
+                       <label style="font-size:13px; font-weight:500; color:#111827; margin-bottom:8px; display:block;">Time Availability (Online)</label>
+                       <input type="text" class="form-control" value="09:00 AM - 11:00 AM" disabled style="background:#f3f4f6;">
+                   </div>
+                   <div style="flex:1;">
+                       <label style="font-size:13px; font-weight:500; color:#111827; margin-bottom:8px; display:block;">Time Availability (In Clinic)</label>
+                       <input type="text" class="form-control" value="10:00 AM - 04:00 PM" disabled style="background:#f3f4f6;">
+                   </div>
+               </div>
+               <h3 style="font-size:14px; font-weight:600; margin-bottom:16px;">Weekly Availability</h3>
+           `;
+
+// Build the individual day blocks
+days.forEach(day => {
+const isWeekend = day === 'Saturday' || day === 'Sunday';
+container.innerHTML += `
+                   <div style="border:1px solid #e5e7eb; border-radius:12px; padding:20px; margin-bottom:16px; background:#fff;">
+                       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+                           <div style="font-weight:600; font-size:14px;">${day}</div>
+                           <div style="display:flex; align-items:center; gap:8px;">
+                               ${isWeekend ? '<span style="color:#ef4444; font-size:12px; font-style:italic;">Mark as off day</span>' : ''}
+                               <input type="checkbox" class="dash-input" ${!isWeekend ? 'checked' : ''} style="width:18px; height:18px; accent-color:#111827;">
+                           </div>
+                       </div>
+                       <div class="schedule-times-row">
+                           <div style="flex:1;">
+                               <label style="font-size:12px; color:#4b5563; margin-bottom:8px; display:block;">Online Hours</label>
+                               <input type="text" class="dash-input form-control" value="09:00 AM - 03:00 PM" style="text-align:center;">
+                           </div>
+                           <div style="flex:1;">
+                               <label style="font-size:12px; color:#4b5563; margin-bottom:8px; display:block;">Clinic Hours</label>
+                               <input type="text" class="dash-input form-control" value="09:00 AM - 04:00 PM" style="text-align:center;">
+                           </div>
+                       </div>
+                   </div>
+               `;
+});
+}
+renderScheduleUI();
+
+// Lock/Unlock Fields Based on Status
+function setDashboardStatus(status) {
+const isPending = status === 'pending';
+const badge = document.getElementById('dashStatusBadge');
+badge.className = isPending ? 'status-badge pending' : 'status-badge available';
+badge.innerText = isPending ? 'Pending Approval' : 'Available';
+
+document.querySelectorAll('.dash-input').forEach(i => i.disabled = isPending);
+document.querySelectorAll('.dash-file-box').forEach(b => isPending ? b.classList.add('disabled') : b.classList.remove('disabled'));
+
+document.getElementById('dashSaveProfileBtn').style.display = isPending ? 'none' : 'block';
+document.getElementById('saveScheduleBtn').style.display = isPending ? 'none' : 'block';
+document.getElementById('pendingWarning').style.display = isPending ? 'block' : 'none';
+document.getElementById('schedulePendingWarning').style.display = isPending ? 'block' : 'none';
+}
+
+</script>
 </body>
 </html>
