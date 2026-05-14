@@ -58,23 +58,14 @@
         .card-footer a { color: #0066cc; font-weight: 500; }
         .forgot-link { font-size: 13px; font-weight: 500; color: #0066cc; float: right; margin-bottom: 12px; margin-top: -10px;}
 
-        /* Image 2 Style: Terms Link */
-        .auth-terms-inline { text-align: center; margin-top: 10px; font-size: 13px; color: #6b7280; margin-bottom: 10px; }
-        .auth-terms-inline a { color: #0066cc; font-weight: 600; text-decoration: none; }
-
         /* Auth Footer */
         .auth-footer { padding: 20px 24px; text-align: left; font-size: 13px; color: #6b7280; width: 100%; border-top: 1px solid #e5e7eb; }
         @media (min-width: 768px) { .auth-footer { padding: 24px 48px; } }
 
-        /* ================= MODALS (IMAGE 3) ================= */
-        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(17, 24, 39, 0.6); display: flex; justify-content: center; align-items: center; z-index: 2000; padding: 20px; backdrop-filter: blur(2px); }
-        .email-modal-box { background: #ffffff; border-radius: 16px; width: 100%; max-width: 440px; padding: 40px 32px; text-align: center; position: relative; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); }
-        .email-modal-close { position: absolute; top: 16px; right: 16px; width: 32px; height: 32px; background: #f3f4f6; border-radius: 50%; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; color: #6b7280; font-size: 18px; transition: 0.2s; }
-        .email-modal-icon-wrap { width: 64px; height: 64px; background: #eff6ff; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 24px auto; color: #0066cc; }
-        .email-modal-title { font-size: 22px; font-weight: 700; color: #111827; margin-bottom: 12px; }
-        .email-modal-text { font-size: 14px; color: #6b7280; line-height: 1.6; margin-bottom: 32px; }
-        .email-modal-btn { width: 100%; padding: 14px; background: white; border: 1.5px solid #0066cc; color: #0066cc; font-size: 15px; font-weight: 600; border-radius: 10px; cursor: pointer; transition: 0.2s; }
-        .email-modal-btn:hover { background: #f0f7ff; }
+        /* Terms link standardizer */
+        .auth-terms-inline { text-align: center; margin-top: 12px; font-size: 13px; color: #6b7280; margin-bottom: -10px; }
+        .auth-terms-inline a { color: #0066cc; font-weight: 500; text-decoration: none; }
+        .auth-terms-inline a:hover { text-decoration: underline; }
 
         /* ================= DOCTOR SPECIFIC UPLOAD STYLES ================= */
         #view-complete-data.card { max-width: 650px; } 
@@ -191,8 +182,8 @@
         .review-text { font-size: 14px; color: #4b5563; line-height: 1.6; }
         .review-title { font-weight: 600; color: #111827; margin-bottom: 4px; }
 
-        /* ================= MODAL OVERLAYS (PRESCRIPTION) ================= */
-        .presc-modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(17, 24, 39, 0.7); display: flex; justify-content: center; align-items: center; z-index: 999; padding: 20px; backdrop-filter: blur(2px); }
+        /* ================= MODAL OVERLAYS ================= */
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(17, 24, 39, 0.7); display: flex; justify-content: center; align-items: center; z-index: 999; padding: 20px; backdrop-filter: blur(2px); }
         .presc-modal { background: #fff; border-radius: 16px; width: 100%; max-width: 600px; max-height: 90vh; display: flex; flex-direction: column; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); }
         .presc-header { padding: 24px; border-bottom: 1px solid #e5e7eb; display: flex; justify-content: space-between; align-items: center; }
         .presc-header h2 { font-size: 18px; font-weight: 700; margin: 0; }
@@ -213,6 +204,16 @@
         .radio-group { display: flex; gap: 16px; margin-top: 8px; }
         .radio-group label { display: flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 500; cursor: pointer; color: #4b5563;}
         .radio-group input { accent-color: #0ea5e9; width: 16px; height: 16px;}
+
+        /* Email Notification UI Modal */
+        .email-modal-box { background: #ffffff; border-radius: 16px; width: 100%; max-width: 420px; padding: 32px 24px; text-align: center; position: relative; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1), 0 8px 10px -6px rgba(0,0,0,0.1); }
+        .email-modal-close { position: absolute; top: 16px; right: 16px; width: 28px; height: 28px; background: #f3f4f6; border-radius: 50%; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; color: #4b5563; font-size: 16px; font-weight: bold; transition: background 0.2s; }
+        .email-modal-close:hover { background: #e5e7eb; }
+        .email-modal-icon-wrap { width: 56px; height: 56px; background: #ffffff; border-radius: 50%; border: 1.5px solid #bfdbfe; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px auto; color: #0066cc; }
+        .email-modal-title { font-size: 20px; font-weight: 700; color: #111827; margin-bottom: 12px; }
+        .email-modal-text { font-size: 14px; color: #6b7280; line-height: 1.5; margin-bottom: 28px; padding: 0 16px; }
+        .email-modal-btn { width: 100%; padding: 12px; background: white; border: 1.5px solid #0066cc; color: #0066cc; font-size: 15px; font-weight: 600; border-radius: 8px; cursor: pointer; transition: 0.2s; font-family: inherit; }
+        .email-modal-btn:hover { background: #f8fafc; }
 
         /* ================= RESPONSIVE MOBILE UPGRADES ================= */
         .btn:active, .icon-btn:active, .dash-tab:active, .menu-item:active, .file-upload-box:active, .presc-close:active, .page-btn:active, .email-modal-btn:active, .email-modal-close:active { transform: scale(0.97); }
@@ -326,18 +327,38 @@
                 <div class="card-footer"><p>Didn't have an account? <a href="javascript:void(0)" onclick="showView('view-signup', event)">Apply Now</a></p></div>
             </div>
 
-            <!-- 2. PASSWORDLESS SIGN-UP VIEW -->
+            <!-- 2. STANDARD SIGN-UP VIEW -->
             <div id="view-signup" class="card" style="display: none;">
                 <div class="card-header">
-                    <h1>Let’s get started</h1>
-                    <p>Create your first Doktura.ai account or<br>login if you already have an account</p>
+                    <h1>Let's get started</h1>
+                    <p>Apply for a Doktura.ai Doctor account or<br>login if you already have an account</p>
                 </div>
                 <form id="signupForm">
                     <div class="form-group" style="margin-bottom: 12px;">
                         <label>Email</label>
                         <input type="email" id="regEmail" class="form-control" placeholder="Enter your email" required>
                     </div>
+                    <div class="form-group">
+                        <label>Create Password</label>
+                        <div class="input-wrapper">
+                            <input type="password" id="regPass" class="form-control" placeholder="At least 8 characters" required>
+                            <button type="button" class="icon-btn" onclick="togglePasswordVisibility(this)">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                            </button>
+                        </div>
+                        <div class="strength-bars">
+                            <div class="strength-bar" id="regStrBar1"></div>
+                            <div class="strength-bar" id="regStrBar2"></div>
+                            <div class="strength-bar" id="regStrBar3"></div>
+                        </div>
+                        <ul class="strength-req">
+                            <li id="regReqLen">✗ At least 8 characters</li>
+                            <li id="regReqUpper">✗ One uppercase letter</li>
+                            <li id="regReqNum">✗ One number</li>
+                        </ul>
+                    </div>
                     
+                    <!-- Exact Terms Link formatting requested by User Image 2 -->
                     <div class="auth-terms-inline">
                         By signing up, you agree to our <a href="https://doktura.ai/terms.html" target="_blank">Terms of Service</a> and <a href="https://doktura.ai/privacy.html" target="_blank">Privacy Policy</a>
                     </div>
@@ -351,24 +372,9 @@
                         </button>
                     </div>
 
-                    <button type="submit" id="doRegisterBtn" class="btn btn-primary" style="margin-top: 16px; padding: 14px;">Continue</button>
+                    <button type="submit" id="doRegisterBtn" class="btn btn-primary" style="margin-top: 16px; padding: 14px;">Sign Up</button>
                 </form>
                 <div class="card-footer"><p>Already have an account? <a href="javascript:void(0)" onclick="showView('view-login', event)">Sign-in</a></p></div>
-            </div>
-
-            <!-- CROSS-DEVICE PROMPT -->
-            <div id="view-verify-email-prompt" class="card" style="display: none;">
-                <div class="card-header">
-                    <h1>Security Check</h1>
-                    <p>You opened this link on a different device or browser. Please confirm your email to continue.</p>
-                </div>
-                <form id="verifyPromptForm">
-                    <div class="form-group">
-                        <label>Confirm your Email</label>
-                        <input type="email" id="verifyEmailInput" class="form-control" placeholder="doctor@clinic.com" required>
-                    </div>
-                    <button type="submit" id="verifyPromptBtn" class="btn btn-primary" style="margin-top: 8px;">Complete Sign-in</button>
-                </form>
             </div>
 
             <!-- FORGOT PASSWORD VIEW -->
@@ -394,32 +400,12 @@
                 <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 24px;">
                     <div class="card-header" style="margin-bottom: 0;">
                         <h1>Complete your Profile</h1>
-                        <p>Create a password and upload your professional documents. Admin will verify before activation.</p>
+                        <p>Upload your professional documents. Admin will verify before activation.</p>
                     </div>
                     <button onclick="cancelApplication()" class="btn btn-social" style="width:auto; padding:8px 12px; font-size:11px; border-color:#fca5a5; color:#dc2626;">Cancel Application</button>
                 </div>
                 
                 <form id="profileForm">
-                    <div class="form-group">
-                        <label>Create Password <span id="passOptionalLabel" style="font-weight:400; color:#6b7280; font-size:12px;"></span></label>
-                        <div class="input-wrapper">
-                            <input type="password" id="docPass" class="form-control" placeholder="At least 8 characters">
-                            <button type="button" class="icon-btn" onclick="togglePasswordVisibility(this)">
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
-                            </button>
-                        </div>
-                        <div class="strength-bars">
-                            <div class="strength-bar" id="strBar1"></div>
-                            <div class="strength-bar" id="strBar2"></div>
-                            <div class="strength-bar" id="strBar3"></div>
-                        </div>
-                        <ul class="strength-req">
-                            <li id="reqLen">✗ At least 8 characters</li>
-                            <li id="reqUpper">✗ One uppercase letter</li>
-                            <li id="reqNum">✗ One number</li>
-                        </ul>
-                    </div>
-
                     <div class="form-row mt-4">
                         <div class="form-group"><label>Full Name (with Title)</label><input type="text" id="docName" class="form-control" required></div>
                         <div class="form-group"><label>Speciality</label><input type="text" id="docSpecialty" class="form-control" required></div>
@@ -855,7 +841,7 @@
     <!-- ================= SCRIPTS ================= -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-app.js";
-        import { getAuth, signInWithEmailAndPassword, sendSignInLinkToEmail, isSignInWithEmailLink, signInWithEmailLink, sendPasswordResetEmail, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut, updatePassword, deleteUser } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-auth.js";
+        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, sendEmailVerification, sendPasswordResetEmail, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut, updatePassword, deleteUser } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-auth.js";
         import { getFirestore, collection, query, onSnapshot, orderBy } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore.js";
 
         const API_BASE = 'https://api.doktura.ai'; 
@@ -1019,12 +1005,11 @@
             
             try {
                 // Determine absolute link
-                let safeUrl = "https://doktura.ai/doctor_portal.html";
-                const actionCodeSettings = { url: safeUrl, handleCodeInApp: true };
+                let safeUrl = window.location.origin + "/doctor_portal.html";
+                const actionCodeSettings = { url: safeUrl, handleCodeInApp: false };
 
                 if (lastActionType === 'signup') {
-                    await sendSignInLinkToEmail(auth, lastActionEmail, actionCodeSettings);
-                    window.localStorage.setItem('emailForSignIn', lastActionEmail);
+                    await sendEmailVerification(auth.currentUser, actionCodeSettings);
                 } else if (lastActionType === 'reset') {
                     await sendPasswordResetEmail(auth, lastActionEmail, actionCodeSettings);
                 }
@@ -1469,54 +1454,20 @@
 
         // ================= AUTH HANDLERS & LOGIC ================= //
         
-        // Ensure robust link resolution logic that FORCES Firebase back to the correct path
-        if (isSignInWithEmailLink(auth, window.location.href)) {
-            let email = window.localStorage.getItem('emailForSignIn');
-            if(email) {
-                (async () => {
-                    try {
-                        await signOut(auth); // Clear stale session
-                        await signInWithEmailLink(auth, email, window.location.href);
-                        window.localStorage.removeItem('emailForSignIn');
-                        window.history.replaceState(null, "", window.location.pathname);
-                    } catch(e) { showAlert(e.message); }
-                })();
-            } else {
-                showView('view-verify-email-prompt', null, false);
-            }
-        }
-
-        document.getElementById("verifyPromptForm").addEventListener("submit", async (e) => {
-             e.preventDefault();
-             const email = document.getElementById("verifyEmailInput").value.trim();
-             const btn = document.getElementById("verifyPromptBtn");
-             btn.innerText = "Authenticating..."; btn.disabled = true;
-             
-             // FLAG AS DOCTOR TO PREVENT PATIENT DASHBOARD HIJACK
-             localStorage.setItem('doktura_user_type', 'doctor');
-             
-             try {
-                 await signOut(auth); // Clear stale
-                 await signInWithEmailLink(auth, email, window.location.href);
-                 window.history.replaceState(null, "", window.location.pathname);
-             } catch(e) {
-                 showAlert(e.message);
-                 btn.innerText = "Complete Sign-in"; btn.disabled = false;
-             }
-        });
-
         document.getElementById("loginForm").addEventListener("submit", async (e) => {
             e.preventDefault();
             const btn = document.getElementById("doLoginBtn"); 
             btn.innerText = "Authenticating..."; btn.disabled = true;
-            
-            // FLAG AS DOCTOR TO PREVENT PATIENT DASHBOARD HIJACK
-            localStorage.setItem('doktura_user_type', 'doctor');
-            
             try { 
-                await signInWithEmailAndPassword(auth, document.getElementById("loginEmail").value.trim(), document.getElementById("loginPass").value.trim()); 
+                const userCred = await signInWithEmailAndPassword(auth, document.getElementById("loginEmail").value.trim(), document.getElementById("loginPass").value.trim()); 
+                if (!userCred.user.emailVerified) {
+                    await signOut(auth);
+                    showAlert("Please verify your email address before logging in. Check your inbox.");
+                    btn.innerText = "Continue"; btn.disabled = false;
+                    return;
+                }
             } catch(e) { 
-                showAlert("Invalid Credentials."); 
+                showAlert("Invalid Credentials or User Not Found."); 
                 btn.innerText = "Continue"; btn.disabled = false;
             }
         });
@@ -1524,28 +1475,34 @@
         document.getElementById("signupForm").addEventListener("submit", async (e) => {
             e.preventDefault();
             const email = document.getElementById("regEmail").value.trim();
+            const pass = document.getElementById("regPass").value;
             const btn = document.getElementById("doRegisterBtn");
-            btn.innerText = "Sending Link..."; btn.disabled = true;
             
-            // FLAG AS DOCTOR TO PREVENT PATIENT DASHBOARD HIJACK
-            localStorage.setItem('doktura_user_type', 'doctor');
+            if(pass.length < 8 || !/[A-Z]/.test(pass) || !/[0-9]/.test(pass)) {
+                return showAlert("Please ensure your password meets all requirements.", true);
+            }
+
+            btn.innerText = "Creating Account..."; btn.disabled = true;
             
             try {
-                const safeUrl = "https://doktura.ai/doctor_portal.html"; 
+                const userCredential = await createUserWithEmailAndPassword(auth, email, pass);
+                
                 const actionCodeSettings = {
-                  url: safeUrl, 
-                  handleCodeInApp: true
+                    url: "https://doktura.ai/doctor_portal.html",
+                    handleCodeInApp: false
                 };
-                await sendSignInLinkToEmail(auth, email, actionCodeSettings);
-                window.localStorage.setItem('emailForSignIn', email);
+                await sendEmailVerification(userCredential.user, actionCodeSettings);
+                
+                await signOut(auth); 
                 
                 lastActionEmail = email;
                 lastActionType = "signup";
-                showActionStatusModal("Verification Email has been sent", "Please check your email inbox or spam for Email verification.");
+                showActionStatusModal("Verification Email Sent", "Your account was created. Please check your inbox or spam folder to verify your email before logging in.");
+                document.getElementById("signupForm").reset();
             } catch(e) {
                 showAlert(e.message);
             } finally {
-                btn.innerText = "Continue"; btn.disabled = false;
+                btn.innerText = "Sign Up"; btn.disabled = false;
             }
         });
 
@@ -1554,11 +1511,8 @@
             const email = document.getElementById("forgotEmail").value.trim();
             const btn = document.getElementById("doForgotBtn");
             btn.innerText = "Sending..."; btn.disabled = true;
-            
             try {
-                const safeUrl = "https://doktura.ai/doctor_portal.html"; 
-                const actionCodeSettings = { url: safeUrl, handleCodeInApp: true };
-
+                const actionCodeSettings = { url: "https://doktura.ai/doctor_portal.html", handleCodeInApp: false };
                 await sendPasswordResetEmail(auth, email, actionCodeSettings);
                 
                 lastActionEmail = email;
@@ -1573,8 +1527,6 @@
         });
 
         document.getElementById("doGoogleLoginBtn").addEventListener("click", async () => { 
-            // FLAG AS DOCTOR TO PREVENT PATIENT DASHBOARD HIJACK
-            localStorage.setItem('doktura_user_type', 'doctor');
             try { 
                 const provider = new GoogleAuthProvider();
                 provider.setCustomParameters({ prompt: 'select_account' });
@@ -1585,8 +1537,6 @@
         });
 
         document.getElementById("doGoogleRegBtn").addEventListener("click", async () => { 
-            // FLAG AS DOCTOR TO PREVENT PATIENT DASHBOARD HIJACK
-            localStorage.setItem('doktura_user_type', 'doctor');
             try { 
                 const provider = new GoogleAuthProvider();
                 provider.setCustomParameters({ prompt: 'select_account' });
@@ -1599,6 +1549,12 @@
         // ================= SYNC LOGIC ================= //
         onAuthStateChanged(auth, async (user) => {
             if (user) {
+                const isGoogleUser = user.providerData.some(p => p.providerId === 'google.com');
+                if (!isGoogleUser && !user.emailVerified) {
+                    await signOut(auth);
+                    return;
+                }
+
                 try {
                     const token = await user.getIdToken(true); 
                     
@@ -1644,8 +1600,6 @@
                         }
 
                     } else { 
-                        // Do NOT call view switch if actionStatusModal is already showing logic checks!
-                        // Force layout to complete data securely
                         document.getElementById('authWrapper').style.display = 'flex';
                         document.getElementById('view-dashboard').style.display = 'none';
                         const views =['view-login', 'view-signup', 'view-forgot-password', 'view-complete-data', 'view-verify-email-prompt'];
@@ -1653,21 +1607,6 @@
                             const el = document.getElementById(id);
                             if(el) el.style.display = (id === 'view-complete-data') ? 'block' : 'none';
                         });
-
-                        // Setup Google specific optional logic
-                        const isGoogleUser = user.providerData.some(p => p.providerId === 'google.com');
-                        const passInput = document.getElementById('docPass');
-                        const passLabel = document.getElementById('passOptionalLabel');
-                        
-                        if(isGoogleUser) {
-                            passInput.removeAttribute('required');
-                            passInput.placeholder = "Enter new password (Optional)";
-                            passLabel.innerText = "(Optional)";
-                        } else {
-                            passInput.setAttribute('required', 'true');
-                            passInput.placeholder = "At least 8 characters";
-                            passLabel.innerText = "";
-                        }
 
                         document.getElementById('docName').value = data.name || user.displayName || "";
                         document.getElementById('docSpecialty').value = data.specialty || "";
@@ -1680,37 +1619,36 @@
                     showAlert("Sync Error: " + e.message, true);
                 }
             } else {
-                if(document.getElementById('view-verify-email-prompt').style.display !== 'block' && 
-                   document.getElementById('actionStatusModal').style.display !== 'flex') {
+                if(document.getElementById('actionStatusModal').style.display !== 'flex') {
                     window.showView('view-login', null, false);
                 }
             }
         });
 
         // ================= PASSWORD STRENGTH METER ================= //
-        document.getElementById('docPass').addEventListener('input', function(e) {
+        document.getElementById('regPass').addEventListener('input', function(e) {
             const pw = e.target.value;
             const hasLen = pw.length >= 8;
             const hasUpper = /[A-Z]/.test(pw);
             const hasNum = /[0-9]/.test(pw);
             
-            document.getElementById('reqLen').innerText = hasLen ? "✓ At least 8 characters" : "✗ At least 8 characters";
-            document.getElementById('reqLen').style.color = hasLen ? "#10b981" : "#6b7280";
+            document.getElementById('regReqLen').innerText = hasLen ? "✓ At least 8 characters" : "✗ At least 8 characters";
+            document.getElementById('regReqLen').style.color = hasLen ? "#10b981" : "#6b7280";
             
-            document.getElementById('reqUpper').innerText = hasUpper ? "✓ One uppercase letter" : "✗ One uppercase letter";
-            document.getElementById('reqUpper').style.color = hasUpper ? "#10b981" : "#6b7280";
+            document.getElementById('regReqUpper').innerText = hasUpper ? "✓ One uppercase letter" : "✗ One uppercase letter";
+            document.getElementById('regReqUpper').style.color = hasUpper ? "#10b981" : "#6b7280";
             
-            document.getElementById('reqNum').innerText = hasNum ? "✓ One number" : "✗ One number";
-            document.getElementById('reqNum').style.color = hasNum ? "#10b981" : "#6b7280";
+            document.getElementById('regReqNum').innerText = hasNum ? "✓ One number" : "✗ One number";
+            document.getElementById('regReqNum').style.color = hasNum ? "#10b981" : "#6b7280";
             
             let strScore = 0;
             if(hasLen) strScore++;
             if(hasUpper) strScore++;
             if(hasNum) strScore++;
             
-            const b1 = document.getElementById('strBar1');
-            const b2 = document.getElementById('strBar2');
-            const b3 = document.getElementById('strBar3');
+            const b1 = document.getElementById('regStrBar1');
+            const b2 = document.getElementById('regStrBar2');
+            const b3 = document.getElementById('regStrBar3');
             
             b1.style.background = strScore >= 1 ? (strScore===1 ? '#ef4444' : (strScore===2 ? '#f59e0b' : '#10b981')) : '#e5e7eb';
             b2.style.background = strScore >= 2 ? (strScore===2 ? '#f59e0b' : '#10b981') : '#e5e7eb';
@@ -1721,26 +1659,6 @@
         document.getElementById("profileForm").addEventListener("submit", async (e) => {
             e.preventDefault();
             const btn = document.getElementById("saveProfileBtn");
-            const passVal = document.getElementById('docPass').value;
-            const isGoogleUser = auth.currentUser.providerData.some(p => p.providerId === 'google.com');
-
-            // Handle Password creation if provided (or required if not google)
-            if(passVal) {
-                if(passVal.length < 8 || !/[A-Z]/.test(passVal) || !/[0-9]/.test(passVal)) {
-                    return alert("Please ensure your password meets all the security requirements.");
-                }
-                try {
-                    await updatePassword(auth.currentUser, passVal);
-                } catch(e) {
-                    if(e.code === 'auth/requires-recent-login') {
-                        return alert("Security requirement: We need to verify you before setting a password. Please cancel this application or login via Google to restart the flow fresh.");
-                    } else {
-                        return alert("Error setting password: " + e.message);
-                    }
-                }
-            } else if(!isGoogleUser) {
-                return alert("A secure password is required to continue.");
-            }
 
             btn.innerText = "Uploading... Please wait"; btn.disabled = true;
 
