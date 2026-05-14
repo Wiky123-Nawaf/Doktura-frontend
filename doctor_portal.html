@@ -19,7 +19,7 @@
         .logo-container { display: inline-flex; align-items: center; cursor: pointer; }
         .logo-container img { height: 32px; width: auto; }
         
-        .main-content { flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 24px 16px; }
+        .main-content { flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 24px 16px; position: relative; }
         .card { background: #ffffff; border-radius: 16px; padding: 32px 20px; width: 100%; max-width: 480px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); border: 1px solid #f3f4f6; animation: fadeIn 0.3s ease-in-out; margin: auto; }
         @media (min-width: 768px) { .card { padding: 48px 40px; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05); } }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
@@ -182,7 +182,7 @@
         .review-text { font-size: 14px; color: #4b5563; line-height: 1.6; }
         .review-title { font-weight: 600; color: #111827; margin-bottom: 4px; }
 
-        /* ================= MODAL OVERLAYS ================= */
+        /* ================= MODAL OVERLAYS & SPINNERS ================= */
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(17, 24, 39, 0.7); display: flex; justify-content: center; align-items: center; z-index: 999; padding: 20px; backdrop-filter: blur(2px); }
         .presc-modal { background: #fff; border-radius: 16px; width: 100%; max-width: 600px; max-height: 90vh; display: flex; flex-direction: column; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); }
         .presc-header { padding: 24px; border-bottom: 1px solid #e5e7eb; display: flex; justify-content: space-between; align-items: center; }
@@ -214,6 +214,11 @@
         .email-modal-text { font-size: 14px; color: #6b7280; line-height: 1.5; margin-bottom: 28px; padding: 0 16px; }
         .email-modal-btn { width: 100%; padding: 12px; background: white; border: 1.5px solid #0066cc; color: #0066cc; font-size: 15px; font-weight: 600; border-radius: 8px; cursor: pointer; transition: 0.2s; font-family: inherit; }
         .email-modal-btn:hover { background: #f8fafc; }
+
+        /* Global Spinner Overlay */
+        #globalLoader { background: rgba(255, 255, 255, 0.85); z-index: 9999; flex-direction: column; backdrop-filter: blur(4px); }
+        .spinner { width: 48px; height: 48px; border: 4px solid #e5e7eb; border-top: 4px solid #0066cc; border-radius: 50%; animation: spin 1s linear infinite; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
         /* ================= RESPONSIVE MOBILE UPGRADES ================= */
         .btn:active, .icon-btn:active, .dash-tab:active, .menu-item:active, .file-upload-box:active, .presc-close:active, .page-btn:active, .email-modal-btn:active, .email-modal-close:active { transform: scale(0.97); }
@@ -273,6 +278,12 @@
 </head>
 <body>
 
+    <!-- Global Loading Overlay -->
+    <div id="globalLoader" class="modal-overlay" style="display: none;">
+        <div class="spinner"></div>
+        <div id="loaderText" style="margin-top: 16px; font-size: 15px; font-weight: 600; color: #111827;">Please wait...</div>
+    </div>
+
     <!-- AUTHENTICATION WRAPPER -->
     <div id="authWrapper">
         <header class="header">
@@ -324,10 +335,10 @@
 
                     <button type="submit" id="doLoginBtn" class="btn btn-primary" style="margin-top: 12px; padding: 14px;">Continue</button>
                 </form>
-                <div class="card-footer"><p>Didn't have an account? <a href="javascript:void(0)" onclick="showView('view-signup', event)">Sign-up</a></p></div>
+                <div class="card-footer"><p>Didn't have an account? <a href="javascript:void(0)" onclick="showView('view-signup', event)">Apply Now</a></p></div>
             </div>
 
-            <!-- 2. STANDARD SIGN-UP VIEW -->
+            <!-- 2. STANDARD SIGN-UP VIEW (Email Only) -->
             <div id="view-signup" class="card" style="display: none;">
                 <div class="card-header">
                     <h1>Let's get started</h1>
@@ -337,25 +348,6 @@
                     <div class="form-group" style="margin-bottom: 12px;">
                         <label>Email</label>
                         <input type="email" id="regEmail" class="form-control" placeholder="Enter your email" required>
-                    </div>
-                    <div class="form-group">
-                        <label>Create Password</label>
-                        <div class="input-wrapper">
-                            <input type="password" id="regPass" class="form-control" placeholder="At least 8 characters" required>
-                            <button type="button" class="icon-btn" onclick="togglePasswordVisibility(this)">
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
-                            </button>
-                        </div>
-                        <div class="strength-bars">
-                            <div class="strength-bar" id="regStrBar1"></div>
-                            <div class="strength-bar" id="regStrBar2"></div>
-                            <div class="strength-bar" id="regStrBar3"></div>
-                        </div>
-                        <ul class="strength-req">
-                            <li id="regReqLen">✗ At least 8 characters</li>
-                            <li id="regReqUpper">✗ One uppercase letter</li>
-                            <li id="regReqNum">✗ One number</li>
-                        </ul>
                     </div>
                     
                     <div class="auth-terms-inline">
@@ -371,9 +363,65 @@
                         </button>
                     </div>
 
-                    <button type="submit" id="doRegisterBtn" class="btn btn-primary" style="margin-top: 16px; padding: 14px;">Sign Up</button>
+                    <button type="submit" id="doRegisterBtn" class="btn btn-primary" style="margin-top: 16px; padding: 14px;">Continue</button>
                 </form>
                 <div class="card-footer"><p>Already have an account? <a href="javascript:void(0)" onclick="showView('view-login', event)">Sign-in</a></p></div>
+            </div>
+
+            <!-- 2.5 VERIFY EMAIL PROMPT (For Cross-Device Links) -->
+            <div id="view-verify-email-prompt" class="card" style="display: none;">
+                <div class="card-header">
+                    <h1>Confirm your email</h1>
+                    <p>You opened this link on a different device or browser. To continue safely, please confirm your email address.</p>
+                </div>
+                <form id="confirmEmailForm">
+                    <div class="form-group">
+                        <label>Email</label>
+                        <input type="email" id="confirmEmailInput" class="form-control" placeholder="Enter your email" required>
+                    </div>
+                    <button type="submit" id="doConfirmEmailBtn" class="btn btn-primary" style="margin-top: 8px;">Complete Sign In</button>
+                </form>
+            </div>
+
+            <!-- 3. SET PASSWORD VIEW (After Email Link Click) -->
+            <div id="view-set-password" class="card" style="display: none;">
+                <div class="card-header">
+                    <h1>Set your password</h1>
+                    <p>Create a secure password for your new Doktura Doctor account.</p>
+                </div>
+                <form id="setPasswordForm">
+                    <div class="form-group">
+                        <label>Create Password</label>
+                        <div class="input-wrapper">
+                            <input type="password" id="setPass1" class="form-control" placeholder="At least 8 characters" required>
+                            <button type="button" class="icon-btn" onclick="togglePasswordVisibility(this)">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                            </button>
+                        </div>
+                        <div class="strength-bars">
+                            <div class="strength-bar" id="setStrBar1"></div>
+                            <div class="strength-bar" id="setStrBar2"></div>
+                            <div class="strength-bar" id="setStrBar3"></div>
+                        </div>
+                        <ul class="strength-req">
+                            <li id="setReqLen">✗ At least 8 characters</li>
+                            <li id="setReqUpper">✗ One uppercase letter</li>
+                            <li id="setReqNum">✗ One number</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="form-group" style="margin-top: 20px;">
+                        <label>Confirm Password</label>
+                        <div class="input-wrapper">
+                            <input type="password" id="setPass2" class="form-control" placeholder="Re-enter password" required>
+                            <button type="button" class="icon-btn" onclick="togglePasswordVisibility(this)">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                            </button>
+                        </div>
+                    </div>
+
+                    <button type="submit" id="doSetPassBtn" class="btn btn-primary" style="margin-top: 16px; padding: 14px;">Save & Continue</button>
+                </form>
             </div>
 
             <!-- FORGOT PASSWORD VIEW -->
@@ -394,7 +442,7 @@
                 </div>
             </div>
 
-            <!-- RESET PASSWORD VIEW -->
+            <!-- RESET PASSWORD VIEW (Action Link) -->
             <div id="view-reset-password" class="card" style="display: none;">
                 <div class="card-header">
                     <h1>Reset Password</h1>
@@ -414,7 +462,7 @@
                 </form>
             </div>
 
-            <!-- 3. DOCTOR INITIAL COMPLETE DATA -->
+            <!-- 4. DOCTOR INITIAL COMPLETE DATA -->
             <div id="view-complete-data" class="card" style="display: none;">
                 <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 24px;">
                     <div class="card-header" style="margin-bottom: 0;">
@@ -841,7 +889,7 @@
         </div>
     </div>
 
-    <!-- ================= MODAL: CUSTOM EMAIL STATUS (IMAGE 3 UI) ================= -->
+    <!-- ================= MODAL: CUSTOM EMAIL STATUS ================= -->
     <div id="actionStatusModal" class="modal-overlay" style="display:none;">
         <div class="email-modal-box">
             <button class="email-modal-close" onclick="closeActionStatusModal()">✕</button>
@@ -860,7 +908,7 @@
     <!-- ================= SCRIPTS ================= -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-app.js";
-        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, sendEmailVerification, sendPasswordResetEmail, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut, updatePassword, deleteUser, applyActionCode, verifyPasswordResetCode, confirmPasswordReset } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-auth.js";
+        import { getAuth, signInWithEmailAndPassword, sendSignInLinkToEmail, isSignInWithEmailLink, signInWithEmailLink, sendPasswordResetEmail, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut, updatePassword, deleteUser, verifyPasswordResetCode, confirmPasswordReset, getAdditionalUserInfo } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-auth.js";
         import { getFirestore, collection, query, onSnapshot, orderBy } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore.js";
 
         const API_BASE = 'https://api.doktura.ai'; 
@@ -891,10 +939,19 @@
         const urlParams = new URLSearchParams(window.location.search);
         const mode = urlParams.get('mode');
         const oobCode = urlParams.get('oobCode');
-        const isProcessingLink = (mode === 'verifyEmail' || mode === 'resetPassword') && oobCode;
+        let isProcessingLink = isSignInWithEmailLink(auth, window.location.href) || (mode === 'resetPassword' && oobCode);
 
         // ================= UI CORE =================
         const alertBox = document.getElementById("authAlertBox");
+
+        window.showGlobalLoader = function(text = "Please wait...") {
+            document.getElementById('loaderText').innerText = text;
+            document.getElementById('globalLoader').style.display = 'flex';
+        }
+
+        window.hideGlobalLoader = function() {
+            document.getElementById('globalLoader').style.display = 'none';
+        }
 
         window.showView = function(targetId, event, pushHistory = true) {
             if (event) event.preventDefault();
@@ -912,7 +969,7 @@
             // Hidden modals specific reset
             document.getElementById('actionStatusModal').style.display = 'none';
 
-            const views =['view-login', 'view-signup', 'view-forgot-password', 'view-complete-data', 'view-verify-email-prompt', 'view-reset-password'];
+            const views =['view-login', 'view-signup', 'view-forgot-password', 'view-complete-data', 'view-verify-email-prompt', 'view-reset-password', 'view-set-password'];
             views.forEach(id => {
                 const el = document.getElementById(id);
                 if(el) el.style.display = (id === targetId) ? 'block' : 'none';
@@ -920,7 +977,7 @@
             
             if(alertBox) alertBox.style.display = 'none';
             
-            if (pushHistory && targetId !== 'view-complete-data' && targetId !== 'view-verify-email-prompt' && targetId !== 'view-reset-password') {
+            if (pushHistory && !['view-complete-data', 'view-verify-email-prompt', 'view-reset-password', 'view-set-password'].includes(targetId)) {
                 history.pushState({view: targetId}, "", "#" + targetId.replace('view-', ''));
             }
         }
@@ -988,16 +1045,19 @@
         };
 
         window.logoutDoctor = async function() { 
+            showGlobalLoader("Logging out...");
             await signOut(auth); 
             window.location.reload(); 
         }
 
         window.cancelApplication = async function() {
             if(confirm("Are you sure you want to cancel your application? Your incomplete account will be permanently deleted.")) {
+                showGlobalLoader("Canceling application...");
                 try {
                     await deleteUser(auth.currentUser);
                     window.location.reload();
                 } catch(e) {
+                    hideGlobalLoader();
                     if(e.code === 'auth/requires-recent-login') {
                         alert("For security, please login again to delete your account.");
                         await signOut(auth);
@@ -1012,10 +1072,8 @@
         window.showActionStatusModal = function(title, text) {
             document.getElementById('actionStatusTitle').innerText = title;
             document.getElementById('actionStatusText').innerText = text;
-            
             document.getElementById('actionStatusResendBtn').innerText = "Resend Link";
             document.getElementById('actionStatusResendBtn').disabled = false;
-            
             document.getElementById('actionStatusModal').style.display = 'flex';
         }
 
@@ -1029,12 +1087,11 @@
             btn.innerText = "Sending..."; btn.disabled = true;
             
             try {
-                // Determine absolute link for doctor portal
                 let safeUrl = window.location.origin + window.location.pathname;
                 const actionCodeSettings = { url: safeUrl, handleCodeInApp: true };
 
                 if (lastActionType === 'signup') {
-                    await sendEmailVerification(auth.currentUser, actionCodeSettings);
+                    await sendSignInLinkToEmail(auth, lastActionEmail, actionCodeSettings);
                 } else if (lastActionType === 'reset') {
                     await sendPasswordResetEmail(auth, lastActionEmail, actionCodeSettings);
                 }
@@ -1423,7 +1480,6 @@
         });
 
         window.submitPrescription = async function() {
-            const btn = document.getElementById('submitPrescriptionBtn');
             const notes = document.getElementById('prescNotes').value.trim();
             const mcNeeded = document.getElementById('mcCheckbox').checked;
             const mcDays = document.getElementById('mcDays').value.trim();
@@ -1452,7 +1508,7 @@
             let finalNotes = notes;
             if(mcNeeded && mcDays) finalNotes += `\n\nMC Issued: ${mcDays}`;
 
-            btn.innerText = "Saving & Sending..."; btn.disabled = true;
+            showGlobalLoader("Saving Prescription...");
 
             try {
                 const token = await auth.currentUser.getIdToken(true);
@@ -1470,72 +1526,80 @@
                 if(!res.ok) throw new Error("Failed to save");
                 alert("Consultation completed! Prescription sent to patient.");
                 closePrescriptionModal();
+                hideGlobalLoader();
                 loadAppointments(); 
             } catch(e) {
+                hideGlobalLoader();
                 alert("Error saving prescription.");
             }
-            btn.innerText = "Add Record & Send to Patient"; btn.disabled = false;
         }
 
         // ================= AUTH HANDLERS & LOGIC ================= //
         
         document.getElementById("loginForm").addEventListener("submit", async (e) => {
             e.preventDefault();
-            const btn = document.getElementById("doLoginBtn"); 
-            btn.innerText = "Authenticating..."; btn.disabled = true;
+            showGlobalLoader("Authenticating...");
             try { 
-                const userCred = await signInWithEmailAndPassword(auth, document.getElementById("loginEmail").value.trim(), document.getElementById("loginPass").value.trim()); 
-                if (!userCred.user.emailVerified) {
-                    await signOut(auth);
-                    showAlert("Please verify your email address before logging in. Check your inbox.");
-                    btn.innerText = "Continue"; btn.disabled = false;
-                    return;
-                }
+                await signInWithEmailAndPassword(auth, document.getElementById("loginEmail").value.trim(), document.getElementById("loginPass").value.trim()); 
+                // onAuthStateChanged will handle the redirect
             } catch(e) { 
+                hideGlobalLoader();
                 showAlert("Invalid Credentials or User Not Found."); 
-                btn.innerText = "Continue"; btn.disabled = false;
             }
         });
 
+        // 1. New Email-Only Signup Flow
         document.getElementById("signupForm").addEventListener("submit", async (e) => {
             e.preventDefault();
             const email = document.getElementById("regEmail").value.trim();
-            const pass = document.getElementById("regPass").value;
-            const btn = document.getElementById("doRegisterBtn");
-            
-            if(pass.length < 8 || !/[A-Z]/.test(pass) || !/[0-9]/.test(pass)) {
-                return showAlert("Please ensure your password meets all requirements.", true);
-            }
-
-            btn.innerText = "Creating Account..."; btn.disabled = true;
+            showGlobalLoader("Sending verification link...");
             
             try {
-                const userCredential = await createUserWithEmailAndPassword(auth, email, pass);
-                
                 const actionCodeSettings = {
                     url: window.location.origin + window.location.pathname,
                     handleCodeInApp: true
                 };
-                await sendEmailVerification(userCredential.user, actionCodeSettings);
-                
-                await signOut(auth); 
+                await sendSignInLinkToEmail(auth, email, actionCodeSettings);
+                window.localStorage.setItem('doctorEmailForSignIn', email);
                 
                 lastActionEmail = email;
                 lastActionType = "signup";
-                showActionStatusModal("Verification Email Sent", "Your account was created. Please check your inbox or spam folder to verify your email before logging in.");
+                
+                hideGlobalLoader();
                 document.getElementById("signupForm").reset();
+                showActionStatusModal("Verification Email has been sent", "Please check your email inbox or spam for Email verification.");
             } catch(e) {
+                hideGlobalLoader();
                 showAlert(e.message);
-            } finally {
-                btn.innerText = "Sign Up"; btn.disabled = false;
+            }
+        });
+
+        // 2. Set Password Form Submit (Triggered after email link is verified)
+        document.getElementById("setPasswordForm").addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const pass1 = document.getElementById("setPass1").value;
+            const pass2 = document.getElementById("setPass2").value;
+            
+            if (pass1 !== pass2) return showAlert("Passwords do not match.", true);
+            if (pass1.length < 8 || !/[A-Z]/.test(pass1) || !/[0-9]/.test(pass1)) {
+                return showAlert("Please ensure your password meets all requirements.", true);
+            }
+            
+            showGlobalLoader("Securing account...");
+            try {
+                await updatePassword(auth.currentUser, pass1);
+                // Success! Now force them to Complete Profile via sync logic
+                await triggerSync(auth.currentUser, true); 
+            } catch(e) {
+                hideGlobalLoader();
+                showAlert("Failed to set password: " + e.message);
             }
         });
 
         document.getElementById("forgotForm").addEventListener("submit", async (e) => {
             e.preventDefault();
             const email = document.getElementById("forgotEmail").value.trim();
-            const btn = document.getElementById("doForgotBtn");
-            btn.innerText = "Sending..."; btn.disabled = true;
+            showGlobalLoader("Sending link...");
             try {
                 const actionCodeSettings = { url: window.location.origin + window.location.pathname, handleCodeInApp: true };
                 await sendPasswordResetEmail(auth, email, actionCodeSettings);
@@ -1543,11 +1607,11 @@
                 lastActionEmail = email;
                 lastActionType = "reset";
                 document.getElementById("forgotForm").reset();
+                hideGlobalLoader();
                 showActionStatusModal("Password Reset Email has been sent", "Please check your email inbox or spam for a Password Reset Link.");
             } catch(e) {
+                hideGlobalLoader();
                 showAlert(e.message);
-            } finally {
-                btn.innerText = "Reset password"; btn.disabled = false;
             }
         });
 
@@ -1572,37 +1636,32 @@
         });
 
         // ================= SYNC LOGIC ================= //
-        onAuthStateChanged(auth, async (user) => {
-            if (isProcessingLink) return; // Wait for processing the URL intercept logic
-            
-            if (user) {
-                const isGoogleUser = user.providerData.some(p => p.providerId === 'google.com');
-                if (!isGoogleUser && !user.emailVerified) {
-                    await signOut(auth);
-                    return;
-                }
-
-                try {
-                    const token = await user.getIdToken(true); 
-                    
-                    const res = await fetch(`${API_BASE}/api/doctor/sync`, { 
-                        method: 'POST', 
-                        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }, 
-                        body: JSON.stringify({ email: user.email }) 
-                    });
-                    
-                    if (!res.ok) {
-                        let errMsg = "Backend sync failed.";
-                        try { const errData = await res.json(); errMsg = errData.detail || errMsg; } catch(_) {}
-                        throw new Error(errMsg);
-                    }
-                    
-                    const data = await res.json();
-                    
-                    let phoneClean = data.phone || "";
-                    if(phoneClean.startsWith("+60")) phoneClean = phoneClean.substring(3).trim();
-                    
-                    if(data.is_complete || data.status === 'approved') { 
+        
+        async function triggerSync(user, forceCompleteData = false) {
+            showGlobalLoader("Loading your profile...");
+            try {
+                const token = await user.getIdToken(true); 
+                
+                const res = await fetch(`${API_BASE}/api/doctor/sync`, { 
+                    method: 'POST', 
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }, 
+                    body: JSON.stringify({ email: user.email }) 
+                });
+                
+                if (!res.ok) throw new Error("Backend sync failed.");
+                
+                const data = await res.json();
+                let phoneClean = data.phone || "";
+                if(phoneClean.startsWith("+60")) phoneClean = phoneClean.substring(3).trim();
+                
+                hideGlobalLoader();
+                isProcessingLink = false; // release block
+                
+                if(data.is_complete || data.status === 'approved') { 
+                    if (forceCompleteData && !data.is_complete) {
+                        populateCompleteDataForm(user, data, phoneClean);
+                        showView('view-complete-data');
+                    } else {
                         window.showView('view-dashboard', null, false); 
                         setDashboardStatus(data.status);
 
@@ -1625,26 +1684,37 @@
                             alert("Congratulations! Your Doctor profile has been verified and approved by admins.");
                             localStorage.setItem('approved_notified', 'true');
                         }
-
-                    } else { 
-                        document.getElementById('authWrapper').style.display = 'flex';
-                        document.getElementById('view-dashboard').style.display = 'none';
-                        const views =['view-login', 'view-signup', 'view-forgot-password', 'view-complete-data', 'view-verify-email-prompt'];
-                        views.forEach(id => {
-                            const el = document.getElementById(id);
-                            if(el) el.style.display = (id === 'view-complete-data') ? 'block' : 'none';
-                        });
-
-                        document.getElementById('docName').value = data.name || user.displayName || "";
-                        document.getElementById('docSpecialty').value = data.specialty || "";
-                        document.getElementById('docPhone').value = phoneClean;
-                        document.getElementById('docLocation').value = data.location || "";
                     }
-                } catch(e) { 
-                    console.error("Sync Error:", e);
-                    window.showView('view-login', null, false);
-                    showAlert("Sync Error: " + e.message, true);
+                } else { 
+                    populateCompleteDataForm(user, data, phoneClean);
+                    showView('view-complete-data');
                 }
+            } catch(e) { 
+                hideGlobalLoader();
+                console.error("Sync Error:", e);
+                window.showView('view-login', null, false);
+                showAlert("Sync Error: " + e.message, true);
+            }
+        }
+
+        function populateCompleteDataForm(user, data, phoneClean) {
+            document.getElementById('docName').value = data.name || user.displayName || "";
+            document.getElementById('docSpecialty').value = data.specialty || "";
+            document.getElementById('docPhone').value = phoneClean || "";
+            document.getElementById('docLocation').value = data.location || "";
+        }
+
+        onAuthStateChanged(auth, async (user) => {
+            if (isProcessingLink) return; // Wait for processing the URL intercept logic
+            
+            if (user) {
+                // If it's a new email account without a password somehow, trigger set password
+                if(user.providerData.every(p => p.providerId === 'password') && !user.emailVerified && !isSignInWithEmailLink(auth, window.location.href)) {
+                    // Fallback for legacy flow (if they somehow used old signup logic)
+                    await signOut(auth);
+                    return;
+                }
+                await triggerSync(user);
             } else {
                 if(document.getElementById('actionStatusModal').style.display !== 'flex') {
                     window.showView('view-login', null, false);
@@ -1652,30 +1722,30 @@
             }
         });
 
-        // ================= PASSWORD STRENGTH METER ================= //
-        document.getElementById('regPass').addEventListener('input', function(e) {
+        // ================= PASSWORD STRENGTH METER (Updated ID) ================= //
+        document.getElementById('setPass1').addEventListener('input', function(e) {
             const pw = e.target.value;
             const hasLen = pw.length >= 8;
             const hasUpper = /[A-Z]/.test(pw);
             const hasNum = /[0-9]/.test(pw);
             
-            document.getElementById('regReqLen').innerText = hasLen ? "✓ At least 8 characters" : "✗ At least 8 characters";
-            document.getElementById('regReqLen').style.color = hasLen ? "#10b981" : "#6b7280";
+            document.getElementById('setReqLen').innerText = hasLen ? "✓ At least 8 characters" : "✗ At least 8 characters";
+            document.getElementById('setReqLen').style.color = hasLen ? "#10b981" : "#6b7280";
             
-            document.getElementById('regReqUpper').innerText = hasUpper ? "✓ One uppercase letter" : "✗ One uppercase letter";
-            document.getElementById('regReqUpper').style.color = hasUpper ? "#10b981" : "#6b7280";
+            document.getElementById('setReqUpper').innerText = hasUpper ? "✓ One uppercase letter" : "✗ One uppercase letter";
+            document.getElementById('setReqUpper').style.color = hasUpper ? "#10b981" : "#6b7280";
             
-            document.getElementById('regReqNum').innerText = hasNum ? "✓ One number" : "✗ One number";
-            document.getElementById('regReqNum').style.color = hasNum ? "#10b981" : "#6b7280";
+            document.getElementById('setReqNum').innerText = hasNum ? "✓ One number" : "✗ One number";
+            document.getElementById('setReqNum').style.color = hasNum ? "#10b981" : "#6b7280";
             
             let strScore = 0;
             if(hasLen) strScore++;
             if(hasUpper) strScore++;
             if(hasNum) strScore++;
             
-            const b1 = document.getElementById('regStrBar1');
-            const b2 = document.getElementById('regStrBar2');
-            const b3 = document.getElementById('regStrBar3');
+            const b1 = document.getElementById('setStrBar1');
+            const b2 = document.getElementById('setStrBar2');
+            const b3 = document.getElementById('setStrBar3');
             
             b1.style.background = strScore >= 1 ? (strScore===1 ? '#ef4444' : (strScore===2 ? '#f59e0b' : '#10b981')) : '#e5e7eb';
             b2.style.background = strScore >= 2 ? (strScore===2 ? '#f59e0b' : '#10b981') : '#e5e7eb';
@@ -1685,10 +1755,7 @@
         // ================= INITIAL PROFILE UPLOAD ================= //
         document.getElementById("profileForm").addEventListener("submit", async (e) => {
             e.preventDefault();
-            const btn = document.getElementById("saveProfileBtn");
-
-            btn.innerText = "Uploading... Please wait"; btn.disabled = true;
-
+            showGlobalLoader("Uploading... Please wait");
             try {
                 const token = await auth.currentUser.getIdToken(true);
                 const formData = new FormData();
@@ -1721,9 +1788,9 @@
                 alert("Submitted successfully! Your account is pending admin review.");
                 window.location.reload(); 
             } catch (error) {
+                hideGlobalLoader();
                 console.error("Backend Error Detail:", error);
-                alert("Upload Failed.\n\n" + error.message + "\n\n(Note: This implies a Server-Side Crash in the Python Backend. Please check Backend console logs for the 500 status details.)"); 
-                btn.innerText = "Submit for Verification"; btn.disabled = false;
+                alert("Upload Failed.\n\n" + error.message); 
             }
         });
 
@@ -1731,8 +1798,7 @@
         // ================= PROFILE UPDATES (DASHBOARD) ================= //
         document.getElementById("dashUpdateForm").addEventListener("submit", async (e) => {
             e.preventDefault();
-            const btn = document.getElementById("dashSaveProfileBtn");
-            btn.innerText = "Saving Changes..."; btn.disabled = true;
+            showGlobalLoader("Saving Changes...");
 
             try {
                 const token = await auth.currentUser.getIdToken(true);
@@ -1771,13 +1837,13 @@
                     throw new Error(`Server Error: ${errDetail}`);
                 }
 
+                hideGlobalLoader();
                 alert("Profile and documents updated successfully!");
-                btn.innerText = "Update Profile"; btn.disabled = false;
 
             } catch (error) {
+                hideGlobalLoader();
                 console.error("Backend Error Detail:", error);
                 alert("Upload Failed.\n\n" + error.message);  
-                btn.innerText = "Update Profile"; btn.disabled = false;
             }
         });
 
@@ -1852,22 +1918,48 @@
 
         // ================= INTERCEPT FIREBASE ACTION URLS ================= //
         
-        // Handle Email Verification Click
-        if (mode === 'verifyEmail' && oobCode) {
-            applyActionCode(auth, oobCode).then(() => {
-                showAlert("Email verified successfully! You can now log in.", false);
+        async function handleEmailSignIn(email) {
+            showGlobalLoader("Verifying your email...");
+            try {
+                if (auth.currentUser) await signOut(auth); // Clear stale cache
+                
+                const result = await signInWithEmailLink(auth, email, window.location.href);
+                window.localStorage.removeItem('doctorEmailForSignIn');
                 window.history.replaceState({}, document.title, window.location.pathname);
-                showView('view-login', null, false);
-            }).catch(e => {
-                showAlert("Verification link has expired or is invalid.", true);
-                window.history.replaceState({}, document.title, window.location.pathname);
-                showView('view-login', null, false);
-            });
+                
+                const additionalInfo = getAdditionalUserInfo(result);
+                
+                hideGlobalLoader();
+                if (additionalInfo?.isNewUser) {
+                    showView('view-set-password', null, false);
+                } else {
+                    await triggerSync(result.user);
+                }
+            } catch (e) {
+                hideGlobalLoader();
+                showAlert("Invalid or expired sign-in link.", true);
+                showView('view-login');
+            }
+        }
+
+        if (isSignInWithEmailLink(auth, window.location.href)) {
+            let email = window.localStorage.getItem('doctorEmailForSignIn');
+            if (email) {
+                handleEmailSignIn(email);
+            } else {
+                showView('view-verify-email-prompt');
+                document.getElementById('confirmEmailForm').addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    handleEmailSignIn(document.getElementById('confirmEmailInput').value.trim());
+                });
+            }
         }
 
         // Handle Reset Password Click
         if (mode === 'resetPassword' && oobCode) {
+            showGlobalLoader("Loading...");
             verifyPasswordResetCode(auth, oobCode).then((email) => {
+                hideGlobalLoader();
                 showView('view-reset-password', null, false);
                 
                 document.getElementById('resetPasswordActionForm').addEventListener('submit', (e) => {
@@ -1875,19 +1967,19 @@
                     const newPass = document.getElementById('newResetPass').value;
                     if (newPass.length < 8) return showAlert("Password must be at least 8 characters.", true);
                     
-                    const btn = document.getElementById('doResetFinalBtn');
-                    btn.innerText = "Saving..."; btn.disabled = true;
-
+                    showGlobalLoader("Saving...");
                     confirmPasswordReset(auth, oobCode, newPass).then(() => {
+                        hideGlobalLoader();
                         showAlert("Password updated successfully! Please login.", false);
                         window.history.replaceState({}, document.title, window.location.pathname);
                         showView('view-login', null, false);
                     }).catch(err => {
+                        hideGlobalLoader();
                         showAlert("Failed to reset password: " + err.message, true);
-                        btn.innerText = "Save Password"; btn.disabled = false;
                     });
                 });
             }).catch(e => {
+                hideGlobalLoader();
                 showAlert("Reset link has expired or is invalid.", true);
                 window.history.replaceState({}, document.title, window.location.pathname);
                 showView('view-login', null, false);
