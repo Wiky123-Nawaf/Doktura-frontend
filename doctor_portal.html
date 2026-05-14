@@ -1421,9 +1421,11 @@
 
         // ================= AUTH HANDLERS & LOGIC ================= //
         
+        // Setup Link Catching immediately
         if (isSignInWithEmailLink(auth, window.location.href)) {
             let email = window.localStorage.getItem('emailForSignIn');
             if(email) {
+                // Background process
                 (async () => {
                     try {
                         await signOut(auth); // Clear stale session
@@ -1446,6 +1448,7 @@
                  await signOut(auth); // Clear stale
                  await signInWithEmailLink(auth, email, window.location.href);
                  window.history.replaceState(null, "", window.location.pathname);
+                 // The auth listener picks this up
              } catch(e) {
                  showAlert(e.message);
                  btn.innerText = "Complete Sign-in"; btn.disabled = false;
@@ -1471,9 +1474,8 @@
             btn.innerText = "Sending Link..."; btn.disabled = true;
             
             try {
-                // Ensure Firebase Dynamic link parser catches doctor portal without fragment hashes
                 const actionCodeSettings = {
-                  url: window.location.origin + window.location.pathname, 
+                  url: window.location.href,  // Explicitly mapping back to the same file where clicked to prevent fallbacks to index
                   handleCodeInApp: true
                 };
                 await sendSignInLinkToEmail(auth, email, actionCodeSettings);
@@ -1763,6 +1765,7 @@
             const days =['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
             const container = document.getElementById('scheduleDaysContainer');
             
+            // Build the top Global Time Inputs
             container.innerHTML = `
                 <div class="global-times-row">
                     <div style="flex:1;">
@@ -1777,6 +1780,7 @@
                 <h3 style="font-size:14px; font-weight:600; margin-bottom:16px;">Weekly Availability</h3>
             `;
             
+            // Build the individual day blocks
             days.forEach(day => {
                 const isWeekend = day === 'Saturday' || day === 'Sunday';
                 container.innerHTML += `
@@ -1804,6 +1808,7 @@
         }
         renderScheduleUI();
 
+        // Lock/Unlock Fields Based on Status
         function setDashboardStatus(status) {
             const isPending = status === 'pending';
             const badge = document.getElementById('dashStatusBadge');
