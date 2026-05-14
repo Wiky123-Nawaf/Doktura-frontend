@@ -62,6 +62,11 @@
         .auth-footer { padding: 20px 24px; text-align: left; font-size: 13px; color: #6b7280; width: 100%; border-top: 1px solid #e5e7eb; }
         @media (min-width: 768px) { .auth-footer { padding: 24px 48px; } }
 
+        /* Terms link standardizer */
+        .auth-terms-inline { text-align: center; margin-top: 12px; font-size: 13px; color: #6b7280; margin-bottom: -10px; }
+        .auth-terms-inline a { color: #0066cc; font-weight: 500; text-decoration: none; }
+        .auth-terms-inline a:hover { text-decoration: underline; }
+
         /* ================= DOCTOR SPECIFIC UPLOAD STYLES ================= */
         #view-complete-data.card { max-width: 650px; } 
         .file-upload-box { border: 1px dashed #d1d5db; border-radius: 8px; padding: 16px; text-align: center; background-color: #f9fafb; cursor: pointer; transition: 0.2s; position: relative; font-size: 13px; color: #4b5563; }
@@ -178,7 +183,8 @@
         .review-title { font-weight: 600; color: #111827; margin-bottom: 4px; }
 
         /* ================= MODAL OVERLAYS ================= */
-        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(17, 24, 39, 0.7); display: flex; justify-content: center; align-items: center; z-index: 999; padding: 20px; }
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(17, 24, 39, 0.5); display: flex; justify-content: center; align-items: center; z-index: 1000; padding: 20px; backdrop-filter: blur(3px); }
+        
         .presc-modal { background: #fff; border-radius: 16px; width: 100%; max-width: 600px; max-height: 90vh; display: flex; flex-direction: column; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); }
         .presc-header { padding: 24px; border-bottom: 1px solid #e5e7eb; display: flex; justify-content: space-between; align-items: center; }
         .presc-header h2 { font-size: 18px; font-weight: 700; margin: 0; }
@@ -200,14 +206,18 @@
         .radio-group label { display: flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 500; cursor: pointer; color: #4b5563;}
         .radio-group input { accent-color: #0ea5e9; width: 16px; height: 16px;}
 
-        /* Reset Modal Specific */
-        #modal-reset-sent .presc-modal { text-align: center; max-width: 400px; padding: 32px 24px; }
-        #modal-reset-sent svg { width: 64px; height: 64px; margin: 0 auto 16px auto; color: #10b981; }
-        #modal-reset-sent h2 { font-size: 22px; font-weight: 700; color: #111827; margin-bottom: 8px; }
-        #modal-reset-sent p { font-size: 14px; color: #4b5563; line-height: 1.5; margin-bottom: 24px; }
+        /* Email Notification UI Modal (Exact Match) */
+        .email-modal-box { background: #ffffff; border-radius: 16px; width: 100%; max-width: 420px; padding: 32px 24px; text-align: center; position: relative; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1), 0 8px 10px -6px rgba(0,0,0,0.1); }
+        .email-modal-close { position: absolute; top: 16px; right: 16px; width: 28px; height: 28px; background: #f3f4f6; border-radius: 50%; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; color: #4b5563; font-size: 16px; font-weight: bold; transition: background 0.2s; }
+        .email-modal-close:hover { background: #e5e7eb; }
+        .email-modal-icon-wrap { width: 56px; height: 56px; background: #ffffff; border-radius: 50%; border: 1.5px solid #bfdbfe; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px auto; color: #0066cc; }
+        .email-modal-title { font-size: 20px; font-weight: 700; color: #111827; margin-bottom: 12px; }
+        .email-modal-text { font-size: 14px; color: #6b7280; line-height: 1.5; margin-bottom: 28px; padding: 0 16px; }
+        .email-modal-btn { width: 100%; padding: 12px; background: white; border: 1.5px solid #0066cc; color: #0066cc; font-size: 15px; font-weight: 600; border-radius: 8px; cursor: pointer; transition: 0.2s; font-family: inherit; }
+        .email-modal-btn:hover { background: #f8fafc; }
 
         /* ================= RESPONSIVE MOBILE UPGRADES ================= */
-        .btn:active, .icon-btn:active, .dash-tab:active, .menu-item:active, .file-upload-box:active, .presc-close:active, .page-btn:active { transform: scale(0.97); }
+        .btn:active, .icon-btn:active, .dash-tab:active, .menu-item:active, .file-upload-box:active, .presc-close:active, .page-btn:active, .email-modal-btn:active, .email-modal-close:active { transform: scale(0.97); }
 
         .schedule-times-row { display: flex; gap: 16px; }
         .global-times-row { display: flex; gap: 16px; margin-bottom: 24px; }
@@ -321,14 +331,17 @@
             <!-- 2. PASSWORDLESS SIGN-UP VIEW -->
             <div id="view-signup" class="card" style="display: none;">
                 <div class="card-header">
-                    <h1>Apply as a Doctor</h1>
-                    <p>Enter your professional email to start the secure registration process. We'll send you a magic link.</p>
+                    <h1>Let’s get started</h1>
+                    <p>Create your first Doktura.ai account or<br>login if you already have an account</p>
                 </div>
                 <form id="signupForm">
-                    <div class="form-group">
+                    <div class="form-group" style="margin-bottom: 12px;">
                         <label>Email</label>
-                        <input type="email" id="regEmail" class="form-control" placeholder="doctor@clinic.com" required>
-                        <p style="font-size: 12px; color: #6b7280; margin-top: 10px; line-height: 1.5;">By continuing, you agree to our Terms of Service and Privacy Policy.</p>
+                        <input type="email" id="regEmail" class="form-control" placeholder="Enter your email" required>
+                    </div>
+                    
+                    <div class="auth-terms-inline">
+                        By signing up, you agree to our <a href="https://doktura.ai/terms.html" target="_blank">Terms of Service</a> and <a href="https://doktura.ai/privacy.html" target="_blank">Privacy Policy</a>
                     </div>
                     
                     <div class="divider"><span>Or continue with</span></div>
@@ -340,17 +353,9 @@
                         </button>
                     </div>
 
-                    <button type="submit" id="doRegisterBtn" class="btn btn-primary" style="margin-top: 16px; padding: 14px;">Send Verification Link</button>
+                    <button type="submit" id="doRegisterBtn" class="btn btn-primary" style="margin-top: 16px; padding: 14px;">Continue</button>
                 </form>
-                <div class="card-footer"><p>Already approved? <a href="javascript:void(0)" onclick="showView('view-login', event)">Sign-in</a></p></div>
-            </div>
-
-            <!-- SUCCESS LINK SENT CARD -->
-            <div id="view-link-sent" class="card" style="display: none; text-align: center;">
-                <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2" style="margin: 0 auto 16px auto;"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
-                <h1 style="font-size: 24px; font-weight: 700; color: #111827; margin-bottom: 12px;">Check your email</h1>
-                <p style="font-size: 14px; color: #4b5563; line-height: 1.5; margin-bottom: 24px;">We've sent a magic verification link to your inbox. Click the link to complete your doctor registration securely.</p>
-                <button class="btn btn-primary" onclick="showView('view-login')">Return to Login</button>
+                <div class="card-footer"><p>Already have an account? <a href="javascript:void(0)" onclick="showView('view-login', event)">Sign-in</a></p></div>
             </div>
 
             <!-- CROSS-DEVICE PROMPT -->
@@ -833,13 +838,20 @@
         </div>
     </div>
 
-    <!-- ================= MODAL: FORGOT PASSWORD RESET SENT ================= -->
-    <div id="modal-reset-sent" class="modal-overlay" style="display:none;">
-        <div class="presc-modal" style="width: auto;">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
-            <h2>Reset Link Sent</h2>
-            <p>Please check your inbox and spam folder. Click the link we sent to securely reset your doctor password.</p>
-            <button class="btn btn-primary" onclick="closeResetModal()">Return to Login</button>
+    <!-- ================= MODAL: FORGOT PASSWORD / EMAIL LINK SENT ================= -->
+    <!-- Matches Image 3 specific layout requested -->
+    <div id="actionStatusModal" class="modal-overlay" style="display:none;">
+        <div class="email-modal-box">
+            <button class="email-modal-close" onclick="closeActionStatusModal()">✕</button>
+            <div class="email-modal-icon-wrap">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="2" y="4" width="20" height="16" rx="2"></rect>
+                    <path d="M2 4l10 8 10-8"></path>
+                </svg>
+            </div>
+            <h2 id="actionStatusTitle" class="email-modal-title">Verification Email has been sent</h2>
+            <p id="actionStatusText" class="email-modal-text">Please check your email inbox or spam for Email verification.</p>
+            <button id="actionStatusResendBtn" class="email-modal-btn" onclick="resendActionLink()">Resend Link</button>
         </div>
     </div>
 
@@ -868,6 +880,10 @@
 
         let currentReviews = [];
         let filteredReviews =[];
+        
+        // Link resend states
+        let lastActionType = ""; 
+        let lastActionEmail = "";
 
         // ================= UI CORE =================
         const alertBox = document.getElementById("authAlertBox");
@@ -885,15 +901,18 @@
             document.getElementById('authWrapper').style.display = 'flex';
             document.getElementById('view-dashboard').style.display = 'none';
 
-            const views =['view-login', 'view-signup', 'view-forgot-password', 'view-complete-data', 'view-verify-email-prompt', 'view-link-sent'];
+            // Hidden modals specific reset
+            document.getElementById('actionStatusModal').style.display = 'none';
+
+            const views =['view-login', 'view-signup', 'view-forgot-password', 'view-complete-data', 'view-verify-email-prompt'];
             views.forEach(id => {
                 const el = document.getElementById(id);
-                if(el) el.style.display = (id === targetId) ? (id==='view-link-sent'?'block':'block') : 'none';
+                if(el) el.style.display = (id === targetId) ? 'block' : 'none';
             });
             
             if(alertBox) alertBox.style.display = 'none';
             
-            if (pushHistory && targetId !== 'view-complete-data' && targetId !== 'view-verify-email-prompt' && targetId !== 'view-link-sent') {
+            if (pushHistory && targetId !== 'view-complete-data' && targetId !== 'view-verify-email-prompt') {
                 history.pushState({view: targetId}, "", "#" + targetId.replace('view-', ''));
             }
         }
@@ -982,9 +1001,41 @@
             }
         }
 
-        window.closeResetModal = function() {
-            document.getElementById('modal-reset-sent').style.display = 'none';
-            window.showView('view-login');
+        window.showActionStatusModal = function(title, text) {
+            document.getElementById('actionStatusTitle').innerText = title;
+            document.getElementById('actionStatusText').innerText = text;
+            
+            document.getElementById('actionStatusResendBtn').innerText = "Resend Link";
+            document.getElementById('actionStatusResendBtn').disabled = false;
+            
+            document.getElementById('actionStatusModal').style.display = 'flex';
+        }
+
+        window.closeActionStatusModal = function() {
+            document.getElementById('actionStatusModal').style.display = 'none';
+        }
+
+        window.resendActionLink = async function() {
+            if (!lastActionEmail || !lastActionType) return;
+            const btn = document.getElementById('actionStatusResendBtn');
+            btn.innerText = "Sending..."; btn.disabled = true;
+            
+            try {
+                // Determine absolute link
+                let safeUrl = window.location.origin + "/doctor_portal.html";
+                const actionCodeSettings = { url: safeUrl, handleCodeInApp: true };
+
+                if (lastActionType === 'signup') {
+                    await sendSignInLinkToEmail(auth, lastActionEmail, actionCodeSettings);
+                    window.localStorage.setItem('emailForSignIn', lastActionEmail);
+                } else if (lastActionType === 'reset') {
+                    await sendPasswordResetEmail(auth, lastActionEmail, actionCodeSettings);
+                }
+                btn.innerText = "Link Resent!";
+            } catch(e) {
+                btn.innerText = "Error: " + e.message;
+                btn.disabled = false;
+            }
         }
 
         // ================= NOTIFICATIONS LOGIC =================
@@ -1421,11 +1472,10 @@
 
         // ================= AUTH HANDLERS & LOGIC ================= //
         
-        // Setup Link Catching immediately
+        // Ensure robust link resolution logic that FORCES Firebase back to the correct path
         if (isSignInWithEmailLink(auth, window.location.href)) {
             let email = window.localStorage.getItem('emailForSignIn');
             if(email) {
-                // Background process
                 (async () => {
                     try {
                         await signOut(auth); // Clear stale session
@@ -1448,7 +1498,6 @@
                  await signOut(auth); // Clear stale
                  await signInWithEmailLink(auth, email, window.location.href);
                  window.history.replaceState(null, "", window.location.pathname);
-                 // The auth listener picks this up
              } catch(e) {
                  showAlert(e.message);
                  btn.innerText = "Complete Sign-in"; btn.disabled = false;
@@ -1474,17 +1523,22 @@
             btn.innerText = "Sending Link..."; btn.disabled = true;
             
             try {
+                // HARDCODE THIS PRECISE PATH SO IT NEVER MISS-DYNAMICS TO THE PATIENT ROOT!
+                const safePathUrl = window.location.origin + "/doctor_portal.html";
                 const actionCodeSettings = {
-                  url: window.location.href,  // Explicitly mapping back to the same file where clicked to prevent fallbacks to index
+                  url: safePathUrl, 
                   handleCodeInApp: true
                 };
                 await sendSignInLinkToEmail(auth, email, actionCodeSettings);
                 window.localStorage.setItem('emailForSignIn', email);
                 
-                showView('view-link-sent');
+                lastActionEmail = email;
+                lastActionType = "signup";
+                showActionStatusModal("Verification Email has been sent", "Please check your email inbox or spam for Email verification.");
             } catch(e) {
                 showAlert(e.message);
-                btn.innerText = "Send Verification Link"; btn.disabled = false;
+            } finally {
+                btn.innerText = "Continue"; btn.disabled = false;
             }
         });
 
@@ -1494,13 +1548,20 @@
             const btn = document.getElementById("doForgotBtn");
             btn.innerText = "Sending..."; btn.disabled = true;
             try {
-                await sendPasswordResetEmail(auth, email);
-                document.getElementById('modal-reset-sent').style.display = 'flex';
+                const safePathUrl = window.location.origin + "/doctor_portal.html";
+                const actionCodeSettings = { url: safePathUrl, handleCodeInApp: true };
+
+                await sendPasswordResetEmail(auth, email, actionCodeSettings);
+                
+                lastActionEmail = email;
+                lastActionType = "reset";
                 document.getElementById("forgotForm").reset();
+                showActionStatusModal("Password Reset Email has been sent", "Please check your email inbox or spam for a Password Reset Link.");
             } catch(e) {
                 showAlert(e.message);
+            } finally {
+                btn.innerText = "Reset password"; btn.disabled = false;
             }
-            btn.innerText = "Reset password"; btn.disabled = false;
         });
 
         document.getElementById("doGoogleLoginBtn").addEventListener("click", async () => { 
@@ -1571,8 +1632,16 @@
                         }
 
                     } else { 
-                        window.showView('view-complete-data', null, false); 
-                        
+                        // Do NOT call view switch if actionStatusModal is already showing logic checks!
+                        // Force layout
+                        document.getElementById('authWrapper').style.display = 'flex';
+                        document.getElementById('view-dashboard').style.display = 'none';
+                        const views =['view-login', 'view-signup', 'view-forgot-password', 'view-complete-data', 'view-verify-email-prompt'];
+                        views.forEach(id => {
+                            const el = document.getElementById(id);
+                            if(el) el.style.display = (id === 'view-complete-data') ? 'block' : 'none';
+                        });
+
                         // Setup Google specific optional logic
                         const isGoogleUser = user.providerData.some(p => p.providerId === 'google.com');
                         const passInput = document.getElementById('docPass');
@@ -1600,7 +1669,7 @@
                 }
             } else {
                 if(document.getElementById('view-verify-email-prompt').style.display !== 'block' && 
-                   document.getElementById('view-link-sent').style.display !== 'block') {
+                   document.getElementById('actionStatusModal').style.display !== 'flex') {
                     window.showView('view-login', null, false);
                 }
             }
@@ -1765,7 +1834,6 @@
             const days =['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
             const container = document.getElementById('scheduleDaysContainer');
             
-            // Build the top Global Time Inputs
             container.innerHTML = `
                 <div class="global-times-row">
                     <div style="flex:1;">
@@ -1780,7 +1848,6 @@
                 <h3 style="font-size:14px; font-weight:600; margin-bottom:16px;">Weekly Availability</h3>
             `;
             
-            // Build the individual day blocks
             days.forEach(day => {
                 const isWeekend = day === 'Saturday' || day === 'Sunday';
                 container.innerHTML += `
@@ -1808,7 +1875,6 @@
         }
         renderScheduleUI();
 
-        // Lock/Unlock Fields Based on Status
         function setDashboardStatus(status) {
             const isPending = status === 'pending';
             const badge = document.getElementById('dashStatusBadge');
