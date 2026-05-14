@@ -62,6 +62,28 @@
         .auth-footer { padding: 20px 24px; text-align: left; font-size: 13px; color: #6b7280; width: 100%; border-top: 1px solid #e5e7eb; }
         @media (min-width: 768px) { .auth-footer { padding: 24px 48px; } }
 
+        /* Highlight emails in blue */
+        .highlight-email { color: #0066cc; font-weight: 500; }
+
+        /* Terms text */
+        .terms-text { font-size: 13px; color: #6b7280; margin-bottom: 24px; text-align: left; line-height: 1.5; }
+        .terms-text a { color: #0066cc; font-weight: 500; }
+        .terms-text a:hover { text-decoration: underline; }
+
+        /* Password Strength UI */
+        .strength-bars { display: flex; gap: 8px; margin-top: 12px; margin-bottom: 12px; }
+        .strength-bar { height: 4px; border-radius: 2px; flex: 1; background-color: #e5e7eb; transition: background-color 0.3s; }
+        .strength-bar.red { background-color: #ea4335; }
+        .strength-bar.yellow { background-color: #fbbc05; }
+        .strength-bar.green { background-color: #34a853; }
+        .strength-text { font-size: 14px; color: #4b5563; margin-bottom: 12px; text-align: left; }
+        .strength-list { list-style: none; padding: 0; margin: 0 0 20px 0; text-align: left; }
+        .strength-list li { font-size: 13px; color: #6b7280; display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+        .strength-list li.valid { color: #111827; }
+        .icon-circle { width: 16px; height: 16px; border-radius: 50%; display: flex; justify-content: center; align-items: center; color: white; }
+        .icon-circle.green { background-color: #34a853; }
+        .icon-circle.grey { background-color: #9ca3af; }
+
         /* ================= DOCTOR SPECIFIC UPLOAD STYLES ================= */
         #view-complete-data.card { max-width: 650px; } 
         .file-upload-box { border: 1px dashed #d1d5db; border-radius: 8px; padding: 16px; text-align: center; background-color: #f9fafb; cursor: pointer; transition: 0.2s; position: relative; font-size: 13px; color: #4b5563; }
@@ -174,7 +196,12 @@
 
         /* ================= MODAL & PRESCRIPTION FORM ================= */
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(17, 24, 39, 0.7); display: flex; justify-content: center; align-items: center; z-index: 999; padding: 20px; }
-        .presc-modal { background: #fff; border-radius: 16px; width: 100%; max-width: 600px; max-height: 90vh; display: flex; flex-direction: column; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); }
+        .presc-modal, .modal-card { background: #fff; border-radius: 16px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); }
+        .presc-modal { width: 100%; max-width: 600px; max-height: 90vh; display: flex; flex-direction: column; }
+        .modal-card { padding: 40px 24px; width: 100%; max-width: 420px; position: relative; text-align: center; animation: modalPopIn 0.3s cubic-bezier(0.16, 1, 0.3, 1); }
+        @media (min-width: 768px) { .modal-card { padding: 48px; } }
+        @keyframes modalPopIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+
         .presc-header { padding: 24px; border-bottom: 1px solid #e5e7eb; display: flex; justify-content: space-between; align-items: center; }
         .presc-header h2 { font-size: 18px; font-weight: 700; margin: 0; }
         .presc-close { background: none; border: none; font-size: 24px; cursor: pointer; color: #6b7280; }
@@ -195,12 +222,18 @@
         .radio-group label { display: flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 500; cursor: pointer; color: #4b5563;}
         .radio-group input { accent-color: #0ea5e9; width: 16px; height: 16px;}
 
+        /* Alert Modals specific classes */
+        .modal-close-btn { position: absolute; top: 16px; right: 16px; background-color: #f3f4f6; border: none; border-radius: 50%; width: 32px; height: 32px; display: flex; justify-content: center; align-items: center; cursor: pointer; color: #4b5563; transition: background-color 0.2s; }
+        .modal-close-btn:hover { background-color: #e5e7eb; color: #111827; }
+        .modal-icon-wrapper { background-color: #eaf3ff; width: 88px; height: 88px; border-radius: 50%; display: flex; justify-content: center; align-items: center; margin: 0 auto 24px auto; }
+        .modal-card h2 { font-size: 20px; font-weight: 700; color: #111827; margin-bottom: 12px; }
+        @media (min-width: 768px) { .modal-card h2 { font-size: 22px; } }
+        .modal-card p { font-size: 14px; color: #4b5563; line-height: 1.5; margin-bottom: 32px; padding: 0 10px; }
+        .modal-card .btn-outline-primary { width: 100%; }
+
         /* ================= RESPONSIVE MOBILE UPGRADES ================= */
-        
-        /* Mobile Active Press Animation */
         .btn:active, .icon-btn:active, .dash-tab:active, .menu-item:active, .file-upload-box:active, .presc-close:active, .page-btn:active { transform: scale(0.97); }
 
-        /* Structural Utility Classes for easy responsive switching */
         .schedule-times-row { display: flex; gap: 16px; }
         .global-times-row { display: flex; gap: 16px; margin-bottom: 24px; }
         .ratings-top-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
@@ -208,34 +241,21 @@
         .patient-details-col { text-align: left; }
         .desktop-action-center { text-align: center; }
 
-        /* Sidebar Elements specifically for mobile */
         .sidebar-overlay { display: none; }
         .mobile-menu-btn { display: none; background: none; border: none; cursor: pointer; color: #4b5563; padding: 4px; }
 
         @media (max-width: 767px) {
             .mobile-menu-btn { display: flex; align-items: center; justify-content: center; }
-            
-            /* Sidebar Slide-out Drawer */
             .sidebar { position: fixed; top: 0; left: 0; height: 100%; z-index: 200; transform: translateX(-100%); transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: 4px 0 20px rgba(0,0,0,0.08); }
             .sidebar.open { transform: translateX(0); }
-            
-            /* Backdrop Overlay */
             .sidebar-overlay { display: none; position: fixed; inset: 0; background: rgba(17,24,39,0.5); z-index: 150; backdrop-filter: blur(2px); transition: opacity 0.3s; }
             .sidebar-overlay.open { display: block; }
-            
-            /* Dash Header Adjustments */
             .dash-header { padding: 0 16px; height: 64px; min-height: 64px; justify-content: space-between;}
-            
-            /* Body Adjustments */
             .dash-body { padding: 24px 16px; }
             .dash-title { font-size: 22px; }
             .dash-card { padding: 20px 16px !important; }
-            
-            /* Horizontal Scrollable Tabs */
             .dash-tabs { display: flex; overflow-x: auto; flex-wrap: nowrap; padding-bottom: 4px; -webkit-overflow-scrolling: touch; width: 100%; }
             .dash-tab { white-space: nowrap; padding: 8px 16px; font-size: 13px; flex: 0 0 auto; }
-            
-            /* Table to Stacked Cards Conversion */
             .table-container { border: none; background: transparent; }
             .dash-table thead { display: none; }
             .dash-table tbody, .dash-table tr, .dash-table td { display: block; width: 100%; }
@@ -243,25 +263,16 @@
             .dash-table td { padding: 12px 0 !important; border-bottom: 1px dashed #f3f4f6 !important; display: flex; justify-content: space-between; align-items: center; text-align: right; }
             .dash-table td:last-child { border-bottom: none !important; padding-bottom: 0 !important; justify-content: flex-end; }
             .dash-table td::before { content: attr(data-label); font-weight: 600; font-size: 11px; color: #9ca3af; text-transform: uppercase; text-align: left; margin-right: 16px; }
-            
-            /* Fix alignments for card view */
             .patient-details-col { text-align: right !important; }
             .desktop-action-center { text-align: right !important; }
-            
-            /* Layout Reflows */
             .profile-header-row { flex-direction: column; align-items: flex-start; gap: 12px; }
             .schedule-times-row { flex-direction: column; gap: 12px; }
             .global-times-row { flex-direction: column; gap: 12px; margin-bottom: 16px; }
-            
-            /* Ratings & Appointments Control Bar Reflows */
             .ratings-top-bar, .appointments-top-bar { flex-direction: column; align-items: flex-start; gap: 16px; }
             .ratings-top-bar > div:last-child, .appointments-top-bar > div:last-child { width: 100%; display: flex; flex-direction: column; gap: 12px; }
             .search-bar { width: 100% !important; }
-            
             .ratings-grid { grid-template-columns: 1fr; gap: 24px; }
             .ratings-summary-card { padding: 20px; }
-            
-            /* Modal Adjustments */
             .presc-modal { margin: 16px; width: auto; max-height: 90vh; border-radius: 12px; }
             .presc-header, .presc-body, .presc-footer { padding: 16px; }
             .radio-group { flex-wrap: wrap; gap: 12px; }
@@ -276,9 +287,13 @@
             <div class="logo-container" onclick="showView('view-login')">
                 <img src="https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/Group%202085665235.png?download=true" alt="doktura.ai logo">
             </div>
+            <div id="authCloseBtnContainer" style="display: none;">
+                <a href="index.html">← Back Home</a>
+            </div>
         </header>
 
         <main class="main-content">
+            <!-- Reusable Dynamic Alert Box -->
             <div id="authAlertContainer" style="width: 100%; max-width: 480px;">
                 <div id="authAlertBox" style="display: none; margin-bottom: 20px; padding: 14px; border-radius: 8px; font-size: 14px; text-align: center; font-weight: 500;"></div>
             </div>
@@ -303,11 +318,12 @@
                             </button>
                         </div>
                     </div>
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
-                        <label style="display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 400; cursor: pointer; color: #4b5563;">
-                            <input type="checkbox" style="width: 16px; height: 16px; accent-color: #0066cc;"> Keep me logged in
+                    
+                    <div class="options-row">
+                        <a href="javascript:void(0)" class="forgot-link" onclick="showView('view-forgot-password', event)">Forgot password?</a>
+                        <label class="checkbox-label">
+                            <input type="checkbox"> Keep me logged in
                         </label>
-                        <a href="javascript:void(0)" class="forgot-link" style="margin-bottom: 0;" onclick="showView('view-forgot-password', event)">Forgot password?</a>
                     </div>
                     
                     <div class="divider"><span>Or continue with</span></div>
@@ -319,7 +335,7 @@
                         </button>
                     </div>
 
-                    <button type="submit" id="doLoginBtn" class="btn btn-primary" style="margin-top: 12px; padding: 14px;">Continue</button>
+                    <button type="submit" id="doLoginBtn" class="btn btn-primary" style="margin-top: 12px;">Continue</button>
                 </form>
                 <div class="card-footer"><p>Didn't have an account? <a href="javascript:void(0)" onclick="showView('view-signup', event)">Sign-up</a></p></div>
             </div>
@@ -331,19 +347,12 @@
                     <p>Start your application process to join Doktura.ai</p>
                 </div>
                 <form id="signupForm">
-                    <div class="form-group">
+                    <div class="form-group" style="margin-bottom: 12px;">
                         <label>Email</label>
                         <input type="email" id="regEmail" class="form-control" placeholder="Enter your email" required>
                     </div>
-                    <div class="form-group">
-                        <label>Create Password</label>
-                        <div class="input-wrapper">
-                            <input type="password" id="regPass" class="form-control" placeholder="At least 8 characters" required>
-                            <button type="button" class="icon-btn" onclick="togglePasswordVisibility(this)">
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
-                            </button>
-                        </div>
-                    </div>
+
+                    <div class="terms-text">By signing up, you agree to our <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a></div>
                     
                     <div class="divider"><span>Or continue with</span></div>
                     
@@ -354,9 +363,24 @@
                         </button>
                     </div>
 
-                    <button type="submit" id="doRegisterBtn" class="btn btn-primary" style="margin-top: 16px; padding: 14px;">Sign Up</button>
+                    <button type="submit" id="doRegisterBtn" class="btn btn-primary" style="margin-top: 16px;">Continue</button>
                 </form>
                 <div class="card-footer"><p>Already approved? <a href="javascript:void(0)" onclick="showView('view-login', event)">Sign-in</a></p></div>
+            </div>
+
+            <!-- 2.5 VERIFY EMAIL PROMPT (For Cross-Device Links) -->
+            <div id="view-verify-email-prompt" class="card" style="display: none;">
+                <div class="card-header">
+                    <h1>Confirm your email</h1>
+                    <p>You opened this link on a different device or browser. To continue signing in securely, please confirm the email address you used.</p>
+                </div>
+                <form id="confirmEmailForm">
+                    <div class="form-group">
+                        <label>Email</label>
+                        <input type="email" id="confirmEmailInput" class="form-control" placeholder="Enter your email" required>
+                    </div>
+                    <button type="submit" id="doConfirmEmailBtn" class="btn btn-primary" style="margin-top: 8px;">Complete Sign In</button>
+                </form>
             </div>
 
             <!-- FORGOT PASSWORD VIEW -->
@@ -377,31 +401,83 @@
                 </div>
             </div>
 
+            <!-- 5. RESET PASSWORD (ACTION URL) VIEW -->
+            <div id="view-reset-password" class="card" style="display: none;">
+                <div class="card-header">
+                    <h1 style="font-size: 26px;">Reset your password</h1>
+                    <p>Changing password for <span id="reset-email-display" class="highlight-email"></span></p>
+                </div>
+                <form id="resetPasswordActionForm">
+                    <div class="form-group">
+                        <label>Password</label>
+                        <div class="input-wrapper">
+                            <input type="password" id="resetPass1" class="form-control" placeholder="Enter your password" required>
+                            <button type="button" class="icon-btn" onclick="togglePasswordVisibility(this)">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Confirm password</label>
+                        <div class="input-wrapper">
+                            <input type="password" id="resetPass2" class="form-control" placeholder="Re enter password" required>
+                            <button type="button" class="icon-btn" onclick="togglePasswordVisibility(this)">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                            </button>
+                        </div>
+                    </div>
+                    <button type="submit" id="doResetFinalBtn" class="btn btn-primary" style="margin-top: 16px;">Reset password</button>
+                </form>
+            </div>
+
             <!-- 3. DOCTOR INITIAL COMPLETE DATA -->
             <div id="view-complete-data" class="card" style="display: none;">
-                <div style="display: flex; justify-content: space-between; align-items: flex-start;">
-                    <div class="card-header" style="margin-bottom: 24px;">
-                        <h1>Complete your Profile</h1>
-                        <p>Upload your professional documents. Our admin team will verify your credentials before your account becomes active.</p>
-                    </div>
-                    <button onclick="logoutDoctor()" class="btn btn-social" style="width:auto; padding:6px 12px; font-size:12px; border-color:#ef4444; color:#ef4444;">Sign out</button>
+                <div class="card-header" style="margin-bottom: 24px;">
+                    <h1>Complete your Profile</h1>
+                    <p>Upload your professional documents. Our admin team will verify your credentials before your account becomes active.</p>
                 </div>
                 
                 <form id="profileForm">
                     <div class="form-row">
-                        <div class="form-group"><label>Full Name (with Title)</label><input type="text" id="docName" class="form-control" required></div>
-                        <div class="form-group"><label>Speciality</label><input type="text" id="docSpecialty" class="form-control" required></div>
+                        <div class="form-group"><label>Full Name (with Title)</label><input type="text" id="docName" class="form-control" placeholder="e.g. Dr. John Doe" required></div>
+                        <div class="form-group"><label>Speciality</label><input type="text" id="docSpecialty" class="form-control" placeholder="e.g. Cardiologist" required></div>
                     </div>
                     <div class="form-row">
                         <div class="form-group">
                             <label>Contact Number</label>
                             <div class="phone-input-wrapper">
                                 <span class="phone-prefix">+60</span>
-                                <input type="tel" id="docPhone" class="form-control" required>
+                                <input type="tel" id="docPhone" class="form-control" placeholder="12345678" required>
                             </div>
                         </div>
-                        <div class="form-group"><label>Clinic Location</label><input type="text" id="docLocation" class="form-control" required></div>
+                        <div class="form-group"><label>Clinic Location</label><input type="text" id="docLocation" class="form-control" placeholder="e.g. Kuala Lumpur" required></div>
                     </div>
+
+                    <!-- Password Requirement Block added directly here -->
+                    <div class="form-group" id="profilePassContainer">
+                        <label>Password</label>
+                        <div class="input-wrapper">
+                            <input type="password" id="profilePass" class="form-control" placeholder="Enter your password">
+                            <button type="button" class="icon-btn" onclick="togglePasswordVisibility(this)" aria-label="Toggle password visibility">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                            </button>
+                        </div>
+                        
+                        <div class="strength-bars" id="strengthBars">
+                            <div class="strength-bar"></div>
+                            <div class="strength-bar"></div>
+                            <div class="strength-bar"></div>
+                        </div>
+    
+                        <div class="strength-text" id="strengthText">Weak password. Must contain :</div>
+                        
+                        <ul class="strength-list">
+                            <li id="reqUpper"><span class="icon-circle grey"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></span> At least 1 uppercase</li>
+                            <li id="reqNum"><span class="icon-circle grey"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></span> At least 1 number</li>
+                            <li id="reqLen"><span class="icon-circle grey"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></span> At least 8 characters</li>
+                        </ul>
+                    </div>
+
                     <hr style="border: 0; border-top: 1px solid #e5e7eb; margin: 24px 0;">
                     <h3 style="font-size: 15px; margin-bottom: 16px;">Required Documents</h3>
                     
@@ -436,6 +512,10 @@
                     </div>
                     <button type="submit" id="saveProfileBtn" class="btn btn-primary" style="margin-top: 16px;">Submit for Verification</button>
                 </form>
+
+                <div class="card-footer" style="margin-top: 24px; border-top: 1px solid #e5e7eb; padding-top: 20px; text-align: center;">
+                    <p style="color: #6b7280; font-size: 13px;">Need to start over? <a href="#" onclick="handleSignOut(event)" style="color: #4b5563; font-weight: 600; text-decoration: underline;">Sign out</a></p>
+                </div>
             </div>
         </main>
         
@@ -750,7 +830,39 @@
         </div>
     </div>
 
-    <!-- ================= MODAL: ADD NEW PRESCRIPTION ================= -->
+    <!-- ================= MODALS ================= -->
+    
+    <!-- Email Verification Sent Modal -->
+    <div id="modal-verification-sent" class="modal-overlay" style="display: none;">
+        <div class="modal-card">
+            <button class="modal-close-btn" onclick="closeAllModals();" aria-label="Close modal">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+            </button>
+            <div class="modal-icon-wrapper">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#0066cc" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+            </div>
+            <h2>Verification Email has been sent</h2>
+            <p>Please check your email inbox or spam for Email verification.</p>
+            <button id="resendLinkBtn" class="btn btn-outline-primary" onclick="resendVerificationLink()">Resend Link</button>
+        </div>
+    </div>
+
+    <!-- Forgot Password Reset Modal -->
+    <div id="modal-reset-sent" class="modal-overlay" style="display: none;">
+        <div class="modal-card">
+            <button class="modal-close-btn" onclick="closeAllModals(); showView('view-login');" aria-label="Close modal">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+            </button>
+            <div class="modal-icon-wrapper">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#0066cc" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+            </div>
+            <h2>Reset Link Sent</h2>
+            <p>Please check your email inbox or spam folder to reset your password.</p>
+            <button class="btn btn-outline-primary" onclick="closeAllModals(); showView('view-login');">Back to Login</button>
+        </div>
+    </div>
+
+    <!-- Prescription Form Modal -->
     <div id="prescriptionModal" class="modal-overlay" style="display: none;">
         <div class="presc-modal">
             <div class="presc-header">
@@ -808,7 +920,12 @@
     <!-- ================= SCRIPTS ================= -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-app.js";
-        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, sendPasswordResetEmail, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-auth.js";
+        import { 
+            getAuth, signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, 
+            onAuthStateChanged, signOut, sendPasswordResetEmail, verifyPasswordResetCode, 
+            confirmPasswordReset, isSignInWithEmailLink, signInWithEmailLink, 
+            sendSignInLinkToEmail, updatePassword, deleteUser 
+        } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-auth.js";
         import { getFirestore, collection, query, onSnapshot, orderBy } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore.js";
 
         const API_BASE = 'https://api.doktura.ai'; 
@@ -823,19 +940,20 @@
 
         // State variables
         let currentAppointments = [];
-        let filteredAppointments =[];
+        let filteredAppointments = [];
         let apptCurrentPage = 1;
         const apptItemsPerPage = 5;
         let activeAppointmentIdForPrescription = null;
 
         let currentReviews = [];
-        let filteredReviews =[];
+        let filteredReviews = [];
 
         // ================= UI CORE =================
         const alertBox = document.getElementById("authAlertBox");
 
         window.showView = function(targetId, event, pushHistory = true) {
             if (event) event.preventDefault();
+            window.closeAllModals();
             
             if(targetId === 'view-dashboard') {
                 document.getElementById('authWrapper').style.display = 'none';
@@ -847,7 +965,7 @@
             document.getElementById('authWrapper').style.display = 'flex';
             document.getElementById('view-dashboard').style.display = 'none';
 
-            const views =['view-login', 'view-signup', 'view-forgot-password', 'view-complete-data'];
+            const views = ['view-login', 'view-signup', 'view-forgot-password', 'view-complete-data', 'view-reset-password', 'view-verify-email-prompt'];
             views.forEach(id => {
                 const el = document.getElementById(id);
                 if(el) el.style.display = (id === targetId) ? 'block' : 'none';
@@ -855,7 +973,7 @@
             
             if(alertBox) alertBox.style.display = 'none';
             
-            if (pushHistory && targetId !== 'view-complete-data') {
+            if (pushHistory && targetId !== 'view-complete-data' && targetId !== 'view-reset-password') {
                 history.pushState({view: targetId}, "", "#" + targetId.replace('view-', ''));
             }
         }
@@ -924,8 +1042,451 @@
 
         window.logoutDoctor = async function() { 
             await signOut(auth); 
-            window.location.reload(); 
+            window.location.href = window.location.pathname; 
         }
+
+        window.handleSignOut = async function(e) {
+            if (e) e.preventDefault();
+            try {
+                const user = auth.currentUser;
+                if (user) {
+                    try {
+                        await deleteUser(user);
+                    } catch (delErr) {
+                        console.warn("Could not delete incomplete user, signing out instead:", delErr);
+                        await signOut(auth); 
+                    }
+                }
+                window.location.href = window.location.pathname; 
+            } catch(err) {
+                console.error(err);
+                showAlert("Failed to start over.", true);
+            }
+        };
+
+        window.closeAllModals = function() {
+            document.getElementById('modal-verification-sent').style.display = 'none';
+            document.getElementById('modal-reset-sent').style.display = 'none';
+            document.getElementById('prescriptionModal').style.display = 'none';
+            document.body.classList.remove('modal-open');
+        }
+
+        // ================= PASSWORD STRENGTH UI LOGIC ================= //
+        function updateReqUI(id, isValid) {
+            const li = document.getElementById(id);
+            const icon = li.querySelector('.icon-circle');
+            if (isValid) {
+                li.classList.add('valid');
+                icon.className = 'icon-circle green';
+                icon.innerHTML = '<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>';
+            } else {
+                li.classList.remove('valid');
+                icon.className = 'icon-circle grey';
+                icon.innerHTML = '<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>';
+            }
+        }
+
+        document.getElementById('profilePass').addEventListener('input', function(e) {
+            const val = e.target.value;
+            const hasUpper = /[A-Z]/.test(val);
+            const hasNum = /[0-9]/.test(val);
+            const hasLen = val.length >= 8;
+
+            updateReqUI('reqUpper', hasUpper);
+            updateReqUI('reqNum', hasNum);
+            updateReqUI('reqLen', hasLen);
+
+            let score = hasUpper + hasNum + hasLen;
+            const bars = document.querySelectorAll('#strengthBars .strength-bar');
+            bars.forEach(b => b.className = 'strength-bar'); 
+
+            const textEl = document.getElementById('strengthText');
+            const isOptional = !e.target.hasAttribute('required');
+
+            if (score === 0 || val.length === 0) {
+                textEl.innerText = isOptional && val.length === 0 ? 'Optional password. Must contain :' : 'Weak password. Must contain :';
+            } else if (score === 1) {
+                bars[0].classList.add('red');
+                textEl.innerText = 'Weak password. Must contain :';
+            } else if (score === 2) {
+                bars[0].classList.add('yellow');
+                bars[1].classList.add('yellow');
+                textEl.innerText = 'Moderate password. Must contain :';
+            } else if (score === 3) {
+                bars[0].classList.add('green');
+                bars[1].classList.add('green');
+                bars[2].classList.add('green');
+                textEl.innerText = 'Strong password.';
+            }
+        });
+
+        // ================= INTERCEPT FIREBASE ACTION URLS ================= //
+        const urlParams = new URLSearchParams(window.location.search);
+        const mode = urlParams.get('mode');
+        const oobCode = urlParams.get('oobCode');
+
+        const isEmailLinkSignIn = isSignInWithEmailLink(auth, window.location.href);
+        const isResetPassword = (mode === 'resetPassword' && oobCode);
+        const isProcessingLink = isEmailLinkSignIn || isResetPassword;
+
+        async function executeEmailSignIn(email, buttonToReset = null) {
+            try {
+                if (auth.currentUser) {
+                    await signOut(auth);
+                }
+
+                const result = await signInWithEmailLink(auth, email, window.location.href);
+                window.localStorage.removeItem('emailForSignIn');
+                
+                window.history.replaceState({}, document.title, window.location.pathname);
+                setupCompleteDataForm(result.user);
+                window.showView('view-complete-data');
+            } catch (error) {
+                showAlert("Invalid or expired sign-in link. Please request a new one.", true);
+                window.showView('view-login');
+            } finally {
+                if (buttonToReset) {
+                    buttonToReset.innerText = 'Complete Sign In'; 
+                    buttonToReset.disabled = false;
+                }
+            }
+        }
+
+        if (isEmailLinkSignIn) {
+            let email = window.localStorage.getItem('emailForSignIn');
+            
+            if (email) {
+                executeEmailSignIn(email);
+            } else {
+                window.showView('view-verify-email-prompt');
+            }
+        } else if (isResetPassword) {
+            verifyPasswordResetCode(auth, oobCode).then((email) => {
+                document.getElementById('reset-email-display').innerText = email;
+                window.showView('view-reset-password');
+            }).catch((error) => {
+                showAlert("The reset link has expired or is invalid.", true);
+                window.showView('view-login');
+            });
+        }
+
+        document.getElementById('confirmEmailForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('doConfirmEmailBtn');
+            const emailInput = document.getElementById('confirmEmailInput').value.trim();
+            btn.innerText = 'Verifying...'; 
+            btn.disabled = true;
+            executeEmailSignIn(emailInput, btn);
+        });
+
+        function setupCompleteDataForm(user, data = {}) {
+            if(data.name || user.displayName) {
+                document.getElementById("docName").value = data.name || user.displayName;
+            }
+
+            const passContainer = document.getElementById('profilePassContainer');
+            const passInput = document.getElementById('profilePass');
+            const strengthText = document.getElementById('strengthText');
+            
+            passContainer.style.display = 'block';
+
+            const isGoogle = user.providerData && user.providerData.some(p => p.providerId === 'google.com');
+            
+            if(isGoogle) {
+                passInput.removeAttribute('required');
+                passInput.placeholder = "Enter your password (Optional)";
+                if(strengthText && !passInput.value) strengthText.innerText = "Optional password. Must contain :";
+            } else {
+                passInput.setAttribute('required', 'true');
+                passInput.placeholder = "Enter your password";
+                if(strengthText && !passInput.value) strengthText.innerText = "Weak password. Must contain :";
+            }
+        }
+
+        // ================= AUTH HANDLERS ================= //
+        
+        document.getElementById("resetPasswordActionForm").addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const pass1 = document.getElementById("resetPass1").value;
+            const pass2 = document.getElementById("resetPass2").value;
+            
+            if (pass1 !== pass2) return showAlert("Passwords do not match.", true);
+            if (pass1.length < 8) return showAlert("Password must be at least 8 characters.", true);
+
+            const btn = document.getElementById("doResetFinalBtn");
+            btn.innerText = "Resetting..."; btn.disabled = true;
+
+            try {
+                await confirmPasswordReset(auth, oobCode, pass1);
+                showAlert("Password updated successfully! Please login.", false);
+                window.history.replaceState({}, document.title, window.location.pathname);
+                window.showView('view-login');
+            } catch(e) {
+                showAlert("Failed to reset password. Link might be expired.", true);
+            }
+            btn.innerText = "Reset password"; btn.disabled = false;
+        });
+
+        document.getElementById("loginForm").addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById("doLoginBtn"); 
+            btn.innerText = "Logging in..."; btn.disabled = true;
+            try { 
+                await signInWithEmailAndPassword(auth, document.getElementById("loginEmail").value.trim(), document.getElementById("loginPass").value.trim()); 
+            } catch(e) { 
+                showAlert("Invalid Credentials or User Not Found."); 
+                btn.innerText = "Continue"; btn.disabled = false;
+            }
+        });
+
+        document.getElementById("signupForm").addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const email = document.getElementById("regEmail").value.trim();
+            const btn = document.getElementById("doRegisterBtn");
+            
+            btn.innerText = "Sending..."; btn.disabled = true;
+            try {
+                const actionCodeSettings = {
+                    url: window.location.origin + window.location.pathname,
+                    handleCodeInApp: true
+                };
+                await sendSignInLinkToEmail(auth, email, actionCodeSettings);
+                window.localStorage.setItem('emailForSignIn', email);
+                window.showModal('modal-verification-sent');
+            } catch(e) {
+                showAlert("Registration failed: " + e.message);
+            }
+            btn.innerText = "Continue"; btn.disabled = false;
+        });
+
+        window.resendVerificationLink = async function() {
+            const email = window.localStorage.getItem('emailForSignIn') || document.getElementById("regEmail").value.trim();
+            if(!email) return showAlert("No email found to resend.", true);
+            
+            const btn = document.getElementById("resendLinkBtn");
+            const originalText = btn.innerText;
+            btn.innerText = "Resending..."; btn.disabled = true;
+            
+            try {
+                const actionCodeSettings = {
+                    url: window.location.origin + window.location.pathname,
+                    handleCodeInApp: true
+                };
+                await sendSignInLinkToEmail(auth, email, actionCodeSettings);
+                showAlert("Verification email resent successfully!", false);
+            } catch(e) {
+                showAlert("Failed to resend link.", true);
+            }
+            btn.innerText = originalText; btn.disabled = false;
+        };
+
+        document.getElementById("forgotForm").addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const email = document.getElementById("forgotEmail").value.trim();
+            const btn = document.getElementById("doForgotBtn");
+            
+            btn.innerText = "Sending..."; btn.disabled = true;
+            try {
+                await sendPasswordResetEmail(auth, email);
+                window.showModal('modal-reset-sent');
+            } catch (e) {
+                showAlert("Failed to send reset link.");
+            }
+            btn.innerText = "Reset password"; btn.disabled = false;
+        });
+
+        const handleGoogleLogin = async () => { 
+            try { await signInWithPopup(auth, new GoogleAuthProvider()); } catch(e) { showAlert("Google Authentication Failed."); } 
+        };
+        document.getElementById("doGoogleLoginBtn").addEventListener("click", handleGoogleLogin);
+        document.getElementById("doGoogleRegBtn").addEventListener("click", handleGoogleLogin);
+
+
+        // ================= SYNC LOGIC ================= //
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                try {
+                    const token = await user.getIdToken(true); 
+                    
+                    const res = await fetch(`${API_BASE}/api/doctor/sync`, { 
+                        method: 'POST', 
+                        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }, 
+                        body: JSON.stringify({ email: user.email, name: user.displayName, photo_url: user.photoURL }) 
+                    });
+                    
+                    if (!res.ok) {
+                        let errMsg = "Backend sync failed.";
+                        try { const errData = await res.json(); errMsg = errData.detail || errMsg; } catch(_) {}
+                        throw new Error(errMsg);
+                    }
+                    
+                    const data = await res.json();
+                    
+                    let phoneClean = data.phone || "";
+                    if(phoneClean.startsWith("+60")) phoneClean = phoneClean.substring(3).trim();
+                    
+                    if(data.is_complete || data.status === 'approved') { 
+                        window.showView('view-dashboard', null, false); 
+                        setDashboardStatus(data.status);
+
+                        document.getElementById('sidebarName').innerText = data.name || user.displayName || "Doctor";
+                        document.getElementById('sidebarEmail').innerText = user.email;
+                        if(user.photoURL) {
+                            document.getElementById('sidebarAvatar').src = user.photoURL;
+                            document.getElementById('topAvatar').src = user.photoURL;
+                        }
+
+                        document.getElementById('dashName').value = data.name || user.displayName || "";
+                        document.getElementById('dashSpecialty').value = data.specialty || "";
+                        document.getElementById('dashEmail').value = user.email || "";
+                        document.getElementById('dashPhone').value = phoneClean;
+                        document.getElementById('dashLocation').value = data.location || "";
+
+                        setupRealTimeNotifications(data.id);
+                        
+                        if(data.status === 'approved' && !localStorage.getItem('approved_notified')) {
+                            alert("Congratulations! Your Doctor profile has been verified and approved by admins.");
+                            localStorage.setItem('approved_notified', 'true');
+                        }
+
+                    } else { 
+                        if(!isEmailLinkSignIn) {
+                            setupCompleteDataForm(user, data);
+                            window.showView('view-complete-data', null, false); 
+                            document.getElementById('docSpecialty').value = data.specialty || "";
+                            document.getElementById('docPhone').value = phoneClean;
+                            document.getElementById('docLocation').value = data.location || "";
+                        }
+                    }
+                } catch(e) { 
+                    console.error("Sync Error:", e);
+                    if(!isEmailLinkSignIn) {
+                        setupCompleteDataForm(user);
+                        window.showView('view-complete-data');
+                    }
+                }
+            } else {
+                if (!isProcessingLink) {
+                    window.showView('view-login');
+                }
+            }
+        });
+
+
+        // ================= INITIAL PROFILE UPLOAD ================= //
+        document.getElementById("profileForm").addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const passContainer = document.getElementById('profilePassContainer');
+            const passInput = document.getElementById('profilePass');
+            const btn = document.getElementById("saveProfileBtn");
+            btn.innerText = "Uploading... Please wait"; btn.disabled = true;
+            
+            try {
+                // Determine whether a password was provided and process it if so
+                if (passContainer.style.display !== 'none' && passInput.value.length > 0) {
+                    const pass = passInput.value;
+                    const hasUpper = /[A-Z]/.test(pass);
+                    const hasNum = /[0-9]/.test(pass);
+                    const hasLen = pass.length >= 8;
+                    
+                    if (!hasUpper || !hasNum || !hasLen) {
+                        btn.innerText = "Submit for Verification"; btn.disabled = false;
+                        return showAlert("Please ensure your password meets all requirements.", true);
+                    }
+
+                    try {
+                        await updatePassword(auth.currentUser, pass);
+                    } catch (err) {
+                        if (err.code === 'auth/requires-recent-login') {
+                            throw new Error("Your session is too old to set a password. Please sign out, request a new link, and sign in again.");
+                        } else {
+                            throw err; 
+                        }
+                    }
+                } else if (passInput.hasAttribute('required') && passInput.value.length === 0) {
+                    btn.innerText = "Submit for Verification"; btn.disabled = false;
+                    return showAlert("Password is required.", true);
+                }
+
+                const freshToken = await auth.currentUser.getIdToken(true);
+                const formData = new FormData();
+                formData.append("name", document.getElementById("docName").value.trim());
+                formData.append("phone", "+60" + document.getElementById("docPhone").value.trim());
+                formData.append("specialty", document.getElementById("docSpecialty").value.trim());
+                formData.append("location", document.getElementById("docLocation").value.trim());
+                
+                formData.append("photo", document.getElementById("docPhoto").files[0]);
+                formData.append("resume", document.getElementById("docResume").files[0]);
+                formData.append("apc", document.getElementById("docAPC").files[0]);
+                formData.append("mmc", document.getElementById("docMMC").files[0]);
+                formData.append("ic", document.getElementById("docIC").files[0]);
+
+                const response = await fetch(`${API_BASE}/api/doctor/complete_profile`, {
+                    method: "POST", headers: { 'Authorization': `Bearer ${freshToken}` }, body: formData
+                });
+
+                if(!response.ok) {
+                    const errTxt = await response.text();
+                    throw new Error(errTxt || `Server error: ${response.status}`);
+                }
+
+                alert("Submitted successfully! Your account is pending admin review.");
+                window.location.reload(); 
+            } catch (error) {
+                console.error(error);
+                showAlert("Error saving profile: " + (error.message || "Unknown server error")); 
+                btn.innerText = "Submit for Verification"; btn.disabled = false;
+            }
+        });
+
+
+        // ================= PROFILE UPDATES (DASHBOARD) ================= //
+        document.getElementById("dashUpdateForm").addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById("dashSaveProfileBtn");
+            btn.innerText = "Saving Changes..."; btn.disabled = true;
+
+            try {
+                const token = await auth.currentUser.getIdToken(true);
+                const formData = new FormData();
+                formData.append("name", document.getElementById("dashName").value.trim());
+                formData.append("phone", "+60" + document.getElementById("dashPhone").value.trim());
+                formData.append("specialty", document.getElementById("dashSpecialty").value.trim());
+                formData.append("location", document.getElementById("dashLocation").value.trim());
+                
+                const photo = document.getElementById("dashPhoto").files[0];
+                const resume = document.getElementById("dashResume").files[0];
+                const apc = document.getElementById("dashAPC").files[0];
+                const mmc = document.getElementById("dashMMC").files[0];
+                const ic = document.getElementById("dashIC").files[0];
+
+                if(photo) formData.append("photo", photo);
+                if(resume) formData.append("resume", resume);
+                if(apc) formData.append("apc", apc);
+                if(mmc) formData.append("mmc", mmc);
+                if(ic) formData.append("ic", ic);
+
+                const response = await fetch(`${API_BASE}/api/doctor/complete_profile`, {
+                    method: "POST",
+                    headers: { 'Authorization': `Bearer ${token}` },
+                    body: formData
+                });
+
+                if(!response.ok) throw new Error("Update failed");
+
+                alert("Profile and documents updated successfully!");
+                btn.innerText = "Update Profile"; btn.disabled = false;
+
+            } catch (error) {
+                alert("Error updating profile."); 
+                btn.innerText = "Update Profile"; btn.disabled = false;
+            }
+        });
+
+        document.getElementById("saveScheduleBtn").addEventListener("click", () => {
+            alert("Schedule saved successfully!");
+        });
+
 
         // ================= NOTIFICATIONS LOGIC =================
         window.toggleNotifications = function() {
@@ -1019,7 +1580,7 @@
                 });
                 document.getElementById('starBarsContainer').innerHTML = barsHTML;
 
-                currentReviews = data.reviews ||[];
+                currentReviews = data.reviews || [];
                 filterReviews();
 
             } catch (e) {
@@ -1086,7 +1647,7 @@
                 if(!res.ok) throw new Error("Failed to fetch");
                 
                 const data = await res.json();
-                currentAppointments = data.appointments ||[];
+                currentAppointments = data.appointments || [];
                 filterAppointments();
 
             } catch(e) {
@@ -1313,7 +1874,7 @@
             if(!notes) return alert("Doctor's Note is required.");
 
             const medBlocks = document.querySelectorAll('.med-block');
-            const medications =[];
+            const medications = [];
             
             medBlocks.forEach(block => {
                 const id = block.id.split('_')[1];
@@ -1359,214 +1920,11 @@
             btn.innerText = "Add Record & Send to Patient"; btn.disabled = false;
         }
 
-        // ================= AUTH HANDLERS & AUTO-FILL ================= //
-        
-        document.getElementById("loginForm").addEventListener("submit", async (e) => {
-            e.preventDefault();
-            const btn = document.getElementById("doLoginBtn"); 
-            btn.innerText = "Authenticating..."; btn.disabled = true;
-            try { 
-                await signInWithEmailAndPassword(auth, document.getElementById("loginEmail").value.trim(), document.getElementById("loginPass").value.trim()); 
-            } catch(e) { 
-                showAlert("Invalid Credentials."); 
-                btn.innerText = "Sign In"; btn.disabled = false;
-            }
-        });
-
-        document.getElementById("signupForm").addEventListener("submit", async (e) => {
-            e.preventDefault();
-            const email = document.getElementById("regEmail").value.trim();
-            const pass = document.getElementById("regPass").value.trim();
-            const btn = document.getElementById("doRegisterBtn");
-            
-            btn.innerText = "Creating Account..."; btn.disabled = true;
-            try {
-                await createUserWithEmailAndPassword(auth, email, pass);
-            } catch(e) {
-                showAlert(e.message);
-                btn.innerText = "Sign Up"; btn.disabled = false;
-            }
-        });
-
-        document.getElementById("forgotForm").addEventListener("submit", async (e) => {
-            e.preventDefault();
-            const email = document.getElementById("forgotEmail").value.trim();
-            const btn = document.getElementById("doForgotBtn");
-            btn.innerText = "Sending..."; btn.disabled = true;
-            try {
-                await sendPasswordResetEmail(auth, email);
-                showAlert("Password reset link sent! Check your email.", false);
-                window.showView('view-login');
-            } catch(e) {
-                showAlert(e.message);
-            }
-            btn.innerText = "Reset password"; btn.disabled = false;
-        });
-
-        document.getElementById("doGoogleLoginBtn").addEventListener("click", async () => { 
-            try { 
-                const provider = new GoogleAuthProvider();
-                provider.setCustomParameters({ prompt: 'select_account' });
-                await signInWithPopup(auth, provider); 
-            } catch(e) {} 
-        });
-
-        document.getElementById("doGoogleRegBtn").addEventListener("click", async () => { 
-            try { 
-                const provider = new GoogleAuthProvider();
-                provider.setCustomParameters({ prompt: 'select_account' });
-                await signInWithPopup(auth, provider); 
-            } catch(e) {} 
-        });
-
-        // ================= SYNC LOGIC ================= //
-        onAuthStateChanged(auth, async (user) => {
-            if (user) {
-                try {
-                    const token = await user.getIdToken();
-                    
-                    const res = await fetch(`${API_BASE}/api/doctor/sync`, { 
-                        method: 'POST', 
-                        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }, 
-                        body: JSON.stringify({ email: user.email }) 
-                    });
-                    
-                    if (!res.ok) {
-                        let errMsg = "Backend sync failed.";
-                        try { const errData = await res.json(); errMsg = errData.detail || errMsg; } catch(_) {}
-                        throw new Error(errMsg);
-                    }
-                    
-                    const data = await res.json();
-                    
-                    let phoneClean = data.phone || "";
-                    if(phoneClean.startsWith("+60")) phoneClean = phoneClean.substring(3).trim();
-                    
-                    if(data.is_complete || data.status === 'approved') { 
-                        window.showView('view-dashboard', null, false); 
-                        setDashboardStatus(data.status);
-
-                        document.getElementById('sidebarName').innerText = data.name || user.displayName || "Doctor";
-                        document.getElementById('sidebarEmail').innerText = user.email;
-                        if(user.photoURL) {
-                            document.getElementById('sidebarAvatar').src = user.photoURL;
-                            document.getElementById('topAvatar').src = user.photoURL;
-                        }
-
-                        document.getElementById('dashName').value = data.name || user.displayName || "";
-                        document.getElementById('dashSpecialty').value = data.specialty || "";
-                        document.getElementById('dashEmail').value = user.email || "";
-                        document.getElementById('dashPhone').value = phoneClean;
-                        document.getElementById('dashLocation').value = data.location || "";
-
-                        setupRealTimeNotifications(data.id);
-                        
-                        if(data.status === 'approved' && !localStorage.getItem('approved_notified')) {
-                            alert("Congratulations! Your Doctor profile has been verified and approved by admins.");
-                            localStorage.setItem('approved_notified', 'true');
-                        }
-
-                    } else { 
-                        window.showView('view-complete-data', null, false); 
-                        document.getElementById('docName').value = data.name || user.displayName || "";
-                        document.getElementById('docSpecialty').value = data.specialty || "";
-                        document.getElementById('docPhone').value = phoneClean;
-                        document.getElementById('docLocation').value = data.location || "";
-                    }
-                } catch(e) { 
-                    console.error("Sync Error:", e);
-                    window.showView('view-login', null, false);
-                    showAlert("Sync Error: " + e.message, true);
-                }
-            } else {
-                window.showView('view-login', null, false);
-            }
-        });
-
-        // ================= PROFILE UPDATES (DASHBOARD) ================= //
-        document.getElementById("dashUpdateForm").addEventListener("submit", async (e) => {
-            e.preventDefault();
-            const btn = document.getElementById("dashSaveProfileBtn");
-            btn.innerText = "Saving Changes..."; btn.disabled = true;
-
-            try {
-                const token = await auth.currentUser.getIdToken();
-                const formData = new FormData();
-                formData.append("name", document.getElementById("dashName").value.trim());
-                formData.append("phone", "+60" + document.getElementById("dashPhone").value.trim());
-                formData.append("specialty", document.getElementById("dashSpecialty").value.trim());
-                formData.append("location", document.getElementById("dashLocation").value.trim());
-                
-                const photo = document.getElementById("dashPhoto").files[0];
-                const resume = document.getElementById("dashResume").files[0];
-                const apc = document.getElementById("dashAPC").files[0];
-                const mmc = document.getElementById("dashMMC").files[0];
-                const ic = document.getElementById("dashIC").files[0];
-
-                if(photo) formData.append("photo", photo);
-                if(resume) formData.append("resume", resume);
-                if(apc) formData.append("apc", apc);
-                if(mmc) formData.append("mmc", mmc);
-                if(ic) formData.append("ic", ic);
-
-                const response = await fetch(`${API_BASE}/api/doctor/complete_profile`, {
-                    method: "POST",
-                    headers: { 'Authorization': `Bearer ${token}` },
-                    body: formData
-                });
-
-                if(!response.ok) throw new Error("Update failed");
-
-                alert("Profile and documents updated successfully!");
-                btn.innerText = "Update Profile"; btn.disabled = false;
-
-            } catch (error) {
-                alert("Error updating profile."); 
-                btn.innerText = "Update Profile"; btn.disabled = false;
-            }
-        });
-
-        document.getElementById("saveScheduleBtn").addEventListener("click", () => {
-            alert("Schedule saved successfully!");
-        });
-
-        // ================= INITIAL PROFILE UPLOAD ================= //
-        document.getElementById("profileForm").addEventListener("submit", async (e) => {
-            e.preventDefault();
-            const btn = document.getElementById("saveProfileBtn");
-            btn.innerText = "Uploading... Please wait"; btn.disabled = true;
-            try {
-                const token = await auth.currentUser.getIdToken();
-                const formData = new FormData();
-                formData.append("name", document.getElementById("docName").value.trim());
-                formData.append("phone", "+60" + document.getElementById("docPhone").value.trim());
-                formData.append("specialty", document.getElementById("docSpecialty").value.trim());
-                formData.append("location", document.getElementById("docLocation").value.trim());
-                
-                formData.append("photo", document.getElementById("docPhoto").files[0]);
-                formData.append("resume", document.getElementById("docResume").files[0]);
-                formData.append("apc", document.getElementById("docAPC").files[0]);
-                formData.append("mmc", document.getElementById("docMMC").files[0]);
-                formData.append("ic", document.getElementById("docIC").files[0]);
-
-                const response = await fetch(`${API_BASE}/api/doctor/complete_profile`, {
-                    method: "POST", headers: { 'Authorization': `Bearer ${token}` }, body: formData
-                });
-
-                if(!response.ok) throw new Error("Upload failed");
-                alert("Submitted successfully! Your account is pending admin review.");
-                window.location.reload(); 
-            } catch (error) {
-                alert("Error saving profile."); btn.innerText = "Submit for Verification"; btn.disabled = false;
-            }
-        });
-
         // ================= SCHEDULE UI BUILDER ================= //
         function renderScheduleUI() {
-            const days =['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+            const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
             const container = document.getElementById('scheduleDaysContainer');
             
-            // Build the top Global Time Inputs
             container.innerHTML = `
                 <div class="global-times-row">
                     <div style="flex:1;">
@@ -1581,7 +1939,6 @@
                 <h3 style="font-size:14px; font-weight:600; margin-bottom:16px;">Weekly Availability</h3>
             `;
             
-            // Build the individual day blocks
             days.forEach(day => {
                 const isWeekend = day === 'Saturday' || day === 'Sunday';
                 container.innerHTML += `
