@@ -1195,43 +1195,51 @@
 
         // State Check & Sync with backend
         onAuthStateChanged(auth, async (user) => {
-            if (user) {
-                try {
-                    // Added true to force token refresh incase user was deleted/recreated and has stale UID
-                    const token = await user.getIdToken(true); 
-                    const res = await fetch(`${API_BASE}/api/user/sync`, { 
-                        method: 'POST', 
-                        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }, 
-                        body: JSON.stringify({ email: user.email, name: user.displayName, photo_url: user.photoURL }) 
-                    });
-                    
-                    if (!res.ok) throw new Error("Sync failed");
-                    
-                    const data = await res.json();
-                    
-                    if(data.is_complete) { 
-                        window.location.href = "dashboard.html"; 
-                    } else { 
-                        // Do not interrupt if we are currently handling the email link
-                        if(!isEmailLinkSignIn) {
-                            setupCompleteDataForm(user, data);
-                            window.showView('view-complete-data'); 
-                        }
-                    }
-                } catch(e) { 
-                    console.warn("Backend Sync Failed - Falling back to local form rendering.");
-                    // Fallback to prevent logout loop if backend is incomplete/missing
-                    if(!isEmailLinkSignIn) {
-                        setupCompleteDataForm(user);
-                        window.showView('view-complete-data');
-                    }
-                }
-            } else {
-                if (!isProcessingLink) {
-                    window.showView('view-login');
+    if (user) {
+        // === DOCTOR LOGIN PROTECTION FIX ===
+        // If the browser remembers we are trying to log in as a Doctor, 
+        // DO NOT process this patient script. Stop here and let doctor_portal.html handle it.
+        if (localStorage.getItem('doktura_user_type') === 'doctor') return;
+        // ===================================
+
+        try {
+            // Added true to force token refresh incase user was deleted/recreated and has stale UID
+            const token = await user.getIdToken(true); 
+            const res = await fetch(`${API_BASE}/api/user/sync`, { 
+                method: 'POST', 
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }, 
+                body: JSON.stringify({ email: user.email, name: user.displayName, photo_url: user.photoURL }) 
+            });
+            
+            if (!res.ok) throw new Error("Sync failed");
+            
+            const data = await res.json();
+            
+            if(data.is_complete) { 
+                // Ensure patient type is set (Clears doctor flag if they are actually a patient)
+                localStorage.setItem('doktura_user_type', 'patient');
+                window.location.href = "dashboard.html"; 
+            } else { 
+                // Do not interrupt if we are currently handling the email link
+                if(!isEmailLinkSignIn) {
+                    setupCompleteDataForm(user, data);
+                    window.showView('view-complete-data'); 
                 }
             }
-        });
+        } catch(e) { 
+            console.warn("Backend Sync Failed - Falling back to local form rendering.");
+            // Fallback to prevent logout loop if backend is incomplete/missing
+            if(!isEmailLinkSignIn) {
+                setupCompleteDataForm(user);
+                window.showView('view-complete-data');
+            }
+        }
+    } else {
+        if (!isProcessingLink) {
+            window.showView('view-login');
+        }
+    }
+});
 
         // Save Profile Logic (Final Step)
         document.getElementById("profileForm").addEventListener("submit", async (e) => {
