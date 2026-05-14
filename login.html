@@ -616,7 +616,7 @@
                     </button>
                 </div>
 
-                <button type="submit" id="doLoginBtn" class="btn primary">Continue</button>
+                <button type="submit" id="doLoginBtn" class="btn btn-primary">Continue</button>
             </form>
 
             <div class="card-footer">
@@ -636,8 +636,6 @@
                     <label for="regEmail">Email</label>
                     <input type="email" id="regEmail" class="form-control" placeholder="Enter your email" required>
                 </div>
-
-                <!-- Password field completely removed for email link verification step -->
 
                 <div class="divider"><span>Or continue with</span></div>
 
@@ -731,6 +729,10 @@
 
                 <button type="submit" id="saveProfileBtn" class="btn btn-primary" style="margin-top: 8px;">Continue</button>
             </form>
+
+            <div class="card-footer" style="margin-top: 24px; border-top: 1px solid #e5e7eb; padding-top: 20px; text-align: center;">
+                <p style="color: #6b7280; font-size: 13px;">Need to start over? <a href="#" onclick="handleSignOut(event)" style="color: #4b5563; font-weight: 600; text-decoration: underline;">Sign out</a></p>
+            </div>
         </div>
 
         <!-- ================= 4. FORGOT PASSWORD VIEW ================= -->
@@ -871,6 +873,19 @@
                 alertBox.style.border = '1px solid #dcfce7';
             }
         }
+
+        // Exposed globally for the Complete Data "Sign out" button
+        window.handleSignOut = async function(e) {
+            if (e) e.preventDefault();
+            try {
+                await signOut(auth);
+                // Strip any URL hashes/parameters to completely reset the page
+                window.location.href = window.location.pathname; 
+            } catch(err) {
+                console.error(err);
+                showAlert("Failed to sign out.", true);
+            }
+        };
 
         // ================= PASSWORD STRENGTH UI LOGIC ================= //
         function updateReqUI(id, isValid) {
