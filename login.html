@@ -302,7 +302,7 @@
             align-items: flex-start;
             gap: 16px;
             margin-top: 8px;
-            margin-bottom: 24px;
+            margin-bottom: 16px;
         }
 
         @media (min-width: 768px) {
@@ -335,6 +335,24 @@
             border: 1px solid #d1d5db;
             accent-color: #000;
             cursor: pointer;
+        }
+
+        /* Terms text */
+        .terms-text {
+            font-size: 13px;
+            color: #6b7280;
+            margin-bottom: 24px;
+            text-align: left;
+            line-height: 1.5;
+        }
+
+        .terms-text a {
+            color: #0066cc;
+            font-weight: 500;
+        }
+
+        .terms-text a:hover {
+            text-decoration: underline;
         }
 
         /* Divider */
@@ -601,6 +619,8 @@
                         <input type="checkbox"> Keep me logged in
                     </label>
                 </div>
+                
+                <div class="terms-text">By signing up, you agree to our <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a></div>
 
                 <div class="divider"><span>Or continue with</span></div>
 
@@ -632,10 +652,12 @@
             </div>
 
             <form id="signupForm">
-                <div class="form-group">
+                <div class="form-group" style="margin-bottom: 12px;">
                     <label for="regEmail">Email</label>
                     <input type="email" id="regEmail" class="form-control" placeholder="Enter your email" required>
                 </div>
+
+                <div class="terms-text">By signing up, you agree to our <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a></div>
 
                 <div class="divider"><span>Or continue with</span></div>
 
@@ -1147,7 +1169,8 @@
         onAuthStateChanged(auth, async (user) => {
             if (user) {
                 try {
-                    const token = await user.getIdToken();
+                    // Added true to force token refresh incase user was deleted/recreated and has stale UID
+                    const token = await user.getIdToken(true); 
                     const res = await fetch(`${API_BASE}/api/user/sync`, { 
                         method: 'POST', 
                         headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }, 
@@ -1225,10 +1248,13 @@
                     return showAlert("Password is required.", true);
                 }
 
+                // Added true to force token refresh incase user was deleted/recreated
+                const freshToken = await auth.currentUser.getIdToken(true);
+
                 // Sync profile data to backend
                 const response = await fetch(`${API_BASE}/api/user/profile`, { 
                     method: 'POST', 
-                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${await auth.currentUser.getIdToken()}` }, 
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${freshToken}` }, 
                     body: JSON.stringify({ name: combinedName, phone, photo_url: tempPhotoUrl }) 
                 });
                 
