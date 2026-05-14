@@ -315,7 +315,7 @@
 
                     <button type="submit" id="doLoginBtn" class="btn btn-primary" style="margin-top: 12px; padding: 14px;">Continue</button>
                 </form>
-                <div class="card-footer"><p>Didn't have an account? <a href="javascript:void(0)" onclick="showView('view-signup', event)">Sign-up</a></p></div>
+                <div class="card-footer"><p>Didn't have an account? <a href="javascript:void(0)" onclick="showView('view-signup', event)">Apply Now</a></p></div>
             </div>
 
             <!-- 2. PASSWORDLESS SIGN-UP VIEW -->
@@ -328,7 +328,7 @@
                     <div class="form-group">
                         <label>Email</label>
                         <input type="email" id="regEmail" class="form-control" placeholder="doctor@clinic.com" required>
-                        <div class="terms-text">By signing up, you agree to our <a href="https://doktura.ai/terms.html">Terms of Service</a> and <a href="https://doktura.ai/privacy.html">Privacy Policy</a></div>
+                        <p style="font-size: 12px; color: #6b7280; margin-top: 10px; line-height: 1.5;">By continuing, you agree to our Terms of Service and Privacy Policy.</p>
                     </div>
                     
                     <div class="divider"><span>Or continue with</span></div>
@@ -1421,11 +1421,9 @@
 
         // ================= AUTH HANDLERS & LOGIC ================= //
         
-        // Setup Link Catching immediately
         if (isSignInWithEmailLink(auth, window.location.href)) {
             let email = window.localStorage.getItem('emailForSignIn');
             if(email) {
-                // Background process
                 (async () => {
                     try {
                         await signOut(auth); // Clear stale session
@@ -1448,7 +1446,6 @@
                  await signOut(auth); // Clear stale
                  await signInWithEmailLink(auth, email, window.location.href);
                  window.history.replaceState(null, "", window.location.pathname);
-                 // The auth listener picks this up
              } catch(e) {
                  showAlert(e.message);
                  btn.innerText = "Complete Sign-in"; btn.disabled = false;
@@ -1474,8 +1471,9 @@
             btn.innerText = "Sending Link..."; btn.disabled = true;
             
             try {
+                // Ensure Firebase Dynamic link parser catches doctor portal without fragment hashes
                 const actionCodeSettings = {
-                  url: window.location.href, 
+                  url: window.location.origin + window.location.pathname, 
                   handleCodeInApp: true
                 };
                 await sendSignInLinkToEmail(auth, email, actionCodeSettings);
@@ -1508,7 +1506,9 @@
                 const provider = new GoogleAuthProvider();
                 provider.setCustomParameters({ prompt: 'select_account' });
                 await signInWithPopup(auth, provider); 
-            } catch(e) {} 
+            } catch(e) {
+                if (e.code !== "auth/popup-closed-by-user") showAlert(e.message);
+            } 
         });
 
         document.getElementById("doGoogleRegBtn").addEventListener("click", async () => { 
@@ -1516,7 +1516,9 @@
                 const provider = new GoogleAuthProvider();
                 provider.setCustomParameters({ prompt: 'select_account' });
                 await signInWithPopup(auth, provider); 
-            } catch(e) {} 
+            } catch(e) {
+                if (e.code !== "auth/popup-closed-by-user") showAlert(e.message);
+            } 
         });
 
         // ================= SYNC LOGIC ================= //
@@ -1641,11 +1643,9 @@
 
             // Handle Password creation if provided (or required if not google)
             if(passVal) {
-                // Additional strength check lock if desired
                 if(passVal.length < 8 || !/[A-Z]/.test(passVal) || !/[0-9]/.test(passVal)) {
                     return alert("Please ensure your password meets all the security requirements.");
                 }
-
                 try {
                     await updatePassword(auth.currentUser, passVal);
                 } catch(e) {
@@ -1685,9 +1685,7 @@
                         const errData = await response.json();
                         errDetail = errData.detail || JSON.stringify(errData);
                     } catch(jsonErr) {
-                        try {
-                            errDetail = await response.text();
-                        } catch(textErr) {}
+                        try { errDetail = await response.text(); } catch(textErr) {}
                     }
                     throw new Error(`Server Error: ${errDetail}`);
                 }
@@ -1740,9 +1738,7 @@
                         const errData = await response.json();
                         errDetail = errData.detail || JSON.stringify(errData);
                     } catch(jsonErr) {
-                        try {
-                            errDetail = await response.text();
-                        } catch(textErr) {}
+                        try { errDetail = await response.text(); } catch(textErr) {}
                     }
                     throw new Error(`Server Error: ${errDetail}`);
                 }
@@ -1767,7 +1763,6 @@
             const days =['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
             const container = document.getElementById('scheduleDaysContainer');
             
-            // Build the top Global Time Inputs
             container.innerHTML = `
                 <div class="global-times-row">
                     <div style="flex:1;">
@@ -1782,7 +1777,6 @@
                 <h3 style="font-size:14px; font-weight:600; margin-bottom:16px;">Weekly Availability</h3>
             `;
             
-            // Build the individual day blocks
             days.forEach(day => {
                 const isWeekend = day === 'Saturday' || day === 'Sunday';
                 container.innerHTML += `
@@ -1810,7 +1804,6 @@
         }
         renderScheduleUI();
 
-        // Lock/Unlock Fields Based on Status
         function setDashboardStatus(status) {
             const isPending = status === 'pending';
             const badge = document.getElementById('dashStatusBadge');
