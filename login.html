@@ -616,7 +616,7 @@
                     </button>
                 </div>
 
-                <button type="submit" id="doLoginBtn" class="btn btn-primary">Continue</button>
+                <button type="submit" id="doLoginBtn" class="btn primary">Continue</button>
             </form>
 
             <div class="card-footer">
@@ -902,8 +902,10 @@
             bars.forEach(b => b.className = 'strength-bar'); 
 
             const textEl = document.getElementById('strengthText');
+            const isOptional = !e.target.hasAttribute('required');
+
             if (score === 0 || val.length === 0) {
-                textEl.innerText = 'Weak password. Must contain :';
+                textEl.innerText = isOptional && val.length === 0 ? 'Optional password. Must contain :' : 'Weak password. Must contain :';
             } else if (score === 1) {
                 bars[0].classList.add('red');
                 textEl.innerText = 'Weak password. Must contain :';
@@ -931,25 +933,30 @@
         const isProcessingLink = isEmailLinkSignIn || isResetPassword;
 
         // Helper function for processing the Email Verification link logic
-        function executeEmailSignIn(email, buttonToReset = null) {
-            signInWithEmailLink(auth, email, window.location.href)
-                .then((result) => {
-                    window.localStorage.removeItem('emailForSignIn');
-                    // Strip auth codes out of URL so refreshing doesn't break it
-                    window.history.replaceState({}, document.title, window.location.pathname);
-                    setupCompleteDataForm(result.user);
-                    window.showView('view-complete-data');
-                })
-                .catch((error) => {
-                    showAlert("Invalid or expired sign-in link. Please request a new one.", true);
-                    window.showView('view-login');
-                })
-                .finally(() => {
-                    if (buttonToReset) {
-                        buttonToReset.innerText = 'Complete Sign In'; 
-                        buttonToReset.disabled = false;
-                    }
-                });
+        async function executeEmailSignIn(email, buttonToReset = null) {
+            try {
+                // Ensure any cached stale sessions are cleared out FIRST! 
+                // This prevents `updatePassword` from throwing `auth/requires-recent-login` immediately.
+                if (auth.currentUser) {
+                    await signOut(auth);
+                }
+
+                const result = await signInWithEmailLink(auth, email, window.location.href);
+                window.localStorage.removeItem('emailForSignIn');
+                
+                // Strip auth codes out of URL so refreshing doesn't break it
+                window.history.replaceState({}, document.title, window.location.pathname);
+                setupCompleteDataForm(result.user);
+                window.showView('view-complete-data');
+            } catch (error) {
+                showAlert("Invalid or expired sign-in link. Please request a new one.", true);
+                window.showView('view-login');
+            } finally {
+                if (buttonToReset) {
+                    buttonToReset.innerText = 'Complete Sign In'; 
+                    buttonToReset.disabled = false;
+                }
+            }
         }
 
         // Process sign in link specifically to force showing the complete data view directly
@@ -995,17 +1002,24 @@
                 if(parts.length > 1) document.getElementById("profileLastName").value = parts.slice(1).join(' ');
             }
 
-            // Hide password if authenticated via Google
-            const isGoogle = user.providerData && user.providerData.some(p => p.providerId === 'google.com');
             const passContainer = document.getElementById('profilePassContainer');
             const passInput = document.getElementById('profilePass');
+            const strengthText = document.getElementById('strengthText');
             
+            // Explicitly ensure the container stays visible for EVERYONE
+            passContainer.style.display = 'block';
+
+            const isGoogle = user.providerData && user.providerData.some(p => p.providerId === 'google.com');
+            
+            // Differentiate requirement status between Google vs Email links
             if(isGoogle) {
-                passContainer.style.display = 'none';
                 passInput.removeAttribute('required');
+                passInput.placeholder = "Enter your password (Optional)";
+                if(strengthText && !passInput.value) strengthText.innerText = "Optional password. Must contain :";
             } else {
-                passContainer.style.display = 'block';
                 passInput.setAttribute('required', 'true');
+                passInput.placeholder = "Enter your password";
+                if(strengthText && !passInput.value) strengthText.innerText = "Weak password. Must contain :";
             }
         }
 
@@ -1168,8 +1182,8 @@
             btn.innerText = "Saving..."; btn.disabled = true;
             
             try {
-                // If password is required and visible, update it in Firebase auth securely
-                if (passContainer.style.display !== 'none') {
+                // Determine whether a password was provided and process it if so
+                if (passContainer.style.display !== 'none' && passInput.value.length > 0) {
                     const pass = passInput.value;
                     const hasUpper = /[A-Z]/.test(pass);
                     const hasNum = /[0-9]/.test(pass);
@@ -1179,7 +1193,21 @@
                         btn.innerText = "Continue"; btn.disabled = false;
                         return showAlert("Please ensure your password meets all requirements.", true);
                     }
-                    await updatePassword(auth.currentUser, pass);
+
+                    try {
+                        await updatePassword(auth.currentUser, pass);
+                    } catch (err) {
+                        if (err.code === 'auth/requires-recent-login') {
+                            // Translate unhelpful error to action-oriented feedback
+                            throw new Error("Your session is too old to set a password. Please sign out, request a new link, and sign in again.");
+                        } else {
+                            throw err; 
+                        }
+                    }
+                } else if (passInput.hasAttribute('required') && passInput.value.length === 0) {
+                    // Pre-flight check if password was strictly required (e.g., standard email link logic)
+                    btn.innerText = "Continue"; btn.disabled = false;
+                    return showAlert("Password is required.", true);
                 }
 
                 // Sync profile data to backend
