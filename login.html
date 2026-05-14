@@ -847,6 +847,26 @@ Sign-up with Google
 
 <!-- Firebase and Logic Scripts -->
 <script type="module">
+// =====================================================================
+// 1. TRAFFIC COP: FORWARD DOCTORS TO THE DOCTOR PORTAL
+// =====================================================================
+{
+    const params = new URLSearchParams(window.location.search);
+    const continueUrl = params.get('continueUrl');
+
+    if (continueUrl && continueUrl.includes('doctor_portal')) {
+        const targetUrl = new URL(continueUrl);
+        // Transfer the Firebase verification codes to the new URL
+        params.forEach((value, key) => {
+            if (key !== 'continueUrl') targetUrl.searchParams.set(key, value);
+        });
+        // Immediately redirect to the doctor portal
+        window.location.replace(targetUrl.toString());
+        throw new Error("Redirecting to Doctor Portal..."); // Stops the patient script from running
+    }
+}
+// =====================================================================
+
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-app.js";
 import { 
 getAuth, signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, 
