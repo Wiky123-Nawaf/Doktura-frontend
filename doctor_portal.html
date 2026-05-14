@@ -206,7 +206,7 @@
         .radio-group label { display: flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 500; cursor: pointer; color: #4b5563;}
         .radio-group input { accent-color: #0ea5e9; width: 16px; height: 16px;}
 
-        /* Email Notification UI Modal (Exact Match) */
+        /* Email Notification UI Modal */
         .email-modal-box { background: #ffffff; border-radius: 16px; width: 100%; max-width: 420px; padding: 32px 24px; text-align: center; position: relative; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1), 0 8px 10px -6px rgba(0,0,0,0.1); }
         .email-modal-close { position: absolute; top: 16px; right: 16px; width: 28px; height: 28px; background: #f3f4f6; border-radius: 50%; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; color: #4b5563; font-size: 16px; font-weight: bold; transition: background 0.2s; }
         .email-modal-close:hover { background: #e5e7eb; }
@@ -882,8 +882,8 @@
         let filteredReviews =[];
         
         // Link resend states
-        let lastActionType = ""; 
         let lastActionEmail = "";
+        let lastActionType = ""; 
 
         // ================= UI CORE =================
         const alertBox = document.getElementById("authAlertBox");
@@ -1021,8 +1021,8 @@
             btn.innerText = "Sending..."; btn.disabled = true;
             
             try {
-                // Determine absolute link
-                let safeUrl = window.location.origin + "/doctor_portal.html";
+                // Ensure hardcoded proper domain reference
+                let safeUrl = window.location.origin + window.location.pathname; 
                 const actionCodeSettings = { url: safeUrl, handleCodeInApp: true };
 
                 if (lastActionType === 'signup') {
@@ -1037,6 +1037,7 @@
                 btn.disabled = false;
             }
         }
+
 
         // ================= NOTIFICATIONS LOGIC =================
         window.toggleNotifications = function() {
@@ -1524,7 +1525,7 @@
             
             try {
                 // HARDCODE THIS PRECISE PATH SO IT NEVER MISS-DYNAMICS TO THE PATIENT ROOT!
-                const safePathUrl = window.location.origin + "/doctor_portal.html";
+                const safePathUrl = window.location.origin + window.location.pathname; 
                 const actionCodeSettings = {
                   url: safePathUrl, 
                   handleCodeInApp: true
@@ -1548,7 +1549,7 @@
             const btn = document.getElementById("doForgotBtn");
             btn.innerText = "Sending..."; btn.disabled = true;
             try {
-                const safePathUrl = window.location.origin + "/doctor_portal.html";
+                const safePathUrl = window.location.origin + window.location.pathname; 
                 const actionCodeSettings = { url: safePathUrl, handleCodeInApp: true };
 
                 await sendPasswordResetEmail(auth, email, actionCodeSettings);
@@ -1834,6 +1835,7 @@
             const days =['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
             const container = document.getElementById('scheduleDaysContainer');
             
+            // Build the top Global Time Inputs
             container.innerHTML = `
                 <div class="global-times-row">
                     <div style="flex:1;">
@@ -1848,6 +1850,7 @@
                 <h3 style="font-size:14px; font-weight:600; margin-bottom:16px;">Weekly Availability</h3>
             `;
             
+            // Build the individual day blocks
             days.forEach(day => {
                 const isWeekend = day === 'Saturday' || day === 'Sunday';
                 container.innerHTML += `
@@ -1875,6 +1878,7 @@
         }
         renderScheduleUI();
 
+        // Lock/Unlock Fields Based on Status
         function setDashboardStatus(status) {
             const isPending = status === 'pending';
             const badge = document.getElementById('dashStatusBadge');
