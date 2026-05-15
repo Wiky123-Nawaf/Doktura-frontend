@@ -768,7 +768,7 @@
                                     <th>Patient Details</th>
                                     <th>Patient ID</th>
                                     <th>Visit Type</th>
-                                    <th>Symptoms</th> <!-- NEW -->
+                                    <th>Symptoms</th>
                                     <th>Appointment Date</th>
                                     <th>Appointment Time</th>
                                     <th>Action</th>
@@ -799,7 +799,7 @@
                             <input type="text" id="ratingSearchInput" placeholder="Search Reviews" onkeyup="filterReviews()">
                         </div>
                         <button class="btn btn-social" style="width: auto; padding: 6px 12px;" onclick="loadReviews()">
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"></polyline><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path></svg> Refresh
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"></polyline><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path></svg Refresh
                         </button>
                     </div>
                 </div>
@@ -921,6 +921,15 @@
         </div>
     </div>
 
+    <!-- Global Toast Notification -->
+    <div id="toastNotification" style="display:none; position:fixed; bottom:24px; right:24px; background:#ffffff; border-left:4px solid #0ea5e9; box-shadow:0 10px 25px -5px rgba(0,0,0,0.1), 0 8px 10px -6px rgba(0,0,0,0.1); padding:16px 20px; border-radius:8px; z-index:9999; animation: fadeIn 0.3s ease-in-out; min-width: 300px;">
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 4px;">
+            <div style="font-weight:700; color:#111827; font-size: 14px;" id="toastTitle">Notification</div>
+            <button onclick="document.getElementById('toastNotification').style.display='none'" style="background:none; border:none; cursor:pointer; color:#9ca3af; font-size: 16px; margin-left: 12px;">×</button>
+        </div>
+        <div style="font-size:13px; color:#4b5563; line-height: 1.5;" id="toastMsg">Message goes here...</div>
+    </div>
+
     <!-- ================= SCRIPTS ================= -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-app.js";
@@ -967,6 +976,14 @@
 
         window.hideGlobalLoader = function() {
             document.getElementById('globalLoader').style.display = 'none';
+        }
+
+        window.showToast = function(title, msg) {
+            document.getElementById('toastTitle').innerText = title;
+            document.getElementById('toastMsg').innerText = msg;
+            const toast = document.getElementById('toastNotification');
+            toast.style.display = 'block';
+            setTimeout(() => { toast.style.display = 'none'; }, 6000); 
         }
 
         window.showView = function(targetId, event, pushHistory = true) {
@@ -1145,6 +1162,7 @@
         function setupRealTimeNotifications(uid) {
             const notifRef = collection(db, "doctors", uid, "notifications");
             const q = query(notifRef, orderBy("created_at", "desc"));
+            let isFirstSnapshot = true;
 
             onSnapshot(q, (snapshot) => {
                 const listEl = document.getElementById('notifList');
@@ -1180,6 +1198,21 @@
                 } else {
                     badge.style.display = 'none';
                 }
+
+                // If a new notification is added, trigger toast and silent table refresh
+                if (!isFirstSnapshot) {
+                    snapshot.docChanges().forEach((change) => {
+                        if (change.type === "added") {
+                            const data = change.doc.data();
+                            showToast(data.title || "New Notification", data.message || "You have a new update.");
+                            // If the doctor is on the dashboard, refresh appointments silently
+                            if (document.getElementById('dashViewAppointments').style.display === 'block') {
+                                loadAppointments(true); 
+                            }
+                        }
+                    });
+                }
+                isFirstSnapshot = false;
             });
         }
 
@@ -1278,10 +1311,38 @@
             });
         }
 
-        // ================= APPOINTMENTS LOGIC =================
-        window.loadAppointments = async function() {
+        // ================= APPOINTMENTS LOGIC & 6HR REMINDERS =================
+        window.notifiedUpcomingAppts = new Set();
+        
+        window.checkUpcomingAppointments = function(appointments) {
+            const now = new Date();
+            appointments.forEach(appt => {
+                if (!appt.consultation_completed && appt.status !== 'cancelled') {
+                    try {
+                        const apptDate = new Date(appt.datetime);
+                        if (isNaN(apptDate.getTime())) return;
+                        
+                        const diffHours = (apptDate - now) / (1000 * 60 * 60);
+                        
+                        // If appointment is upcoming within 6 hours
+                        if (diffHours > 0 && diffHours <= 6) {
+                            if (!window.notifiedUpcomingAppts.has(appt.appointment_id)) {
+                                window.notifiedUpcomingAppts.add(appt.appointment_id);
+                                showToast("Upcoming Appointment Reminder", `You have a consultation with ${appt.patient_name || 'a patient'} in approx ${Math.ceil(diffHours)} hours.`);
+                            }
+                        }
+                    } catch(e) {}
+                }
+            });
+        }
+
+        window.loadAppointments = async function(silent = false) {
             const tbody = document.getElementById('appointmentsTableBody');
-            tbody.innerHTML = '<tr><td colspan="8" style="text-align: center; color: #6b7280; padding: 32px;">Loading appointments...</td></tr>';
+            
+            // Only show full loading UI if it's not a silent background refresh
+            if(!silent) {
+                tbody.innerHTML = '<tr><td colspan="8" style="text-align: center; color: #6b7280; padding: 32px;">Loading appointments...</td></tr>';
+            }
             
             try {
                 const token = await auth.currentUser.getIdToken(true);
@@ -1291,11 +1352,19 @@
                 const data = await res.json();
                 currentAppointments = data.appointments ||[];
                 filterAppointments();
+                checkUpcomingAppointments(currentAppointments);
 
             } catch(e) {
-                tbody.innerHTML = '<tr><td colspan="8" style="text-align: center; color: #ef4444; padding: 32px;">Error loading appointments.</td></tr>';
+                if(!silent) tbody.innerHTML = '<tr><td colspan="8" style="text-align: center; color: #ef4444; padding: 32px;">Error loading appointments.</td></tr>';
             }
         }
+
+        // Auto-refresh appointments quietly every 60 seconds
+        setInterval(() => {
+            if (auth.currentUser && document.getElementById('dashViewAppointments').style.display === 'block') {
+                loadAppointments(true);
+            }
+        }, 60000);
 
         window.filterAppointments = function() {
             const query = (document.getElementById('appointmentSearchInput').value || '').toLowerCase();
@@ -1337,12 +1406,11 @@
                        </button>`;
 
                 let symptomsContent;
-                if (appt.symptoms) {
-                    // Escape safely to prevent string breaking when passed to the function
+                if (appt.symptoms && appt.symptoms !== 'null' && appt.symptoms !== 'None') {
                     const safeText = appt.symptoms.replace(/'/g, "\\'").replace(/"/g, "&quot;").replace(/\n/g, "\\n");
-                    symptomsContent = `<div onclick="openSymptomModal('${safeText}')" style="cursor: pointer; color: #0066cc; font-size: 13px; max-width: 150px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="Click to view all">${appt.symptoms}</div>`;
+                    symptomsContent = `<button onclick="openSymptomModal('${safeText}')" style="background: #f8fafc; color: #0ea5e9; border: 1px solid #e0f2fe; border-radius: 12px; padding: 4px 12px; font-size: 12px; font-weight: 600; cursor: pointer; transition: 0.2s; white-space: nowrap;" onmouseover="this.style.background='#e0f2fe'" onmouseout="this.style.background='#f8fafc'">View ...</button>`;
                 } else {
-                    symptomsContent = `<div style="color: #9ca3af; font-style: italic; font-size: 13px;">None</div>`;
+                    symptomsContent = `<span style="color: #9ca3af; font-style: italic; font-size: 12px;">None</span>`;
                 }
 
                 tbody.innerHTML += `
