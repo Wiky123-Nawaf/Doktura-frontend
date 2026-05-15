@@ -1408,7 +1408,7 @@
                 let symptomsContent;
                 if (appt.symptoms && appt.symptoms !== 'null' && appt.symptoms !== 'None') {
                     const safeText = appt.symptoms.replace(/'/g, "\\'").replace(/"/g, "&quot;").replace(/\n/g, "\\n");
-                    symptomsContent = `<button onclick="openSymptomModal('${safeText}')" style="background: #f8fafc; color: #0ea5e9; border: 1px solid #e0f2fe; border-radius: 12px; padding: 4px 12px; font-size: 12px; font-weight: 600; cursor: pointer; transition: 0.2s; white-space: nowrap;" onmouseover="this.style.background='#e0f2fe'" onmouseout="this.style.background='#f8fafc'">View ...</button>`;
+                    symptomsContent = `<button onclick="openSymptomModal('${safeText}')" style="background: #f8fafc; color: #0ea5e9; border: 1px solid #e0f2fe; border-radius: 12px; padding: 4px 12px; font-size: 12px; font-weight: 600; cursor: pointer; transition: 0.2s; white-space: nowrap;" onmouseover="this.style.background='#e0f2fe'" onmouseout="this.style.background='#f8fafc'">View</button>`;
                 } else {
                     symptomsContent = `<span style="color: #9ca3af; font-style: italic; font-size: 12px;">None</span>`;
                 }
