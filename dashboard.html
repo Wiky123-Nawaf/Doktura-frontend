@@ -1500,6 +1500,7 @@
             if (!preferredTime) return showInlineMessage("Please select an available time slot.", "error");
 
             if (!document.getElementById('pdpa-agree').checked) return showInlineMessage("You must agree to the PDPA to proceed.", "error");
+            const symptomsText = document.getElementById('book-symptoms').value;
             
             const btn = document.getElementById('book-btn'); 
             btn.innerText = "Processing...";
@@ -1510,7 +1511,8 @@
                     body:JSON.stringify({ 
                         doctor_id: doctorId, 
                         visit_type: "online", 
-                        preferred_datetime: preferredTime 
+                        preferred_datetime: preferredTime,
+                        symptoms: symptomsText
                     }) 
                 });
                 const d = await r.json(); 
