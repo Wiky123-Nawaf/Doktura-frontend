@@ -186,53 +186,34 @@
             display: none !important;
         }
 
-        body.chat-mode-active .section-white:first-of-type {
+        /* Force the flex column to fit strictly within the screen without scrolling the main body */
+        body.chat-mode-active .section-white:first-of-type,
+        body.chat-mode-active .hero-chat-wrapper,
+        body.chat-mode-active .chat-content-bottom,
+        body.chat-mode-active .chat-section,
+        body.chat-mode-active .chat-container {
             display: flex;
             flex-direction: column;
             flex: 1;
-            height: 100%;
             min-height: 0;
+            margin: 0 !important;
         }
 
-        body.chat-mode-active .hero-chat-wrapper {
-            display: flex;
-            flex-direction: column;
-            flex: 1;
-            height: 100%;
-            min-height: 0;
-        }
-
-        body.chat-mode-active .chat-content-bottom {
-            display: flex;
-            flex-direction: column;
-            flex: 1;
-            padding-bottom: 0;
-            margin: 0;
-            min-height: 0;
-        }
-
+        /* Eliminate paddings that cause vertical overflow */
+        body.chat-mode-active .chat-content-bottom,
         body.chat-mode-active .chat-section {
-            display: flex;
-            flex-direction: column;
-            flex: 1;
-            padding-top: 0;
-            padding-bottom: 0;
-            min-height: 0;
+            padding: 0 !important;
         }
 
         body.chat-mode-active .chat-container {
             max-width: 800px;
             width: 100%;
-            height: 100%;
             border: none;
             box-shadow: none;
-            display: flex;
-            flex-direction: column;
-            margin: 0 auto;
-            padding: 0 16px 16px 16px;
             border-radius: 0;
             background-color: transparent;
-            min-height: 0;
+            /* Extra padding strictly at bottom of container to push the bar up over system nav */
+            padding: 16px 16px calc(24px + env(safe-area-inset-bottom, 16px)) 16px !important;
         }
 
         body.chat-mode-active #chat-history {
@@ -244,12 +225,16 @@
             -webkit-overflow-scrolling: touch;
         }
 
+        body.chat-mode-active .chat-input-area {
+            flex-shrink: 0; /* Never collapse input area */
+        }
+
         body.chat-mode-active .input-wrapper {
             min-height: 50px;
             height: auto;
             background-color: #fff;
             border: 1px solid #e2e8f0;
-            margin-bottom: 0;
+            margin-bottom: 0 !important; /* CRITICAL: Must be 0 to keep fixed in view */
             padding: 8px 16px;
             border-radius: 24px;
             flex-direction: row;
@@ -541,12 +526,13 @@
             }
 
             body.chat-mode-active .chat-container {
-                padding: 0 16px 0px 16px !important;
+                /* Ensured plenty of padding at the bottom for mobile safe area & nav bar clearance */
+                padding: 12px 16px calc(32px + env(safe-area-inset-bottom, 16px)) 16px !important;
                 border-radius: 0;
             }
 
             body.chat-mode-active .input-wrapper {
-                margin-bottom: calc(28px + env(safe-area-inset-bottom, 16px)) !important;
+                margin-bottom: 0 !important; /* Rely entirely on container padding for spacing */
             }
 
             .hero-chat-wrapper { display: block; min-height: auto; }
@@ -1433,6 +1419,12 @@
             }
         };
 
+        // Formatting Helpers
+        function formatMarkdown(text) {
+            // Replaces text wrapped in ** with strong tags (explicit style just in case of tailwind resets)
+            return text.replace(/\*\*([\s\S]*?)\*\*/g, '<strong style="font-weight: 700; color: #111111;">$1</strong>');
+        }
+
         // 2. Chat Bubble Helpers
         function createUserBubble(text) {
             return `
@@ -1446,12 +1438,11 @@
         function createAiBubble(text) {
             let extraHtml = '';
             
-            // Parse markdown bold text (**text**)
-            const formattedText = text.replace(/\*\*([\s\S]*?)\*\*/g, '<strong>$1</strong>');
-            
+            // Format Markdown (Bold)
+            const formattedText = formatMarkdown(text);
             const lowerText = text.toLowerCase();
 
-            // Detect Login Trigger (Step 4 of Prompt)
+            // Detect Login Trigger
             const showLogin = lowerText.includes("log in") || 
                               lowerText.includes("login") || 
                               lowerText.includes("logging into") ||
@@ -1468,7 +1459,7 @@
                 </div>`;
             }
 
-            // Detect Gender Question Trigger (Optional UI Polish)
+            // Detect Gender Question Trigger
             const showGender = (lowerText.includes("biological sex") || lowerText.includes("male or female")) && !showLogin;
             
             if (showGender) {
@@ -1570,7 +1561,7 @@
                     const loader = document.getElementById(loadId);
                     if(loader) loader.remove();
                     
-                    history.innerHTML += createAiBubble("If this is an emergency, call 911 or your local emergency number.<br><br>Hello! How can I assist you with your health today?");
+                    history.innerHTML += createAiBubble("If this is an emergency, call **911** or your local emergency number.<br><br>Hello! How can I assist you with your health today?");
                     
                     history.innerHTML += `
                         <div id="tos-blocker" style="display: flex; gap: 12px; margin-top: 16px;">
