@@ -229,7 +229,7 @@
             display: flex;
             flex-direction: column;
             margin: 0 auto;
-            padding: 0 16px 16px 16px;
+            padding: 0 16px 24px 16px;
             border-radius: 0;
             background-color: transparent;
             min-height: 0;
@@ -541,7 +541,7 @@
             }
 
             body.chat-mode-active .chat-container {
-                padding: 0 16px calc(24px + env(safe-area-inset-bottom, 24px)) 16px !important;
+                padding: 12px 16px max(40px, calc(32px + env(safe-area-inset-bottom))) 16px !important;
                 border-radius: 0;
             }
 
@@ -581,7 +581,7 @@
             .input-actions { margin-top: 12px; }
             .btn-get-started { padding: 8px 16px; font-size: 13px; border-radius: 8px; }
             .suggestion-chips { display: none !important; }
-            .pdpa-text { justify-content: center; font-size: 11px; color: #64748b; margin-top: 12px; padding-bottom: max(12px, env(safe-area-inset-bottom)); }
+            .pdpa-text { justify-content: center; font-size: 11px; color: #64748b; margin-top: 12px; padding-bottom: max(24px, env(safe-area-inset-bottom)); }
 
             .bottom-info { padding: 40px 0 32px 0; text-align: center; } 
             .plus-icon-wrap { margin: 0 auto 20px auto; } 
@@ -1440,8 +1440,11 @@
         }
 
         function createAiBubble(text) {
+            // Render markdown bold: **text** to <strong>text</strong>
+            let parsedText = text.replace(/\*\*([\s\S]*?)\*\*/g, '<strong>$1</strong>');
+            
             let extraHtml = '';
-            const lowerText = text.toLowerCase();
+            const lowerText = parsedText.toLowerCase();
 
             // Detect Login Trigger (Step 4 of Prompt)
             const showLogin = lowerText.includes("log in") || 
@@ -1476,7 +1479,7 @@
                     <img src="https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/Fig%204.png" style="width: 32px; height: 32px; border-radius: 50%; border: 1px solid var(--border-gray); background: white; flex-shrink: 0;">
                     <div style="display: flex; flex-direction: column; max-width: 85%;">
                         <div style="background: #f0f7ff; border: 1px solid rgba(0, 102, 204, 0.1); color: var(--text-dark); padding: 12px 16px; border-radius: 16px 16px 16px 4px; font-size: 14px; text-align: left; line-height: 1.6;">
-                            ${text.replace(/\n/g, '<br>')}
+                            ${parsedText.replace(/\n/g, '<br>')}
                         </div>
                         ${extraHtml}
                     </div>
