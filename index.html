@@ -151,6 +151,136 @@
         .chip:hover { background: #f8fafc; border-color: #cbd5e1; }
         .pdpa-text { display: flex; align-items: center; justify-content: flex-end; gap: 6px; font-size: 12px; color: #94a3b8; font-weight: 500; }
 
+        /* --- Full Screen Chat Mode Styles --- */
+        body.chat-mode-active .hide-in-chat {
+            display: none !important;
+        }
+
+        body.chat-mode-active .chat-tabs-wrapper {
+            display: none !important;
+        }
+
+        body.chat-mode-active .section-white:first-of-type {
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+            height: 100%;
+        }
+
+        body.chat-mode-active .hero-chat-wrapper {
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+            height: 100%;
+        }
+
+        body.chat-mode-active .chat-content-bottom {
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+            padding-bottom: 0;
+            margin: 0;
+        }
+
+        body.chat-mode-active .chat-section {
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+            padding-top: 0;
+            padding-bottom: 0;
+        }
+
+        body.chat-mode-active .chat-container {
+            max-width: 800px;
+            width: 100%;
+            height: 100%;
+            border: none;
+            box-shadow: none;
+            display: flex;
+            flex-direction: column;
+            margin: 0 auto;
+            padding: 0 16px 16px 16px;
+            border-radius: 0;
+            background-color: transparent;
+        }
+
+        body.chat-mode-active #chat-history {
+            flex: 1;
+            max-height: none;
+            overflow-y: auto;
+            margin-bottom: 16px;
+        }
+
+        body.chat-mode-active .input-wrapper {
+            min-height: 50px;
+            height: auto;
+            background-color: #fff;
+            border: 1px solid #e2e8f0;
+            margin-bottom: 0;
+            padding: 8px 16px;
+            border-radius: 24px;
+            flex-direction: row;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        body.chat-mode-active .input-top-area {
+            flex: 1;
+            align-items: center;
+            gap: 8px;
+        }
+
+        body.chat-mode-active .input-top-area svg {
+            display: none;
+        }
+
+        body.chat-mode-active .input-field {
+            min-height: 24px;
+            height: 24px;
+            font-size: 15px;
+            padding: 0;
+            margin: 0;
+            line-height: 24px;
+            overflow: hidden;
+            resize: none;
+        }
+
+        body.chat-mode-active .input-actions {
+            margin-top: 0;
+            width: auto;
+            margin-left: 12px;
+            display: flex;
+            align-items: center;
+        }
+
+        body.chat-mode-active .btn-get-started {
+            border-radius: 50%;
+            width: 36px;
+            height: 36px;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: transparent;
+            overflow: hidden;
+            position: relative;
+        }
+
+        body.chat-mode-active .btn-get-started svg {
+            color: #ffffff;
+            margin: 0;
+            position: absolute;
+            width: 16px;
+            height: 16px;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        body.chat-mode-active .pdpa-text {
+            display: none;
+        }
+
         /* --- Bottom Info Section --- */
         .bottom-info { padding: 80px 0 60px 0; text-align: center; max-width: 800px; margin: 0 auto; }
         .plus-icon-wrap { width: 48px; height: 48px; background-color: #f8fafc; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 24px auto; color: #111; }
@@ -375,6 +505,11 @@
                 align-items: center !important;
                 justify-content: center !important;
                 white-space: nowrap !important;
+            }
+
+            body.chat-mode-active .chat-container {
+                padding: 0 16px 16px 16px;
+                border-radius: 0;
             }
 
             .hero-chat-wrapper { display: block; min-height: auto; }
@@ -603,7 +738,7 @@
         <div class="section-white flex-1">
             <div class="container relative z-10 hero-chat-wrapper">
 
-                <div class="hero-content-top">
+                <div class="hero-content-top hide-in-chat">
                     <!-- Centered Hero -->
                     <section class="hero">
                         <img src="https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/Figure%203.png?download=true" alt="Doktura Avatars" class="hero-fig2">
@@ -641,34 +776,25 @@
                             </div>
 
                             <div id="chat-history">
-                                <!-- Terms of Service Blocker overlay -->
-                                <div id="tos-blocker" style="margin-top: 8px; padding: 20px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; text-align: left;">
-                                    <p style="font-size: 14px; color: #475569; margin-bottom: 12px;">Before I can reply, I need your permission to unlock your private AI doctor. <strong>It's fast, safe and free.</strong></p>
-                                    <label style="display: flex; align-items: flex-start; gap: 8px; font-size: 12px; color: #64748b; cursor: pointer;">
-                                        <input type="checkbox" id="tos-checkbox" style="margin-top: 2px;" onchange="handleTosChange(this)">
-                                        <span>I agree to the <a href="https://doktura.ai/terms.html" class="text-blue">Electronic Terms of Service</a> and will discuss all Electronic output with a doctor. Doktura is an AI doctor, not a licensed physician, and does not provide medical advice.</span>
-                                    </label>
-                                </div>
                             </div>
 
                             <div class="chat-input-area">
-                                <!-- Initially Hidden until ToS Checked -->
-                                <div id="chat-input-wrapper" class="input-wrapper shadow-sm" style="display: none;">
+                                <div id="chat-input-wrapper" class="input-wrapper shadow-sm">
                                     <div class="input-top-area">
                                         <svg width="16" height="16" viewBox="0 0 24 24" fill="#0066cc" xmlns="http://www.w3.org/2000/svg">
                                             <path d="M12 2L14.5 9.5L22 12L14.5 14.5L12 22L9.5 14.5L2 12L9.5 9.5L12 2Z"/>
                                         </svg>
-                                        <textarea id="chat-input" class="input-field" placeholder="Get health advice.." onkeydown="if(event.key === 'Enter' && !event.shiftKey) { event.preventDefault(); sendGuestChat(); }"></textarea>
+                                        <textarea id="chat-input" class="input-field" placeholder="Describe symptoms or ask any health question..." onkeydown="if(event.key === 'Enter' && !event.shiftKey) { event.preventDefault(); sendGuestChat(); }"></textarea>
                                     </div>
                                     <div class="input-actions">
                                         <button class="btn-get-started shadow-md" onclick="sendGuestChat()" aria-label="Send message">
-                                            Start Here
+                                            Start Chat
                                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
                                         </button>
                                     </div>
                                 </div>
 
-                                <div id="suggestion-chips" class="suggestion-chips" style="display: none;">
+                                <div id="suggestion-chips" class="suggestion-chips">
                                     <button class="chip" onclick="document.getElementById('chat-input').value='Fever & flu'; sendGuestChat();">Fever & flu</button>
                                     <button class="chip" onclick="document.getElementById('chat-input').value='Sore throat'; sendGuestChat();">Sore throat</button>
                                     <button class="chip" onclick="document.getElementById('chat-input').value='Skin issues'; sendGuestChat();">Skin issues</button>
@@ -691,7 +817,7 @@
 
             </div>
 
-            <div class="container relative z-10">
+            <div class="container relative z-10 hide-in-chat">
                 <section class="bottom-info">
                     <div class="plus-icon-wrap">
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#111" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -707,7 +833,7 @@
         </div>
 
         <!-- Website Visit Counter Section -->
-        <div class="section-grayish">
+        <div class="section-grayish hide-in-chat">
             <div class="container">
                 <section class="stats-counter-section">
                     <div class="counter-boxes">
@@ -726,7 +852,7 @@
         </div>
 
         <!-- How It Works Section -->
-        <div class="section-white">
+        <div class="section-white hide-in-chat">
             <div class="container">
                 <section class="how-it-works-section">
                     <div class="how-pill">How <span>to use</span></div>
@@ -753,7 +879,7 @@
         </div>
 
         <!-- Differences Section -->
-        <div class="section-grayish">
+        <div class="section-grayish hide-in-chat">
             <div class="container">
                 <section class="differences-section">
                     <div class="diff-header">
@@ -787,7 +913,7 @@
         </div>
 
         <!-- Link to Doctor Section -->
-        <div class="section-white">
+        <div class="section-white hide-in-chat">
             <div class="container">
                 <section class="link-doctor-section">
                     <img src="https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/Figure%203.png?download=true" alt="Doctors" class="link-doctor-fig">
@@ -843,7 +969,7 @@
         </div>
 
         <!-- Features Stacked Section -->
-        <div class="section-white">
+        <div class="section-white hide-in-chat">
             <div class="container">
                 <section class="features-section">
                     <div class="feature-card">
@@ -926,7 +1052,7 @@
         </div>
 
         <!-- Testimonials Section -->
-        <div class="section-white">
+        <div class="section-white hide-in-chat">
             <div class="container">
                 <section class="testimonials-section">
                     <div class="text-center">
@@ -970,7 +1096,7 @@
         </div>
 
         <!-- Join as Doctor Section -->
-        <div class="section-white">
+        <div class="section-white hide-in-chat">
             <div class="container">
                 <section class="join-doctor-section">
                     <div class="join-doctor-left">
@@ -1001,7 +1127,7 @@
         </div>
 
         <!-- UPDATED FAQ Section -->
-        <div class="section-faq-bg">
+        <div class="section-faq-bg hide-in-chat">
             <div class="container">
                 <section class="faq-section">
                     <div class="faq-header-center">
@@ -1056,7 +1182,7 @@
         </div>
 
         <!-- FULL WIDTH Edge-to-Edge Footer Section -->
-        <footer class="footer-section">
+        <footer class="footer-section hide-in-chat">
             <div class="footer-content">
                 <div class="footer-top">
                     <div class="footer-brand">
@@ -1180,23 +1306,37 @@
 
     <!-- Main Chat Implementation & UI Logic -->
     <script>
-        // 1. Logic for Terms of Service Blocker
+        // 1. Initial State & Deep Linking checks
         document.addEventListener("DOMContentLoaded", () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.get('chat') === 'active') {
+                document.body.classList.add('chat-mode-active');
+                const chips = document.getElementById('suggestion-chips');
+                if (chips) chips.style.display = 'none';
+                document.getElementById('chat-input').placeholder = "Reply to Doktura...";
+            }
+
             const tosAccepted = localStorage.getItem("tos_accepted");
             if (tosAccepted === "true") {
-                document.getElementById('tos-blocker').style.display = 'none';
-                document.getElementById('chat-input-wrapper').style.display = 'flex';
-                document.getElementById('suggestion-chips').style.display = 'flex';
-                loadGuestHistory(); // Load existing chat history from Redis if any
+                loadGuestHistory();
             }
         });
 
         window.handleTosChange = function(checkbox) {
             if (checkbox.checked) {
                 localStorage.setItem("tos_accepted", "true");
-                document.getElementById('tos-blocker').style.display = 'none';
-                document.getElementById('chat-input-wrapper').style.display = 'flex';
-                document.getElementById('suggestion-chips').style.display = 'flex';
+                
+                const tosBlocker = document.getElementById('tos-blocker');
+                if (tosBlocker) {
+                    tosBlocker.innerHTML = `
+                        <div style="width: 32px; flex-shrink: 0;"></div>
+                        <div style="display: flex; align-items: center; gap: 8px; color: #10b981; font-size: 13px; font-weight: 600; padding: 8px 0;">
+                            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path></svg>
+                            Terms accepted
+                        </div>
+                    `;
+                }
+
                 document.getElementById('chat-input').focus();
                 
                 // Initialize unique guest session ID
@@ -1282,7 +1422,7 @@
                 
                 if (data.history && data.history.length > 0) {
                     const historyDiv = document.getElementById('chat-history');
-                    historyDiv.innerHTML = ''; // Clear default greeting to show history
+                    historyDiv.innerHTML = ''; 
                     
                     data.history.forEach(msg => {
                         if (msg.role === 'user') {
@@ -1298,12 +1438,20 @@
             }
         }
 
-        // 4. Send Message Logic
+        // 4. Send Message Logic & Full Screen Transition
         window.sendGuestChat = async function() {
             const input = document.getElementById('chat-input');
             const history = document.getElementById('chat-history');
             const message = input.value.trim();
             if (!message) return;
+
+            // Activate Full Screen Chat View
+            if (!document.body.classList.contains('chat-mode-active')) {
+                document.body.classList.add('chat-mode-active');
+                document.getElementById('suggestion-chips').style.display = 'none';
+                document.getElementById('chat-input').placeholder = "Reply to Doktura...";
+                window.history.pushState(null, '', window.location.pathname + '?chat=active');
+            }
 
             // Remove any quick-reply buttons before sending new text
             const existingChips = history.querySelectorAll('.quick-reply-chips');
@@ -1312,6 +1460,51 @@
             history.innerHTML += createUserBubble(message);
             input.value = ''; 
             history.scrollTop = history.scrollHeight;
+
+            const tosAccepted = localStorage.getItem("tos_accepted");
+            if (tosAccepted !== "true") {
+                if (document.getElementById('tos-blocker')) {
+                    // Already waiting for ToS, don't resend the full prompt
+                    history.innerHTML += `
+                        <div style="display: flex; gap: 12px; margin-top: 16px;">
+                            <div style="width: 32px; flex-shrink: 0;"></div>
+                            <div style="color: #ef4444; font-size: 13px; font-weight: 500;">Please accept the Terms of Service above to continue.</div>
+                        </div>
+                    `;
+                    history.scrollTop = history.scrollHeight;
+                    return;
+                }
+
+                const loadId = 'load-' + Date.now();
+                history.innerHTML += `
+                    <div id="${loadId}" style="display: flex; gap: 12px; margin-top: 16px; opacity: 0.6;">
+                        <img src="https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/Fig%204.png" style="width: 32px; height: 32px; border-radius: 50%; border: 1px solid var(--border-gray); background: white; flex-shrink: 0;">
+                        <div style="background: var(--card-grayish); color: var(--text-dark); padding: 12px 16px; border-radius: 16px 16px 16px 4px; font-size: 14px;">Thinking...</div>
+                    </div>`;
+                history.scrollTop = history.scrollHeight;
+
+                setTimeout(() => {
+                    const loader = document.getElementById(loadId);
+                    if(loader) loader.remove();
+                    
+                    history.innerHTML += createAiBubble("If this is an emergency, call 911 or your local emergency number.<br><br>Hello! How can I assist you with your health today?");
+                    
+                    history.innerHTML += `
+                        <div id="tos-blocker" style="display: flex; gap: 12px; margin-top: 16px;">
+                            <div style="width: 32px; flex-shrink: 0;"></div>
+                            <div style="background: #ffffff; border: 1px solid #f1f5f9; box-shadow: 0 4px 12px rgba(0,0,0,0.03); padding: 16px; border-radius: 12px; text-align: left; max-width: 85%;">
+                                <p style="font-size: 14px; color: #475569; margin-bottom: 12px;">Before I can reply, I need your permission to unlock your private AI doctor. <strong>It's fast, safe and free.</strong></p>
+                                <label style="display: flex; align-items: flex-start; gap: 8px; font-size: 13px; color: #64748b; cursor: pointer;">
+                                    <input type="checkbox" id="tos-checkbox" style="margin-top: 3px;" onchange="handleTosChange(this)">
+                                    <span style="line-height: 1.5;">I agree to the <a href="https://doktura.ai/terms.html" class="text-blue">Electronic Terms of Service</a> and will discuss all Electronic output with a doctor. Doktura is an AI doctor, not a licensed physician, and does not provide medical advice.</span>
+                                </label>
+                            </div>
+                        </div>
+                    `;
+                    history.scrollTop = history.scrollHeight;
+                }, 800);
+                return;
+            }
 
             const loadId = 'load-' + Date.now();
             history.innerHTML += `
@@ -1336,7 +1529,8 @@
                 if (!res.ok) throw new Error("Backend Error");
                 const data = await res.json();
 
-                document.getElementById(loadId).remove();
+                const loader = document.getElementById(loadId);
+                if(loader) loader.remove();
                 history.innerHTML += createAiBubble(data.reply);
                 history.scrollTop = history.scrollHeight;
             } catch (e) {
