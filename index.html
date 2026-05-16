@@ -177,7 +177,7 @@
         }
         .shake { animation: shake 0.4s ease-in-out; }
 
-        /* --- Strict Full Screen Chat Mode Styles (Solves Mobile Cutoff) --- */
+        /* --- Full Screen Chat Mode Styles --- */
         body.chat-mode-active .hide-in-chat {
             display: none !important;
         }
@@ -186,50 +186,62 @@
             display: none !important;
         }
 
-        body.chat-mode-active #main-scroll-area,
-        body.chat-mode-active .section-white:first-of-type,
-        body.chat-mode-active .hero-chat-wrapper,
-        body.chat-mode-active .chat-content-bottom,
+        body.chat-mode-active .section-white:first-of-type {
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+            height: 100%;
+            min-height: 0;
+        }
+
+        body.chat-mode-active .hero-chat-wrapper {
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+            height: 100%;
+            min-height: 0;
+        }
+
+        body.chat-mode-active .chat-content-bottom {
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+            padding-bottom: 0;
+            margin: 0;
+            min-height: 0;
+        }
+
         body.chat-mode-active .chat-section {
             display: flex;
             flex-direction: column;
-            flex: 1 1 0%;
+            flex: 1;
+            padding-top: 0;
+            padding-bottom: 0;
             min-height: 0;
-            max-height: 100%;
-            overflow: hidden !important;
-            margin: 0;
-            padding: 0;
         }
 
         body.chat-mode-active .chat-container {
-            display: flex;
-            flex-direction: column;
-            flex: 1 1 0%;
-            min-height: 0;
-            max-height: 100%;
-            overflow: hidden;
-            width: 100%;
             max-width: 800px;
-            margin: 0 auto;
+            width: 100%;
+            height: 100%;
             border: none;
             box-shadow: none;
+            display: flex;
+            flex-direction: column;
+            margin: 0 auto;
+            padding: 0 16px 16px 16px;
             border-radius: 0;
             background-color: transparent;
-            padding: 16px !important;
-            padding-bottom: calc(16px + env(safe-area-inset-bottom, 0px)) !important;
+            min-height: 0;
         }
 
         body.chat-mode-active #chat-history {
-            flex: 1 1 0%;
-            min-height: 0;
+            flex: 1;
             max-height: none;
             overflow-y: auto;
-            margin-bottom: 12px;
+            margin-bottom: 16px;
+            min-height: 0;
             -webkit-overflow-scrolling: touch;
-        }
-
-        body.chat-mode-active .chat-input-area {
-            flex: 0 0 auto;
         }
 
         body.chat-mode-active .input-wrapper {
@@ -528,6 +540,15 @@
                 white-space: nowrap !important;
             }
 
+            body.chat-mode-active .chat-container {
+                padding: 0 16px 0px 16px !important;
+                border-radius: 0;
+            }
+
+            body.chat-mode-active .input-wrapper {
+                margin-bottom: calc(28px + env(safe-area-inset-bottom, 16px)) !important;
+            }
+
             .hero-chat-wrapper { display: block; min-height: auto; }
             .hero-content-top { display: block; padding-bottom: 0px; }
             .chat-content-bottom {
@@ -564,7 +585,7 @@
             .input-actions { margin-top: 12px; }
             .btn-get-started { padding: 8px 16px; font-size: 13px; border-radius: 8px; }
             .suggestion-chips { display: none !important; }
-            .pdpa-text { justify-content: center; font-size: 11px; color: #64748b; margin-top: 12px; padding-bottom: max(24px, env(safe-area-inset-bottom)); }
+            .pdpa-text { justify-content: center; font-size: 11px; color: #64748b; margin-top: 12px; padding-bottom: max(12px, env(safe-area-inset-bottom)); }
 
             .bottom-info { padding: 40px 0 32px 0; text-align: center; } 
             .plus-icon-wrap { margin: 0 auto 20px auto; } 
@@ -1324,6 +1345,17 @@
     <script>
         // 1. Initial State & Deep Linking checks
         document.addEventListener("DOMContentLoaded", () => {
+            // Clear session and state on page reload, return to standard view
+            const perfEntries = performance.getEntriesByType("navigation");
+            if (perfEntries.length > 0 && perfEntries[0].type === "reload") {
+                localStorage.removeItem("tos_accepted");
+                localStorage.removeItem("anon_session_id");
+                if (window.location.search.includes("chat=active")) {
+                    window.location.href = window.location.pathname;
+                    return;
+                }
+            }
+
             const urlParams = new URLSearchParams(window.location.search);
             if (urlParams.get('chat') === 'active') {
                 document.body.classList.add('chat-mode-active');
@@ -1412,12 +1444,12 @@
         }
 
         function createAiBubble(text) {
-            // Render markdown bold: **text** and *text* to <strong>text</strong>
-            let parsedText = text.replace(/\*\*([\s\S]*?)\*\*/g, '<strong>$1</strong>');
-            parsedText = parsedText.replace(/(^|[^\*])\*([^\*]+)\*([^\*]|$)/g, '$1<strong>$2</strong>$3');
-
             let extraHtml = '';
-            const lowerText = parsedText.toLowerCase();
+            
+            // Parse markdown bold text (**text**)
+            const formattedText = text.replace(/\*\*([\s\S]*?)\*\*/g, '<strong>$1</strong>');
+            
+            const lowerText = text.toLowerCase();
 
             // Detect Login Trigger (Step 4 of Prompt)
             const showLogin = lowerText.includes("log in") || 
@@ -1452,7 +1484,7 @@
                     <img src="https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/Fig%204.png" style="width: 32px; height: 32px; border-radius: 50%; border: 1px solid var(--border-gray); background: white; flex-shrink: 0;">
                     <div style="display: flex; flex-direction: column; max-width: 85%;">
                         <div style="background: #f0f7ff; border: 1px solid rgba(0, 102, 204, 0.1); color: var(--text-dark); padding: 12px 16px; border-radius: 16px 16px 16px 4px; font-size: 14px; text-align: left; line-height: 1.6;">
-                            ${parsedText.replace(/\n/g, '<br>')}
+                            ${formattedText.replace(/\n/g, '<br>')}
                         </div>
                         ${extraHtml}
                     </div>
