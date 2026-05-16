@@ -29,6 +29,7 @@
             -webkit-font-smoothing: antialiased;
             background-color: #ffffff !important;
             overflow-x: hidden;
+            height: 100dvh !important; /* Force dynamic viewport height */
         }
 
         @media (prefers-color-scheme: dark) {
@@ -195,7 +196,6 @@
         .input-field { 
             width: 100%; border: none; background: transparent; outline: none; font-size: 15px; 
             color: #111111 !important; 
-            -webkit-text-fill-color: #111111 !important; 
             font-family: inherit; resize: none; height: 100%; min-height: 48px; 
         }
         .input-field::placeholder { color: #94a3b8; }
@@ -247,28 +247,21 @@
             display: none !important;
         }
 
-        /* Force the flex column to fit strictly within the screen without scrolling the main body */
-        body.chat-mode-active .section-white:first-of-type {
-            display: flex;
-            flex-direction: column;
-            flex: 1;
-            width: 100%;
-            height: 100%;
-            min-height: 0;
-            padding: 0 !important;
-        }
-
+        /* Pure Flex chain - avoiding height: 100% overrides */
+        body.chat-mode-active .section-white:first-of-type,
         body.chat-mode-active .hero-chat-wrapper,
         body.chat-mode-active .chat-content-bottom,
         body.chat-mode-active .chat-section {
             display: flex;
             flex-direction: column;
-            align-items: center; /* Ensures strict centering horizontally */
+            align-items: center; 
             width: 100%;
             flex: 1;
             min-height: 0;
+            height: auto; /* Reverting any strict heights so flex-1 operates cleanly */
             margin: 0 !important;
             padding: 0 !important;
+            max-width: 100% !important;
         }
 
         body.chat-mode-active .chat-container {
@@ -276,14 +269,15 @@
             flex-direction: column;
             flex: 1;
             width: 100%;
-            max-width: 850px;
-            margin: 0 auto !important; /* Forces horizontal center in full view */
+            max-width: 800px;
+            margin: 0 auto !important; 
             border: none;
             box-shadow: none;
             border-radius: 0;
             background-color: transparent;
             padding: 0 16px 0 16px !important;
             min-height: 0;
+            height: auto;
         }
 
         body.chat-mode-active #chat-history {
@@ -298,9 +292,10 @@
 
         body.chat-mode-active .chat-input-area {
             flex-shrink: 0; /* Never collapse input area */
-            padding-bottom: calc(16px + env(safe-area-inset-bottom, 16px)); /* Safe area padding pushes it above nav bar */
+            padding-bottom: calc(24px + env(safe-area-inset-bottom, 16px)); /* Safe area padding pushes it safely above nav bar */
+            padding-top: 8px;
             width: 100%;
-            background: #ffffff; /* Match background so it overlays cleanly */
+            background: #ffffff;
         }
 
         body.chat-mode-active .input-wrapper {
@@ -308,7 +303,7 @@
             height: auto;
             background-color: #fff;
             border: 1px solid #e2e8f0;
-            margin-bottom: 0 !important; /* CRITICAL: Keep fixed at bottom padding boundary */
+            margin-bottom: 0 !important; /* Kept flush to boundaries */
             padding: 8px 16px;
             border-radius: 24px;
             flex-direction: row;
@@ -601,13 +596,13 @@
             }
 
             body.chat-mode-active .chat-container {
-                /* Ensures horizontal centering and adds extra bottom padding for robust mobile safe area / nav bar clearance */
+                /* Ensured plenty of padding at the bottom for mobile safe area & nav bar clearance */
                 padding: 0 16px 0 16px !important;
                 border-radius: 0;
             }
 
             body.chat-mode-active .chat-input-area {
-                padding-bottom: calc(24px + env(safe-area-inset-bottom, 24px)) !important;
+                padding-bottom: calc(32px + env(safe-area-inset-bottom, 24px)) !important;
             }
 
             .hero-chat-wrapper { display: flex; width: 100%; align-items: center; flex-direction: column; min-height: auto; }
