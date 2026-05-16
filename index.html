@@ -1664,7 +1664,7 @@
                     if(loader) loader.remove();
                     
                     // Passing standard markdown here, function formatMarkdown handles rendering it
-                    history.innerHTML += createAiBubble("If this is an emergency, call **911** or your local emergency number.<br><br>Hello! How can I assist you with your health today?");
+                    history.innerHTML += createAiBubble("If this is an emergency, call **999** or your local emergency number.<br><br>Hello! How can I assist you with your health today?");
                     
                     history.innerHTML += `
                         <div id="tos-blocker" style="display: flex; gap: 12px; margin-top: 16px;">
@@ -1683,7 +1683,7 @@
                     // Disable input immediately
                     const chatInput = document.getElementById('chat-input');
                     chatInput.readOnly = true;
-                    chatInput.placeholder = "Please check the box above to continue";
+                    chatInput.placeholder = "Please check the box above";
                     chatInput.blur();
                 }, 800);
                 return;
