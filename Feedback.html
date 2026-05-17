@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="color-scheme" content="light">
+    <title>Doktura.ai - Stories & Feedback</title>
+
+    <link rel="icon" type="image/jpeg" href="https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/Vector%20(4).png?download=true">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <style>
+        /* --- Reset & Base Styles --- */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', sans-serif;
+            color: #1a1a1a !important;
+            line-height: 1.5;
+            -webkit-font-smoothing: antialiased;
+            background-color: #ffffff !important;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* --- Color Variables --- */
+        :root {
+            --primary-blue: #0066cc;
+            --text-dark: #111111;
+            --text-gray: #666666;
+            --star-gold: #facc15;
+            --card-light-bg: #F4FAFC; 
+            --quote-blue: #C6E4F9;
+        }
+
+        a { text-decoration: none; color: inherit; transition: color 0.2s; }
+        
+        .btn-primary {
+            background-color: var(--primary-blue);
+            color: white;
+            border: none;
+            border-radius: 999px;
+            padding: 10px 24px;
+            font-size: 14px;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 0.2s;
+        }
+        .btn-primary:hover { opacity: 0.9; }
+
+        /* --- Header Styles --- */
+        .top-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 20px 40px;
+            max-width: 1400px;
+            margin: 0 auto;
+            width: 100%;
+        }
+        .logo-wrap img { height: 32px; object-fit: contain; }
+        
+        .nav-links {
+            display: flex;
+            gap: 32px;
+            align-items: center;
+        }
+        .nav-links a {
+            font-size: 15px;
+            color: #64748b;
+            font-weight: 500;
+        }
+        .nav-links a:hover { color: var(--text-dark); }
+        .nav-links a.active {
+            color: var(--text-dark);
+            font-weight: 700;
+        }
+        
+        /* Mobile Header Adjustments */
+        .mobile-menu-btn { display: none; }
+        @media (max-width: 1024px) {
+            .nav-links { display: none; }
+            .mobile-menu-btn { display: block; }
+            .top-header { padding: 16px 20px; }
+        }
+
+        /* --- Feedback Page Content Styles --- */
+        .page-wrapper { flex: 1; }
+
+        .stories-hero {
+            text-align: center;
+            padding: 60px 24px;
+            max-width: 760px;
+            margin: 0 auto;
+        }
+        .stories-hero h1 {
+            font-size: 42px;
+            font-weight: 800;
+            color: var(--text-dark);
+            margin-bottom: 24px;
+            letter-spacing: -0.5px;
+        }
+        .stories-hero h2 {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 16px;
+        }
+        .stories-hero p {
+            font-size: 16px;
+            color: #475569;
+            line-height: 1.6;
+        }
+
+        /* --- Grid Layout --- */
+        .feedback-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
+            max-width: 1200px;
+            margin: 0 auto 100px auto;
+            padding: 0 24px;
+        }
+
+        /* Card matching image design */
+        .feedback-card {
+            background-color: var(--card-light-bg);
+            border-radius: 20px;
+            padding: 32px;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .quote-icon {
+            color: var(--quote-blue);
+            width: 44px;
+            height: 44px;
+            margin-bottom: 16px;
+        }
+        
+        .stars {
+            display: flex;
+            gap: 4px;
+            margin-bottom: 16px;
+            color: var(--star-gold);
+        }
+        .stars svg { width: 16px; height: 16px; fill: currentColor; }
+        
+        .review-text {
+            font-size: 15px;
+            color: var(--text-dark);
+            line-height: 1.6;
+            margin-bottom: 24px;
+            flex-grow: 1;
+        }
+        
+        .user-profile-block {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        .user-profile-block img {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+        .user-meta {
+            display: flex;
+            flex-direction: column;
+        }
+        .user-meta .name {
+            font-weight: 600;
+            color: var(--text-dark);
+            font-size: 15px;
+        }
+        .user-meta .handle {
+            font-size: 13px;
+            color: #64748b;
+        }
+
+        /* --- Preserved Footer Styles --- */
+        .footer-section { background-color: #111111; color: #ffffff; padding: 80px 0 40px 0; width: 100%; border-top-left-radius: 32px; border-top-right-radius: 32px; }
+        .footer-content { max-width: 1200px; margin: 0 auto; padding: 0 24px; display: flex; flex-direction: column; }
+        .footer-top { display: flex; justify-content: space-between; gap: 60px; padding-bottom: 60px; }
+        .footer-brand { max-width: 380px; }
+        .footer-brand img { height: 40px; width: auto; margin-bottom: 24px; display: block; }
+        .footer-brand p { color: #a0aab5; font-size: 15px; line-height: 1.6; }
+        .footer-links-group { display: flex; gap: 120px; }
+        .footer-col h4 { font-size: 16px; font-weight: 600; margin-bottom: 24px; color: #ffffff; }
+        .footer-col a { display: block; color: #a0aab5; font-size: 14px; margin-bottom: 16px; text-decoration: none; transition: color 0.2s; }
+        .footer-col a:hover { color: #ffffff; }
+        .footer-bottom { display: flex; justify-content: space-between; align-items: center; padding-top: 40px; border-top: 1px solid rgba(255, 255, 255, 0.1); }
+        .footer-bottom p { color: #a0aab5; font-size: 13px; }
+        .social-area { display: flex; align-items: center; gap: 20px; }
+        .social-area span { color: #ffffff; font-weight: 500; font-size: 14px; }
+        .social-icons { display: flex; align-items: center; gap: 16px; }
+        .social-icons a { color: #ffffff; transition: opacity 0.2s; display: flex; align-items: center; justify-content: center; }
+        .social-icons a:hover { opacity: 0.7; }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .feedback-grid { grid-template-columns: repeat(2, 1fr); }
+            .footer-top { flex-direction: column; gap: 40px; }
+            .footer-links-group { gap: 60px; justify-content: flex-start; }
+            .footer-section { border-radius: 0; }
+        }
+        @media (max-width: 768px) {
+            .feedback-grid { grid-template-columns: 1fr; }
+            .stories-hero h1 { font-size: 32px; }
+            .footer-links-group { flex-direction: column; gap: 32px; }
+            .footer-bottom { flex-direction: column; align-items: flex-start; gap: 24px; }
+            .social-area { flex-direction: column; align-items: flex-start; gap: 16px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header -->
+    <header class="top-header">
+        <a href="index.html" class="logo-wrap">
+            <img src="https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/Group%202085665235.png?download=true" alt="Doktura Logo">
+        </a>
+        
+        <nav class="nav-links">
+            <a href="#">About Us</a>
+            <a href="#">FAQ</a>
+            <a href="#" class="active">Feedback</a>
+            <a href="#">Contact Us</a>
+            <a href="#">Terms of Service</a>
+        </nav>
+
+        <div class="flex items-center gap-4">
+            <button class="mobile-menu-btn text-gray-500">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+            </button>
+            <a href="https://doktura.ai/login.html" class="btn-primary">Login Now</a>
+        </div>
+    </header>
+
+    <main class="page-wrapper">
+        <!-- Hero Section -->
+        <section class="stories-hero">
+            <h1>Doktura.Ai Stories</h1>
+            <h2>Real people. Real experiences. Real care.</h2>
+            <p>We love hearing how Doktura.Ai has helped you navigate your health questions, get guidance, or connect with a doctor. Here's what some of our amazing users have to say:</p>
+        </section>
+
+        <!-- Testimonials Grid -->
+        <section class="feedback-grid">
+            
+            <!-- Shuffled cards, 2 entries per person, completely different texts -->
+            
+            <!-- 1. Zara Lee (Review 1) -->
+            <div class="feedback-card">
+                <svg class="quote-icon" viewBox="0 0 44 44" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M19.8 22H11C11 17.14 14.94 13.2 19.8 13.2V8.8C12.516 8.8 6.6 14.716 6.6 22V35.2H19.8V22ZM37.4 22H28.6C28.6 17.14 32.54 13.2 37.4 13.2V8.8C30.116 8.8 24.2 14.716 24.2 22V35.2H37.4V22Z" /></svg>
+                <div class="stars">
+                    <svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg><svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg><svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg><svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg><svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+                </div>
+                <p class="review-text">The doctors on this platform are top-notch. My consultation was thorough, and the prescription was sent directly to my local pharmacy with zero hassle.</p>
+                <div class="user-profile-block">
+                    <img src="https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/Zara%20Lee.webp" alt="Zara Lee">
+                    <div class="user-meta">
+                        <span class="name">Zara Lee</span>
+                        <span class="handle">ZaraL</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 2. Faisal Ahmed (Review 1) -->
+            <div class="feedback-card">
+                <svg class="quote-icon" viewBox="0 0 44 44" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M19.8 22H11C11 17.14 14.94 13.2 19.8 13.2V8.8C12.516 8.8 6.6 14.716 6.6 22V35.2H19.8V22ZM37.4 22H28.6C28.6 17.14 32.54 13.2 37.4 13.2V8.8C30.116 8.8 24.2 14.716 24.2 22V35.2H37.4V22Z" /></svg>
+                <div class="stars">
+                    <svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg><svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg><svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg><svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg><svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+                </div>
+                <p class="review-text">I was feeling unwell late at night and didn’t know what to do. The AI gave me clear guidance instantly, and I booked a doctor right after.</p>
+                <div class="user-profile-block">
+                    <img src="https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/1e37881e785c2acf3a1882b6dad6518d55813fa4.png" alt="Faisal Ahmed">
+                    <div class="user-meta">
+                        <span class="name">Faisal Ahmed</span>
+                        <span class="handle">Faisi12</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 3. Haris Lim (Review 1) -->
+            <div class="feedback-card">
+                <svg class="quote-icon" viewBox="0 0 44 44" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M19.8 22H11C11 17.14 14.94 13.2 19.8 13.2V8.8C12.516 8.8 6.6 14.716 6.6 22V35.2H19.8V22ZM37.4 22H28.6C28.6 17.14 32.54 13.2 37.4 13.2V8.8C30.116 8.8 24.2 14.716 24.2 22V35.2H37.4V22Z" /></svg>
+                <div class="stars">
+                    <svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg><svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg><svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg><svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg><svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+                </div>
+                <p class="review-text">Booking an appointment used to be such a hassle. With this app, I secured a slot with my preferred GP in under a minute without waiting on hold.</p>
+                <div class="user-profile-block">
+                    <img src="https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/Haris%20Lim.webp" alt="Haris Lim">
+                    <div class="user-meta">
+                        <span class="name">Haris Lim</span>
+                        <span class="handle">Lim99</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 4. Diego Martinez (Review 1) -->
+            <div class="feedback-card">
+                <svg class="quote-icon" viewBox="0 0 44 44" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M19.8 22H11C11 17.14 14.94 13.2 19.8 13.2V8.8C12.516 8.8 6.6 14.716 6.6 22V35.2H19.8V22ZM37.4 22H28.6C28.6 17.14 32.54 13.2 37.4 13.2V8.8C30.116 8.8 24.2 14.716 24.2 22V35.2H37.4V22Z" /></svg>
+                <div class="stars">
+                    <svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg><svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg><svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg><svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg><svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+                </div>
+                <p class="review-text">The platform is seamless from start to finish. The AI guidance is extremely clear, and the customer support team is very responsive if you ever need help.</p>
+                <div class="user-profile-block">
+                    <img src="https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/Diego%20Martinez.webp" alt="Diego Martinez">
+                    <div class="user-meta">
+                        <span class="name">Diego Martinez</span>
+                        <span class="handle">DiegoM</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 5. Priya Menon (Review 1) -->
+            <div class="feedback-card">
+                <svg class="quote-icon" viewBox="0 0 44 44" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M19.8 22H11C11 17.14 14.94 13.2 19.8 13.2V8.8C12.516 8.8 6.6 14.716 6.6 22V35.2H19.8V22ZM37.4 22H28.6C28.6 17.14 32.54 13.2 37.4 13.2V8.8C30.116 8.8 24.2 14.716 24.2 22V35.2H37.4V22Z" /></svg>
+                <div class="stars">
+                    <svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg><svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg><svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg><svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg><svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+                </div>
+                <p class="review-text">I was feeling unwell late at night and didn’t know what to do. The AI gave me clear guidance instantly, and I booked a doctor right after. Everything was smooth and fast.</p>
+                <div class="user-profile-block">
+                    <img src="https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/Priya-Menon.webp" alt="Priya Menon">
+                    <div class="user-meta">
+                        <span class="name">Priya Menon</span>
+                        <span class="handle">PriyaM</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 6. Mei Ling Chan (Review 1) -->
+            <div class="feedback-card">
+                <svg class="quote-icon" viewBox="0 0 44 44" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M19.8 22H11C11 17.14 14.94 13.2 19.8 13.2V8.8C12.516 8.8 6.6 14.716 6.6 22V35.2H19.8V22ZM37.4 22H28.6C28.6 17.14 32.54 13.2 37.4 13.2V8.8C30.116 8.8 24.2 14.716 24.2 22V35.2H37.4V22Z" /></svg>
+                <div class="stars">
+                    <svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg><svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg><svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg><svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg><svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+                </div>
+                <p class="review-text">Fast, reliable, and secure. Having all my medical records and upcoming appointments in one place is incredibly convenient for me and my family's needs.</p>
+                <div class="user-profile-block">
+                    <img src="https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/Mei%20Ling%20Chan(1).webp" alt="Mei Ling">
+                    <div class="user-meta">
+                        <span class="name">Mei Ling Chan</span>
+                        <span class="handle">MLChan</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 7. Faisal Ahmed (Review 2) -->
+            <div class="feedback-card">
+                <svg class="quote-icon" viewBox="0 0 44 44" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M19.8 22H11C11 17.14 14.94 13.2 19.8 13.2V8.8C12.516 8.8 6.6 14.716 6.6 22V35.2H19.8V22ZM37.4 22H28.6C28.6 17.14 32.54 13.2 37.4 13.2V8.8C30.116 8.8 24.2 14.716 24.2 22V35.2H37.4V22Z" /></svg>
+                <div class="stars">
+                    <svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg><svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg><svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg><svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg><svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+                </div>
+                <p class="review-text">The user interface is incredibly intuitive. I was able to find a specialist near me within minutes. Highly recommended for quick consultations!</p>
+                <div class="user-profile-block">
+                    <img src="https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/1e37881e785c2acf3a1882b6dad6518d55813fa4.png" alt="Faisal Ahmed">
+                    <div class="user-meta">
+                        <span class="name">Faisal Ahmed</span>
+                        <span class="handle">Faisi12</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 8. Zara Lee (Review 2) -->
+            <div class="feedback-card">
+                <svg class="quote-icon" viewBox="0 0 44 44" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M19.8 22H11C11 17.14 14.94 13.2 19.8 13.2V8.8C12.516 8.8 6.6 14.716 6.6 22V35.2H19.8V22ZM37.4 22H28.6C28.6 17.14 32.54 13.2 37.4 13.2V8.8C30.116 8.8 24.2 14.716 24.2 22V35.2H37.4V22Z" /></svg>
+                <div class="stars">
+                    <svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg><svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg><svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg><svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg><svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+                </div>
+                <p class="review-text">I love how I can access this 24/7. Having a medical AI assistant at my fingertips gives me genuine peace of mind, especially when traveling abroad.</p>
+                <div class="user-profile-block">
+                    <img src="https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/Zara%20Lee.webp" alt="Zara Lee">
+                    <div class="user-meta">
+                        <span class="name">Zara Lee</span>
+                        <span class="handle">ZaraL</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 9. Haris Lim (Review 2) -->
+            <div class="feedback-card">
+                <svg class="quote-icon" viewBox="0 0 44 44" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M19.8 22H11C11 17.14 14.94 13.2 19.8 13.2V8.8C12.516 8.8 6.6 14.716 6.6 22V35.2H19.8V22ZM37.4 22H28.6C28.6 17.14 32.54 13.2 37.4 13.2V8.8C30.116 8.8 24.2 14.716 24.2 22V35.2H37.4V22Z" /></svg>
+                <div class="stars">
+                    <svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg><svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg><svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg><svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg><svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+                </div>
+                <p class="review-text">I appreciate the follow-up reminders. It really feels like they care about your recovery journey, not just the initial booking. Great experience.</p>
+                <div class="user-profile-block">
+                    <img src="https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/Haris%20Lim.webp" alt="Haris Lim">
+                    <div class="user-meta">
+                        <span class="name">Haris Lim</span>
+                        <span class="handle">Lim99</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 10. Priya Menon (Review 2) -->
+            <div class="feedback-card">
+                <svg class="quote-icon" viewBox="0 0 44 44" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M19.8 22H11C11 17.14 14.94 13.2 19.8 13.2V8.8C12.516 8.8 6.6 14.716 6.6 22V35.2H19.8V22ZM37.4 22H28.6C28.6 17.14 32.54 13.2 37.4 13.2V8.8C30.116 8.8 24.2 14.716 24.2 22V35.2H37.4V22Z" /></svg>
+                <div class="stars">
+                    <svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg><svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg><svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg><svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg><svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+                </div>
+                <p class="review-text">Doktura.Ai saved me a trip to the ER for a minor issue. The symptom checker was spot on, and the telemedicine call was very professional.</p>
+                <div class="user-profile-block">
+                    <img src="https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/Priya-Menon.webp" alt="Priya Menon">
+                    <div class="user-meta">
+                        <span class="name">Priya Menon</span>
+                        <span class="handle">PriyaM</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 11. Diego Martinez (Review 2) -->
+            <div class="feedback-card">
+                <svg class="quote-icon" viewBox="0 0 44 44" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M19.8 22H11C11 17.14 14.94 13.2 19.8 13.2V8.8C12.516 8.8 6.6 14.716 6.6 22V35.2H19.8V22ZM37.4 22H28.6C28.6 17.14 32.54 13.2 37.4 13.2V8.8C30.116 8.8 24.2 14.716 24.2 22V35.2H37.4V22Z" /></svg>
+                <div class="stars">
+                    <svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg><svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg><svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg><svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg><svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+                </div>
+                <p class="review-text">As someone with a busy schedule, Doktura.Ai is a lifesaver. I managed to get a quick consultation during my lunch break without any waiting time.</p>
+                <div class="user-profile-block">
+                    <img src="https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/Diego%20Martinez.webp" alt="Diego Martinez">
+                    <div class="user-meta">
+                        <span class="name">Diego Martinez</span>
+                        <span class="handle">DiegoM</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 12. Mei Ling Chan (Review 2) -->
+            <div class="feedback-card">
+                <svg class="quote-icon" viewBox="0 0 44 44" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M19.8 22H11C11 17.14 14.94 13.2 19.8 13.2V8.8C12.516 8.8 6.6 14.716 6.6 22V35.2H19.8V22ZM37.4 22H28.6C28.6 17.14 32.54 13.2 37.4 13.2V8.8C30.116 8.8 24.2 14.716 24.2 22V35.2H37.4V22Z" /></svg>
+                <div class="stars">
+                    <svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg><svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg><svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg><svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg><svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+                </div>
+                <p class="review-text">The AI symptom analysis is surprisingly accurate. It asked the right questions and suggested I see a dermatologist, which turned out to be exactly what I needed.</p>
+                <div class="user-profile-block">
+                    <img src="https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/Mei%20Ling%20Chan(1).webp" alt="Mei Ling">
+                    <div class="user-meta">
+                        <span class="name">Mei Ling Chan</span>
+                        <span class="handle">MLChan</span>
+                    </div>
+                </div>
+            </div>
+
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer-section">
+        <div class="footer-content">
+            <div class="footer-top">
+                <div class="footer-brand">
+                    <img src="https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/Group%202085665233.png?download=true" alt="Doktura.ai Logo">
+                    <p>Providing AI-powered medical insights and<br>seamless doctor bookings 24/7.</p>
+                </div>
+
+                <div class="footer-links-group">
+                    <div class="footer-col">
+                        <h4>Company</h4>
+                        <a href="https://doktura.ai/About-us.html">About</a>
+                        <a href="#">Careers</a>
+                        <a href="https://doktura.ai/Contact-Us.html">Contact Us</a>
+                    </div>
+                    <div class="footer-col">
+                        <h4>Legal</h4>
+                        <a href="https://doktura.ai/privacy.html">Privacy Policy</a>
+                        <a href="https://doktura.ai/terms.html">Terms of Service</a>
+                        <a href="#">PDPA</a>
+                    </div>
+                    <div class="footer-col">
+                        <h4>Support</h4>
+                        <a href="#">FAQ</a>
+                        <a href="#">Doctor Portal Login</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                <p>Copyright 2026 © Doktura Plt Registration No. 202604000898 (LLP0046127-LGN)</p>
+                <div class="social-area">
+                    <span>Connect with us</span>
+                    <div class="social-icons">
+                        <a href="https://www.instagram.com/doktura.ai/" target="_blank" aria-label="Instagram">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
+                        </a>
+                        <a href="https://www.linkedin.com/company/doktura-ai" target="_blank" aria-label="LinkedIn">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle></svg>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+</body>
+</html>
