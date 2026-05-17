@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Doktura AI - Admin Login</title>
+    <style>
+        /* CSS Reset & Basic Setup */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: #f4f5f7;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            color: #333;
+        }
+
+        /* Header / Navbar */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 40px;
+            background-color: transparent;
+        }
+
+        header .logo {
+            font-size: 20px;
+            font-weight: bold;
+            color: #000;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        header .back-home {
+            text-decoration: none;
+            color: #666;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        header .back-home:hover {
+            color: #000;
+        }
+
+        /* Main Content & Card */
+        main {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .login-card {
+            background-color: #fff;
+            width: 100%;
+            max-width: 450px;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+
+        .login-card h1 {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .login-card p.subtitle {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 30px;
+            line-height: 1.5;
+        }
+
+        /* Form Elements */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #111;
+        }
+
+        .form-group input[type="email"],
+        .form-group input[type="password"] {
+            width: 100%;
+            padding: 12px 14px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 14px;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .form-group input:focus {
+            border-color: #0056b3;
+        }
+
+        .password-container {
+            position: relative;
+        }
+
+        .password-container .toggle-password {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            color: #666;
+        }
+
+        .form-options {
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .checkbox-label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            color: #333;
+            cursor: pointer;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 12px;
+            background-color: #0066cc;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .submit-btn:hover {
+            background-color: #0052a3;
+        }
+
+        #error-msg {
+            color: #dc3545;
+            font-size: 13px;
+            margin-bottom: 15px;
+            display: none;
+            text-align: center;
+        }
+
+        /* Footer */
+        footer {
+            padding: 20px 40px;
+            font-size: 12px;
+            color: #888;
+            display: flex;
+            justify-content: space-between;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo">
+            <!-- Simple SVG icon representing the doctor logo -->
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+            doktura.ai
+        </div>
+        <a href="https://doktura.ai" class="back-home">&larr; Back Home</a>
+    </header>
+
+    <main>
+        <div class="login-card">
+            <h1>Welcome back</h1>
+            <p class="subtitle">Login with your Admin account and Password<br>to access the dashboard.</p>
+
+            <div id="error-msg">Invalid Admin Email or Password</div>
+
+            <form id="admin-login-form">
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" id="email" placeholder="Enter your admin email" required value="dokturamedic@gmail.com">
+                </div>
+
+                <div class="form-group">
+                    <label>Password</label>
+                    <div class="password-container">
+                        <input type="password" id="password" placeholder="Enter your password" required>
+                        <span class="toggle-password" onclick="togglePassword()">👁️</span>
+                    </div>
+                </div>
+
+                <div class="form-options">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="keep-logged-in"> Keep me logged in
+                    </label>
+                </div>
+
+                <button type="submit" class="submit-btn" id="login-btn">Continue</button>
+            </form>
+        </div>
+    </main>
+
+    <footer>
+        <div>Copyright 2026 © Doktura Plt Registration No. 202604000898 (LLP0046127-LGN)</div>
+    </footer>
+
+    <script>
+        // API URL - Change this to https://api.doktura.ai/api/admin/login in production
+        const API_URL = "https://api.doktura.ai/api/admin/login"; 
+        
+        // Show/Hide Password function
+        function togglePassword() {
+            const pwdInput = document.getElementById('password');
+            if (pwdInput.type === 'password') {
+                pwdInput.type = 'text';
+            } else {
+                pwdInput.type = 'password';
+            }
+        }
+
+        // Handle Login Submission
+        document.getElementById('admin-login-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const errorMsg = document.getElementById('error-msg');
+            const loginBtn = document.getElementById('login-btn');
+
+            // Loading state
+            loginBtn.innerText = "Authenticating...";
+            loginBtn.disabled = true;
+            errorMsg.style.display = "none";
+
+            try {
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ email: email, password: password })
+                });
+
+                const data = await response.json();
+
+                if (response.ok && data.success) {
+                    // Save secure token to localStorage
+                    localStorage.setItem('admin_token', data.token);
+                    
+                    // Redirect to Admin Dashboard page (we will create this next)
+                    window.location.href = "admin_dashboard.html"; 
+                } else {
+                    // Show error
+                    errorMsg.innerText = data.detail || "Invalid login credentials.";
+                    errorMsg.style.display = "block";
+                }
+            } catch (error) {
+                console.error('Login error:', error);
+                errorMsg.innerText = "Network error. Please try again.";
+                errorMsg.style.display = "block";
+            } finally {
+                loginBtn.innerText = "Continue";
+                loginBtn.disabled = false;
+            }
+        });
+    </script>
+</body>
+</html>
