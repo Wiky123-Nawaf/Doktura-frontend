@@ -1814,14 +1814,13 @@
             if (isProcessingLink) return; // Wait for processing the URL intercept logic
             
             if (user) {
-                // If it's a new email account without a password somehow, trigger set password
-                if(user.providerData.every(p => p.providerId === 'password') && !user.emailVerified && !isSignInWithEmailLink(auth, window.location.href)) {
-                    // Fallback for legacy flow (if they somehow used old signup logic)
-                    await signOut(auth);
-                    return;
-                }
+                // I have removed the strict email verification check here. 
+                // Now you can log in immediately with your manually created Firebase accounts!
                 await triggerSync(user);
             } else {
+                // FIX: If there is no user, ALWAYS hide the spinner so it doesn't get stuck!
+                hideGlobalLoader(); 
+                
                 if(document.getElementById('actionStatusModal').style.display !== 'flex') {
                     window.showView('view-login', null, false);
                 }
