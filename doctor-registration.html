@@ -252,11 +252,10 @@
                     <h1>Partner Doctor Registration</h1>
                     <p>We are launching soon! Register your interest early to become part of our network and manage patient consultations seamlessly.</p>
                 </div>
-                <form action="https://formsubmit.co/dokturamedic@gmail.com" method="POST" enctype="multipart/form-data">
-                    <input type="text" name="_honey" style="display:none">
-                    <input type="hidden" name="_captcha" value="false">
-                    <input type="hidden" name="_next" value="https://doktura.ai/">
-                    <input type="hidden" name="_subject" value="New Doctor Early Registration Submission">
+                <!-- UPDATED: Form action changed to Formspree endpoint -->
+                <form action="https://formspree.io/f/mkoeneal" method="POST" enctype="multipart/form-data">
+                    
+                    <!-- REMOVED: Formsubmit.co specific hidden inputs -->
 
                     <h3 class="section-title">General Information</h3>
                     <div class="form-row">
@@ -280,7 +279,6 @@
                             </label>
                         </div>
                     </div>
-                    <!-- START: Added File Upload Fields -->
                     <div class="form-group">
                         <label class="form-label">Borang 11 (APC)</label>
                         <div class="file-input-wrapper">
@@ -311,7 +309,6 @@
                             </label>
                         </div>
                     </div>
-                    <!-- END: Added File Upload Fields -->
                     <button type="submit" class="btn-primary">Submit Application</button>
                     <p style="text-align: center; font-size: 12px; color: #666; margin-top: 16px;">By submitting, your details will be securely sent for early review.</p>
                 </form>
