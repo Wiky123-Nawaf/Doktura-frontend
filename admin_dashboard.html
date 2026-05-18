@@ -3,226 +3,302 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Doktura AI - Live Admin Dashboard</title>
+    <title>Doktura AI - Admin Dashboard</title>
     <link rel="icon" type="image/jpeg" href="https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/Vector%20(4).png?download=true">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         :root {
-            --bg-body: #f8fafc; --bg-sidebar: #ffffff; --bg-card: #ffffff;
+            --bg-body: #f4f7fe; --bg-sidebar: #ffffff; --bg-card: #ffffff;
             --text-main: #111827; --text-muted: #6b7280; --text-light: #9ca3af;
-            --border-light: #f3f4f6; --border: #e5e7eb;
-            --primary: #0066cc; --primary-light: #eff6ff; --primary-dark: #004c99;
-            --success: #10b981; --danger: #ef4444; --warning: #f59e0b;
+            --border: #e5e7eb; --border-light: #f3f4f6;
+            --primary: #0066cc; --primary-light: #e0f2fe; --primary-hover: #0052a3;
+            --success: #10b981; --success-light: #d1fae5;
+            --danger: #ef4444; --danger-light: #fee2e2;
+            --warning: #f59e0b; --warning-light: #fef3c7;
         }
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
         body { display: flex; height: 100vh; background-color: var(--bg-body); overflow: hidden; color: var(--text-main); }
 
-        /* --- NEW SIDEBAR --- */
-        .sidebar { width: 250px; background-color: var(--bg-sidebar); border-right: 1px solid var(--border); display: flex; flex-direction: column; padding: 20px 16px; }
-        .logo { padding: 0 8px 24px 8px; }
-        .logo img { height: 28px; }
-        .nav-menu { list-style: none; flex-grow: 1; }
-        .nav-menu a { display: flex; align-items: center; gap: 12px; padding: 10px 12px; text-decoration: none; color: var(--text-muted); font-size: 14px; font-weight: 500; border-radius: 8px; transition: 0.2s;}
-        .nav-menu a:hover { background-color: var(--border-light); }
-        .nav-menu a.active { background-color: var(--primary); color: #fff; font-weight: 600; }
-        .nav-menu a svg { width: 20px; height: 20px; }
-        .sidebar-profile { display: flex; align-items: center; gap: 12px; padding: 12px; border-top: 1px solid var(--border-light); }
-        .sidebar-profile img { width: 36px; height: 36px; border-radius: 50%; }
+        /* ====== SIDEBAR ====== */
+        .sidebar { width: 260px; background-color: var(--bg-sidebar); border-right: 1px solid var(--border); display: flex; flex-direction: column; justify-content: space-between; }
+        .sidebar-top { padding: 24px 20px; }
+        .logo { margin-bottom: 40px; display: flex; align-items: center; padding-left: 10px; }
+        .logo img { height: 26px; width: auto; }
+        .menu-label { font-size: 11px; font-weight: 600; color: var(--text-light); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 12px; padding-left: 10px; }
+        .nav-menu { list-style: none; display: flex; flex-direction: column; gap: 4px; }
+        .nav-menu a { display: flex; align-items: center; gap: 12px; padding: 12px 14px; text-decoration: none; color: var(--text-muted); font-size: 14px; font-weight: 500; border-radius: 8px; transition: 0.2s;}
+        .nav-menu a:hover { background-color: var(--bg-body); color: var(--text-main); }
+        .nav-menu a.active { background-color: var(--primary-light); color: var(--primary); font-weight: 600; }
+        
+        .sidebar-bottom { padding: 20px; border-top: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+        .user-profile { display: flex; align-items: center; gap: 10px; }
+        .user-profile img { width: 36px; height: 36px; border-radius: 50%; }
+        .user-info { display: flex; flex-direction: column; }
+        .user-info .name { font-size: 13px; font-weight: 600; color: var(--text-main); }
+        .user-info .email { font-size: 11px; color: var(--text-muted); }
+        .logout-btn { background: none; border: none; cursor: pointer; color: var(--text-muted); font-size: 18px; transition: 0.2s; }
+        .logout-btn:hover { color: var(--danger); }
 
-        /* --- NEW MAIN CONTENT & HEADER --- */
+        /* ====== MAIN CONTENT ====== */
         .main-content { flex: 1; display: flex; flex-direction: column; overflow-y: auto; }
-        header { display: flex; justify-content: space-between; align-items: center; padding: 16px 32px; background: #fff; border-bottom: 1px solid var(--border); position: sticky; top:0; z-index: 10;}
-        .header-left h1 { font-weight: 600; font-size: 20px; }
-        .header-left p { font-size: 13px; color: var(--text-muted); margin-top: 4px; }
-        .header-right { display: flex; align-items: center; gap: 16px; }
-        .search-bar { position: relative; }
-        .search-bar input { background: var(--bg-body); border: 1px solid var(--border); border-radius: 8px; padding: 8px 12px 8px 36px; width: 250px; font-size: 13px; }
-        .search-bar svg { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); width: 16px; height: 16px; color: var(--text-light); }
-        .header-actions { display: flex; align-items: center; gap: 8px; }
-        .icon-btn { background: none; border: none; cursor: pointer; color: var(--text-muted); padding: 8px; }
-        .icon-btn svg { width: 22px; height: 22px; }
-
-        .dashboard-body { padding: 24px 32px; }
-
-        /* --- NEW METRIC CARDS --- */
-        .metrics-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; margin-bottom: 24px; }
-        .metric-card { background: var(--bg-card); padding: 20px; border-radius: 16px; border: 1px solid var(--border); box-shadow: 0 1px 2px rgba(0,0,0,0.02); }
-        .metric-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
-        .metric-label { font-size: 14px; color: var(--text-muted); font-weight: 500; }
-        .metric-value { font-size: 32px; font-weight: 700; }
-        .metric-subtext { font-size: 12px; color: var(--text-light); margin-top: 8px; }
-        .metric-change { font-weight: 600; font-size: 13px; }
-        .metric-change.positive { color: var(--success); }
-        .metric-change.negative { color: var(--danger); }
-
-        /* --- NEW PANELS & TABLES --- */
-        .panel { background: var(--bg-card); border-radius: 16px; border: 1px solid var(--border); overflow: hidden; }
-        .panel-header { display: flex; justify-content: space-between; align-items: center; padding: 16px 24px; border-bottom: 1px solid var(--border); font-weight: 600; font-size: 15px; }
-        .panel-actions { display: flex; align-items: center; gap: 8px; }
-        .btn-sm { background: var(--bg-body); border: 1px solid var(--border); color: var(--text-muted); font-size: 12px; font-weight: 500; padding: 6px 12px; border-radius: 6px; cursor: pointer; }
-        .btn-primary { background: var(--primary); color: white; padding: 8px 16px; border: none; border-radius: 8px; font-weight: 500; cursor: pointer; }
+        header { display: flex; justify-content: space-between; align-items: center; padding: 20px 32px; background: transparent; position: sticky; top:0; z-index: 10;}
+        .search-global { display: flex; align-items: center; background: #fff; border: 1px solid var(--border); border-radius: 8px; padding: 8px 16px; width: 300px; box-shadow: 0 1px 2px rgba(0,0,0,0.02); }
+        .search-global input { border: none; outline: none; font-size: 13px; margin-left: 8px; width: 100%; color: var(--text-main); }
         
-        .main-layout { display: grid; grid-template-columns: 2fr 1.2fr; gap: 24px; }
+        .header-right { display: flex; align-items: center; gap: 20px; }
+        .bell-icon { position: relative; cursor: pointer; color: var(--text-muted); font-size: 18px; }
+        .bell-icon::after { content: ''; position: absolute; top: 0; right: 0; width: 6px; height: 6px; background: var(--danger); border-radius: 50%; border: 2px solid #fff;}
+
+        .dashboard-body { padding: 0 32px 32px 32px; max-width: 1400px; margin: 0 auto; width: 100%; }
+        .page-title { margin-bottom: 24px; }
+        .page-title h1 { font-size: 22px; font-weight: 700; color: var(--text-main); }
+        .page-title p { font-size: 14px; color: var(--text-muted); margin-top: 4px; }
+
+        /* ====== METRIC CARDS ====== */
+        .metrics-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px; }
+        .metric-card { background: var(--bg-card); padding: 20px; border-radius: 16px; border: 1px solid var(--border); box-shadow: 0 4px 6px -1px rgba(0,0,0,0.02); display: flex; flex-direction: column; position: relative; }
+        .metric-card.clickable { cursor: pointer; transition: 0.2s; }
+        .metric-card.clickable:hover { border-color: var(--primary); transform: translateY(-2px); box-shadow: 0 10px 15px -3px rgba(0,0,0,0.05); }
         
-        /* See More Functionality */
-        .table-container { max-height: 350px; overflow-y: auto; }
+        .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; font-size: 13px; font-weight: 600; color: var(--text-main); }
+        .card-header span { color: var(--text-muted); cursor: pointer; }
+        .card-body { display: flex; align-items: center; gap: 16px; margin-bottom: 16px; }
+        .card-body .value { font-size: 32px; font-weight: 700; letter-spacing: -1px; }
+        
+        /* Circular Progress Indicator */
+        .progress-circle { width: 40px; height: 40px; border-radius: 50%; display: flex; justify-content: center; align-items: center; background: conic-gradient(var(--danger) 70%, var(--border) 0); }
+        .progress-circle.blue { background: conic-gradient(var(--primary) 40%, var(--border) 0); }
+        .progress-circle.orange { background: conic-gradient(var(--warning) 60%, var(--border) 0); }
+        .progress-inner { width: 32px; height: 32px; border-radius: 50%; background: #fff; }
+        
+        .card-subinfo { font-size: 11px; color: var(--text-muted); }
+        .card-footer { display: flex; justify-content: space-between; font-size: 12px; font-weight: 500; }
+        .trend-up { color: var(--success); }
+        .trend-down { color: var(--danger); }
+
+        /* ====== PANELS ====== */
+        .layout-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 24px; }
+        .panel { background: var(--bg-card); border-radius: 16px; border: 1px solid var(--border); margin-bottom: 24px; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.02); }
+        .panel-header { display: flex; justify-content: space-between; align-items: center; padding: 20px 24px; border-bottom: 1px solid var(--border-light); font-weight: 600; font-size: 16px; }
+        
+        /* ====== TABLE ====== */
+        .table-tools { display: flex; justify-content: space-between; padding: 16px 24px; border-bottom: 1px solid var(--border-light); }
+        .search-table { display: flex; align-items: center; border: 1px solid var(--border); border-radius: 8px; padding: 6px 12px; width: 300px; }
+        .search-table input { border: none; outline: none; font-size: 12px; width: 100%; margin-left: 8px; }
+        .filter-btn { border: 1px solid var(--border); background: #fff; border-radius: 8px; padding: 6px 12px; cursor: pointer; color: var(--text-muted); }
+
         table { width: 100%; border-collapse: collapse; }
-        thead th { position: sticky; top: 0; background: #fafafa; z-index: 1; text-align: left; padding: 12px 24px; font-size: 11px; color: var(--text-light); text-transform: uppercase; border-bottom: 1px solid var(--border); }
-        td { padding: 14px 24px; font-size: 13px; border-bottom: 1px solid var(--border); vertical-align: middle; }
-        .avatar-sm { width: 32px; height: 32px; border-radius: 50%; vertical-align: middle; margin-right: 12px; object-fit: cover; }
-        
-        .doctor-list-item { display: flex; align-items: center; justify-content: space-between; padding: 12px 24px; border-bottom: 1px solid var(--border); }
-        .badge { padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; }
-        .badge.pending { background: #fffbeb; color: #b45309; }
-        .badge.verified { background: #f0fdf4; color: #15803d; }
-        .btn-approve, .btn-reject { font-size: 12px; font-weight: 500; background: #fff; border: 1px solid var(--border); padding: 6px 12px; border-radius: 6px; cursor: pointer; }
-        .btn-approve:hover { background: #f0fdf4; border-color: #15803d; color: #15803d; }
-        .btn-reject:hover { background: #fef2f2; border-color: #ef4444; color: #ef4444; }
+        thead th { background: #fff; text-align: left; padding: 12px 24px; font-size: 11px; color: var(--text-muted); font-weight: 500; border-bottom: 1px solid var(--border); }
+        td { padding: 16px 24px; font-size: 13px; border-bottom: 1px solid var(--border-light); color: var(--text-main); }
+        .avatar-sm { width: 28px; height: 28px; border-radius: 50%; vertical-align: middle; margin-right: 8px; }
+        .time-pill { font-size:11px; color:var(--primary); font-weight:600; background:var(--primary-light); padding:4px 8px; border-radius:20px; display:inline-block; margin-left: 8px;}
 
-        /* Modals (No change needed) */
-        .modal-overlay { position: fixed; inset: 0; background: rgba(17, 24, 39, 0.6); display: flex; justify-content: center; align-items: center; z-index: 1000; backdrop-filter: blur(2px); }
-        .modal-box { background: #fff; border-radius: 16px; width: 100%; max-width: 500px; max-height: 90vh; display: flex; flex-direction: column; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); }
-        .modal-header, .modal-footer { padding: 20px 24px; border-color: var(--border); }
-        .modal-header { border-bottom: 1px solid; } .modal-footer { border-top: 1px solid; }
-        .modal-header h2 { font-size: 18px; }
+        /* ====== SEE MORE BUTTON ====== */
+        .see-more-container { text-align: center; padding: 16px; background: #fff; }
+        .btn-see-more { background: transparent; border: 1px solid var(--border); color: var(--text-main); font-size: 13px; font-weight: 600; padding: 8px 24px; border-radius: 20px; cursor: pointer; transition: 0.2s; }
+        .btn-see-more:hover { background: var(--bg-body); border-color: var(--text-muted); }
+
+        /* ====== DOCTOR LIST ====== */
+        .btn-add { background: var(--primary); color: #fff; border: none; padding: 8px 16px; border-radius: 8px; font-size: 13px; font-weight: 500; cursor: pointer; transition: 0.2s;}
+        .btn-add:hover { background: var(--primary-hover); }
+        
+        .doc-card { border: 1px solid var(--border-light); padding: 16px; border-radius: 12px; margin-bottom: 12px; background: #fff; box-shadow: 0 1px 2px rgba(0,0,0,0.02); }
+        .badge { padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; }
+        .badge.pending { background: var(--warning-light); color: var(--warning); border: 1px solid #fcd34d; }
+        .badge.verified { background: var(--success-light); color: var(--success); border: 1px solid #6ee7b7; }
+        
+        .doc-actions { display: flex; gap: 8px; margin-top: 16px; }
+        .btn-outline-success { flex: 1; padding: 8px; border-radius: 8px; background: #fff; border: 1px solid var(--border); color: var(--text-main); font-size: 12px; font-weight: 600; cursor: pointer; transition: 0.2s;}
+        .btn-outline-danger { flex: 1; padding: 8px; border-radius: 8px; background: #fff; border: 1px solid var(--border); color: var(--danger); font-size: 12px; font-weight: 600; cursor: pointer; transition: 0.2s;}
+        .btn-outline-success:hover { border-color: var(--success); color: var(--success); background: var(--success-light); }
+        .btn-outline-danger:hover { border-color: var(--danger); background: var(--danger-light); }
+
+        /* ====== MODALS ====== */
+        .modal-overlay { position: fixed; inset: 0; background: rgba(17, 24, 39, 0.6); display: flex; justify-content: center; align-items: center; z-index: 1000; backdrop-filter: blur(4px); }
+        .modal-box { background: #fff; border-radius: 16px; width: 100%; max-width: 500px; max-height: 90vh; display: flex; flex-direction: column; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25); }
+        .modal-header { padding: 20px 24px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+        .modal-header h2 { font-size: 18px; font-weight: 600; }
         .modal-close { background: none; border: none; font-size: 24px; cursor: pointer; color: var(--text-muted); }
         .modal-body { padding: 24px; overflow-y: auto; flex: 1; }
+        .modal-footer { padding: 20px 24px; border-top: 1px solid var(--border); text-align: right; }
     </style>
 </head>
 <body>
 
+    <!-- SIDEBAR -->
     <aside class="sidebar">
-        <div>
+        <div class="sidebar-top">
             <div class="logo">
                 <img src="https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/Group%202085665235.png?download=true" alt="doktura.ai">
             </div>
+            <div class="menu-label">Main Menu</div>
             <ul class="nav-menu">
-                <li><a href="#" class="active">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 6a7.5 7.5 0 100 15 7.5 7.5 0 000-15zM21 21l-5.197-5.197" /></svg>
-                    Dashboard
-                </a></li>
-                <li><a href="#">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-4.663v-.005A9.345 9.345 0 0112 12c-3.057 0-5.84-1.343-7.822-3.486M12 12a9.37 9.37 0 01-3.372-1.938l-.001-.002c-1.487-1.305-2.712-2.884-3.635-4.663a9.37 9.37 0 01-1.938-3.372l-.002-.001c-.246-.962-.396-1.956-.396-2.977A9.37 9.37 0 0112 3c2.08 0 4.028.668 5.624 1.834l.001.001a9.37 9.37 0 013.372 1.938l.002.001c1.487 1.305 2.712 2.884 3.635 4.663a9.37 9.37 0 011.938 3.372l.001.002c.246.962.396 1.956.396 2.977a9.37 9.37 0 01-1.834 5.624l-.001.001a9.37 9.37 0 01-1.938 3.372z" /></svg>
-                    Patients
-                </a></li>
-                <li><a href="#">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z" /></svg>
-                    Doctors
-                </a></li>
-                <li><a href="#">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5" /></svg>
-                    Appointments
-                </a></li>
+                <li><a href="#" class="active">🏠 Dashboard</a></li>
+                <li><a href="#">👥 Patients</a></li>
+                <li><a href="#">👨‍⚕️ Doctors</a></li>
+                <li><a href="#">📅 Appointments</a></li>
+                <li><a href="#">⚙️ Settings</a></li>
             </ul>
         </div>
-        <div class="sidebar-profile">
-            <img src="https://ui-avatars.com/api/?name=Sabrina+Gomez&background=0D8ABC&color=fff" alt="Admin Avatar">
-            <div>
-                <div style="font-weight: 600; font-size: 14px;">Sabrina Gomez</div>
-                <button onclick="logout()" style="background:none; border:none; color:var(--danger); cursor:pointer; font-size: 12px; font-weight: 500; padding:0;">Logout</button>
+        <div class="sidebar-bottom">
+            <div class="user-profile">
+                <img src="https://ui-avatars.com/api/?name=Admin+User&background=0D8ABC&color=fff" alt="Avatar">
+                <div class="user-info">
+                    <span class="name">Super Admin</span>
+                    <span class="email">dokturamedic@gmail.com</span>
+                </div>
             </div>
+            <button class="logout-btn" onclick="logout()" title="Logout">🚪</button>
         </div>
     </aside>
 
+    <!-- MAIN CONTENT -->
     <main class="main-content">
         <header>
-            <div class="header-left">
-                <h1>Welcome back, Sabrina!</h1>
-                <p>Overview of platform activity and key metrics.</p>
+            <div class="search-global">
+                🔍 <input type="text" placeholder="Search...">
             </div>
             <div class="header-right">
-                <div class="search-bar">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" /></svg>
-                    <input type="text" placeholder="Search...">
-                </div>
-                <div class="header-actions">
-                    <button class="icon-btn">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0" /></svg>
-                    </button>
-                    <img src="https://ui-avatars.com/api/?name=Sabrina+Gomez&background=0D8ABC&color=fff" style="width:36px; height:36px; border-radius:50%;">
+                <div class="bell-icon">🔔</div>
+                <div class="user-profile">
+                    <img src="https://ui-avatars.com/api/?name=Sabrina+Gomez&background=0D8ABC&color=fff" alt="Avatar">
+                    <div class="user-info">
+                        <span class="name">Sabrina Gomez</span>
+                        <span class="email">Super Admin</span>
+                    </div>
                 </div>
             </div>
         </header>
 
         <div class="dashboard-body">
-            <!-- 1. LIVE STATS CARDS -->
-            <div class="metrics-grid">
-                <div class="metric-card">
-                    <div class="metric-header"><div class="metric-label">Total Patients</div></div>
-                    <div class="metric-value" id="stat-patients">0</div>
-                    <div class="metric-subtext"><span class="metric-change positive">+12%</span> vs last month</div>
-                </div>
-                <div class="metric-card">
-                    <div class="metric-header"><div class="metric-label">Approved Doctors</div></div>
-                    <div class="metric-value" id="stat-doctors">0</div>
-                    <div class="metric-subtext">9 Available Now</div>
-                </div>
-                <div class="metric-card">
-                    <div class="metric-header"><div class="metric-label">Active Appointments</div></div>
-                    <div class="metric-value" id="stat-appts">0</div>
-                    <div class="metric-subtext">8 waiting</div>
-                </div>
-                <div class="metric-card" onclick="openRevenueModal()" style="cursor: pointer;">
-                    <div class="metric-header"><div class="metric-label">Monthly Revenue</div></div>
-                    <div class="metric-value" id="stat-revenue">MYR 0.00</div>
-                    <div class="metric-subtext"><span class="metric-change negative">-2.3%</span> Decreased</div>
-                </div>
-            </div>
-
-            <!-- Main Layout Grid -->
-            <div style="display: grid; grid-template-columns: 1fr; gap: 24px; margin-bottom: 24px;">
-                <div class="panel">
-                    <div class="panel-header">
-                        <span>Appointment Received Over Time</span>
-                        <div class="panel-actions">
-                            <select class="btn-sm"><option>Last 8 Months</option></select>
-                        </div>
-                    </div>
-                    <div style="padding: 16px; height: 300px;">
-                        <canvas id="mainChart"></canvas>
-                    </div>
-                </div>
-            </div>
             
-            <div class="main-layout">
-                <!-- Appointment Records -->
-                <div class="panel">
-                    <div class="panel-header">
-                        <span>Appointment Records</span>
-                        <div class="panel-actions">
-                            <input type="text" placeholder="Search patient or doctor..." class="btn-sm" style="width: 200px;">
+            <div class="page-title">
+                <h1>Welcome back, Sabrina!</h1>
+                <p>Overview of platform activity and key metrics.</p>
+            </div>
+
+            <!-- METRIC CARDS -->
+            <div class="metrics-grid">
+                <!-- Card 1 -->
+                <div class="metric-card">
+                    <div class="card-header">Total Patients <span>↗</span></div>
+                    <div class="card-body">
+                        <div class="value" id="stat-patients">0</div>
+                        <div>
+                            <div class="progress-circle"><div class="progress-inner"></div></div>
                         </div>
+                        <div class="card-subinfo">Monthly Target<br><strong>24/30 patients</strong></div>
                     </div>
-                    <!-- SEE MORE IMPLEMENTATION: This container is scrollable -->
-                    <div class="table-container">
-                        <table>
-                            <thead>
-                                <tr><th>Date & Time</th><th>Patient</th><th>Doctor</th><th>Symptoms</th></tr>
-                            </thead>
-                            <tbody id="table-appointments">
-                                <tr><td colspan="4" style="text-align: center; color: var(--text-light); padding: 20px;">Loading records...</td></tr>
-                            </tbody>
-                        </table>
-                    </div>
+                    <div class="card-footer"><span class="trend-up">↗ +12%</span> vs last month</div>
                 </div>
 
-                <!-- Doctor Management -->
-                <div class="panel">
-                    <div class="panel-header">
-                        <span>Doctor Management</span>
-                        <button class="btn-primary">+ Add Doctor</button>
+                <!-- Card 2 -->
+                <div class="metric-card">
+                    <div class="card-header">Approved Doctors <span>↗</span></div>
+                    <div class="card-body">
+                        <div class="value" id="stat-doctors">0</div>
+                        <div>
+                            <div class="progress-circle orange"><div class="progress-inner"></div></div>
+                        </div>
+                        <div class="card-subinfo">Staffing Goal<br><strong>15/30</strong></div>
                     </div>
-                    <div id="list-doctors" style="max-height: 400px; overflow-y: auto;">
-                        <p style="text-align: center; color: var(--text-light); font-size: 13px; padding: 20px;">Checking for applications...</p>
+                    <div class="card-footer"><span class="trend-up">9 Available Now</span> <span>3 Off-duty</span></div>
+                </div>
+
+                <!-- Card 3 -->
+                <div class="metric-card">
+                    <div class="card-header">Active Appointments <span>↗</span></div>
+                    <div class="card-body">
+                        <div class="value" id="stat-appts">0</div>
+                        <div>
+                            <div class="progress-circle blue"><div class="progress-inner"></div></div>
+                        </div>
+                        <div class="card-subinfo">Daily Capacity<br><strong>17/30</strong></div>
                     </div>
+                    <div class="card-footer"><span class="trend-up">8 waiting</span> <span>> 15 mins</span></div>
+                </div>
+
+                <!-- Card 4 (REVENUE - CLICKABLE) -->
+                <div class="metric-card clickable" onclick="openRevenueModal()" title="Click to view all-time history">
+                    <div class="card-header">Monthly Revenue <span style="color:var(--primary);">↗</span></div>
+                    <div class="card-body" style="display:block;">
+                        <div class="value" id="stat-revenue">MYR 0.00</div>
+                    </div>
+                    <div class="card-footer"><span class="trend-down">↘ -2.3% Decreased</span> <span>per patient</span></div>
                 </div>
             </div>
 
+            <div class="layout-grid">
+                <!-- LEFT COLUMN -->
+                <div class="left-col" style="display: flex; flex-direction: column;">
+                    
+                    <!-- Chart Panel -->
+                    <div class="panel">
+                        <div class="panel-header">
+                            Appointment Received Over Time
+                            <select style="padding:4px 8px; border-radius:6px; border:1px solid var(--border); outline:none;">
+                                <option>Last 6 Months</option>
+                            </select>
+                        </div>
+                        <div style="padding: 20px; height: 300px;">
+                            <canvas id="mainChart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Appointment Table Panel -->
+                    <div class="panel" style="flex: 1;">
+                        <div class="panel-header" style="border-bottom:none; padding-bottom:10px;">
+                            Appointment Records
+                        </div>
+                        <div class="table-tools">
+                            <div class="search-table">
+                                🔍 <input type="text" id="apptSearchInput" placeholder="Search by patient or doctor..." onkeyup="filterAppointments()">
+                            </div>
+                            <button class="filter-btn">⚙️ Filter</button>
+                        </div>
+                        <div class="table-responsive">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Date & Time</th>
+                                        <th>Patient</th>
+                                        <th>Doctor</th>
+                                        <th>Symptoms</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="table-deliveries">
+                                    <tr><td colspan="4" style="text-align: center; color: var(--text-light);">Loading records...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <!-- SEE MORE BUTTON -->
+                        <div class="see-more-container" id="seeMoreContainer" style="display: none;">
+                            <button class="btn-see-more" onclick="loadMoreAppointments()">See More ↓</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- RIGHT COLUMN -->
+                <div class="right-col">
+                    <!-- Doctors Panel -->
+                    <div class="panel">
+                        <div class="panel-header">
+                            Doctor Management
+                            <button class="btn-add" onclick="openAddDoctorModal()">+ Add Doctor</button>
+                        </div>
+                        <div id="list-pending-doctors" style="padding: 20px;">
+                            <p style="text-align: center; color: var(--text-light); font-size: 13px;">Checking for doctors...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </main>
+
+    <!-- ================= MODALS ================= -->
     
-    <!-- Revenue History Modal (No Change) -->
+    <!-- Revenue History Modal -->
     <div id="revenueModal" class="modal-overlay" style="display: none;">
         <div class="modal-box" style="max-width: 450px;">
             <div class="modal-header">
@@ -233,14 +309,15 @@
                 <table style="width: 100%; border-collapse: collapse;">
                     <thead>
                         <tr>
-                            <th style="background: #fafafa; padding: 12px 24px; text-align: left;">Month</th>
-                            <th style="background: #fafafa; padding: 12px 24px; text-align: right;">Total Revenue</th>
+                            <th style="background: #fafafa; padding: 12px 24px; text-align: left; border-bottom: 1px solid var(--border-light);">Month</th>
+                            <th style="background: #fafafa; padding: 12px 24px; text-align: right; border-bottom: 1px solid var(--border-light);">Total Revenue</th>
                         </tr>
                     </thead>
-                    <tbody id="revenueHistoryTableBody"></tbody>
+                    <tbody id="revenueHistoryTableBody">
+                    </tbody>
                 </table>
             </div>
-            <div class="modal-footer" style="background: #f8fafc; text-align: left;">
+            <div class="modal-footer" style="padding: 16px 24px; background: #f8fafc; text-align: left;">
                 <div style="display: flex; justify-content: space-between; font-weight: 700; font-size: 15px;">
                     <span>All-Time Total Revenue:</span>
                     <span id="allTimeRevenueTotal" style="color: var(--primary);">MYR 0.00</span>
@@ -249,15 +326,34 @@
         </div>
     </div>
 
+    <!-- Symptom Read More Modal -->
+    <div id="symptomModal" class="modal-overlay" style="display: none;">
+        <div class="modal-box" style="max-width: 400px;">
+            <div class="modal-header">
+                <h2>Patient Symptoms</h2>
+                <button class="modal-close" onclick="closeSymptomModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p id="symptomFullText" style="font-size: 14px; line-height: 1.6; color: var(--text-main);"></p>
+            </div>
+        </div>
+    </div>
+
     <script>
+        // Check Auth
         const token = localStorage.getItem('admin_token');
         if (!token) window.location.href = "admin_login.html";
 
         const API_BASE = "https://api.doktura.ai/api";
         const headers = { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' };
         
-        let allAppointmentsData = [], allPatientsData = [];
+        // Data Stores
+        let allAppointmentsData = [];
+        let filteredAppointmentsData = [];
+        let allPatientsData = []; 
+        let currentTableLimit = 4; // Start by showing 4 rows
 
+        // 1. FETCH STATS
         async function loadStats() {
             try {
                 const res = await fetch(`${API_BASE}/admin/stats`, { headers });
@@ -266,94 +362,147 @@
                     document.getElementById('stat-patients').innerText = data.total_patients;
                     document.getElementById('stat-doctors').innerText = data.total_doctors;
                     document.getElementById('stat-appts').innerText = data.active_appointments;
-                    document.getElementById('stat-revenue').innerText = `MYR ${(data.monthly_revenue || 0).toFixed(2)}`;
+                    
+                    // Add comma formatting for large money amounts
+                    document.getElementById('stat-revenue').innerText = `MYR ${(data.monthly_revenue || 0).toLocaleString('en-US', {minimumFractionDigits: 2})}`;
                 }
             } catch (e) { console.error("Stats Error:", e); }
         }
 
+        // 2. FETCH DOCTORS
         async function loadDoctors() {
             try {
                 const [apprRes, pendRes] = await Promise.all([
-                    fetch(`${API_BASE}/doctors`),
+                    fetch(`${API_BASE}/doctors`), 
                     fetch(`${API_BASE}/admin/doctors/pending`, { headers })
                 ]);
                 const approvedDocs = apprRes.ok ? await apprRes.json() : [];
                 const pendingDocs = pendRes.ok ? await pendRes.json() : [];
                 
                 const allDocs = [...pendingDocs, ...approvedDocs];
-                const container = document.getElementById('list-doctors');
+                const container = document.getElementById('list-pending-doctors');
 
                 if (allDocs.length === 0) {
-                    container.innerHTML = `<p style="text-align:center; color:var(--text-light); padding: 20px;">No doctors in database.</p>`;
+                    container.innerHTML = `<p style="text-align:center; color:gray; font-size:12px;">No doctors in database.</p>`;
                     return;
                 }
 
                 container.innerHTML = allDocs.map(doc => {
                     const isPending = doc.status === 'pending';
+                    const badgeClass = isPending ? 'pending' : 'verified';
+                    const badgeText = isPending ? 'Pending' : 'Verified';
+                    
+                    let actionsHtml = '';
+                    if (isPending) {
+                        actionsHtml = `
+                        <div class="doc-actions">
+                            <button class="btn-outline-success" onclick="verifyDoctor('${doc.id}', 'approve')">Approve</button>
+                            <button class="btn-outline-danger" onclick="verifyDoctor('${doc.id}', 'reject')">Reject</button>
+                        </div>`;
+                    }
+
                     return `
-                    <div class="doctor-list-item">
-                        <div style="display: flex; align-items: center; gap: 12px;">
-                            <img src="${doc.photo_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(doc.name)}&background=random`}" class="avatar-sm">
-                            <div>
-                                <div style="font-weight: 600; font-size: 14px;">${doc.name}</div>
-                                <div style="font-size: 12px; color: var(--text-muted);">${doc.specialty || "General"}</div>
+                    <div class="doc-card">
+                        <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                            <div style="display: flex; align-items: center; gap: 12px;">
+                                <img src="${doc.photo_url || `https://ui-avatars.com/api/?name=${doc.name}&background=random`}" class="avatar-sm" style="width:40px; height:40px;">
+                                <div>
+                                    <div style="font-weight: 600; font-size: 14px; color: var(--text-main);">${doc.name}</div>
+                                    <div style="font-size: 12px; color: var(--text-muted);">${doc.specialty || "General"}</div>
+                                </div>
                             </div>
+                            <span class="badge ${badgeClass}">${badgeText}</span>
                         </div>
-                        ${isPending ? `
-                            <div style="display: flex; gap: 8px;">
-                                <button class="btn-approve" onclick="verifyDoctor('${doc.id}', 'approve')">Approve</button>
-                                <button class="btn-reject" onclick="verifyDoctor('${doc.id}', 'reject')">Reject</button>
-                            </div>` : 
-                            `<span class="badge verified">Verified</span>`
-                        }
+                        ${actionsHtml}
                     </div>`;
                 }).join('');
             } catch (e) { console.error("Docs Error:", e); }
         }
 
+        // 3. FETCH APPOINTMENTS & HANDLE TABLE
         async function loadAppointments() {
             try {
                 const res = await fetch(`${API_BASE}/admin/appointments`, { headers });
-                const appointments = res.ok ? await res.json() : [];
-                allAppointmentsData = appointments;
-                
-                const tableBody = document.getElementById('table-appointments');
-
-                if (appointments.length === 0) {
-                    tableBody.innerHTML = `<tr><td colspan="4" style="text-align:center; padding: 20px;">No recent appointments.</td></tr>`;
-                    return;
+                if (res.ok) {
+                    allAppointmentsData = await res.json();
+                    filteredAppointmentsData = [...allAppointmentsData]; // Copy for searching
+                    currentTableLimit = 4; // Reset limit
+                    renderAppointmentsTable();
+                    renderChartWithRealData(allAppointmentsData);
                 }
-
-                tableBody.innerHTML = appointments.slice(0, 15).map(app => { // Show first 15, rest are scrollable
-                    const d = new Date(app.preferred_datetime || app.created_at);
-                    const dateStr = d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-                    const timeStr = d.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
-
-                    return `
-                    <tr>
-                        <td>
-                            <div style="font-weight:500;">${dateStr}</div>
-                            <div style="font-size:11px; color:var(--text-muted);">${timeStr}</div>
-                        </td>
-                        <td>
-                            <div style="display:flex; align-items:center;">
-                                <img src="https://ui-avatars.com/api/?name=${encodeURIComponent(app.patient_name)}&background=f3f4f6" class="avatar-sm"> 
-                                <span style="font-weight:500;">${app.patient_name || 'Anonymous'}</span>
-                            </div>
-                        </td>
-                        <td>
-                             <div style="display:flex; align-items:center;">
-                                <img src="https://ui-avatars.com/api/?name=${encodeURIComponent(app.doctor_name)}&background=random" class="avatar-sm">
-                                <span style="font-weight:500;">${app.doctor_name || 'Unassigned'}</span>
-                            </div>
-                        </td>
-                        <td>${app.symptoms || "General Visit"}</td>
-                    </tr>`;
-                }).join('');
-                renderChartWithRealData(appointments);
             } catch (e) { console.error("Appointments Error:", e); }
         }
 
+        // Search Filter Logic
+        function filterAppointments() {
+            const query = document.getElementById('apptSearchInput').value.toLowerCase();
+            filteredAppointmentsData = allAppointmentsData.filter(app => {
+                const pName = (app.patient_name || "").toLowerCase();
+                const dName = (app.doctor_name || "").toLowerCase();
+                return pName.includes(query) || dName.includes(query);
+            });
+            currentTableLimit = 4; // Reset to 4 items on new search
+            renderAppointmentsTable();
+        }
+
+        // See More Logic
+        function loadMoreAppointments() {
+            currentTableLimit += 4;
+            renderAppointmentsTable();
+        }
+
+        // Render Table Logic
+        function renderAppointmentsTable() {
+            const tableBody = document.getElementById('table-deliveries');
+            const seeMoreContainer = document.getElementById('seeMoreContainer');
+
+            if (filteredAppointmentsData.length === 0) {
+                tableBody.innerHTML = `<tr><td colspan="4" style="text-align:center;">No records found.</td></tr>`;
+                seeMoreContainer.style.display = 'none';
+                return;
+            }
+
+            // Slice array based on current limit
+            const itemsToShow = filteredAppointmentsData.slice(0, currentTableLimit);
+
+            tableBody.innerHTML = itemsToShow.map(app => {
+                const d = new Date(app.preferred_datetime || app.created_at);
+                const dateStr = d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+                const timeStr = d.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+
+                let sympText = app.symptoms && app.symptoms !== 'null' ? app.symptoms : "General Visit";
+                let displaySymp = sympText.length > 20 ? sympText.substring(0, 20) + "..." : sympText;
+                const safeSymp = sympText.replace(/'/g, "\\'").replace(/"/g, "&quot;").replace(/\n/g, "\\n");
+
+                return `
+                <tr>
+                    <td>
+                        <span style="font-weight:500;">${dateStr}</span>
+                        <span class="time-pill">${timeStr}</span>
+                    </td>
+                    <td>
+                        <img src="https://ui-avatars.com/api/?name=${app.patient_name}&background=f3f4f6" class="avatar-sm"> 
+                        <span style="font-weight:500;">${app.patient_name || 'Anonymous'}</span>
+                    </td>
+                    <td>
+                        <img src="https://ui-avatars.com/api/?name=${app.doctor_name}&background=random" class="avatar-sm">
+                        <span style="font-weight:500;">${app.doctor_name || 'Unassigned'}</span>
+                    </td>
+                    <td>
+                        <span style="color:var(--text-muted); cursor:pointer;" onclick="openSymptomModal('${safeSymp}')">"${displaySymp}"</span>
+                    </td>
+                </tr>`;
+            }).join('');
+
+            // Hide or Show "See More" button
+            if (currentTableLimit >= filteredAppointmentsData.length) {
+                seeMoreContainer.style.display = 'none';
+            } else {
+                seeMoreContainer.style.display = 'block';
+            }
+        }
+
+        // 4. FETCH PATIENTS (For RM 50 tracking)
         async function loadPatients() {
             try {
                 const res = await fetch(`${API_BASE}/admin/patients/all`, { headers });
@@ -361,16 +510,15 @@
             } catch (e) { console.error("Patients Error:", e); }
         }
 
+        // Action Logic
         async function verifyDoctor(id, action) {
             if (!confirm(`Are you sure you want to ${action} this doctor?`)) return;
-            const res = await fetch(`${API_BASE}/admin/doctors/${id}/verify?action=${action}`, { method: 'POST', headers });
-            if (res.ok) {
-                alert(`Doctor ${action}d successfully`);
-                loadDoctors();
-                loadStats();
-            } else { alert("Action failed."); }
+            const res = await fetch(`${API_BASE}/admin/doctors/${id}/verify?action=${action}`, { method: 'POST', headers: headers });
+            if (res.ok) { alert(`Doctor ${action}d successfully`); loadDoctors(); loadStats(); } 
+            else { alert("Action failed."); }
         }
 
+        // ================= REVENUE MODAL LOGIC =================
         function openRevenueModal() {
             const revenueByMonth = {};
             let allTimeTotal = 0;
@@ -380,48 +528,65 @@
                 if (amt === 0 && appt.type === "online") amt = 38.0; 
 
                 const d = new Date(appt.created_at || appt.preferred_datetime);
-                if (isNaN(d)) return;
-                const monthKey = d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, '0');
-                const displayLabel = d.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
-                if (!revenueByMonth[monthKey]) revenueByMonth[monthKey] = { label: displayLabel, total: 0 };
-                revenueByMonth[monthKey].total += amt;
-                allTimeTotal += amt;
+                if (!isNaN(d)) {
+                    const monthKey = d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, '0');
+                    const displayLabel = d.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+                    if (!revenueByMonth[monthKey]) revenueByMonth[monthKey] = { label: displayLabel, total: 0 };
+                    revenueByMonth[monthKey].total += amt;
+                    allTimeTotal += amt;
+                }
             });
 
             allPatientsData.forEach(patient => {
                 if (patient.is_subscribed) {
                     const d = new Date(patient.created_at);
-                    if (isNaN(d)) return;
-                    const monthKey = d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, '0');
-                    const displayLabel = d.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
-                    if (!revenueByMonth[monthKey]) revenueByMonth[monthKey] = { label: displayLabel, total: 0 };
-                    revenueByMonth[monthKey].total += 50.0;
-                    allTimeTotal += 50.0;
+                    if (!isNaN(d)) {
+                        const monthKey = d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, '0');
+                        const displayLabel = d.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+                        if (!revenueByMonth[monthKey]) revenueByMonth[monthKey] = { label: displayLabel, total: 0 };
+                        revenueByMonth[monthKey].total += 50.0;
+                        allTimeTotal += 50.0;
+                    }
                 }
             });
 
             const sortedMonths = Object.keys(revenueByMonth).sort().reverse();
             const tbody = document.getElementById('revenueHistoryTableBody');
-            tbody.innerHTML = sortedMonths.length === 0 ? '<tr><td colspan="2" style="text-align:center; padding: 20px;">No revenue recorded yet.</td></tr>' : 
-                sortedMonths.map(key => `
-                    <tr>
-                        <td style="font-weight: 500; padding: 14px 24px;">${revenueByMonth[key].label}</td>
-                        <td style="text-align: right; font-weight: 600; padding: 14px 24px;">MYR ${revenueByMonth[key].total.toFixed(2)}</td>
-                    </tr>`).join('');
+            tbody.innerHTML = '';
+
+            if (sortedMonths.length === 0 || allTimeTotal === 0) {
+                tbody.innerHTML = '<tr><td colspan="2" style="text-align:center; padding: 20px; color: var(--text-muted);">No revenue recorded yet.</td></tr>';
+            } else {
+                sortedMonths.forEach(key => {
+                    const item = revenueByMonth[key];
+                    if(item.total > 0) {
+                        tbody.innerHTML += `
+                            <tr>
+                                <td style="font-weight: 500; padding: 14px 24px; border-bottom: 1px solid var(--border-light);">${item.label}</td>
+                                <td style="text-align: right; color: var(--text-main); font-weight: 600; padding: 14px 24px; border-bottom: 1px solid var(--border-light);">MYR ${item.total.toLocaleString('en-US', {minimumFractionDigits: 2})}</td>
+                            </tr>
+                        `;
+                    }
+                });
+            }
             
-            document.getElementById('allTimeRevenueTotal').innerText = `MYR ${allTimeTotal.toFixed(2)}`;
+            document.getElementById('allTimeRevenueTotal').innerText = `MYR ${allTimeTotal.toLocaleString('en-US', {minimumFractionDigits: 2})}`;
             document.getElementById('revenueModal').style.display = 'flex';
         }
-
         function closeRevenueModal() { document.getElementById('revenueModal').style.display = 'none'; }
         
+        // Modals
+        function openSymptomModal(text) { document.getElementById('symptomFullText').innerText = text; document.getElementById('symptomModal').style.display = 'flex'; }
+        function closeSymptomModal() { document.getElementById('symptomModal').style.display = 'none'; }
+
+        // ================= CHART LOGIC =================
         let chartInstance = null;
         function renderChartWithRealData(appointments) {
             const counts = {};
             const monthsLabel = [];
-            const now = new Date();
-            for (let i = 7; i >= 0; i--) {
-                const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+            
+            for (let i = 5; i >= 0; i--) {
+                const d = new Date(); d.setMonth(d.getMonth() - i);
                 const monthStr = d.toLocaleString('en-US', { month: 'short' });
                 monthsLabel.push(monthStr);
                 counts[monthStr] = 0;
@@ -445,15 +610,17 @@
                     datasets: [{
                         label: 'Appointments',
                         data: data,
-                        backgroundColor: '#0066cc',
-                        borderRadius: 4, barPercentage: 0.4
+                        // Blue matching the Figma design for the current month, light blue for others
+                        backgroundColor: function(context) { return context.dataIndex === 5 ? '#0066cc' : '#e0f2fe'; },
+                        borderRadius: 6, 
+                        barPercentage: 0.6
                     }]
                 },
                 options: {
                     responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } },
                     scales: {
-                        y: { beginAtZero: true, ticks: { color: '#9ca3af' }, grid: { borderDash: [5, 5] } },
-                        x: { grid: { display: false }, ticks: {color: '#9ca3af'} }
+                        y: { beginAtZero: true, ticks: { stepSize: 1, color: '#9ca3af' }, grid: { borderDash: [5, 5], color: '#e5e7eb' } },
+                        x: { grid: { display: false }, ticks: { color: '#9ca3af', font: {weight: 500} } }
                     }
                 }
             });
@@ -461,11 +628,12 @@
 
         function logout() { localStorage.removeItem('admin_token'); window.location.href = "admin_login.html"; }
 
+        // Load everything on start
         window.onload = () => {
             loadStats();
             loadDoctors();
             loadAppointments();
-            loadPatients();
+            loadPatients(); 
         };
     </script>
 </body>
