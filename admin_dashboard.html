@@ -3,7 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Doktura AI - Live Admin Dashboard</title>
+    <title>Doktura AI - Admin Dashboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
@@ -14,6 +16,7 @@
             --primary: #0066cc; --primary-light: #eff6ff;
             --success: #10b981; --danger: #ef4444; --warning: #f59e0b;
         }
+
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
         body { display: flex; height: 100vh; background-color: var(--bg-body); overflow: hidden; color: var(--text-main); }
 
@@ -21,230 +24,410 @@
         .sidebar { width: 250px; background-color: var(--bg-sidebar); border-right: 1px solid var(--border); display: flex; flex-direction: column; justify-content: space-between; }
         .sidebar-top { padding: 24px 20px; }
         .logo { font-size: 20px; font-weight: 700; display: flex; align-items: center; gap: 8px; margin-bottom: 30px; }
+        .nav-label { font-size: 11px; font-weight: 600; color: var(--text-light); text-transform: uppercase; margin-bottom: 12px; letter-spacing: 0.5px; }
         .nav-menu { list-style: none; }
-        .nav-menu a { display: flex; align-items: center; gap: 12px; padding: 10px 14px; text-decoration: none; color: var(--text-muted); font-size: 14px; font-weight: 500; border-radius: 8px; }
+        .nav-menu li { margin-bottom: 4px; }
+        .nav-menu a { display: flex; align-items: center; gap: 12px; padding: 10px 14px; text-decoration: none; color: var(--text-muted); font-size: 14px; font-weight: 500; border-radius: 8px; transition: 0.2s; }
+        .nav-menu a svg { width: 18px; height: 18px; stroke: currentColor; fill: none; stroke-width: 2; }
         .nav-menu a.active { background-color: var(--primary-light); color: var(--primary); font-weight: 600; }
+        .nav-menu a:hover:not(.active) { background-color: #f9fafb; color: var(--text-main); }
         .sidebar-bottom { padding: 20px; border-top: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+        .profile-small { display: flex; align-items: center; gap: 10px; }
+        .profile-small img { width: 36px; height: 36px; border-radius: 50%; }
+        .profile-small .info h4 { font-size: 13px; margin: 0; color: var(--text-main); }
+        .profile-small .info p { font-size: 11px; margin: 0; color: var(--text-light); }
 
         /* MAIN CONTENT */
         .main-content { flex: 1; display: flex; flex-direction: column; overflow-y: auto; }
-        header { display: flex; justify-content: space-between; align-items: center; padding: 16px 32px; }
-        .dashboard-body { padding: 0 32px 32px 32px; }
+        header { display: flex; justify-content: space-between; align-items: center; padding: 16px 32px; background: transparent; }
+        .search-container { position: relative; width: 300px; }
+        .search-container svg { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); width: 16px; height: 16px; color: var(--text-light); }
+        .search-container input { width: 100%; padding: 10px 12px 10px 36px; border: 1px solid var(--border); border-radius: 8px; font-size: 14px; outline: none; background: #fff; }
+        .header-actions { display: flex; align-items: center; gap: 24px; }
+        .admin-profile { display: flex; align-items: center; gap: 12px; border-left: 1px solid var(--border); padding-left: 24px; }
+        .admin-profile img { width: 36px; height: 36px; border-radius: 50%; }
+        .admin-profile h4 { font-size: 14px; font-weight: 600; margin: 0; }
+        .admin-profile p { font-size: 12px; color: var(--text-light); margin: 0; }
 
-        /* METRIC CARDS */
+        .dashboard-body { padding: 0 32px 32px 32px; }
+        .welcome-title h1 { font-size: 22px; font-weight: 600; margin-bottom: 4px; }
+        .welcome-title p { font-size: 14px; color: var(--text-muted); margin-bottom: 24px;}
+
+        /* METRICS GRID */
         .metrics-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px; }
         .metric-card { background: var(--bg-card); padding: 20px; border-radius: 16px; border: 1px solid var(--border); box-shadow: 0 1px 2px rgba(0,0,0,0.02); }
-        .metric-label { font-size: 13px; color: var(--text-muted); margin-bottom: 8px; font-weight: 500; }
-        .metric-value { font-size: 28px; font-weight: 700; }
-
-        /* TABLES & PANELS */
+        .metric-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+        .metric-header h3 { font-size: 13px; font-weight: 500; color: var(--text-main); display: flex; align-items: center; gap: 8px; }
+        .metric-header h3 svg { width: 16px; height: 16px; color: var(--text-muted); }
+        .metric-content { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+        .metric-value { font-size: 32px; font-weight: 700; color: var(--text-main); }
+        .metric-footer { display: flex; justify-content: space-between; font-size: 12px; font-weight: 500; }
+        
+        /* GRIDS & PANELS */
         .layout-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 24px; }
-        .panel { background: var(--bg-card); border-radius: 16px; border: 1px solid var(--border); margin-bottom: 24px; overflow: hidden; }
-        .panel-header { display: flex; justify-content: space-between; padding: 16px 24px; border-bottom: 1px solid var(--border-light); font-weight: 600; background: #fafafa; }
-        
-        table { width: 100%; border-collapse: collapse; }
-        th { text-align: left; padding: 12px 24px; font-size: 11px; color: var(--text-light); text-transform: uppercase; border-bottom: 1px solid var(--border-light); }
-        td { padding: 14px 24px; font-size: 13px; border-bottom: 1px solid var(--border-light); }
+        .panel { background: var(--bg-card); border-radius: 16px; border: 1px solid var(--border); margin-bottom: 24px; }
+        .panel-header { display: flex; justify-content: space-between; align-items: center; padding: 20px 24px; border-bottom: 1px solid var(--border-light); }
+        .panel-header h2 { font-size: 16px; font-weight: 600; display: flex; align-items: center; gap: 8px; }
+        .panel-body { padding: 24px; }
 
-        /* BUTTONS & BADGES */
-        .badge { padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; text-transform: capitalize; }
-        .badge.pending_pricing { background: #fee2e2; color: #b91c1c; }
-        .badge.paid { background: #d1fae5; color: #065f46; }
-        .badge.pending_payment { background: #fef3c7; color: #92400e; }
+        /* TABLE */
+        table { width: 100%; border-collapse: collapse; }
+        th { text-align: left; padding: 12px; font-size: 12px; color: var(--text-light); font-weight: 500; border-bottom: 1px solid var(--border-light); }
+        td { padding: 16px 12px; font-size: 13px; font-weight: 500; border-bottom: 1px solid var(--border-light); vertical-align: middle; }
+        .td-flex { display: flex; align-items: center; gap: 10px; }
+        .avatar-sm { width: 28px; height: 28px; border-radius: 50%; object-fit: cover; }
+        .time-badge { background: var(--primary-light); color: var(--primary); padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; }
+
+        /* DOCTOR LIST */
+        .btn-add { background: var(--primary); color: #fff; border: none; padding: 8px 16px; border-radius: 8px; font-size: 13px; font-weight: 500; cursor: pointer; display: flex; align-items: center; gap: 6px; }
+        .doc-list { display: flex; flex-direction: column; gap: 16px; }
+        .doc-card { border: 1px solid var(--border-light); border-radius: 12px; padding: 16px; background: #fafafa; }
+        .doc-card-inner { display: flex; justify-content: space-between; align-items: center; }
+        .doc-info { display: flex; align-items: center; gap: 12px; }
+        .doc-info img { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; }
+        .doc-info h4 { font-size: 14px; margin: 0; }
+        .doc-info p { font-size: 12px; color: var(--text-muted); margin: 0; }
         
-        .btn-action { padding: 6px 12px; border-radius: 6px; border: 1px solid var(--border); background: #fff; cursor: pointer; font-size: 12px; font-weight: 500; }
-        .btn-approve { color: var(--success); }
-        .btn-reject { color: var(--danger); }
-        .btn-action:hover { background: #f9fafb; }
+        .badge { padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: 600; border: 1px solid; }
+        .badge.verified { color: var(--success); border-color: #bbf7d0; background: #f0fdf4; }
+        .badge.pending { color: var(--warning); border-color: #fef08a; background: #fefce8; }
+
+        .doc-actions { display: flex; gap: 8px; margin-top: 16px; }
+        .doc-actions button { flex: 1; padding: 8px; border-radius: 8px; font-size: 12px; font-weight: 500; cursor: pointer; border: 1px solid var(--border); background: #fff; }
+        .doc-actions .btn-approve:hover { background: #f9fafb; border-color: var(--success); color: var(--success); }
+        .doc-actions .btn-reject:hover { background: #fef2f2; color: var(--danger); border-color: var(--danger); }
+
+        /* WIDGET */
+        .appt-manage-card { padding: 20px; border: 1px solid var(--border-light); border-radius: 12px; background: #fafafa; }
+        .am-details { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px; margin-top: 20px;}
+        .am-row { display: flex; justify-content: space-between; grid-column: span 2; font-size: 13px; }
+        .am-label { color: var(--text-light); }
+        .am-value { font-weight: 500; display: flex; align-items: center; gap: 8px; }
+
+        /* Simple SVG ring for metrics */
+        .ring-svg { width: 40px; height: 40px; transform: rotate(-90deg); }
+        .ring-bg { fill: none; stroke: #fee2e2; stroke-width: 4; }
+        .ring-fill { fill: none; stroke: #ef4444; stroke-width: 4; stroke-linecap: round; }
     </style>
 </head>
 <body>
 
     <aside class="sidebar">
         <div class="sidebar-top">
-            <div class="logo">doktura.ai</div>
+            <div class="logo">
+                <svg viewBox="0 0 24 24" width="20" height="20"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" stroke="#111" stroke-width="2" stroke-linecap="round"/></svg>
+                doktura.ai
+            </div>
+            <div class="nav-label">Main Menu</div>
             <ul class="nav-menu">
-                <li><a href="#" class="active">📊 Dashboard</a></li>
-                <li><a href="admin_patients.html">👥 Patients</a></li>
-                <li><a href="admin_doctors.html">👨‍⚕️ Doctors</a></li>
-                <li><a href="admin_deliveries.html">📦 Deliveries</a></li>
+                <li><a href="#" class="active"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><path d="M9 3v18M15 3v18M3 9h18M3 15h18"/></svg> Dashboard</a></li>
+                <li><a href="#"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg> Patients</a></li>
+                <li><a href="#"><svg viewBox="0 0 24 24"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg> Doctors</a></li>
+                <li><a href="#"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg> Appointments</a></li>
+                <li><a href="#"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg> Settings</a></li>
             </ul>
         </div>
         <div class="sidebar-bottom">
-            <div class="info">
-                <div style="font-size: 12px; font-weight: 600;">Super Admin</div>
-                <div style="font-size: 11px; color: var(--text-light);">dokturamedic@gmail.com</div>
+            <div class="profile-small">
+                <img src="https://ui-avatars.com/api/?name=Muaz+Syahrir&background=random" alt="Admin">
+                <div class="info"><h4>Muaz syahrir</h4><p>Super Admin</p></div>
             </div>
-            <button onclick="logout()" style="background:none; border:none; color:var(--danger); cursor:pointer; font-size: 12px; font-weight: 600;">Logout</button>
+            <button onclick="logout()" style="background:none; border:none; cursor:pointer;"><svg viewBox="0 0 24 24" width="20" height="20" stroke="#6b7280" fill="none" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></svg></button>
         </div>
     </aside>
 
-    <main class="main-content">
+    <div class="main-content">
         <header>
-            <div style="font-weight: 600; font-size: 18px;">Dashboard Overview</div>
-            <div id="live-time" style="font-size: 14px; color: var(--text-muted);"></div>
+            <div class="search-container">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+                <input type="text" placeholder="Search">
+            </div>
+            <div class="header-actions">
+                <div class="admin-profile">
+                    <img src="https://ui-avatars.com/api/?name=Sabrina+Gomez&background=0D8ABC&color=fff">
+                    <div class="info"><h4>Sabrina Gomez</h4><p>Super Admin</p></div>
+                </div>
+            </div>
         </header>
 
         <div class="dashboard-body">
-            <!-- 1. LIVE STATS CARDS -->
+            <div class="welcome-title">
+                <h1>Welcome back, Sabrina!</h1>
+                <p>Overview of platform activity and key metrics.</p>
+            </div>
+
+            <!-- LIVE METRICS -->
             <div class="metrics-grid">
                 <div class="metric-card">
-                    <div class="metric-label">Total Patients</div>
-                    <div class="metric-value" id="stat-patients">0</div>
+                    <div class="metric-header">
+                        <h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg> Total Patients</h3>
+                    </div>
+                    <div class="metric-content">
+                        <span class="metric-value" id="stat-patients">...</span>
+                        <div style="text-align: right; display: flex; align-items:center; gap:8px;">
+                            <svg class="ring-svg"><circle class="ring-bg" cx="20" cy="20" r="16"/><circle class="ring-fill" cx="20" cy="20" r="16" stroke-dasharray="80 100"/></svg>
+                            <div style="font-size: 10px; color: var(--text-light); text-align: left;">Monthly Target<br><strong style="color:var(--text-main)">24/30</strong></div>
+                        </div>
+                    </div>
+                    <div class="metric-footer"><span style="color: var(--success);">↗ +12% vs last month</span></div>
                 </div>
+
                 <div class="metric-card">
-                    <div class="metric-label">Approved Doctors</div>
-                    <div class="metric-value" id="stat-doctors">0</div>
+                    <div class="metric-header">
+                        <h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg> Total Doctors</h3>
+                    </div>
+                    <div class="metric-content">
+                        <span class="metric-value" id="stat-doctors">...</span>
+                        <div style="text-align: right; display: flex; align-items:center; gap:8px;">
+                            <svg class="ring-svg"><circle class="ring-bg" cx="20" cy="20" r="16"/><circle class="ring-fill" cx="20" cy="20" r="16" stroke-dasharray="50 100"/></svg>
+                            <div style="font-size: 10px; color: var(--text-light); text-align: left;">Staffing Goal<br><strong style="color:var(--text-main)">15/30</strong></div>
+                        </div>
+                    </div>
+                    <div class="metric-footer"><span style="color: var(--success);" id="stat-doc-avail">... Available Now</span></div>
                 </div>
+
                 <div class="metric-card">
-                    <div class="metric-label">Scheduled Appts</div>
-                    <div class="metric-value" id="stat-appts">0</div>
+                    <div class="metric-header">
+                        <h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg> Active Appointments</h3>
+                    </div>
+                    <div class="metric-content">
+                        <span class="metric-value" id="stat-appts">...</span>
+                        <div style="text-align: right; display: flex; align-items:center; gap:8px;">
+                            <svg class="ring-svg"><circle class="ring-bg" cx="20" cy="20" r="16"/><circle class="ring-fill" cx="20" cy="20" r="16" stroke-dasharray="60 100"/></svg>
+                            <div style="font-size: 10px; color: var(--text-light); text-align: left;">Daily Capacity<br><strong style="color:var(--text-main)">17/30</strong></div>
+                        </div>
+                    </div>
+                    <div class="metric-footer"><span style="color: var(--success);" id="stat-appts-waiting">... waiting</span></div>
                 </div>
+
                 <div class="metric-card">
-                    <div class="metric-label">Monthly Revenue</div>
-                    <div class="metric-value" id="stat-revenue">RM 0.00</div>
+                    <div class="metric-header">
+                        <h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg> Monthly Revenue</h3>
+                    </div>
+                    <div class="metric-content" style="align-items: flex-end;">
+                        <span class="metric-value" id="stat-revenue" style="font-size: 26px;">MYR ...</span>
+                    </div>
+                    <div class="metric-footer" style="margin-top:20px;"><span style="color: var(--danger);">↘ Live Tracking</span></div>
                 </div>
             </div>
 
             <div class="layout-grid">
-                <!-- 2. APPOINTMENT RECORDS (LIVE DELIVERIES) -->
+                <!-- LEFT COLUMN -->
                 <div class="left-col">
                     <div class="panel">
-                        <div class="panel-header">Recent Medication Orders</div>
-                        <div style="min-height: 300px;">
+                        <div class="panel-header">
+                            <h2>Appointment Received Over Time</h2>
+                            <select style="padding: 4px 8px; border: 1px solid var(--border); border-radius: 6px; font-size: 12px; color: var(--text-muted);"><option>Last 6 Months</option></select>
+                        </div>
+                        <div class="panel-body">
+                            <div style="height: 250px; width: 100%;"><canvas id="mainChart"></canvas></div>
+                        </div>
+                    </div>
+
+                    <!-- LIVE APPOINTMENT RECORDS TABLE -->
+                    <div class="panel">
+                        <div class="panel-header" style="border-bottom: none; padding-bottom: 0;">
+                            <h2><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/></svg> Appointment Records</h2>
+                        </div>
+                        <div class="panel-body" style="padding-top: 12px; max-height: 400px; overflow-y: auto;">
                             <table>
-                                <thead>
-                                    <tr>
-                                        <th>Patient</th>
-                                        <th>Date</th>
-                                        <th>Status</th>
-                                        <th>Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="table-deliveries">
-                                    <tr><td colspan="4" style="text-align: center; color: var(--text-light);">Loading orders...</td></tr>
+                                <thead><tr><th style="width: 30px;"></th><th>Date & Time ↕</th><th>Patient ↕</th><th>Doctor ↕</th><th>Symptoms ↕</th></tr></thead>
+                                <tbody id="live-table-body">
+                                    <tr><td colspan="5" style="text-align: center; color: var(--text-muted);">Loading records...</td></tr>
                                 </tbody>
                             </table>
                         </div>
                     </div>
                 </div>
 
-                <!-- 3. DOCTOR APPROVALS (LIVE PENDING) -->
+                <!-- RIGHT COLUMN -->
                 <div class="right-col">
+                    <!-- LIVE DOCTORS -->
                     <div class="panel">
-                        <div class="panel-header">Pending Doctor Approvals</div>
-                        <div id="list-pending-doctors" style="padding: 20px;">
-                            <p style="text-align: center; color: var(--text-light); font-size: 13px;">Checking for applications...</p>
+                        <div class="panel-header">
+                            <h2><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/></svg> Doctor Management</h2>
+                            <button class="btn-add">+ Add Doctor</button>
+                        </div>
+                        <div class="panel-body">
+                            <div class="doc-list" id="live-doctor-list">
+                                <p style="text-align: center; color: var(--text-muted); font-size: 13px;">Loading doctors...</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- WIDGET (LATEST PENDING APPOINTMENT) -->
+                    <div class="panel">
+                        <div class="panel-header">
+                            <h2><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/></svg> Appointment Management</h2>
+                        </div>
+                        <div class="panel-body" id="latest-appt-widget">
+                            <p style="text-align: center; color: var(--text-muted); font-size: 13px;">No pending appointments found.</p>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-    </main>
+    </div>
 
+    <!-- API INTEGRATION SCRIPT -->
     <script>
-        // Check authentication
-        const token = localStorage.getItem('admin_token');
-        if (!token) window.location.href = "admin_login.html";
+        const API_BASE = "https://api.doktura.ai/api";
+        const adminToken = localStorage.getItem('admin_token');
+        if (!adminToken) window.location.href = "admin_login.html";
 
-        const API_BASE = "https://api.doktura.ai/api/admin";
+        const headers = { 'Authorization': `Bearer ${adminToken}`, 'Content-Type': 'application/json' };
 
-        // Global Helper for Auth Headers
-        const getHeaders = () => ({
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
-        });
-
-        // 1. FETCH STATS
-        async function loadStats() {
+        async function loadLiveDashboard() {
             try {
-                const res = await fetch(`${API_BASE}/stats`, { headers: getHeaders() });
-                const data = await res.json();
-                if (res.ok) {
-                    document.getElementById('stat-patients').innerText = data.total_patients;
-                    document.getElementById('stat-doctors').innerText = data.total_doctors;
-                    document.getElementById('stat-appts').innerText = data.active_appointments;
-                    document.getElementById('stat-revenue').innerText = `RM ${data.monthly_revenue.toFixed(2)}`;
+                // 1. Fetch Stats
+                const statRes = await fetch(`${API_BASE}/admin/stats`, { headers });
+                if (statRes.ok) {
+                    const stats = await statRes.json();
+                    document.getElementById('stat-patients').innerText = stats.total_patients.toLocaleString();
+                    document.getElementById('stat-doctors').innerText = stats.total_doctors;
+                    document.getElementById('stat-doc-avail').innerText = `${stats.total_doctors} Available Now`;
+                    document.getElementById('stat-appts').innerText = stats.active_appointments;
+                    document.getElementById('stat-appts-waiting').innerText = `${stats.active_appointments} waiting`;
+                    document.getElementById('stat-revenue').innerText = `MYR ${stats.monthly_revenue.toFixed(2)}`;
                 }
-            } catch (e) { console.error("Stats Error:", e); }
-        }
 
-        // 2. FETCH PENDING DOCTORS
-        async function loadPendingDoctors() {
-            try {
-                const res = await fetch(`${API_BASE}/doctors/pending`, { headers: getHeaders() });
-                const doctors = await res.json();
-                const container = document.getElementById('list-pending-doctors');
+                // 2. Fetch Doctors (Public Approved + Admin Pending)
+                const [apprRes, pendRes] = await Promise.all([
+                    fetch(`${API_BASE}/doctors`), 
+                    fetch(`${API_BASE}/admin/doctors/pending`, { headers })
+                ]);
+                const approvedDocs = apprRes.ok ? await apprRes.json() : [];
+                const pendingDocs = pendRes.ok ? await pendRes.json() : [];
                 
-                if (doctors.length === 0) {
-                    container.innerHTML = `<p style="text-align:center; color:gray; font-size:12px;">No pending doctors.</p>`;
-                    return;
-                }
-
-                container.innerHTML = doctors.map(doc => `
-                    <div style="border: 1px solid var(--border-light); padding: 12px; border-radius: 12px; margin-bottom: 12px;">
-                        <div style="font-weight: 600; font-size: 14px;">${doc.name}</div>
-                        <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 10px;">${doc.specialty}</div>
-                        <div style="display: flex; gap: 8px;">
-                            <button class="btn-action btn-approve" onclick="verifyDoctor('${doc.id}', 'approve')">Verify</button>
-                            <button class="btn-action btn-reject" onclick="verifyDoctor('${doc.id}', 'reject')">Reject</button>
+                // Combine and show top 4 (prioritizing pending so Admin sees them first)
+                const allDocs = [...pendingDocs, ...approvedDocs].slice(0, 4);
+                
+                document.getElementById('live-doctor-list').innerHTML = allDocs.map(doc => {
+                    const isPending = doc.status === 'pending';
+                    return `
+                    <div class="doc-card">
+                        <div class="doc-card-inner">
+                            <div class="doc-info">
+                                <img src="${doc.photo_url || `https://ui-avatars.com/api/?name=${doc.name}&background=random`}">
+                                <div><h4>${doc.name}</h4><p>${doc.specialty || "General"}</p></div>
+                            </div>
+                            <span class="badge ${isPending ? 'pending' : 'verified'}">${isPending ? 'Pending' : 'Verified'}</span>
                         </div>
-                    </div>
-                `).join('');
-            } catch (e) { console.error("Docs Error:", e); }
-        }
+                        ${isPending ? `
+                        <div class="doc-actions">
+                            <button class="btn-approve" onclick="actionDoc('${doc.id}', 'approve')">Approved</button>
+                            <button class="btn-reject" onclick="actionDoc('${doc.id}', 'reject')">Reject</button>
+                        </div>` : ''}
+                    </div>`;
+                }).join('');
 
-        // 3. FETCH DELIVERIES / ORDERS
-        async function loadDeliveries() {
-            try {
-                const res = await fetch(`${API_BASE}/deliveries`, { headers: getHeaders() });
-                const deliveries = await res.json();
-                const tableBody = document.getElementById('table-deliveries');
+                // 3. Fetch All Appointments
+                const apptRes = await fetch(`${API_BASE}/admin/appointments`, { headers });
+                if (apptRes.ok) {
+                    const appts = await apptRes.json();
+                    
+                    // Render Table (Top 10)
+                    document.getElementById('live-table-body').innerHTML = appts.slice(0, 10).map(a => {
+                        const dateObj = new Date(a.preferred_datetime || a.created_at);
+                        const dateStr = dateObj.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+                        const timeStr = dateObj.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+                        
+                        return `
+                        <tr>
+                            <td><input type="checkbox"></td>
+                            <td><div class="td-flex">${dateStr} <span class="time-badge">${timeStr}</span></div></td>
+                            <td><div class="td-flex"><img src="https://ui-avatars.com/api/?name=${a.patient_name}&background=f3f4f6" class="avatar-sm"> ${a.patient_name}</div></td>
+                            <td><div class="td-flex"><img src="https://ui-avatars.com/api/?name=${a.doctor_name}&background=random" class="avatar-sm"> ${a.doctor_name}</div></td>
+                            <td style="color:var(--text-muted);">"${a.symptoms ? a.symptoms.substring(0,20)+'...' : 'General Visit'}"</td>
+                        </tr>`;
+                    }).join('');
 
-                if (deliveries.length === 0) {
-                    tableBody.innerHTML = `<tr><td colspan="4" style="text-align:center;">No active medication orders.</td></tr>`;
-                    return;
+                    // Render Widget (Find first pending_payment or scheduled appt)
+                    const pendingAppt = appts.find(a => a.status !== 'completed' && a.status !== 'cancelled');
+                    if (pendingAppt) {
+                        const d = new Date(pendingAppt.preferred_datetime || pendingAppt.created_at);
+                        document.getElementById('latest-appt-widget').innerHTML = `
+                        <div class="appt-manage-card">
+                            <div style="display:flex; justify-content:space-between; margin-bottom:20px;">
+                                <div style="display:flex; gap:12px; align-items:center;">
+                                    <div style="width:40px; height:40px; border-radius:50%; background:#fee2e2; color:var(--danger); display:flex; align-items:center; justify-content:center; font-weight:600;">${pendingAppt.patient_name.charAt(0)}</div>
+                                    <div>
+                                        <h4 style="font-size:14px; margin:0;">${pendingAppt.patient_name}</h4>
+                                        <p style="font-size:12px; color:var(--text-light); margin:0;">${pendingAppt.patient_email || 'No email'}</p>
+                                    </div>
+                                </div>
+                                <span class="badge pending">${pendingAppt.status.replace('_', ' ')}</span>
+                            </div>
+                            <div class="am-details">
+                                <div class="am-row"><span class="am-label">Date & Time</span><span class="am-value">${d.toLocaleDateString()} <span class="time-badge">${d.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}</span></span></div>
+                                <div class="am-row"><span class="am-label">Doctor</span><span class="am-value">${pendingAppt.doctor_name}</span></div>
+                                <div class="am-row"><span class="am-label">Type</span><span class="am-value" style="color: #8b5cf6;">${pendingAppt.type === 'online' ? 'Online Video' : 'In Clinic Visit'}</span></div>
+                            </div>
+                        </div>`;
+                    }
+
+                    // Render Chart Data (Group by Month)
+                    renderChartWithRealData(appts);
                 }
 
-                tableBody.innerHTML = deliveries.map(order => `
-                    <tr>
-                        <td style="font-weight:600;">${order.patient_name || 'Anonymous'}</td>
-                        <td style="color:var(--text-muted);">${order.date ? order.date.split('T')[0] : 'N/A'}</td>
-                        <td><span class="badge ${order.delivery_status}">${order.delivery_status.replace('_', ' ')}</span></td>
-                        <td>
-                            <button class="btn-action" onclick="window.location.href='admin_order_detail.html?id=${order.appointment_id}'">Manage</button>
-                        </td>
-                    </tr>
-                `).join('');
-            } catch (e) { console.error("Deliveries Error:", e); }
+            } catch (e) { console.error("Error loading dashboard:", e); }
         }
 
-        // Action: Verify/Reject Doctor
-        async function verifyDoctor(id, action) {
-            if (!confirm(`Are you sure you want to ${action} this doctor?`)) return;
-            const res = await fetch(`${API_BASE}/doctors/${id}/verify?action=${action}`, { 
-                method: 'POST', 
-                headers: getHeaders() 
-            });
-            if (res.ok) {
-                alert(`Doctor ${action}d successfully`);
-                loadPendingDoctors();
-                loadStats();
+        async function actionDoc(id, action) {
+            await fetch(`${API_BASE}/admin/doctors/${id}/action?action=${action}`, { method: 'POST', headers });
+            loadLiveDashboard(); // Refresh UI
+        }
+
+        // Generate Chart.js dynamically from DB data
+        let chartInstance = null;
+        function renderChartWithRealData(appointments) {
+            const counts = {};
+            const monthsLabel = [];
+            
+            // Generate last 6 months dynamically
+            for (let i = 5; i >= 0; i--) {
+                const d = new Date(); d.setMonth(d.getMonth() - i);
+                const monthStr = d.toLocaleString('en-US', { month: 'short' });
+                monthsLabel.push(monthStr);
+                counts[monthStr] = 0;
             }
+
+            // Tally appointments
+            appointments.forEach(a => {
+                const d = new Date(a.created_at || a.preferred_datetime);
+                const m = d.toLocaleString('en-US', { month: 'short' });
+                if (counts[m] !== undefined) counts[m]++;
+            });
+
+            const data = monthsLabel.map(m => counts[m] || 0);
+            
+            const ctx = document.getElementById('mainChart').getContext('2d');
+            if (chartInstance) chartInstance.destroy(); // Prevent overlap
+            
+            chartInstance = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: monthsLabel,
+                    datasets: [{
+                        label: 'Appointments',
+                        data: data,
+                        backgroundColor: function(context) { return context.dataIndex === 5 ? '#0066cc' : '#e0f2fe'; },
+                        borderRadius: 4, barPercentage: 0.5
+                    }]
+                },
+                options: {
+                    responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } },
+                    scales: {
+                        y: { beginAtZero: true, ticks: { stepSize: 1, color: '#9ca3af' }, grid: { borderDash: [5, 5] } },
+                        x: { grid: { display: false } }
+                    }
+                }
+            });
         }
 
-        function logout() {
-            localStorage.removeItem('admin_token');
-            window.location.href = "admin_login.html";
-        }
+        function logout() { localStorage.removeItem('admin_token'); window.location.href = "admin_login.html"; }
 
-        // Auto-refresh data every 60 seconds
-        window.onload = () => {
-            loadStats();
-            loadPendingDoctors();
-            loadDeliveries();
-            document.getElementById('live-time').innerText = new Date().toLocaleDateString('en-GB', { dateStyle: 'full' });
-        };
+        window.onload = loadLiveDashboard;
     </script>
 </body>
 </html>
