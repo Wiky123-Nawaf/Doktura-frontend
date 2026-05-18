@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Doktura AI - Admin Dashboard</title>
+    <!-- Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --bg-body: #f8fafc;
+            --bg-sidebar: #ffffff;
+            --bg-card: #ffffff;
+            --text-main: #111827;
+            --text-muted: #6b7280;
+            --text-light: #9ca3af;
+            --border-light: #f3f4f6;
+            --border: #e5e7eb;
+            --primary: #0066cc;
+            --primary-light: #eff6ff;
+            --success: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+
+        body { display: flex; height: 100vh; background-color: var(--bg-body); overflow: hidden; color: var(--text-main); }
+
+        /* ================== SIDEBAR ================== */
+        .sidebar {
+            width: 250px; background-color: var(--bg-sidebar); border-right: 1px solid var(--border);
+            display: flex; flex-direction: column; justify-content: space-between;
+        }
+
+        .sidebar-top { padding: 24px 20px; }
+        
+        .logo-container {
+            display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;
+        }
+        .logo { font-size: 20px; font-weight: 700; display: flex; align-items: center; gap: 8px; }
+        .logo svg { width: 20px; height: 20px; }
+        .collapse-icon { color: var(--text-light); cursor: pointer; }
+
+        .nav-label { font-size: 11px; font-weight: 600; color: var(--text-light); text-transform: uppercase; margin-bottom: 12px; letter-spacing: 0.5px; }
+
+        .nav-menu { list-style: none; }
+        .nav-menu li { margin-bottom: 4px; }
+        .nav-menu a {
+            display: flex; align-items: center; gap: 12px; padding: 10px 14px; text-decoration: none;
+            color: var(--text-muted); font-size: 14px; font-weight: 500; border-radius: 8px; transition: 0.2s;
+        }
+        .nav-menu a svg { width: 18px; height: 18px; stroke: currentColor; fill: none; stroke-width: 2; }
+        .nav-menu a.active { background-color: var(--primary-light); color: var(--primary); font-weight: 600; }
+        .nav-menu a:hover:not(.active) { background-color: #f9fafb; color: var(--text-main); }
+
+        .sidebar-bottom { padding: 20px; border-top: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+        .profile-small { display: flex; align-items: center; gap: 10px; cursor: pointer; }
+        .profile-small img { width: 36px; height: 36px; border-radius: 50%; object-fit: cover; }
+        .profile-small .info h4 { font-size: 13px; margin: 0; color: var(--text-main); }
+        .profile-small .info p { font-size: 11px; margin: 0; color: var(--text-light); }
+        .logout-btn { background: none; border: none; cursor: pointer; color: var(--text-muted); display: flex; align-items: center; }
+        .logout-btn:hover { color: var(--danger); }
+
+        /* ================== MAIN CONTENT ================== */
+        .main-content { flex: 1; display: flex; flex-direction: column; overflow-y: auto; }
+
+        /* HEADER */
+        header { display: flex; justify-content: space-between; align-items: center; padding: 16px 32px; background: transparent; }
+        .search-container { position: relative; width: 300px; }
+        .search-container svg { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); width: 16px; height: 16px; color: var(--text-light); }
+        .search-container input { width: 100%; padding: 10px 12px 10px 36px; border: 1px solid var(--border); border-radius: 8px; font-size: 14px; outline: none; background: #fff; }
+        .search-shortcut { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); display: flex; gap: 4px; }
+        .search-shortcut kbd { background: #f3f4f6; border: 1px solid var(--border); padding: 2px 6px; border-radius: 4px; font-size: 11px; color: var(--text-muted); font-family: sans-serif; }
+
+        .header-actions { display: flex; align-items: center; gap: 24px; }
+        .bell-icon { position: relative; color: var(--text-muted); cursor: pointer; display: flex; align-items: center;}
+        .bell-icon svg { width: 20px; height: 20px; }
+        .bell-dot { position: absolute; top: -2px; right: -2px; width: 8px; height: 8px; background: var(--danger); border-radius: 50%; border: 2px solid var(--bg-body); }
+        
+        .admin-profile { display: flex; align-items: center; gap: 12px; border-left: 1px solid var(--border); padding-left: 24px; }
+        .admin-profile img { width: 36px; height: 36px; border-radius: 50%; object-fit: cover; }
+        .admin-profile .info h4 { font-size: 14px; font-weight: 600; margin: 0; }
+        .admin-profile .info p { font-size: 12px; color: var(--text-light); margin: 0; }
+
+        /* DASHBOARD BODY */
+        .dashboard-body { padding: 0 32px 32px 32px; }
+
+        /* Welcome Section */
+        .welcome-row { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 24px; margin-top: 10px; }
+        .welcome-title h1 { font-size: 22px; font-weight: 600; margin-bottom: 4px; }
+        .welcome-title p { font-size: 14px; color: var(--text-muted); }
+
+        /* Metrics Cards */
+        .metrics-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px; }
+        .metric-card { background: var(--bg-card); padding: 20px; border-radius: 16px; border: 1px solid var(--border); box-shadow: 0 1px 2px rgba(0,0,0,0.02); }
+        .metric-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+        .metric-header h3 { font-size: 13px; font-weight: 500; color: var(--text-main); display: flex; align-items: center; gap: 8px; }
+        .metric-header h3 svg { width: 16px; height: 16px; color: var(--text-muted); }
+        .metric-header .arrow-up { width: 16px; height: 16px; color: var(--text-muted); }
+
+        .metric-content { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+        .metric-value { font-size: 32px; font-weight: 700; color: var(--text-main); }
+        
+        .metric-footer { display: flex; justify-content: space-between; font-size: 12px; font-weight: 500; }
+        .trend-up { color: var(--success); }
+        .trend-down { color: var(--danger); }
+        .trend-text { color: var(--text-muted); }
+
+        /* Layout Grid */
+        .layout-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 24px; }
+
+        /* Panels */
+        .panel { background: var(--bg-card); border-radius: 16px; border: 1px solid var(--border); box-shadow: 0 1px 2px rgba(0,0,0,0.02); margin-bottom: 24px; overflow: hidden;}
+        .panel-header { display: flex; justify-content: space-between; align-items: center; padding: 20px 24px; border-bottom: 1px solid var(--border-light); }
+        .panel-header h2 { font-size: 16px; font-weight: 600; display: flex; align-items: center; gap: 8px; }
+        .panel-header h2 svg { width: 18px; height: 18px; color: var(--text-muted); }
+        .panel-body { padding: 24px; }
+
+        /* Chart Area */
+        .chart-controls { display: flex; gap: 8px; }
+        .dropdown { padding: 6px 12px; border: 1px solid var(--border); border-radius: 6px; font-size: 12px; color: var(--text-muted); background: #fff; outline: none; }
+        .icon-btn { padding: 6px; border: 1px solid var(--border); border-radius: 6px; background: #fff; cursor: pointer; color: var(--text-muted); display: flex; align-items: center; justify-content: center; }
+
+        /* Table Area */
+        .table-controls { display: flex; gap: 12px; }
+        .table-search { position: relative; width: 250px; }
+        .table-search input { width: 100%; padding: 8px 12px 8px 32px; border: 1px solid var(--border); border-radius: 8px; font-size: 12px; outline: none; }
+        .table-search svg { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); width: 14px; height: 14px; color: var(--text-light); }
+
+        table { width: 100%; border-collapse: collapse; margin-top: 10px;}
+        th { text-align: left; padding: 12px; font-size: 12px; color: var(--text-light); font-weight: 500; border-bottom: 1px solid var(--border-light); }
+        td { padding: 16px 12px; font-size: 13px; font-weight: 500; border-bottom: 1px solid var(--border-light); vertical-align: middle; }
+        tr:last-child td { border-bottom: none; }
+        .td-flex { display: flex; align-items: center; gap: 10px; }
+        .avatar-sm { width: 28px; height: 28px; border-radius: 50%; object-fit: cover; }
+        .time-badge { background: var(--primary-light); color: var(--primary); padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; }
+        
+        /* Doctor List */
+        .btn-add { background: var(--primary); color: #fff; border: none; padding: 8px 16px; border-radius: 8px; font-size: 13px; font-weight: 500; cursor: pointer; display: flex; align-items: center; gap: 6px; }
+        .doc-list { display: flex; flex-direction: column; gap: 16px; }
+        .doc-card { border: 1px solid var(--border-light); border-radius: 12px; padding: 16px; background: #fafafa; }
+        .doc-card-inner { display: flex; justify-content: space-between; align-items: center; }
+        .doc-info { display: flex; align-items: center; gap: 12px; }
+        .doc-info img { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; }
+        .doc-info h4 { font-size: 14px; margin: 0; }
+        .doc-info p { font-size: 12px; color: var(--text-muted); margin: 0; }
+        
+        .badge { padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: 600; border: 1px solid; }
+        .badge.verified { color: var(--success); border-color: #bbf7d0; background: #f0fdf4; }
+        .badge.pending { color: var(--warning); border-color: #fef08a; background: #fefce8; }
+        .badge.purple { color: #8b5cf6; border-color: #e9d5ff; background: #f3e8ff; }
+
+        .doc-actions { display: flex; gap: 8px; margin-top: 16px; }
+        .doc-actions button { flex: 1; padding: 8px; border-radius: 8px; font-size: 12px; font-weight: 500; cursor: pointer; border: 1px solid var(--border); background: #fff; }
+        .btn-approve { color: var(--text-main); }
+        .btn-approve:hover { background: #f9fafb; border-color: var(--success); color: var(--success); }
+        .btn-reject { color: var(--danger); }
+        .btn-reject:hover { background: #fef2f2; }
+
+        /* Appointment Management Card */
+        .appt-manage-card { padding: 20px; border: 1px solid var(--border-light); border-radius: 12px; background: #fafafa; }
+        .appt-manage-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .am-profile { display: flex; align-items: center; gap: 12px; }
+        .am-avatar { width: 44px; height: 44px; border-radius: 50%; background: #fee2e2; color: var(--danger); display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 16px; }
+        .am-info h4 { font-size: 14px; margin: 0; }
+        .am-info p { font-size: 12px; color: var(--text-light); margin: 0; }
+        
+        .am-details { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px; }
+        .am-row { display: flex; justify-content: space-between; grid-column: span 2; font-size: 13px; }
+        .am-label { color: var(--text-light); }
+        .am-value { font-weight: 500; display: flex; align-items: center; gap: 8px; }
+
+    </style>
+</head>
+<body>
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+        <div class="sidebar-top">
+            <div class="logo-container">
+                <div class="logo">
+                    <svg viewBox="0 0 24 24"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" stroke="#111" stroke-width="2" stroke-linecap="round"/></svg>
+                    doktura.ai
+                </div>
+                <svg class="collapse-icon" viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" fill="none" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+            </div>
+
+            <div class="nav-label">Main Menu</div>
+            <ul class="nav-menu">
+                <li><a href="#" class="active">
+                    <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><path d="M9 3v18M15 3v18M3 9h18M3 15h18"/></svg>
+                    Dashboard
+                </a></li>
+                <li><a href="#">
+                    <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                    Patients
+                </a></li>
+                <li><a href="#">
+                    <svg viewBox="0 0 24 24"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+                    Doctors
+                </a></li>
+                <li><a href="#">
+                    <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+                    Appointments
+                </a></li>
+                <li><a href="#">
+                    <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+                    Settings
+                </a></li>
+            </ul>
+        </div>
+
+        <div class="sidebar-bottom">
+            <div class="profile-small">
+                <img src="https://ui-avatars.com/api/?name=Muaz+Syahrir&background=random" alt="Admin">
+                <div class="info">
+                    <h4>Muaz syahrir</h4>
+                    <p>Muazsyahrir@gmail.c...</p>
+                </div>
+            </div>
+            <button class="logout-btn" onclick="logout()" title="Logout">
+                <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" fill="none" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></svg>
+            </button>
+        </div>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <div class="main-content">
+        <!-- HEADER -->
+        <header>
+            <div class="search-container">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+                <input type="text" placeholder="Search">
+                <div class="search-shortcut">
+                    <kbd>⌘</kbd> <kbd>K</kbd>
+                </div>
+            </div>
+            <div class="header-actions">
+                <div class="bell-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+                    <div class="bell-dot"></div>
+                </div>
+                <div class="admin-profile">
+                    <img src="https://ui-avatars.com/api/?name=Sabrina+Gomez&background=0D8ABC&color=fff" alt="Sabrina Gomez">
+                    <div class="info">
+                        <h4>Sabrina Gomez</h4>
+                        <p>Super Admin</p>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- BODY -->
+        <div class="dashboard-body">
+            
+            <div class="welcome-row">
+                <div class="welcome-title">
+                    <h1>Welcome back, Sabrina!</h1>
+                    <p>Overview of platform activity and key metrics.</p>
+                </div>
+                <div class="welcome-title" style="text-align: right;">
+                    <h1>Welcome back, Sabrina!</h1>
+                    <p>Overview of platform activity and key metrics.</p>
+                </div>
+            </div>
+
+            <!-- METRIC CARDS -->
+            <div class="metrics-grid">
+                <div class="metric-card">
+                    <div class="metric-header">
+                        <h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg> Total Patients</h3>
+                        <svg class="arrow-up" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17l9.2-9.2M17 17V7H7"/></svg>
+                    </div>
+                    <div class="metric-content">
+                        <span class="metric-value" id="stat-patients">1,247</span>
+                        <div style="text-align: right;">
+                            <svg width="40" height="40" viewBox="0 0 36 36"><path stroke-dasharray="80, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="#ef4444" stroke-width="4"/><path stroke-dasharray="100, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="#fee2e2" stroke-width="4" style="stroke-dasharray: 20, 100; stroke-dashoffset: -80;"/></svg>
+                            <div style="font-size: 10px; color: var(--text-light); margin-top: 4px;">Monthly Target<br><strong style="color:var(--text-main)">24/30 patients</strong></div>
+                        </div>
+                    </div>
+                    <div class="metric-footer">
+                        <span class="trend-up">↗ +12% vs last month</span>
+                    </div>
+                </div>
+
+                <div class="metric-card">
+                    <div class="metric-header">
+                        <h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg> Total Doctors</h3>
+                        <svg class="arrow-up" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17l9.2-9.2M17 17V7H7"/></svg>
+                    </div>
+                    <div class="metric-content">
+                        <span class="metric-value" id="stat-doctors">12</span>
+                        <div style="text-align: right;">
+                            <svg width="40" height="40" viewBox="0 0 36 36"><path stroke-dasharray="50, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="#ef4444" stroke-width="4"/><path stroke-dasharray="100, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="#fee2e2" stroke-width="4" style="stroke-dasharray: 50, 100; stroke-dashoffset: -50;"/></svg>
+                            <div style="font-size: 10px; color: var(--text-light); margin-top: 4px;">Staffing Goal<br><strong style="color:var(--text-main)">15/30</strong></div>
+                        </div>
+                    </div>
+                    <div class="metric-footer">
+                        <span class="trend-up">9 Available Now</span>
+                        <span class="trend-text">3 Off-duty</span>
+                    </div>
+                </div>
+
+                <div class="metric-card">
+                    <div class="metric-header">
+                        <h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg> Active Appointments</h3>
+                        <svg class="arrow-up" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17l9.2-9.2M17 17V7H7"/></svg>
+                    </div>
+                    <div class="metric-content">
+                        <span class="metric-value" id="stat-appts">8</span>
+                        <div style="text-align: right;">
+                            <svg width="40" height="40" viewBox="0 0 36 36"><path stroke-dasharray="60, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="#ef4444" stroke-width="4"/><path stroke-dasharray="100, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="#fee2e2" stroke-width="4" style="stroke-dasharray: 40, 100; stroke-dashoffset: -60;"/></svg>
+                            <div style="font-size: 10px; color: var(--text-light); margin-top: 4px;">Daily Capacity<br><strong style="color:var(--text-main)">17/30</strong></div>
+                        </div>
+                    </div>
+                    <div class="metric-footer">
+                        <span class="trend-up">8 waiting</span>
+                        <span class="trend-text">> 15 mins</span>
+                    </div>
+                </div>
+
+                <div class="metric-card">
+                    <div class="metric-header">
+                        <h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg> Monthly Revenue</h3>
+                        <svg class="arrow-up" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17l9.2-9.2M17 17V7H7"/></svg>
+                    </div>
+                    <div class="metric-content" style="align-items: flex-end;">
+                        <span class="metric-value" id="stat-revenue" style="font-size: 28px;">MYR 342.00</span>
+                    </div>
+                    <div class="metric-footer" style="margin-top: 24px;">
+                        <span class="trend-down">↘ -2.3% Decreased</span>
+                        <span class="trend-text">per patient</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- MAIN GRIDS -->
+            <div class="layout-grid">
+                <!-- LEFT COLUMN -->
+                <div class="left-col">
+                    
+                    <!-- CHART PANEL -->
+                    <div class="panel">
+                        <div class="panel-header">
+                            <h2 style="font-size: 15px; color: #111;">Appointment Received Over Time</h2>
+                            <div class="chart-controls">
+                                <select class="dropdown">
+                                    <option>Last 8 Months</option>
+                                </select>
+                                <button class="icon-btn">
+                                    <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 4v6h-6M1 20v-6h6M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="panel-body" style="padding-top: 10px;">
+                            <div style="height: 250px; width: 100%;">
+                                <canvas id="appointmentChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- APPOINTMENT RECORDS TABLE -->
+                    <div class="panel">
+                        <div class="panel-header" style="border-bottom: none; padding-bottom: 0;">
+                            <h2><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg> Appointment Records</h2>
+                            <div class="table-controls">
+                                <div class="table-search">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                                    <input type="text" placeholder="Search by patient, doctor, or record type">
+                                </div>
+                                <button class="icon-btn">
+                                    <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="panel-body" style="padding-top: 12px; overflow-x: auto;">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th style="width: 30px;"></th>
+                                        <th>Date & Time ↕</th>
+                                        <th>Patient ↕</th>
+                                        <th>Doctor ↕</th>
+                                        <th>Symptoms ↕</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="appointments-table">
+                                    <!-- Rows populated statically to match design -->
+                                    <tr>
+                                        <td><input type="checkbox" style="accent-color: var(--primary);"></td>
+                                        <td><div class="td-flex">Sep 8, 2025 <span class="time-badge">12:30 PM</span></div></td>
+                                        <td><div class="td-flex"><img src="https://ui-avatars.com/api/?name=H&background=f3f4f6&color=666" class="avatar-sm"> Husna</div></td>
+                                        <td><div class="td-flex"><img src="https://ui-avatars.com/api/?name=Dr.Rani&background=random" class="avatar-sm"> Dr. Rani</div></td>
+                                        <td>"Mild fever, pres..."</td>
+                                    </tr>
+                                    <tr>
+                                        <td><input type="checkbox" style="accent-color: var(--primary);"></td>
+                                        <td><div class="td-flex">Sep 8, 2025 <span class="time-badge">12:30 PM</span></div></td>
+                                        <td><div class="td-flex"><img src="https://ui-avatars.com/api/?name=H&background=f3f4f6&color=666" class="avatar-sm"> Husna</div></td>
+                                        <td><div class="td-flex"><img src="https://ui-avatars.com/api/?name=Dr.Surya&background=random" class="avatar-sm"> Dr. Surya</div></td>
+                                        <td>"Chest X-ray nor..."</td>
+                                    </tr>
+                                    <tr>
+                                        <td><input type="checkbox" style="accent-color: var(--primary);"></td>
+                                        <td><div class="td-flex">Sep 8, 2025 <span class="time-badge">12:30 PM</span></div></td>
+                                        <td><div class="td-flex"><img src="https://ui-avatars.com/api/?name=H&background=f3f4f6&color=666" class="avatar-sm"> Husna</div></td>
+                                        <td><div class="td-flex"><img src="https://ui-avatars.com/api/?name=Dr.Andi&background=random" class="avatar-sm"> Dr. Andi</div></td>
+                                        <td>"Routine cleanin..."</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- RIGHT COLUMN -->
+                <div class="right-col">
+                    
+                    <!-- DOCTOR MANAGEMENT PANEL -->
+                    <div class="panel">
+                        <div class="panel-header">
+                            <h2><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg> Doctor Management</h2>
+                            <button class="btn-add"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Add Doctor</button>
+                        </div>
+                        <div class="panel-body">
+                            <div class="doc-list" id="api-doctors-list">
+                                <!-- Pre-populated layout to match screenshot -->
+                                <div class="doc-card">
+                                    <div class="doc-card-inner">
+                                        <div class="doc-info">
+                                            <img src="https://ui-avatars.com/api/?name=Dr.Rani&background=random">
+                                            <div>
+                                                <h4>Dr. Rani</h4>
+                                                <p>Cardiologist</p>
+                                            </div>
+                                        </div>
+                                        <span class="badge verified">Verified</span>
+                                    </div>
+                                </div>
+                                <div class="doc-card">
+                                    <div class="doc-card-inner">
+                                        <div class="doc-info">
+                                            <img src="https://ui-avatars.com/api/?name=Dr.Linda+Torres&background=random">
+                                            <div>
+                                                <h4>Dr. Linda Torres</h4>
+                                                <p>Dermatologist</p>
+                                            </div>
+                                        </div>
+                                        <span class="badge verified">Verified</span>
+                                    </div>
+                                </div>
+                                <!-- This is where dynamic pending API doctors will show up -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- APPOINTMENT MANAGEMENT WIDGET -->
+                    <div class="panel">
+                        <div class="panel-header">
+                            <h2><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg> Appointment Management</h2>
+                            <button class="icon-btn" style="padding: 6px 12px; font-weight: 500;">See All</button>
+                        </div>
+                        <div class="panel-body">
+                            <div class="appt-manage-card">
+                                <div class="appt-manage-header">
+                                    <div class="am-profile">
+                                        <div class="am-avatar">AK</div>
+                                        <div class="am-info">
+                                            <h4>Abdullah Khaled</h4>
+                                            <p>Khaledyra@gmail.com</p>
+                                        </div>
+                                    </div>
+                                    <span class="badge pending">Pending</span>
+                                </div>
+                                
+                                <div class="am-details">
+                                    <div class="am-row">
+                                        <span class="am-label">Date & Time</span>
+                                        <span class="am-value">Sep 15, 2025 <span class="time-badge">12:30 PM</span></span>
+                                    </div>
+                                    <div class="am-row">
+                                        <span class="am-label">Doctor</span>
+                                        <span class="am-value">Dr. Farhan Yusuf, Sp.OG</span>
+                                    </div>
+                                    <div class="am-row">
+                                        <span class="am-label">Type Appointment</span>
+                                        <span class="am-value" style="color: #8b5cf6;">In Clinic Visit</span>
+                                    </div>
+                                </div>
+
+                                <div class="doc-actions" style="margin-top:0;">
+                                    <button class="btn-approve" style="color:#111;">Reschedule</button>
+                                    <button class="btn-reject">Cancel</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SCRIPTS -->
+    <script>
+        const adminToken = localStorage.getItem('admin_token');
+        if (!adminToken) window.location.href = "admin_login.html";
+
+        const API_BASE = "https://api.doktura.ai/api/admin";
+
+        // Fetch Live Stats from Backend
+        async function fetchStats() {
+            try {
+                const res = await fetch(`${API_BASE}/stats`, { headers: { 'Authorization': `Bearer ${adminToken}` } });
+                if(res.ok) {
+                    const data = await res.json();
+                    document.getElementById('stat-patients').innerText = data.total_patients.toLocaleString();
+                    document.getElementById('stat-doctors').innerText = data.total_doctors;
+                    document.getElementById('stat-appts').innerText = data.active_appointments;
+                    document.getElementById('stat-revenue').innerText = `MYR ${data.monthly_revenue.toFixed(2)}`;
+                } else if(res.status === 401) logout();
+            } catch(e) { console.error(e); }
+        }
+
+        // Fetch Live Pending Doctors & Append to Hardcoded List
+        async function fetchPendingDoctors() {
+            try {
+                const res = await fetch(`${API_BASE}/doctors/pending`, { headers: { 'Authorization': `Bearer ${adminToken}` } });
+                if(res.ok) {
+                    const doctors = await res.json();
+                    const list = document.getElementById('api-doctors-list');
+                    
+                    doctors.forEach(doc => {
+                        list.insertAdjacentHTML('beforeend', `
+                            <div class="doc-card" id="doc-${doc.id}">
+                                <div class="doc-card-inner">
+                                    <div class="doc-info">
+                                        <img src="${doc.photo_url || `https://ui-avatars.com/api/?name=${doc.name}&background=random`}">
+                                        <div>
+                                            <h4>${doc.name}</h4>
+                                            <p>${doc.specialty || "General"}</p>
+                                        </div>
+                                    </div>
+                                    <span class="badge pending">Pending</span>
+                                </div>
+                                <div class="doc-actions">
+                                    <button class="btn-approve" onclick="actionDoc('${doc.id}', 'approve')">Approved</button>
+                                    <button class="btn-reject" onclick="actionDoc('${doc.id}', 'reject')">Reject</button>
+                                </div>
+                            </div>
+                        `);
+                    });
+                }
+            } catch(e) { console.error(e); }
+        }
+
+        // Handle Approve/Reject
+        async function actionDoc(id, action) {
+            try {
+                const res = await fetch(`${API_BASE}/doctors/${id}/action?action=${action}`, { method: 'POST', headers: { 'Authorization': `Bearer ${adminToken}` } });
+                if(res.ok) {
+                    document.getElementById(`doc-${id}`).remove();
+                    fetchStats();
+                } else {
+                    alert("Action failed.");
+                }
+            } catch(e) { console.error(e); }
+        }
+
+        // Setup Chart exactly like screenshot
+        function renderChart() {
+            const ctx = document.getElementById('appointmentChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct'],
+                    datasets: [{
+                        label: 'Appointments',
+                        data: [2200, 2600, 3200, 3400, 2800, 2500, 2000, 2400],
+                        backgroundColor: function(context) {
+                            return context.dataIndex === 3 ? '#0066cc' : '#e0f2fe'; // Highlight 'Jun'
+                        },
+                        borderRadius: 4,
+                        barPercentage: 0.6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        y: { 
+                            beginAtZero: true, max: 3500, ticks: { stepSize: 1000, color: '#9ca3af', font: { size: 11 } },
+                            grid: { color: '#f3f4f6', drawBorder: false, borderDash: [5, 5] }
+                        },
+                        x: { 
+                            ticks: { color: '#6b7280', font: { size: 12 } },
+                            grid: { display: false, drawBorder: false } 
+                        }
+                    }
+                }
+            });
+        }
+
+        function logout() {
+            localStorage.removeItem('admin_token');
+            window.location.href = "admin_login.html";
+        }
+
+        window.onload = () => {
+            fetchStats();
+            fetchPendingDoctors();
+            renderChart();
+        };
+    </script>
+</body>
+</html>
