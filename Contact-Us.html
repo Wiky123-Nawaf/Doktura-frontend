@@ -104,7 +104,7 @@
         .contact-header-text p {
             font-size: 16px;
             color: var(--text-gray);
-            max-width: 100%; /* Stretched text as requested */
+            max-width: 100%;
             line-height: 1.6;
         }
 
@@ -329,17 +329,14 @@
                 <h1>Contact Us</h1>
                 <p>Contact our support team for product demos, onboarding assistance, or questions about features and services.</p>
                 
-                <!-- Headset / Support Hours & Address under title as requested -->
                 <div class="header-contact-info">
                     <div class="info-item">
-                        <!-- Headset Icon -->
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 14.25v2.25a3 3 0 003 3h1.5v-4.5a1.5 1.5 0 00-1.5-1.5h-3zm15 0h-3a1.5 1.5 0 00-1.5 1.5v4.5h1.5a3 3 0 003-3v-2.25zM4.5 14.25v-1.5a7.5 7.5 0 0115 0v1.5"></path>
                         </svg>
                         <span>Support hours: Monday - Saturday, 08:00 AM - 09:00 PM</span>
                     </div>
                     <div class="info-item">
-                        <!-- Location Icon -->
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z" />
                             <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z" />
@@ -351,11 +348,10 @@
 
             <!-- Contact Form Block -->
             <div class="form-card">
-                <form action="https://formsubmit.co/dokturamedic@gmail.com" method="POST">
+                <!-- UPDATED: Form action changed to Formspree endpoint -->
+                <form action="https://formspree.io/f/mkoeneal" method="POST">
                     
-                    <input type="hidden" name="_honey" style="display:none">
-                    <input type="hidden" name="_captcha" value="false">
-                    <input type="hidden" name="_next" value="https://doktura.ai/">
+                    <!-- REMOVED: Formsubmit.co specific hidden inputs -->
 
                     <div class="form-row">
                         <div class="form-col">
@@ -435,7 +431,7 @@
         </div>
     </main>
 
-    <!-- Footer updated to 2 columns matching Image 3 -->
+    <!-- Footer -->
     <footer class="footer-section">
         <div class="footer-content">
             <div class="footer-top">
@@ -444,7 +440,6 @@
                     <p>Providing AI-powered medical insights and<br>seamless doctor bookings 24/7.</p>
                 </div>
 
-                <!-- Footer Links: Adjusted to Company and Legal columns only -->
                 <div class="footer-links-group">
                     <div class="footer-col">
                         <h4>Company</h4>
