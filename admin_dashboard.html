@@ -3,9 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Doktura AI - Admin Dashboard</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <title>Doktura AI - Live Admin Dashboard</title>
+    <link rel="icon" type="image/jpeg" href="https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/Vector%20(4).png?download=true">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
@@ -16,98 +15,75 @@
             --primary: #0066cc; --primary-light: #eff6ff;
             --success: #10b981; --danger: #ef4444; --warning: #f59e0b;
         }
-
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
         body { display: flex; height: 100vh; background-color: var(--bg-body); overflow: hidden; color: var(--text-main); }
 
         /* SIDEBAR */
         .sidebar { width: 250px; background-color: var(--bg-sidebar); border-right: 1px solid var(--border); display: flex; flex-direction: column; justify-content: space-between; }
         .sidebar-top { padding: 24px 20px; }
-        .logo { font-size: 20px; font-weight: 700; display: flex; align-items: center; gap: 8px; margin-bottom: 30px; }
-        .nav-label { font-size: 11px; font-weight: 600; color: var(--text-light); text-transform: uppercase; margin-bottom: 12px; letter-spacing: 0.5px; }
+        .logo { margin-bottom: 30px; display: flex; align-items: center; }
+        .logo img { height: 28px; width: auto; }
         .nav-menu { list-style: none; }
-        .nav-menu li { margin-bottom: 4px; }
-        .nav-menu a { display: flex; align-items: center; gap: 12px; padding: 10px 14px; text-decoration: none; color: var(--text-muted); font-size: 14px; font-weight: 500; border-radius: 8px; transition: 0.2s; }
-        .nav-menu a svg { width: 18px; height: 18px; stroke: currentColor; fill: none; stroke-width: 2; }
+        .nav-menu a { display: flex; align-items: center; gap: 12px; padding: 10px 14px; text-decoration: none; color: var(--text-muted); font-size: 14px; font-weight: 500; border-radius: 8px; transition: 0.2s;}
         .nav-menu a.active { background-color: var(--primary-light); color: var(--primary); font-weight: 600; }
-        .nav-menu a:hover:not(.active) { background-color: #f9fafb; color: var(--text-main); }
         .sidebar-bottom { padding: 20px; border-top: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
-        .profile-small { display: flex; align-items: center; gap: 10px; }
-        .profile-small img { width: 36px; height: 36px; border-radius: 50%; }
-        .profile-small .info h4 { font-size: 13px; margin: 0; color: var(--text-main); }
-        .profile-small .info p { font-size: 11px; margin: 0; color: var(--text-light); }
 
         /* MAIN CONTENT */
         .main-content { flex: 1; display: flex; flex-direction: column; overflow-y: auto; }
-        header { display: flex; justify-content: space-between; align-items: center; padding: 16px 32px; background: transparent; }
-        .search-container { position: relative; width: 300px; }
-        .search-container svg { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); width: 16px; height: 16px; color: var(--text-light); }
-        .search-container input { width: 100%; padding: 10px 12px 10px 36px; border: 1px solid var(--border); border-radius: 8px; font-size: 14px; outline: none; background: #fff; }
-        .header-actions { display: flex; align-items: center; gap: 24px; }
-        .admin-profile { display: flex; align-items: center; gap: 12px; border-left: 1px solid var(--border); padding-left: 24px; }
-        .admin-profile img { width: 36px; height: 36px; border-radius: 50%; }
-        .admin-profile h4 { font-size: 14px; font-weight: 600; margin: 0; }
-        .admin-profile p { font-size: 12px; color: var(--text-light); margin: 0; }
+        header { display: flex; justify-content: space-between; align-items: center; padding: 16px 32px; background: #fff; border-bottom: 1px solid var(--border-light); position: sticky; top:0; z-index: 10;}
+        .dashboard-body { padding: 24px 32px; }
 
-        .dashboard-body { padding: 0 32px 32px 32px; }
-        .welcome-title h1 { font-size: 22px; font-weight: 600; margin-bottom: 4px; }
-        .welcome-title p { font-size: 14px; color: var(--text-muted); margin-bottom: 24px;}
-
-        /* METRICS GRID */
+        /* METRIC CARDS */
         .metrics-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px; }
         .metric-card { background: var(--bg-card); padding: 20px; border-radius: 16px; border: 1px solid var(--border); box-shadow: 0 1px 2px rgba(0,0,0,0.02); }
-        .metric-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
-        .metric-header h3 { font-size: 13px; font-weight: 500; color: var(--text-main); display: flex; align-items: center; gap: 8px; }
-        .metric-header h3 svg { width: 16px; height: 16px; color: var(--text-muted); }
-        .metric-content { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
-        .metric-value { font-size: 32px; font-weight: 700; color: var(--text-main); }
-        .metric-footer { display: flex; justify-content: space-between; font-size: 12px; font-weight: 500; }
+        .metric-label { font-size: 13px; color: var(--text-muted); margin-bottom: 8px; font-weight: 500; }
+        .metric-value { font-size: 28px; font-weight: 700; }
         
-        /* GRIDS & PANELS */
-        .layout-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 24px; }
-        .panel { background: var(--bg-card); border-radius: 16px; border: 1px solid var(--border); margin-bottom: 24px; }
-        .panel-header { display: flex; justify-content: space-between; align-items: center; padding: 20px 24px; border-bottom: 1px solid var(--border-light); }
-        .panel-header h2 { font-size: 16px; font-weight: 600; display: flex; align-items: center; gap: 8px; }
-        .panel-body { padding: 24px; }
+        /* CLICKABLE REVENUE CARD */
+        .metric-card.clickable { cursor: pointer; transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s; position: relative;}
+        .metric-card.clickable:hover { transform: translateY(-2px); box-shadow: 0 6px 12px rgba(0,0,0,0.05); border-color: var(--primary); }
+        .metric-card.clickable::after { content: "↗"; position: absolute; top: 16px; right: 16px; font-size: 16px; color: var(--text-light); transition: 0.2s; }
+        .metric-card.clickable:hover::after { color: var(--primary); }
 
-        /* TABLE */
+        /* PANELS & TABLES */
+        .layout-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 24px; }
+        .panel { background: var(--bg-card); border-radius: 16px; border: 1px solid var(--border); margin-bottom: 24px; overflow: hidden; display: flex; flex-direction: column;}
+        .panel-header { display: flex; justify-content: space-between; align-items: center; padding: 16px 24px; border-bottom: 1px solid var(--border-light); font-weight: 600; background: #fafafa; }
+        
+        .table-responsive { max-height: 400px; overflow-y: auto; }
         table { width: 100%; border-collapse: collapse; }
-        th { text-align: left; padding: 12px; font-size: 12px; color: var(--text-light); font-weight: 500; border-bottom: 1px solid var(--border-light); }
-        td { padding: 16px 12px; font-size: 13px; font-weight: 500; border-bottom: 1px solid var(--border-light); vertical-align: middle; }
-        .td-flex { display: flex; align-items: center; gap: 10px; }
-        .avatar-sm { width: 28px; height: 28px; border-radius: 50%; object-fit: cover; }
-        .time-badge { background: var(--primary-light); color: var(--primary); padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; }
+        thead th { position: sticky; top: 0; background: #fafafa; z-index: 1; text-align: left; padding: 12px 24px; font-size: 11px; color: var(--text-light); text-transform: uppercase; border-bottom: 1px solid var(--border-light); }
+        td { padding: 14px 24px; font-size: 13px; border-bottom: 1px solid var(--border-light); }
+        .avatar-sm { width: 28px; height: 28px; border-radius: 50%; vertical-align: middle; margin-right: 8px; }
 
         /* DOCTOR LIST */
         .btn-add { background: var(--primary); color: #fff; border: none; padding: 8px 16px; border-radius: 8px; font-size: 13px; font-weight: 500; cursor: pointer; display: flex; align-items: center; gap: 6px; }
-        .doc-list { display: flex; flex-direction: column; gap: 16px; }
-        .doc-card { border: 1px solid var(--border-light); border-radius: 12px; padding: 16px; background: #fafafa; }
-        .doc-card-inner { display: flex; justify-content: space-between; align-items: center; }
-        .doc-info { display: flex; align-items: center; gap: 12px; }
-        .doc-info img { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; }
-        .doc-info h4 { font-size: 14px; margin: 0; }
-        .doc-info p { font-size: 12px; color: var(--text-muted); margin: 0; }
+        .btn-approve { color: var(--text-main); cursor: pointer; border: 1px solid var(--border); padding: 8px; border-radius: 6px; background: #fff; font-size: 12px; font-weight: 500; width: 100%; transition: 0.2s;}
+        .btn-reject { color: var(--danger); cursor: pointer; border: 1px solid var(--border); padding: 8px; border-radius: 6px; background: #fff; font-size: 12px; font-weight: 500; width: 100%; transition: 0.2s;}
+        .btn-approve:hover { background: #f0fdf4; border-color: var(--success); color: var(--success); }
+        .btn-reject:hover { background: #fef2f2; border-color: var(--danger); }
         
-        .badge { padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: 600; border: 1px solid; }
-        .badge.verified { color: var(--success); border-color: #bbf7d0; background: #f0fdf4; }
-        .badge.pending { color: var(--warning); border-color: #fef08a; background: #fefce8; }
+        .badge { padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; }
+        .badge.pending { background: #fefce8; color: var(--warning); border: 1px solid #fef08a; }
+        .badge.verified { background: #f0fdf4; color: var(--success); border: 1px solid #bbf7d0; }
 
-        .doc-actions { display: flex; gap: 8px; margin-top: 16px; }
-        .doc-actions button { flex: 1; padding: 8px; border-radius: 8px; font-size: 12px; font-weight: 500; cursor: pointer; border: 1px solid var(--border); background: #fff; }
-        .doc-actions .btn-approve:hover { background: #f9fafb; border-color: var(--success); color: var(--success); }
-        .doc-actions .btn-reject:hover { background: #fef2f2; color: var(--danger); border-color: var(--danger); }
-
-        /* WIDGET */
-        .appt-manage-card { padding: 20px; border: 1px solid var(--border-light); border-radius: 12px; background: #fafafa; }
-        .am-details { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px; margin-top: 20px;}
-        .am-row { display: flex; justify-content: space-between; grid-column: span 2; font-size: 13px; }
-        .am-label { color: var(--text-light); }
-        .am-value { font-weight: 500; display: flex; align-items: center; gap: 8px; }
-
-        /* Simple SVG ring for metrics */
-        .ring-svg { width: 40px; height: 40px; transform: rotate(-90deg); }
-        .ring-bg { fill: none; stroke: #fee2e2; stroke-width: 4; }
-        .ring-fill { fill: none; stroke: #ef4444; stroke-width: 4; stroke-linecap: round; }
+        /* MODALS */
+        .modal-overlay { position: fixed; inset: 0; background: rgba(17, 24, 39, 0.6); display: flex; justify-content: center; align-items: center; z-index: 1000; backdrop-filter: blur(2px); }
+        .modal-box { background: #fff; border-radius: 16px; width: 100%; max-width: 500px; max-height: 90vh; display: flex; flex-direction: column; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); }
+        .modal-header { padding: 20px 24px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+        .modal-header h2 { font-size: 18px; font-weight: 600; }
+        .modal-close { background: none; border: none; font-size: 24px; cursor: pointer; color: var(--text-muted); }
+        .modal-body { padding: 24px; overflow-y: auto; flex: 1; }
+        .modal-footer { padding: 20px 24px; border-top: 1px solid var(--border); text-align: right; }
+        
+        /* FORM INPUTS */
+        .form-group { margin-bottom: 16px; }
+        .form-group label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px; color: var(--text-main); }
+        .form-control { width: 100%; padding: 10px 12px; border: 1px solid var(--border); border-radius: 8px; font-size: 13px; outline: none; }
+        .form-control:focus { border-color: var(--primary); }
+        .form-row { display: flex; gap: 16px; }
+        .form-row > div { flex: 1; }
+        .btn-primary { background: var(--primary); color: white; padding: 10px 20px; border: none; border-radius: 8px; font-weight: 500; cursor: pointer; }
     </style>
 </head>
 <body>
@@ -115,183 +91,230 @@
     <aside class="sidebar">
         <div class="sidebar-top">
             <div class="logo">
-                <svg viewBox="0 0 24 24" width="20" height="20"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" stroke="#111" stroke-width="2" stroke-linecap="round"/></svg>
-                doktura.ai
+                <img src="https://huggingface.co/NAwafo/SmolLM-Keyboard-GGUF/resolve/main/Group%202085665235.png?download=true" alt="doktura.ai">
             </div>
-            <div class="nav-label">Main Menu</div>
             <ul class="nav-menu">
-                <li><a href="#" class="active"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><path d="M9 3v18M15 3v18M3 9h18M3 15h18"/></svg> Dashboard</a></li>
-                <li><a href="#"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg> Patients</a></li>
-                <li><a href="#"><svg viewBox="0 0 24 24"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg> Doctors</a></li>
-                <li><a href="#"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg> Appointments</a></li>
-                <li><a href="#"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg> Settings</a></li>
+                <li><a href="#" class="active">📊 Dashboard</a></li>
+                <li><a href="#">👥 Patients</a></li>
+                <li><a href="#">👨‍⚕️ Doctors</a></li>
+                <li><a href="#">📦 Deliveries</a></li>
             </ul>
         </div>
         <div class="sidebar-bottom">
-            <div class="profile-small">
-                <img src="https://ui-avatars.com/api/?name=Muaz+Syahrir&background=random" alt="Admin">
-                <div class="info"><h4>Muaz syahrir</h4><p>Super Admin</p></div>
+            <div class="info">
+                <div style="font-size: 12px; font-weight: 600;">Super Admin</div>
+                <div style="font-size: 11px; color: var(--text-light);">dokturamedic@gmail.com</div>
             </div>
-            <button onclick="logout()" style="background:none; border:none; cursor:pointer;"><svg viewBox="0 0 24 24" width="20" height="20" stroke="#6b7280" fill="none" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></svg></button>
+            <button onclick="logout()" style="background:none; border:none; color:var(--danger); cursor:pointer; font-size: 12px; font-weight: 600;">Logout</button>
         </div>
     </aside>
 
-    <div class="main-content">
+    <main class="main-content">
         <header>
-            <div class="search-container">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
-                <input type="text" placeholder="Search">
+            <div>
+                <h1 style="font-weight: 600; font-size: 20px;">Welcome back, Sabrina!</h1>
+                <p style="font-size: 13px; color: var(--text-muted); margin-top: 4px;">Overview of platform activity and key metrics.</p>
             </div>
-            <div class="header-actions">
-                <div class="admin-profile">
-                    <img src="https://ui-avatars.com/api/?name=Sabrina+Gomez&background=0D8ABC&color=fff">
-                    <div class="info"><h4>Sabrina Gomez</h4><p>Super Admin</p></div>
-                </div>
+            <div style="display:flex; align-items:center; gap: 12px;">
+                <img src="https://ui-avatars.com/api/?name=Sabrina+Gomez&background=0D8ABC&color=fff" style="width:36px; height:36px; border-radius:50%;">
+                <div style="font-size:14px; font-weight:600;">Sabrina Gomez</div>
             </div>
         </header>
 
         <div class="dashboard-body">
-            <div class="welcome-title">
-                <h1>Welcome back, Sabrina!</h1>
-                <p>Overview of platform activity and key metrics.</p>
-            </div>
-
-            <!-- LIVE METRICS -->
+            <!-- 1. LIVE STATS CARDS -->
             <div class="metrics-grid">
                 <div class="metric-card">
-                    <div class="metric-header">
-                        <h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg> Total Patients</h3>
-                    </div>
-                    <div class="metric-content">
-                        <span class="metric-value" id="stat-patients">...</span>
-                        <div style="text-align: right; display: flex; align-items:center; gap:8px;">
-                            <svg class="ring-svg"><circle class="ring-bg" cx="20" cy="20" r="16"/><circle class="ring-fill" cx="20" cy="20" r="16" stroke-dasharray="80 100"/></svg>
-                            <div style="font-size: 10px; color: var(--text-light); text-align: left;">Monthly Target<br><strong style="color:var(--text-main)">24/30</strong></div>
-                        </div>
-                    </div>
-                    <div class="metric-footer"><span style="color: var(--success);">↗ +12% vs last month</span></div>
+                    <div class="metric-label">Total Patients</div>
+                    <div class="metric-value" id="stat-patients">0</div>
                 </div>
-
                 <div class="metric-card">
-                    <div class="metric-header">
-                        <h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg> Total Doctors</h3>
-                    </div>
-                    <div class="metric-content">
-                        <span class="metric-value" id="stat-doctors">...</span>
-                        <div style="text-align: right; display: flex; align-items:center; gap:8px;">
-                            <svg class="ring-svg"><circle class="ring-bg" cx="20" cy="20" r="16"/><circle class="ring-fill" cx="20" cy="20" r="16" stroke-dasharray="50 100"/></svg>
-                            <div style="font-size: 10px; color: var(--text-light); text-align: left;">Staffing Goal<br><strong style="color:var(--text-main)">15/30</strong></div>
-                        </div>
-                    </div>
-                    <div class="metric-footer"><span style="color: var(--success);" id="stat-doc-avail">... Available Now</span></div>
+                    <div class="metric-label">Approved Doctors</div>
+                    <div class="metric-value" id="stat-doctors">0</div>
                 </div>
-
                 <div class="metric-card">
-                    <div class="metric-header">
-                        <h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg> Active Appointments</h3>
-                    </div>
-                    <div class="metric-content">
-                        <span class="metric-value" id="stat-appts">...</span>
-                        <div style="text-align: right; display: flex; align-items:center; gap:8px;">
-                            <svg class="ring-svg"><circle class="ring-bg" cx="20" cy="20" r="16"/><circle class="ring-fill" cx="20" cy="20" r="16" stroke-dasharray="60 100"/></svg>
-                            <div style="font-size: 10px; color: var(--text-light); text-align: left;">Daily Capacity<br><strong style="color:var(--text-main)">17/30</strong></div>
-                        </div>
-                    </div>
-                    <div class="metric-footer"><span style="color: var(--success);" id="stat-appts-waiting">... waiting</span></div>
+                    <div class="metric-label">Active Appointments</div>
+                    <div class="metric-value" id="stat-appts">0</div>
                 </div>
-
-                <div class="metric-card">
-                    <div class="metric-header">
-                        <h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg> Monthly Revenue</h3>
-                    </div>
-                    <div class="metric-content" style="align-items: flex-end;">
-                        <span class="metric-value" id="stat-revenue" style="font-size: 26px;">MYR ...</span>
-                    </div>
-                    <div class="metric-footer" style="margin-top:20px;"><span style="color: var(--danger);">↘ Live Tracking</span></div>
+                <!-- REVENUE CARD (NOW CLICKABLE) -->
+                <div class="metric-card clickable" onclick="openRevenueModal()" title="Click to view all-time revenue history">
+                    <div class="metric-label">Monthly Revenue</div>
+                    <div class="metric-value" id="stat-revenue" style="font-size: 22px;">MYR 0.00</div>
+                    <div style="font-size:11px; color:var(--primary); margin-top: 8px; font-weight: 500;">📅 Click to view all months</div>
                 </div>
             </div>
 
             <div class="layout-grid">
-                <!-- LEFT COLUMN -->
-                <div class="left-col">
+                <!-- 2. LEFT COL: CHART & APPOINTMENTS -->
+                <div class="left-col" style="display: flex; flex-direction: column;">
                     <div class="panel">
-                        <div class="panel-header">
-                            <h2>Appointment Received Over Time</h2>
-                            <select style="padding: 4px 8px; border: 1px solid var(--border); border-radius: 6px; font-size: 12px; color: var(--text-muted);"><option>Last 6 Months</option></select>
-                        </div>
-                        <div class="panel-body">
-                            <div style="height: 250px; width: 100%;"><canvas id="mainChart"></canvas></div>
+                        <div class="panel-header">Appointment Received Over Time</div>
+                        <div style="padding: 16px; height: 250px;">
+                            <canvas id="mainChart"></canvas>
                         </div>
                     </div>
 
-                    <!-- LIVE APPOINTMENT RECORDS TABLE -->
-                    <div class="panel">
-                        <div class="panel-header" style="border-bottom: none; padding-bottom: 0;">
-                            <h2><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/></svg> Appointment Records</h2>
-                        </div>
-                        <div class="panel-body" style="padding-top: 12px; max-height: 400px; overflow-y: auto;">
+                    <div class="panel" style="flex: 1;">
+                        <div class="panel-header">Appointment Records</div>
+                        <div class="table-responsive">
                             <table>
-                                <thead><tr><th style="width: 30px;"></th><th>Date & Time ↕</th><th>Patient ↕</th><th>Doctor ↕</th><th>Symptoms ↕</th></tr></thead>
-                                <tbody id="live-table-body">
-                                    <tr><td colspan="5" style="text-align: center; color: var(--text-muted);">Loading records...</td></tr>
+                                <thead>
+                                    <tr>
+                                        <th>Date & Time</th>
+                                        <th>Patient</th>
+                                        <th>Doctor</th>
+                                        <th>Symptoms</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="table-deliveries">
+                                    <tr><td colspan="4" style="text-align: center; color: var(--text-light);">Loading orders...</td></tr>
                                 </tbody>
                             </table>
                         </div>
                     </div>
                 </div>
 
-                <!-- RIGHT COLUMN -->
+                <!-- 3. RIGHT COL: DOCTORS -->
                 <div class="right-col">
-                    <!-- LIVE DOCTORS -->
                     <div class="panel">
                         <div class="panel-header">
-                            <h2><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/></svg> Doctor Management</h2>
-                            <button class="btn-add">+ Add Doctor</button>
+                            Doctor Management
+                            <button class="btn-add" onclick="openAddDoctorModal()">+ Add Doctor</button>
                         </div>
-                        <div class="panel-body">
-                            <div class="doc-list" id="live-doctor-list">
-                                <p style="text-align: center; color: var(--text-muted); font-size: 13px;">Loading doctors...</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- WIDGET (LATEST PENDING APPOINTMENT) -->
-                    <div class="panel">
-                        <div class="panel-header">
-                            <h2><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/></svg> Appointment Management</h2>
-                        </div>
-                        <div class="panel-body" id="latest-appt-widget">
-                            <p style="text-align: center; color: var(--text-muted); font-size: 13px;">No pending appointments found.</p>
+                        <div id="list-pending-doctors" style="padding: 20px;">
+                            <p style="text-align: center; color: var(--text-light); font-size: 13px;">Checking for applications...</p>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
+    </main>
+
+    <!-- ================= MODALS ================= -->
+    
+    <!-- Revenue History Modal -->
+    <div id="revenueModal" class="modal-overlay" style="display: none;">
+        <div class="modal-box" style="max-width: 450px;">
+            <div class="modal-header">
+                <h2>Revenue History</h2>
+                <button class="modal-close" onclick="closeRevenueModal()">&times;</button>
+            </div>
+            <div class="modal-body" style="padding: 0; max-height: 400px; overflow-y: auto;">
+                <table style="width: 100%; border-collapse: collapse;">
+                    <thead>
+                        <tr>
+                            <th style="background: #fafafa; padding: 12px 24px; text-align: left; border-bottom: 1px solid var(--border-light);">Month</th>
+                            <th style="background: #fafafa; padding: 12px 24px; text-align: right; border-bottom: 1px solid var(--border-light);">Total Revenue</th>
+                        </tr>
+                    </thead>
+                    <tbody id="revenueHistoryTableBody">
+                        <!-- Filled dynamically -->
+                    </tbody>
+                </table>
+            </div>
+            <div class="modal-footer" style="padding: 16px 24px; background: #f8fafc; text-align: left;">
+                <div style="display: flex; justify-content: space-between; font-weight: 700; font-size: 15px;">
+                    <span>All-Time Total Revenue:</span>
+                    <span id="allTimeRevenueTotal" style="color: var(--primary);">MYR 0.00</span>
+                </div>
+            </div>
+        </div>
     </div>
 
-    <!-- API INTEGRATION SCRIPT -->
+    <!-- Symptom Read More Modal -->
+    <div id="symptomModal" class="modal-overlay" style="display: none;">
+        <div class="modal-box" style="max-width: 400px;">
+            <div class="modal-header">
+                <h2>Patient Symptoms</h2>
+                <button class="modal-close" onclick="closeSymptomModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p id="symptomFullText" style="font-size: 14px; line-height: 1.6; color: var(--text-main);"></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Doctor Admin Form Modal -->
+    <div id="addDoctorModal" class="modal-overlay" style="display: none;">
+        <div class="modal-box" style="max-width: 600px;">
+            <div class="modal-header">
+                <h2>Add New Doctor</h2>
+                <button class="modal-close" onclick="closeAddDoctorModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p style="font-size:13px; color:var(--text-muted); margin-bottom: 20px;">Fill out this form to manually add a doctor to the system. They will be verified automatically.</p>
+                <form id="adminAddDocForm">
+                    <!-- Setup Login -->
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Doctor Email</label>
+                            <input type="email" id="newDocEmail" class="form-control" required placeholder="doctor@clinic.com">
+                        </div>
+                        <div class="form-group">
+                            <label>Temporary Password</label>
+                            <input type="text" id="newDocPass" class="form-control" required placeholder="Pass1234!">
+                        </div>
+                    </div>
+                    <hr style="border:0; border-top:1px solid var(--border-light); margin: 10px 0 20px 0;">
+                    
+                    <!-- Profile Info -->
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Full Name</label>
+                            <input type="text" id="newDocName" class="form-control" required placeholder="Dr. John Doe">
+                        </div>
+                        <div class="form-group">
+                            <label>Specialty</label>
+                            <input type="text" id="newDocSpec" class="form-control" required placeholder="Cardiologist">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Phone Number</label>
+                            <input type="text" id="newDocPhone" class="form-control" required placeholder="+60123456789">
+                        </div>
+                        <div class="form-group">
+                            <label>Clinic Location</label>
+                            <input type="text" id="newDocLoc" class="form-control" required placeholder="HQ Clinic">
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-primary" onclick="submitAdminNewDoctor()">Create Doctor Account</button>
+            </div>
+        </div>
+    </div>
+
+
     <script>
+        // Check authentication
+        const token = localStorage.getItem('admin_token');
+        if (!token) window.location.href = "admin_login.html";
+
         const API_BASE = "https://api.doktura.ai/api";
-        const adminToken = localStorage.getItem('admin_token');
-        if (!adminToken) window.location.href = "admin_login.html";
+        const headers = { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' };
+        
+        // Global variables to store data for modals
+        let allAppointmentsData = [];
 
-        const headers = { 'Authorization': `Bearer ${adminToken}`, 'Content-Type': 'application/json' };
-
-        async function loadLiveDashboard() {
+        // 1. FETCH STATS
+        async function loadStats() {
             try {
-                // 1. Fetch Stats
-                const statRes = await fetch(`${API_BASE}/admin/stats`, { headers });
-                if (statRes.ok) {
-                    const stats = await statRes.json();
-                    document.getElementById('stat-patients').innerText = stats.total_patients.toLocaleString();
-                    document.getElementById('stat-doctors').innerText = stats.total_doctors;
-                    document.getElementById('stat-doc-avail').innerText = `${stats.total_doctors} Available Now`;
-                    document.getElementById('stat-appts').innerText = stats.active_appointments;
-                    document.getElementById('stat-appts-waiting').innerText = `${stats.active_appointments} waiting`;
-                    document.getElementById('stat-revenue').innerText = `MYR ${stats.monthly_revenue.toFixed(2)}`;
+                const res = await fetch(`${API_BASE}/admin/stats`, { headers });
+                const data = await res.json();
+                if (res.ok) {
+                    document.getElementById('stat-patients').innerText = data.total_patients;
+                    document.getElementById('stat-doctors').innerText = data.total_doctors;
+                    document.getElementById('stat-appts').innerText = data.active_appointments;
+                    document.getElementById('stat-revenue').innerText = `MYR ${(data.monthly_revenue || 0).toFixed(2)}`;
                 }
+            } catch (e) { console.error("Stats Error:", e); }
+        }
 
-                // 2. Fetch Doctors (Public Approved + Admin Pending)
+        // 2. FETCH PENDING & APPROVED DOCTORS
+        async function loadDoctors() {
+            try {
                 const [apprRes, pendRes] = await Promise.all([
                     fetch(`${API_BASE}/doctors`), 
                     fetch(`${API_BASE}/admin/doctors/pending`, { headers })
@@ -299,92 +322,195 @@
                 const approvedDocs = apprRes.ok ? await apprRes.json() : [];
                 const pendingDocs = pendRes.ok ? await pendRes.json() : [];
                 
-                // Combine and show top 4 (prioritizing pending so Admin sees them first)
-                const allDocs = [...pendingDocs, ...approvedDocs].slice(0, 4);
-                
-                document.getElementById('live-doctor-list').innerHTML = allDocs.map(doc => {
+                // Show all pending first, then pad with approved
+                const allDocs = [...pendingDocs, ...approvedDocs];
+                const container = document.getElementById('list-pending-doctors');
+
+                if (allDocs.length === 0) {
+                    container.innerHTML = `<p style="text-align:center; color:gray; font-size:12px;">No doctors in database.</p>`;
+                    return;
+                }
+
+                container.innerHTML = allDocs.map(doc => {
                     const isPending = doc.status === 'pending';
-                    return `
-                    <div class="doc-card">
-                        <div class="doc-card-inner">
-                            <div class="doc-info">
-                                <img src="${doc.photo_url || `https://ui-avatars.com/api/?name=${doc.name}&background=random`}">
-                                <div><h4>${doc.name}</h4><p>${doc.specialty || "General"}</p></div>
-                            </div>
-                            <span class="badge ${isPending ? 'pending' : 'verified'}">${isPending ? 'Pending' : 'Verified'}</span>
-                        </div>
-                        ${isPending ? `
-                        <div class="doc-actions">
-                            <button class="btn-approve" onclick="actionDoc('${doc.id}', 'approve')">Approved</button>
-                            <button class="btn-reject" onclick="actionDoc('${doc.id}', 'reject')">Reject</button>
-                        </div>` : ''}
-                    </div>`;
-                }).join('');
-
-                // 3. Fetch All Appointments
-                const apptRes = await fetch(`${API_BASE}/admin/appointments`, { headers });
-                if (apptRes.ok) {
-                    const appts = await apptRes.json();
+                    const badgeClass = isPending ? 'pending' : 'verified';
+                    const badgeText = isPending ? 'Pending' : 'Verified';
                     
-                    // Render Table (Top 10)
-                    document.getElementById('live-table-body').innerHTML = appts.slice(0, 10).map(a => {
-                        const dateObj = new Date(a.preferred_datetime || a.created_at);
-                        const dateStr = dateObj.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-                        const timeStr = dateObj.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
-                        
-                        return `
-                        <tr>
-                            <td><input type="checkbox"></td>
-                            <td><div class="td-flex">${dateStr} <span class="time-badge">${timeStr}</span></div></td>
-                            <td><div class="td-flex"><img src="https://ui-avatars.com/api/?name=${a.patient_name}&background=f3f4f6" class="avatar-sm"> ${a.patient_name}</div></td>
-                            <td><div class="td-flex"><img src="https://ui-avatars.com/api/?name=${a.doctor_name}&background=random" class="avatar-sm"> ${a.doctor_name}</div></td>
-                            <td style="color:var(--text-muted);">"${a.symptoms ? a.symptoms.substring(0,20)+'...' : 'General Visit'}"</td>
-                        </tr>`;
-                    }).join('');
-
-                    // Render Widget (Find first pending_payment or scheduled appt)
-                    const pendingAppt = appts.find(a => a.status !== 'completed' && a.status !== 'cancelled');
-                    if (pendingAppt) {
-                        const d = new Date(pendingAppt.preferred_datetime || pendingAppt.created_at);
-                        document.getElementById('latest-appt-widget').innerHTML = `
-                        <div class="appt-manage-card">
-                            <div style="display:flex; justify-content:space-between; margin-bottom:20px;">
-                                <div style="display:flex; gap:12px; align-items:center;">
-                                    <div style="width:40px; height:40px; border-radius:50%; background:#fee2e2; color:var(--danger); display:flex; align-items:center; justify-content:center; font-weight:600;">${pendingAppt.patient_name.charAt(0)}</div>
-                                    <div>
-                                        <h4 style="font-size:14px; margin:0;">${pendingAppt.patient_name}</h4>
-                                        <p style="font-size:12px; color:var(--text-light); margin:0;">${pendingAppt.patient_email || 'No email'}</p>
-                                    </div>
-                                </div>
-                                <span class="badge pending">${pendingAppt.status.replace('_', ' ')}</span>
-                            </div>
-                            <div class="am-details">
-                                <div class="am-row"><span class="am-label">Date & Time</span><span class="am-value">${d.toLocaleDateString()} <span class="time-badge">${d.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}</span></span></div>
-                                <div class="am-row"><span class="am-label">Doctor</span><span class="am-value">${pendingAppt.doctor_name}</span></div>
-                                <div class="am-row"><span class="am-label">Type</span><span class="am-value" style="color: #8b5cf6;">${pendingAppt.type === 'online' ? 'Online Video' : 'In Clinic Visit'}</span></div>
-                            </div>
+                    let actionsHtml = '';
+                    if (isPending) {
+                        actionsHtml = `
+                        <div style="display: flex; gap: 8px; margin-top: 12px;">
+                            <button class="btn-approve" onclick="verifyDoctor('${doc.id}', 'approve')">Approve</button>
+                            <button class="btn-reject" onclick="verifyDoctor('${doc.id}', 'reject')">Reject</button>
                         </div>`;
                     }
 
-                    // Render Chart Data (Group by Month)
-                    renderChartWithRealData(appts);
+                    return `
+                    <div style="border: 1px solid var(--border-light); padding: 16px; border-radius: 12px; margin-bottom: 12px; background: #fafafa;">
+                        <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                            <div style="display: flex; align-items: center; gap: 12px;">
+                                <img src="${doc.photo_url || `https://ui-avatars.com/api/?name=${doc.name}&background=random`}" class="avatar-sm" style="width:40px; height:40px;">
+                                <div>
+                                    <div style="font-weight: 600; font-size: 14px;">${doc.name}</div>
+                                    <div style="font-size: 12px; color: var(--text-muted);">${doc.specialty || "General"}</div>
+                                </div>
+                            </div>
+                            <span class="badge ${badgeClass}">${badgeText}</span>
+                        </div>
+                        ${actionsHtml}
+                    </div>`;
+                }).join('');
+            } catch (e) { console.error("Docs Error:", e); }
+        }
+
+        // 3. FETCH APPOINTMENTS
+        async function loadAppointments() {
+            try {
+                const res = await fetch(`${API_BASE}/admin/appointments`, { headers });
+                const appointments = res.ok ? await res.json() : [];
+                allAppointmentsData = appointments; // Save globally for the Revenue Modal
+                
+                const tableBody = document.getElementById('table-deliveries');
+
+                if (appointments.length === 0) {
+                    tableBody.innerHTML = `<tr><td colspan="4" style="text-align:center;">No recent appointments.</td></tr>`;
+                    return;
                 }
 
-            } catch (e) { console.error("Error loading dashboard:", e); }
+                tableBody.innerHTML = appointments.map(app => {
+                    // Format Date
+                    const d = new Date(app.preferred_datetime || app.created_at);
+                    const dateStr = d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+                    const timeStr = d.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+
+                    // Format Symptoms (Truncate logic)
+                    let sympText = app.symptoms && app.symptoms !== 'null' ? app.symptoms : "General Visit";
+                    let displaySymp = sympText.length > 20 ? sympText.substring(0, 20) + "..." : sympText;
+                    
+                    // Safety replace for JS template literal
+                    const safeSymp = sympText.replace(/'/g, "\\'").replace(/"/g, "&quot;").replace(/\n/g, "\\n");
+
+                    return `
+                    <tr>
+                        <td>
+                            <div style="font-weight:500;">${dateStr}</div>
+                            <div style="font-size:11px; color:var(--primary); font-weight:600; background:var(--primary-light); display:inline-block; padding:2px 6px; border-radius:4px;">${timeStr}</div>
+                        </td>
+                        <td>
+                            <img src="https://ui-avatars.com/api/?name=${app.patient_name}&background=f3f4f6" class="avatar-sm"> 
+                            <span style="font-weight:500;">${app.patient_name || 'Anonymous'}</span>
+                        </td>
+                        <td>
+                            <img src="https://ui-avatars.com/api/?name=${app.doctor_name}&background=random" class="avatar-sm">
+                            <span style="font-weight:500;">${app.doctor_name || 'Unassigned'}</span>
+                        </td>
+                        <td>
+                            <span style="color:var(--primary); cursor:pointer; font-weight: 500;" onclick="openSymptomModal('${safeSymp}')">"${displaySymp}"</span>
+                        </td>
+                    </tr>`;
+                }).join('');
+
+                renderChartWithRealData(appointments);
+            } catch (e) { console.error("Appointments Error:", e); }
         }
 
-        async function actionDoc(id, action) {
-            await fetch(`${API_BASE}/admin/doctors/${id}/action?action=${action}`, { method: 'POST', headers });
-            loadLiveDashboard(); // Refresh UI
+        // Action: Verify/Reject Doctor (Fixes 404 Action error)
+        async function verifyDoctor(id, action) {
+            if (!confirm(`Are you sure you want to ${action} this doctor?`)) return;
+            const res = await fetch(`${API_BASE}/admin/doctors/${id}/verify?action=${action}`, { 
+                method: 'POST', 
+                headers: headers 
+            });
+            if (res.ok) {
+                alert(`Doctor ${action}d successfully`);
+                loadDoctors();
+                loadStats();
+            } else {
+                alert("Action failed. Server might have thrown an error.");
+            }
         }
 
-        // Generate Chart.js dynamically from DB data
+        // ================= REVENUE HISTORY LOGIC =================
+        function openRevenueModal() {
+            if (allAppointmentsData.length === 0) {
+                alert("No revenue data available yet.");
+                return;
+            }
+
+            const revenueByMonth = {};
+            let allTimeTotal = 0;
+
+            allAppointmentsData.forEach(appt => {
+                const amt = parseFloat(appt.amount_paid) || 0;
+                
+                const d = new Date(appt.created_at || appt.preferred_datetime);
+                if (!isNaN(d)) {
+                    const monthKey = d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, '0');
+                    const displayLabel = d.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+
+                    if (!revenueByMonth[monthKey]) {
+                        revenueByMonth[monthKey] = { label: displayLabel, total: 0 };
+                    }
+                    revenueByMonth[monthKey].total += amt;
+                    allTimeTotal += amt;
+                }
+            });
+
+            const sortedMonths = Object.keys(revenueByMonth).sort().reverse();
+            const tbody = document.getElementById('revenueHistoryTableBody');
+            tbody.innerHTML = '';
+
+            if (sortedMonths.length === 0 || allTimeTotal === 0) {
+                tbody.innerHTML = '<tr><td colspan="2" style="text-align:center; padding: 20px; color: var(--text-muted);">No revenue recorded yet.</td></tr>';
+            } else {
+                sortedMonths.forEach(key => {
+                    const item = revenueByMonth[key];
+                    if(item.total > 0) {
+                        tbody.innerHTML += `
+                            <tr>
+                                <td style="font-weight: 500; padding: 14px 24px; border-bottom: 1px solid var(--border-light);">${item.label}</td>
+                                <td style="text-align: right; color: var(--text-main); font-weight: 600; padding: 14px 24px; border-bottom: 1px solid var(--border-light);">MYR ${item.total.toFixed(2)}</td>
+                            </tr>
+                        `;
+                    }
+                });
+            }
+            
+            document.getElementById('allTimeRevenueTotal').innerText = `MYR ${allTimeTotal.toFixed(2)}`;
+            document.getElementById('revenueModal').style.display = 'flex';
+        }
+
+        function closeRevenueModal() {
+            document.getElementById('revenueModal').style.display = 'none';
+        }
+
+        // ================= SYMPTOMS MODAL LOGIC =================
+        function openSymptomModal(text) {
+            document.getElementById('symptomFullText').innerText = text;
+            document.getElementById('symptomModal').style.display = 'flex';
+        }
+        function closeSymptomModal() {
+            document.getElementById('symptomModal').style.display = 'none';
+        }
+
+        // ================= ADD DOCTOR MODAL LOGIC =================
+        function openAddDoctorModal() {
+            document.getElementById('addDoctorModal').style.display = 'flex';
+        }
+        function closeAddDoctorModal() {
+            document.getElementById('addDoctorModal').style.display = 'none';
+        }
+        function submitAdminNewDoctor() {
+            alert("This UI is ready! To make it functional, doctors should register via the Doctor Portal currently as Firebase restricts admin user creation without backend SDKs.");
+            closeAddDoctorModal();
+        }
+
+        // ================= CHART LOGIC =================
         let chartInstance = null;
         function renderChartWithRealData(appointments) {
             const counts = {};
             const monthsLabel = [];
             
-            // Generate last 6 months dynamically
             for (let i = 5; i >= 0; i--) {
                 const d = new Date(); d.setMonth(d.getMonth() - i);
                 const monthStr = d.toLocaleString('en-US', { month: 'short' });
@@ -392,7 +518,6 @@
                 counts[monthStr] = 0;
             }
 
-            // Tally appointments
             appointments.forEach(a => {
                 const d = new Date(a.created_at || a.preferred_datetime);
                 const m = d.toLocaleString('en-US', { month: 'short' });
@@ -402,7 +527,7 @@
             const data = monthsLabel.map(m => counts[m] || 0);
             
             const ctx = document.getElementById('mainChart').getContext('2d');
-            if (chartInstance) chartInstance.destroy(); // Prevent overlap
+            if (chartInstance) chartInstance.destroy(); 
             
             chartInstance = new Chart(ctx, {
                 type: 'bar',
@@ -427,7 +552,11 @@
 
         function logout() { localStorage.removeItem('admin_token'); window.location.href = "admin_login.html"; }
 
-        window.onload = loadLiveDashboard;
+        window.onload = () => {
+            loadStats();
+            loadDoctors();
+            loadAppointments();
+        };
     </script>
 </body>
 </html>
